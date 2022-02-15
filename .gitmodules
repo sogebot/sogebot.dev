@@ -1,0 +1,15 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/sogebot/sogeBot
+[submodule "ui.admin"]
+	path = ui.admin
+	url = https://github.com/sogebot/ui-admin
+[submodule "ui.overlay"]
+	path = ui.overlay
+	url = https://github.com/sogebot/ui-overlay
+[submodule "ui.login"]
+	path = ui.login
+	url = https://github.com/sogebot/ui-login
+[submodule "ui.helpers"]
+	path = ui.helpers
+	url = https://github.com/sogehige/sogebot-ui-helpers
