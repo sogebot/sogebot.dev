@@ -1,3 +1,6 @@
+# Monorepo
+backend/dest
+
 # Logs
 logs
 *.log
