@@ -1,0 +1,11 @@
+name = "ui-oauth-redirecter"
+type = "webpack"
+
+account_id = "279b1b477f7fe230dec055356f9f8c44"
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2022-04-20"
+
+[vars]
+CLIENT_ID = "25ptx7puxva3gg1lt557qjp1ii0uur"
