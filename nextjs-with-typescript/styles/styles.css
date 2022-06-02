@@ -1,3 +1,13 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
 .dashboard-button-active,
 .dashboard-button-inactive {
   padding: 8px;

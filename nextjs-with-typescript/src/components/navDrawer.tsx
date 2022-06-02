@@ -1,47 +1,40 @@
 
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import { Avatar, ListItem, ListItemIcon, Tooltip } from '@mui/material';
 import customTheme from '../theme';
 import { useRouter } from 'next/router';
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import DashboardTwoToneIcon from '@mui/icons-material/DashboardTwoTone';
 import Link from 'next/link';
+import PlaylistPlayTwoToneIcon from '@mui/icons-material/PlaylistPlayTwoTone';
+import FormatQuoteTwoToneIcon from '@mui/icons-material/FormatQuoteTwoTone';
+import QueueMusicTwoToneIcon from '@mui/icons-material/QueueMusicTwoTone';
 
 const drawerWidth: number = 42;
 
 interface LinkedListItemProps {
   path: string;
+  icon: any;
+  title: string;
 }
-const LinkedListItem = React.forwardRef((props: LinkedListItemProps, ref) => {
+const LinkedListItem = function (props: LinkedListItemProps) {
   const router = useRouter();
   const isActive = router.asPath === props.path;
+
   return (
-    <Link href={props.path} passHref >
+    <Link href={props.path} passHref>
       <MuiListItemButton
-        key={42}
+        key={props.title}
         dense
         className={isActive ? 'dashboard-button-active' : 'dashboard-button-inactive'}>
         <ListItemIcon>
-          <DashboardTwoToneIcon />
+          {props.icon}
         </ListItemIcon>
       </MuiListItemButton>
     </Link>
   );
-});
+};
 
 export default function NavDrawer() {
   return (
@@ -50,13 +43,14 @@ export default function NavDrawer() {
     width: drawerWidth,
     flexShrink: 0,
     '& .MuiDrawer-paper': {
+      overflow: 'hidden',
       width: drawerWidth,
       boxSizing: 'border-box',
     },
   }}
   variant="permanent"
   anchor="left">
-  <Avatar alt="Sogeking!" src="https://i.pravatar.cc/32" />
+  <Avatar alt="Sogeking!" src="https://i.pravatar.cc/32" sx={{ marginBottom: '1rem', marginTop: '1rem' }} />
   <List
     sx={{
     // selected and (selected + hover) states
@@ -75,14 +69,24 @@ export default function NavDrawer() {
     },
     }}>
       <Tooltip title="Dashboard" placement="right">
-    <ListItem disablePadding>
-        <LinkedListItem path="/"/>
-    </ListItem>
+        <ListItem disablePadding>
+            <LinkedListItem path="/" icon={<DashboardTwoToneIcon/>} title="Dashboard"/>
+        </ListItem>
       </Tooltip>
-      <Tooltip title="Dashboard2" placement="right">
-    <ListItem disablePadding>
-        <LinkedListItem path="/2"/>
-    </ListItem>
+      <Tooltip title="Playlist" placement="right">
+        <ListItem disablePadding>
+            <LinkedListItem path="/playlist" icon={<PlaylistPlayTwoToneIcon/>} title="Playlist"/>
+        </ListItem>
+      </Tooltip>
+      <Tooltip title="Quotes" placement="right">
+        <ListItem disablePadding>
+            <LinkedListItem path="/quote" icon={<FormatQuoteTwoToneIcon/>} title="Quotes"/>
+        </ListItem>
+      </Tooltip>
+      <Tooltip title="Song Requests" placement="right">
+        <ListItem disablePadding>
+            <LinkedListItem path="/song-requests" icon={<QueueMusicTwoToneIcon/>} title="Song Requests"/>
+        </ListItem>
       </Tooltip>
   </List>
   </Drawer>

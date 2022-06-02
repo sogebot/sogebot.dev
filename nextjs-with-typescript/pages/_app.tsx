@@ -6,11 +6,9 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import '../styles/styles.css'
-import BackdropLoading from '../src/components/backdropLoading';
 import store from '../src/app/store'
 import { Provider } from 'react-redux'
-import NavDrawer from '../src/components/navDrawer';
-import { Box, Typography } from '@mui/material';
+import Layout from '../src/layout';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -20,7 +18,7 @@ interface MyAppProps extends AppProps {
 }
 
 export default function MyApp(props: MyAppProps) {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const { emotionCache = clientSideEmotionCache } = props;
 
   return (
     <Provider store={store}>
@@ -31,14 +29,7 @@ export default function MyApp(props: MyAppProps) {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <BackdropLoading/>
-          <Box sx={{ display: 'flex' }}>
-            <NavDrawer/>
-            <Component {...pageProps} />
-            <Typography paragraph variant='overline'>
-              Copyright © Your Website 2022.
-            </Typography>
-          </Box>
+          <Layout {...props} />
         </ThemeProvider>
       </CacheProvider>
     </Provider>

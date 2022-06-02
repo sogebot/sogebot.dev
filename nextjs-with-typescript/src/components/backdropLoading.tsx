@@ -9,7 +9,7 @@ export default function BackdropLoading() {
 
   useEffect(() => {
     isBotStarted(dispatch);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setOpen(false)
