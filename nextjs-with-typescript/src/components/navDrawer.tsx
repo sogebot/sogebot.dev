@@ -5,11 +5,11 @@ import customTheme from '../theme';
 import { useRouter } from 'next/router';
 import Drawer from '@mui/material/Drawer';
 import MuiListItemButton from '@mui/material/ListItemButton';
-import DashboardTwoToneIcon from '@mui/icons-material/DashboardTwoTone';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import Link from 'next/link';
-import PlaylistPlayTwoToneIcon from '@mui/icons-material/PlaylistPlayTwoTone';
-import FormatQuoteTwoToneIcon from '@mui/icons-material/FormatQuoteTwoTone';
-import QueueMusicTwoToneIcon from '@mui/icons-material/QueueMusicTwoTone';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 
 const drawerWidth: number = 42;
 
@@ -70,22 +70,22 @@ export default function NavDrawer() {
     }}>
       <Tooltip title="Dashboard" placement="right">
         <ListItem disablePadding>
-            <LinkedListItem path="/" icon={<DashboardTwoToneIcon/>} title="Dashboard"/>
+            <LinkedListItem path="/" icon={<DashboardIcon/>} title="Dashboard"/>
         </ListItem>
       </Tooltip>
       <Tooltip title="Playlist" placement="right">
         <ListItem disablePadding>
-            <LinkedListItem path="/playlist" icon={<PlaylistPlayTwoToneIcon/>} title="Playlist"/>
+            <LinkedListItem path="/playlist" icon={<PlaylistPlayIcon/>} title="Playlist"/>
         </ListItem>
       </Tooltip>
       <Tooltip title="Quotes" placement="right">
         <ListItem disablePadding>
-            <LinkedListItem path="/quotes" icon={<FormatQuoteTwoToneIcon/>} title="Quotes"/>
+            <LinkedListItem path="/quotes" icon={<FormatQuoteIcon/>} title="Quotes"/>
         </ListItem>
       </Tooltip>
       <Tooltip title="Song Requests" placement="right">
         <ListItem disablePadding>
-            <LinkedListItem path="/song-requests" icon={<QueueMusicTwoToneIcon/>} title="Song Requests"/>
+            <LinkedListItem path="/song-requests" icon={<QueueMusicIcon/>} title="Song Requests"/>
         </ListItem>
       </Tooltip>
   </List>
