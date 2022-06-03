@@ -14,8 +14,16 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "jsxImportSource": "@emotion/react",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@entity/*": [
+        "./node_modules/@sogebot/backend/src/database/entity/*"
+      ]
+    },
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts"],
   "exclude": ["node_modules"]
 }

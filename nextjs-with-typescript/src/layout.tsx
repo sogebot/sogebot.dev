@@ -14,9 +14,9 @@ export default function Layout(props: AppProps) {
       {state && <Box>
       <NavDrawer />
 
-      <Box sx={{paddingLeft:'42px'}}>
+      <Box sx={{ paddingLeft:'50px'}}>
         <TwitchEmbed/>
-        <Component {...pageProps} />
+        <Component  {...pageProps} />
       </Box>
     </Box>}</>
   );

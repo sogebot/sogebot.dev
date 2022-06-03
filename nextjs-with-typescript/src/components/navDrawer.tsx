@@ -80,7 +80,7 @@ export default function NavDrawer() {
       </Tooltip>
       <Tooltip title="Quotes" placement="right">
         <ListItem disablePadding>
-            <LinkedListItem path="/quote" icon={<FormatQuoteTwoToneIcon/>} title="Quotes"/>
+            <LinkedListItem path="/quotes" icon={<FormatQuoteTwoToneIcon/>} title="Quotes"/>
         </ListItem>
       </Tooltip>
       <Tooltip title="Song Requests" placement="right">
