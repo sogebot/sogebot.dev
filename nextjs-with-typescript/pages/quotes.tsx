@@ -1,7 +1,5 @@
 import { NextPage } from 'next/types';
-import { useEffect, useRef } from 'react';
 
-import { scrollToRef } from '../src/scrollTo';
 import ListQuote from '../src/components/quotes/listQuotes';
 import { Chip, Grid, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,16 +9,12 @@ const Home: NextPage = () => {
   const { tag } = useSelector((state: any) => state.quotes);
   const dispatch = useDispatch()
 
-  const myRef = useRef(null)
-  const executeScroll = () => scrollToRef(myRef)
-  useEffect(() => executeScroll(), []);
-
   const handleDelete = () => {
     dispatch(setTag(null));
   }
 
   return (
-    <Grid container spacing={0} ref={myRef}
+    <Grid container spacing={0}
       sx={{
         height: '100vh',
         width: '100%'

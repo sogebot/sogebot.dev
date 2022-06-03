@@ -1,6 +1,6 @@
 
 import List from '@mui/material/List';
-import { Avatar, ListItem, ListItemIcon, Tooltip } from '@mui/material';
+import { Avatar, ListItem, ListItemIcon, Stack, Tooltip, Typography } from '@mui/material';
 import customTheme from '../theme';
 import { useRouter } from 'next/router';
 import Drawer from '@mui/material/Drawer';
@@ -11,7 +11,7 @@ import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 
-const drawerWidth: number = 42;
+const drawerWidth: number = 72;
 
 interface LinkedListItemProps {
   path: string;
@@ -25,12 +25,18 @@ const LinkedListItem = function (props: LinkedListItemProps) {
   return (
     <Link href={props.path} passHref>
       <MuiListItemButton
+        sx={{ justifyContent: 'center', height: drawerWidth }}
         key={props.title}
         dense
         className={isActive ? 'dashboard-button-active' : 'dashboard-button-inactive'}>
-        <ListItemIcon>
-          {props.icon}
-        </ListItemIcon>
+          <Stack alignContent={"center"}>
+            <ListItemIcon sx={{ placeContent: 'center'}}>
+              {props.icon}
+            </ListItemIcon>
+            <Typography variant="caption" sx={{textAlign: 'center', fontSize: '0.7rem'}}>
+              {props.title}
+            </Typography>
+          </Stack>
       </MuiListItemButton>
     </Link>
   );
@@ -50,9 +56,10 @@ export default function NavDrawer() {
   }}
   variant="permanent"
   anchor="left">
-  <Avatar alt="Sogeking!" src="https://i.pravatar.cc/32" sx={{ marginBottom: '1rem', marginTop: '1rem' }} />
   <List
     sx={{
+    marginTop: '56px',
+
     // selected and (selected + hover) states
     '&& .dashboard-button-active': {
     bgcolor: customTheme.palette.primary.main,

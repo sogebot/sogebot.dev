@@ -1,9 +1,11 @@
 import { Backdrop, CircularProgress, Grid } from '@mui/material';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 export default function TwitchEmbed() {
   const [ room, setRoom ] = useState<null | string>(null);
+  const router = useRouter();
 
   const videoUrl = () => {
     return `${window.location.protocol}//player.twitch.tv/?channel=${room}&autoplay=true&parent=${window.location.hostname}`;
@@ -31,6 +33,8 @@ export default function TwitchEmbed() {
 
   <Grid container spacing={0}
     sx={{
+      position: router.asPath !== '/' ? 'absolute' : 'initial',
+      left: router.asPath !== '/' ? '99999px' : 'initial',
       height: '100vh'
     }}>
   <Grid item xl={10} md={9} sm={8} xs={12}>

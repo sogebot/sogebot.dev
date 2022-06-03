@@ -1,17 +1,11 @@
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next/types';
-import { useEffect, useRef } from 'react';
 import ListSongRequests from '../src/components/listSongRequests';
-import { scrollToRef } from '../src/scrollTo';
 
 
 const Home: NextPage = () => {
-  const myRef = useRef(null)
-  const executeScroll = () => scrollToRef(myRef)
-  useEffect(() => executeScroll(), []);
-
   return (
-    <Grid container spacing={0} ref={myRef}
+    <Grid container spacing={0}
       sx={{
         height: '100vh',
         width: '100%'
