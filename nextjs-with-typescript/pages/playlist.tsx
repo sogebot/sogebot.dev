@@ -1,12 +1,15 @@
-import { Grid } from '@mui/material';
+import { AppBar, Chip, Grid, Toolbar, Typography } from '@mui/material';
 import { NextPage } from 'next/types';
 import ListPlaylist from '../src/components/listPlaylist'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { enableSearch } from '../src/store/searchSlice';
 import { useEffect } from 'react';
 import { nextTick } from 'process';
+import { Box } from '@mui/system';
+import theme from '../src/theme';
 
 const Home: NextPage = () => {
+  const { tag } = useSelector((state) => state.playlist);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -16,11 +19,18 @@ const Home: NextPage = () => {
   }, [dispatch])
 
   return (
+    <><AppBar position="sticky" elevation={24}>
+      <Toolbar>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant='body1'>Current playlist: <Chip variant="filled" color="secondary" size="small" label={tag}/></Typography>
+        </Box>
+      </Toolbar>
+    </AppBar>
     <Grid container spacing={0}>
-      <Grid item sx={{ width: '100%', p: 2 }}>
+      <Grid item sx={{p: 2, width: '100%'}}>
         <ListPlaylist/>
       </Grid>
-    </Grid>);
+    </Grid></>);
 };
 
 export default Home;

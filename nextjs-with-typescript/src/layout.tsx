@@ -36,7 +36,7 @@ export default function Layout(props: AppProps) {
   return (
     <>{!state && <BackdropLoading />}
       {state &&  <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" elevation={5} sx={{ zIndex: theme.zIndex.drawer + 1}}>
+      <AppBar position="sticky" sx={{ zIndex: theme.zIndex.drawer + 1}}>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }}>
             <Badge badgeContent={'public'} color="primary"

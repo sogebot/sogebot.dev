@@ -3,23 +3,18 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
+import { Backdrop, CircularProgress, IconButton, Pagination, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import type { SongPlaylistInterface } from '@entity/song';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../store/playlistSlice';
-import Image from 'next/image';
-
-
-const generateThumbnail = (videoId: string) => {
-  return `https://img.youtube.com/vi/${videoId}/1.jpg`;
-};
+import LinkIcon from '@mui/icons-material/Link';
 
 export default function ListPlaylist() {
   const { search } = useSelector((state: any) => state.search);
   const dispatch = useDispatch()
 
   const [ page, setPage ] = useState(1)
-  const [ itemsPerPage, setItemsPerPage ] = useState(10)
+  const [ itemsPerPage, setItemsPerPage ] = useState(15)
   const [ count, setCount ] = useState(0)
 
   const [ items, setItems ] = useState<(SongPlaylistInterface)[]>([])
@@ -74,19 +69,19 @@ export default function ListPlaylist() {
 
       {!loading &&
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} size="small" padding='none'>
+          <Table sx={{ minWidth: 650 }} size="small" >
             <TableBody>
               {items.map((row) => (
                 <TableRow
                   key={row.videoId}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 }
-                  }}
                 >
-                  <TableCell component="th" scope="row" width={110}>
-                    <a href={'http://youtu.be/' + row.videoId} target="_blank" rel="noreferrer"><Image width={96} height={72} src={generateThumbnail(row.videoId)} alt="Thumbnail" /></a>
-                  </TableCell>
+                  <TableCell component="th" scope="row">{row.videoId}</TableCell>
                   <TableCell>{row.title}</TableCell>
+                  <TableCell align='right'>
+                    <IconButton target={'_blank'} href={`https://youtu.be/${row.videoId}`}>
+                      <LinkIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -94,7 +89,7 @@ export default function ListPlaylist() {
               <TableRow>
                 <TablePagination
                   count={count}
-                  rowsPerPageOptions={[10, 25, 50]}
+                  rowsPerPageOptions={[15, 50, 100, { value: -1, label: 'All' }]}
                   page={page}
                   rowsPerPage={itemsPerPage}
                   onPageChange={handleChangePage}
