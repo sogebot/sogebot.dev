@@ -5,16 +5,9 @@ import ListSongRequests from '../src/components/listSongRequests';
 
 const Home: NextPage = () => {
   return (
-    <Grid container spacing={0}
-      sx={{
-        height: '100vh',
-        width: '100%'
-      }}>
+    <Grid container spacing={0}>
       <Grid item sx={{ width: '100%', p: 2 }}>
-        <Typography variant="h6" component="h6" sx={{ mb: 2 }}>
-          Song Requests
-        </Typography>
-        <ListSongRequests/>
+      <ListSongRequests/>
       </Grid>
     </Grid>);
 };

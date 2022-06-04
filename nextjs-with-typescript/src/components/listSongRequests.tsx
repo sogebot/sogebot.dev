@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Backdrop, CircularProgress, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import Link from 'next/link';
@@ -41,7 +41,7 @@ export default function ListSongRequests() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      {!loading &&
+      {!loading && items.length > 0 &&
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -72,6 +72,12 @@ export default function ListSongRequests() {
             </TableBody>
           </Table>
         </TableContainer>
+      }
+
+      {!loading && items.length === 0 &&
+        <Grid container justifyContent={'center'}>
+          <Typography>No songs in song requests found</Typography>
+        </Grid>
       }
     </Box>
   );

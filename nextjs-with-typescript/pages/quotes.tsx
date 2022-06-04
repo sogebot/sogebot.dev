@@ -1,33 +1,42 @@
 import { NextPage } from 'next/types';
 
 import ListQuote from '../src/components/listQuotes';
-import { Chip, Grid, Typography } from '@mui/material';
+import { AppBar, Chip, Grid, Toolbar, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../src/store/quotesSlice';
+import { Box } from '@mui/system';
 
 const Home: NextPage = () => {
-  const { tag } = useSelector((state: any) => state.quotes);
+  const { tag, tags } = useSelector((state: any) => state.quotes);
   const dispatch = useDispatch()
 
   const handleDelete = () => {
     dispatch(setTag(null));
   }
 
-  return (
-    <Grid container spacing={0}
-      sx={{
-        height: '100vh',
-        width: '100%'
-      }}>
-      <Grid item sx={{ width: '100%', p: 2 }}>
-        <Typography variant="h6" component="h6" sx={{ mb: 2 }}>
-          Quotes
+  const handleTagClick = (newTag: string) => {
+    dispatch(setTag(newTag));
+  }
 
-          {tag && <Chip sx={{ mx: 1 }} label={tag} color="primary" variant="filled" onDelete={handleDelete} />}
-        </Typography>
+  return (
+    <><AppBar position="sticky" elevation={24} sx={{display: tags.length === 0 ? 'none' : undefined }}>
+      <Toolbar>
+        <Box sx={{ flexGrow: 1 }}>
+          {tags.map((item: string) => {
+            return (
+              <Chip key={item} sx={{ mr: 1 }} label={item} color="primary"
+                variant={tag === item ? "filled" : "outlined"}
+                onClick={() => handleTagClick(item)}
+                onDelete={tag === item ? handleDelete : undefined} />)
+          })}
+        </Box>
+      </Toolbar>
+    </AppBar>
+    <Grid container spacing={0}>
+      <Grid item sx={{ width: '100%', p: 2 }}>
         <ListQuote />
       </Grid>
-    </Grid>);
+    </Grid></>);
 };
 
 export default Home;

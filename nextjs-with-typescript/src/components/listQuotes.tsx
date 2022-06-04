@@ -5,9 +5,9 @@ import type { QuotesInterface } from '@entity/quotes';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, Chip, CircularProgress, Grid, Pagination, Typography } from '@mui/material';
-import FormatQuoteTwoToneIcon from '@mui/icons-material/FormatQuoteTwoTone';
-import { setTag } from '../store/quotesSlice'
+import { Backdrop, Card, CardActions, CardContent, CardHeader, Chip, CircularProgress, Divider, Grid, Pagination, Typography } from '@mui/material';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import { setTag, setTags } from '../store/quotesSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import theme from '../theme';
 import { orderBy } from 'lodash';
@@ -35,6 +35,8 @@ export default function ListQuotes() {
       }
       console.debug('Loaded', { itemsGetAll });
       setItems(itemsGetAll as any);
+
+      dispatch(setTags(Array.from(new Set([...itemsGetAll.map(o => o.tags)].flat()))))
       setLoading(false);
     });
   }, [])
@@ -61,41 +63,46 @@ export default function ListQuotes() {
         .map((row, index) => {
           const key = `quotes-${index}`;
           return (
-            <Grid container justifyContent={index % 2 ? 'flex-end' : 'flex-start'} key={key}>
-              {index % 2 === 0 && <FormatQuoteTwoToneIcon fontSize='large'/>}
-              <Grid xs={8}>
-                <Paper sx={{ p: 2, m: 2, alignContent: 'end' }}>
-                  <Typography display="block" gutterBottom>
-                    <Typography color={theme.palette.primary.dark} display="inline" sx={{ mr:1 }}>
-                      #{row.id}
-                    </Typography>
-                    <Typography color={theme.palette.primary.dark} display="inline" sx={{ mr:1 }} fontWeight={'bold'}>
-                      {row.quotedByName}
-                    </Typography>
-                    <Typography color={theme.palette.primary.dark} display="inline" sx={{ mr:1 }}>
-                      {dayjs(row.createdAt).format('LL LTS')}
-                    </Typography>
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {row.quote}
-                  </Typography>
+            <Card key={key} sx={{ mb: 1 }}>
+              <CardContent sx={{ pb: 0 }}>
+                <Typography display="inline" gutterBottom variant="h5" component="div">
+                  #{row.id}
+                </Typography>
+                <Typography variant="body2" display="inline" sx={{ ml:1, mr:1 }} fontWeight={'bold'} color="text.secondary">
+                  {row.quotedByName}
+                </Typography>
+                <Typography variant="body2" display="inline" sx={{ mr:1 }} color="text.secondary">
+                  {dayjs(row.createdAt).format('LL LTS')}
+                </Typography>
 
-                  {row.tags.map((o, idx) => {
-                    const key = `quote-${idx}`;
-                    return (
-                      <Chip sx={{ mt: 1, mr: 1 }} label={o} key={key} color="primary" variant={tag === o ? "filled" : "outlined"} onClick={() => handleTagClick(o)} />
+                <Divider sx={{ mb: 1 }}/>
+                <Typography variant="body1" gutterBottom>
+                  {row.quote}
+                </Typography>
+                <Divider sx={{ mb: 1 }}/>
+              </CardContent>
+
+              <CardActions sx={{ pt:0, px: 2 }}>
+                {row.tags.map((o, idx) => {
+                  const key = `quote-${idx}`;
+                  return (
+                    <Chip label={o} key={key} color="primary" size='small' variant={tag === o ? "filled" : "outlined"} onClick={() => handleTagClick(o)} />
                     )
                   })}
-                </Paper>
-              </Grid>
-              {index % 2 !== 0 && <FormatQuoteTwoToneIcon fontSize='large'/>}
-          </Grid>
+              </CardActions>
+            </Card>
           );
         })}
 
-        {!loading &&
+        {!loading && filteredItems().length > 0 &&
           <Grid container justifyContent={'center'}>
             <Pagination count={Math.ceil(filteredItems().length / rowsPerPage)} page={page} onChange={handleChangePage} />
+          </Grid>
+        }
+
+        {!loading && filteredItems().length === 0 &&
+          <Grid container justifyContent={'center'}>
+            <Typography>No quotes found</Typography>
           </Grid>
         }
     </Box>
