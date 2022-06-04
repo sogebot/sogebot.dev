@@ -20,16 +20,14 @@ const Home: NextPage = () => {
 
   return (
     <><AppBar position="sticky" elevation={24} sx={{display: tags.length === 0 ? 'none' : undefined }}>
-      <Toolbar>
-        <Box sx={{ flexGrow: 1 }}>
+      <Toolbar sx={{overflowX: 'auto', scrollSnapType: 'x mandatory', scrollPadding: '0 20px'  }} className="mobileScrollbar">
           {tags.map((item: string) => {
             return (
-              <Chip key={item} sx={{ mr: 1 }} label={item} color="primary"
+              <Chip key={item} sx={{ mr: 1, scrollSnapAlign: 'start' }} label={item} color="primary"
                 variant={tag === item ? "filled" : "outlined"}
                 onClick={() => handleTagClick(item)}
                 onDelete={tag === item ? handleDelete : undefined} />)
           })}
-        </Box>
       </Toolbar>
     </AppBar>
     <Grid container spacing={0}>

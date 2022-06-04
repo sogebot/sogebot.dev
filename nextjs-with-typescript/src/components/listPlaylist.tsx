@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, CircularProgress, Grid, IconButton, Pagination, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Grid, IconButton, Pagination, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import type { SongPlaylistInterface } from '@entity/song';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../store/playlistSlice';
@@ -103,7 +103,9 @@ export default function ListPlaylist() {
 
       {!loading && items.length === 0 &&
         <Grid container justifyContent={'center'}>
-          <Typography>No songs in playlist found</Typography>
+          <Alert severity="warning" variant="outlined" >
+            No songs in playlist found.
+          </Alert>
         </Grid>
       }
     </Box>

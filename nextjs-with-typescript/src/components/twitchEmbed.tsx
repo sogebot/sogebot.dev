@@ -34,7 +34,7 @@ export default function TwitchEmbed() {
   <Grid container spacing={0}
     sx={{
       position: 'absolute',
-      left: router.asPath !== '/' ? '99999px' : 'initial',
+      right: router.asPath !== '/' ? '99999px' : 'initial',
       height: 'calc(100vh - 65px)',
       width: 'calc(100vw - 72px)'
     }}>

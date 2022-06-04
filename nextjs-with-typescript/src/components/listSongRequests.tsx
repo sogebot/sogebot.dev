@@ -3,11 +3,12 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, CircularProgress, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Alert, AlertTitle, Backdrop, CircularProgress, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import Link from 'next/link';
 import Image from 'next/image';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 
 const generateThumbnail = (videoId: string) => {
   return `https://img.youtube.com/vi/${videoId}/1.jpg`;
@@ -76,7 +77,9 @@ export default function ListSongRequests() {
 
       {!loading && items.length === 0 &&
         <Grid container justifyContent={'center'}>
-          <Typography>No songs in song requests found</Typography>
+          <Alert severity="warning" variant="outlined" >
+            No songs in song requests found.
+          </Alert>
         </Grid>
       }
     </Box>

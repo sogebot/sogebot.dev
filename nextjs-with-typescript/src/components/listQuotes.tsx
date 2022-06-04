@@ -5,7 +5,7 @@ import type { QuotesInterface } from '@entity/quotes';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Backdrop, Card, CardActions, CardContent, CardHeader, Chip, CircularProgress, Divider, Grid, Pagination, Typography } from '@mui/material';
+import { Alert, Backdrop, Card, CardActions, CardContent, CardHeader, Chip, CircularProgress, Divider, Grid, Pagination, Typography } from '@mui/material';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import { setTag, setTags } from '../store/quotesSlice'
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,7 +102,9 @@ export default function ListQuotes() {
 
         {!loading && filteredItems().length === 0 &&
           <Grid container justifyContent={'center'}>
-            <Typography>No quotes found</Typography>
+            <Alert severity="warning" variant="outlined" >
+              No quotes found.
+            </Alert>
           </Grid>
         }
     </Box>

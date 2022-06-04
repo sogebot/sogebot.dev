@@ -13,3 +13,12 @@ body, html {
 .dashboard-button-inactive {
   padding: 8px;
 }
+
+.mobileScrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background: transparent;
+}
+.mobileScrollbar::-webkit-scrollbar-thumb {
+  background: #ffa000;
+}
