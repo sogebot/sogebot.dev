@@ -1,6 +1,6 @@
 import { NextPage } from 'next/types';
 
-import ListQuote from '../src/components/quotes/listQuotes';
+import ListQuote from '../src/components/listQuotes';
 import { Chip, Grid, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../src/store/quotesSlice';

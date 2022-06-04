@@ -5,17 +5,17 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
 import { Backdrop, CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
 import type { SongPlaylistInterface } from '@entity/song';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../store/playlistSlice';
+import Image from 'next/image';
+
 
 const generateThumbnail = (videoId: string) => {
   return `https://img.youtube.com/vi/${videoId}/1.jpg`;
 };
 
-export default function listPlaylist() {
-  const { search } = useSelector((state: any) => state.playlist);
+export default function ListPlaylist() {
+  const { search } = useSelector((state: any) => state.search);
   const dispatch = useDispatch()
 
   const [ page, setPage ] = useState(1)
@@ -27,19 +27,19 @@ export default function listPlaylist() {
 
   React.useEffect(() => {
     setLoading(true);
-    getSocket('/systems/songs', true).emit('current.playlist.tag', (err1: string | null, tag: string) => {
+    getSocket('/systems/songs', true).emit('current.playlist.tag', (err1, tag) => {
       if (err1) {
         return console.error(err1);
       }
 
       dispatch(setTag(tag));
-      console.log({page, itemsPerPage, search})
+
       getSocket('/systems/songs', true).emit('find.playlist', {
         perPage: (itemsPerPage ?? 25),
         page:    ((page ?? 0)),
         tag,
         search:  search,
-      }, (err: string | null, itemsFromServer: SongPlaylistInterface[], countOfItems: number) => {
+      }, (err, itemsFromServer, countOfItems) => {
         if (err) {
           return console.error(err);
         }
@@ -48,7 +48,7 @@ export default function listPlaylist() {
         setLoading(false)
       });
     });
-  }, [page, itemsPerPage, search])
+  }, [page, itemsPerPage, search, dispatch])
 
   React.useEffect(() => {
     setPage(0);
@@ -83,8 +83,8 @@ export default function listPlaylist() {
                     '&:last-child td, &:last-child th': { border: 0 }
                   }}
                 >
-                  <TableCell component="th" scope="row" width={90}>
-                    <a href={'http://youtu.be/' + row.videoId} target="_blank" rel="noreferrer"><img src={generateThumbnail(row.videoId)} width={75} /></a>
+                  <TableCell component="th" scope="row" width={110}>
+                    <a href={'http://youtu.be/' + row.videoId} target="_blank" rel="noreferrer"><Image width={96} height={72} src={generateThumbnail(row.videoId)} alt="Thumbnail" /></a>
                   </TableCell>
                   <TableCell>{row.title}</TableCell>
                 </TableRow>

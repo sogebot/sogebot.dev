@@ -7,6 +7,7 @@ import { Backdrop, CircularProgress, Table, TableBody, TableCell, TableContainer
 import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const generateThumbnail = (videoId: string) => {
   return `https://img.youtube.com/vi/${videoId}/1.jpg`;
@@ -18,7 +19,7 @@ export default function ListSongRequests() {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      getSocket('/systems/songs', true).emit('songs::getAllRequests', {}, (err: string | null, itemsGetAll: SongRequestInterface[]) => {
+      getSocket('/systems/songs', true).emit('songs::getAllRequests', {}, (err, itemsGetAll) => {
         if (err) {
           console.error(err);
           return;
@@ -60,8 +61,8 @@ export default function ListSongRequests() {
                     '&:last-child td, &:last-child th': { border: 0 }
                   }}
                 >
-                  <TableCell component="th" scope="row">
-                    <a href={'http://youtu.be/' + row.videoId} target="_blank" rel="noreferrer"><img src={generateThumbnail(row.videoId)}/></a>
+                  <TableCell component="th" scope="row" width={110}>
+                   <a href={'http://youtu.be/' + row.videoId} target="_blank" rel="noreferrer"><Image width={96} height={72} src={generateThumbnail(row.videoId)} alt="Thumbnail" /></a>
                   </TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.username}</TableCell>

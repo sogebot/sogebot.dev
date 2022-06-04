@@ -33,9 +33,10 @@ export default function TwitchEmbed() {
 
   <Grid container spacing={0}
     sx={{
-      position: router.asPath !== '/' ? 'absolute' : 'initial',
+      position: 'absolute',
       left: router.asPath !== '/' ? '99999px' : 'initial',
-      height: '100vh'
+      height: 'calc(100vh - 65px)',
+      width: 'calc(100vw - 72px)'
     }}>
   <Grid item xl={10} md={9} sm={8} xs={12}>
     {room && <iframe

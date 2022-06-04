@@ -7,9 +7,9 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
 import { Backdrop, Chip, CircularProgress, Grid, Pagination, Typography } from '@mui/material';
 import FormatQuoteTwoToneIcon from '@mui/icons-material/FormatQuoteTwoTone';
-import { setTag } from '../../store/quotesSlice'
+import { setTag } from '../store/quotesSlice'
 import { useDispatch, useSelector } from 'react-redux';
-import theme from '../../theme';
+import theme from '../theme';
 import { orderBy } from 'lodash';
 
 export default function ListQuotes() {

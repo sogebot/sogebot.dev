@@ -9,6 +9,7 @@ import '../styles/styles.css'
 import store from '../src/app/store'
 import { Provider } from 'react-redux'
 import Layout from '../src/layout';
+
 console.log('@sogebot/ui-public', require('../package.json').version);
 
 // Client-side cache, shared for the whole session of the user in the browser.
