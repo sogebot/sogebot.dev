@@ -55,10 +55,10 @@ export default function ListSongRequests() {
             <TableBody>
               {items.map((row) => (
                 <TableRow key={row.id}  >
-                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.username}</TableCell>
                   <TableCell>{dayjs(row.addedAt).format('LL LTS')}</TableCell>
+                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell align='right'>
                     <IconButton target={'_blank'} href={`https://youtu.be/${row.videoId}`}>
                       <LinkIcon />

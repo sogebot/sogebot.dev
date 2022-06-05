@@ -75,8 +75,8 @@ export default function ListPlaylist() {
                 <TableRow
                   key={row.videoId}
                 >
-                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell>{row.title}</TableCell>
+                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell align='right'>
                     <IconButton target={'_blank'} href={`https://youtu.be/${row.videoId}`}>
                       <LinkIcon />
