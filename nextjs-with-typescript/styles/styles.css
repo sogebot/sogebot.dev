@@ -22,3 +22,7 @@ body, html {
 .mobileScrollbar::-webkit-scrollbar-thumb {
   background: #ffa000;
 }
+
+.monospace {
+  font-family: 'Courier New', Courier, monospace;
+}

@@ -14,7 +14,7 @@ export default function ListPlaylist() {
   const dispatch = useDispatch()
 
   const [ page, setPage ] = useState(1)
-  const [ itemsPerPage, setItemsPerPage ] = useState(15)
+  const [ itemsPerPage, setItemsPerPage ] = useState(25)
   const [ count, setCount ] = useState(0)
 
   const [ items, setItems ] = useState<(SongPlaylistInterface)[]>([])
@@ -68,14 +68,14 @@ export default function ListPlaylist() {
       </Backdrop>
 
       {!loading && items.length > 0 &&
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} size="small" >
+        <><TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 64px - 64px - 86px)' }}>
+          <Table sx={{ minWidth: 650 }} size="small">
             <TableBody>
               {items.map((row) => (
                 <TableRow
                   key={row.videoId}
                 >
-                  <TableCell component="th" scope="row">{row.videoId}</TableCell>
+                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell align='right'>
                     <IconButton target={'_blank'} href={`https://youtu.be/${row.videoId}`}>
@@ -85,20 +85,17 @@ export default function ListPlaylist() {
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  count={count}
-                  rowsPerPageOptions={[15, 50, 100, { value: -1, label: 'All' }]}
-                  page={page}
-                  rowsPerPage={itemsPerPage}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
-              </TableRow>
-            </TableFooter>
           </Table>
         </TableContainer>
+        <TablePagination
+          component="div"
+          count={count}
+          rowsPerPageOptions={[25, 50, 100, { value: -1, label: 'All' }]}
+          page={page}
+          rowsPerPage={itemsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        /></>
       }
 
       {!loading && items.length === 0 &&
