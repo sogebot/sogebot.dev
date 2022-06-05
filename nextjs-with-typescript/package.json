@@ -7,6 +7,7 @@
     "dev": "npm run link-backend && next dev",
     "postinstall": "patch-package || (exit 0)",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"

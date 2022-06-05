@@ -9,7 +9,7 @@ import { Box } from '@mui/system';
 import theme from '../src/theme';
 
 const Home: NextPage = () => {
-  const { tag } = useSelector((state) => state.playlist);
+  const { tag } = useSelector((state: any) => state.playlist);
   const dispatch = useDispatch()
 
   useEffect(() => {
