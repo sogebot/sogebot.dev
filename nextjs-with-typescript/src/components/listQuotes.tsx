@@ -1,15 +1,12 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import type { QuotesInterface } from '@entity/quotes';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Alert, Backdrop, Card, CardActions, CardContent, CardHeader, Chip, CircularProgress, Divider, Grid, Pagination, Typography } from '@mui/material';
-import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import { Alert, Backdrop, Card, CardActions, CardContent, Chip, CircularProgress, Divider, Grid, Pagination, Typography } from '@mui/material';
 import { setTag, setTags } from '../store/quotesSlice'
 import { useDispatch, useSelector } from 'react-redux';
-import theme from '../theme';
 import { orderBy } from 'lodash';
 
 export default function ListQuotes() {

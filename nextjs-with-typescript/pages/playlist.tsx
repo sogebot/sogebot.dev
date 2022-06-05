@@ -6,7 +6,6 @@ import { enableSearch } from '../src/store/searchSlice';
 import { useEffect } from 'react';
 import { nextTick } from 'process';
 import { Box } from '@mui/system';
-import theme from '../src/theme';
 
 const Home: NextPage = () => {
   const { tag } = useSelector((state: any) => state.playlist);

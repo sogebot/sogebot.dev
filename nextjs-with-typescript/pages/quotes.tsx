@@ -1,10 +1,9 @@
 import { NextPage } from 'next/types';
 
 import ListQuote from '../src/components/listQuotes';
-import { AppBar, Chip, Grid, Toolbar, Typography } from '@mui/material';
+import { AppBar, Chip, Grid, Toolbar } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../src/store/quotesSlice';
-import { Box } from '@mui/system';
 
 const Home: NextPage = () => {
   const { tag, tags } = useSelector((state: any) => state.quotes);

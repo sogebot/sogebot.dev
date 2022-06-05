@@ -1,6 +1,6 @@
 
 import List from '@mui/material/List';
-import { Avatar, ListItem, ListItemIcon, Stack, Tooltip, Typography } from '@mui/material';
+import { ListItem, ListItemIcon, Stack, Tooltip, Typography } from '@mui/material';
 import customTheme from '../theme';
 import { useRouter } from 'next/router';
 import Drawer from '@mui/material/Drawer';

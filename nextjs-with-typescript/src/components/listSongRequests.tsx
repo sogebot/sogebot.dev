@@ -3,12 +3,9 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
-import { Alert, AlertTitle, Backdrop, CircularProgress, Grid, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import Link from 'next/link';
-import Image from 'next/image';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import LinkIcon from '@mui/icons-material/Link';
 
 const generateThumbnail = (videoId: string) => {
