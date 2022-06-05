@@ -58,22 +58,21 @@ export default function NavDrawer() {
   anchor="left">
   <List
     sx={{
-    marginTop: '56px',
-
-    // selected and (selected + hover) states
-    '&& .dashboard-button-active': {
-    bgcolor: customTheme.palette.primary.main,
-    '&, & .MuiListItemIcon-root': {
-      color: customTheme.palette.primary.contrastText,
-    },
-    },
-    // hover states
-    '& .MuiListItemButton-root:hover': {
-    bgcolor: customTheme.palette.primary.main,
-    '&, & .MuiListItemIcon-root': {
-      color: customTheme.palette.primary.contrastText,
-    },
-    },
+      marginTop: '56px',
+      // selected and (selected + hover) states
+      '&& .dashboard-button-active': {
+        bgcolor: customTheme.palette.primary.main,
+        '&, & .MuiListItemIcon-root': {
+          color: customTheme.palette.primary.contrastText,
+        },
+      },
+      // hover states
+      '& .MuiListItemButton-root:hover': {
+        bgcolor: customTheme.palette.primary.main,
+        '&, & .MuiListItemIcon-root': {
+          color: customTheme.palette.primary.contrastText,
+        },
+      },
     }}>
       <Tooltip title="Dashboard" placement="right">
         <ListItem disablePadding>

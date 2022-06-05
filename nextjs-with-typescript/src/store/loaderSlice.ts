@@ -5,6 +5,7 @@ export const loaderSlice = createSlice({
   initialState: {
     message: 'Connecting to bot.',
     state: false,
+    configuration: {},
   },
   reducers: {
     setMessage: (state: { message: any }, action: { payload: any }) => {
@@ -12,10 +13,13 @@ export const loaderSlice = createSlice({
     },
     setState: (state: { state: any }, action: { payload: any }) => {
       state.state = action.payload
+    },
+    setConfiguration: (state: { configuration: any }, action: { payload: any }) => {
+      state.configuration = action.payload
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { setMessage, setState } = loaderSlice.actions
+export const { setMessage, setState, setConfiguration } = loaderSlice.actions
 export default loaderSlice.reducer

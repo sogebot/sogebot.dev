@@ -8,10 +8,6 @@ import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import LinkIcon from '@mui/icons-material/Link';
 
-const generateThumbnail = (videoId: string) => {
-  return `https://img.youtube.com/vi/${videoId}/1.jpg`;
-};
-
 export default function ListSongRequests() {
   const [ items, setItems ] = useState<(SongRequestInterface)[]>([])
   const [ loading, setLoading ] = useState<boolean>(true)

@@ -21,7 +21,8 @@ const Home: NextPage = () => {
     <><AppBar position="sticky" elevation={24}>
       <Toolbar>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant='body1'>Current playlist: <Chip variant="filled" color="secondary" size="small" label={tag}/></Typography>
+          <Typography variant='body1' display='inline' sx={{pr:1}}>Current playlist:</Typography>
+          <Chip variant="filled" color="secondary" size="small" label={tag}/>
         </Box>
       </Toolbar>
     </AppBar>

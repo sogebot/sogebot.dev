@@ -11,12 +11,33 @@ import { useEffect, useState } from 'react';
 import { disableSearch, } from './store/searchSlice';
 import { Search } from './components/search';
 import { BrowserView, isMobile, MobileView } from 'react-device-detect';
+import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn'
+import { setUser } from './store/userSlice';
+import { UserMenu } from './components/userMenu';
+import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
+import { setLocale } from '@sogebot/ui-helpers/dayjsHelper';
+import { setConfiguration } from './store/loaderSlice';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default function Layout(props: AppProps) {
   const router = useRouter();
   const dispatch = useDispatch();
 
   let [lastPath, setLastPath] = useState('/')
+
+  useEffect(() => {
+    getTranslations()
+    getConfiguration().then(data => {
+      dispatch(setConfiguration(data));
+      setLocale(data.lang as string);
+    });
+
+    isUserLoggedIn(false, false)
+      .then((user) => {
+        console.log({user})
+        dispatch(setUser(user))
+      })
+  }, [dispatch])
 
   useEffect(() => {
     if (lastPath !== router.asPath) {
@@ -34,26 +55,28 @@ export default function Layout(props: AppProps) {
       <AppBar position="sticky" sx={{ zIndex: theme.zIndex.drawer + 1}}>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }}>
-              <Badge badgeContent={'public'} color="primary" invisible={isMobile}
-
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}>
-                <a href="https://sogebot.xyz" target={'_blank'} rel="noreferrer">
-                <MobileView>
-                  <Image src={"/public/static/sogebot_small.png"} width={40} height={25} />
-                  </MobileView>
-                  <BrowserView>
-                  <Image src={"/public/static/sogebot_large.png"} width={190} height={25} />
-                  </BrowserView>
-                </a>
-              </Badge>
+            <Badge
+              badgeContent={'public'}
+              color="primary"
+              invisible={isMobile}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}>
+              <a href="https://sogebot.xyz" target={'_blank'} rel="noreferrer">
+              <MobileView>
+                <Image src={"/public/static/sogebot_small.png"} width={40} height={25} />
+                </MobileView>
+                <BrowserView>
+                <Image src={"/public/static/sogebot_large.png"} width={190} height={25} />
+                </BrowserView>
+              </a>
+            </Badge>
           </Box>
 
           <Search/>
 
-          <Avatar alt="Sogeking!" src="https://i.pravatar.cc/32" />
+          <UserMenu/>
         </Toolbar>
       </AppBar>
       <NavDrawer />
