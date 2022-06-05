@@ -48,6 +48,7 @@ export default function ListSongRequests() {
         <Table sx={{ minWidth: 650 }} stickyHeader size='small'>
             <TableHead>
               <TableRow>
+                <TableCell>ID</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Requested by</TableCell>
                 <TableCell>Added at</TableCell>
@@ -57,6 +58,7 @@ export default function ListSongRequests() {
             <TableBody>
               {items.map((row) => (
                 <TableRow key={row.id}  >
+                  <TableCell component="th" scope="row" className='monospace'>{row.videoId}</TableCell>
                   <TableCell>{row.title}</TableCell>
                   <TableCell>{row.username}</TableCell>
                   <TableCell>{dayjs(row.addedAt).format('LL LTS')}</TableCell>
