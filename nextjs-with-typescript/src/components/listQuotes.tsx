@@ -39,7 +39,7 @@ export default function ListQuotes() {
       dispatch(setTags(Array.from(new Set([...itemsGetAll.map(o => o.tags)].flat()))))
       setLoading(false);
     });
-  }, [])
+  }, [dispatch])
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
