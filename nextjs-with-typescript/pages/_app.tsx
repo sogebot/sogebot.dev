@@ -12,6 +12,7 @@ import Layout from '../src/layout';
 
 console.log('@sogebot/ui-public', require('../package.json').version);
 
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
@@ -26,6 +27,7 @@ export default function MyApp(props: MyAppProps) {
     <Provider store={store}>
       <CacheProvider value={emotionCache}>
         <Head>
+          <title>sogeBot public page</title>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <ThemeProvider theme={theme}>

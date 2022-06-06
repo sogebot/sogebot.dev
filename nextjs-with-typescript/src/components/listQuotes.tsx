@@ -76,7 +76,7 @@ export default function ListQuotes() {
                 <Typography variant="body1" gutterBottom>
                   {row.quote}
                 </Typography>
-                <Divider sx={{ mb: 1 }}/>
+                { row.tags.length > 0 && <Divider sx={{ mb: 1 }}/> }
               </CardContent>
 
               <CardActions sx={{ pt:0, px: 2 }}>

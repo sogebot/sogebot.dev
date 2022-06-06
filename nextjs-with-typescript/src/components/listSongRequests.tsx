@@ -41,10 +41,10 @@ export default function ListSongRequests() {
         <Table sx={{ minWidth: 650 }} stickyHeader size='small'>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Requested by</TableCell>
                 <TableCell>Added at</TableCell>
+                <TableCell>videoID</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
