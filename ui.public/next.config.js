@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   basePath: '/public',
   images: {
-    loader: 'akamai',
-    path: '',
+    loader: 'custom',
     domains: ['img.youtube.com'],
   },
 };
