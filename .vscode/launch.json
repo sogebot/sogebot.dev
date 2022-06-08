@@ -6,7 +6,7 @@
             "request": "launch",
             "name": "without moderation",
             "cwd": "${workspaceFolder}/backend",
-            "runtimeExecutable": "npm",
+            "runtimeExecutable": "yarn",
             "runtimeArgs": [
                 "run",
                 "debug"
@@ -20,7 +20,7 @@
                 "DISABLE":"moderation",
                 "DEBUG": "tmi.message"
             },
-            "preLaunchTask": "npm: build - backend",
+            "preLaunchTask": "yarn: build - backend",
             "sourceMaps": true,
             "port": 9229,
             "outFiles": ["${workspaceFolder}/backend/dest/**/*"]
@@ -29,7 +29,7 @@
             "type": "node",
             "request": "launch",
             "name": "WITH moderation",
-            "runtimeExecutable": "npm",
+            "runtimeExecutable": "yarn",
             "runtimeArgs": [
                 "run",
                 "debug"
@@ -42,7 +42,7 @@
                 "NODE_ENV": "development",
                 "DEBUG": "tmi.message"
             },
-            "preLaunchTask": "npm: build - backend",
+            "preLaunchTask": "yarn: build - backend",
             "sourceMaps": true,
             "port": 9229,
             "outFiles": ["${workspaceFolder}/dest/**/*"]
@@ -51,7 +51,7 @@
             "type": "node",
             "request": "launch",
             "name": "WITH moderation and send messages",
-            "runtimeExecutable": "npm",
+            "runtimeExecutable": "yarn",
             "runtimeArgs": [
                 "run",
                 "debug"
@@ -63,7 +63,7 @@
                 "CORS": "http://localhost:3000",
                 "NODE_ENV": "development"
             },
-            "preLaunchTask": "npm: build - backend",
+            "preLaunchTask": "yarn: build - backend",
             "sourceMaps": true,
             "port": 9229,
             "outFiles": ["${workspaceFolder}/dest/**/*"]

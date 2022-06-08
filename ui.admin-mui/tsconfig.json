@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "incremental": true,
+    "jsxImportSource": "@emotion/react",
+    "jsx": "preserve",
+    "paths": {
+      "typeorm": ["./node_modules/typeorm/typeorm-model-shim.js"],
+      "~/*": [
+        "./*"
+      ],
+      "@entity/*": [
+        "../node_modules/@sogebot/backend/src/database/entity/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts"],
+  "exclude": ["node_modules"]
+}

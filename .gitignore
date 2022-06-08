@@ -1,3 +1,5 @@
+*.db*
+
 # Monorepo
 backend/dest
 ui.admin/.nuxt/*
