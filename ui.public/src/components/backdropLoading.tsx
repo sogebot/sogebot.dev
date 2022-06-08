@@ -12,7 +12,7 @@ export default function BackdropLoading() {
   }, [dispatch]);
 
   useEffect(() => {
-    setOpen(false)
+    setOpen(!state)
   }, [state]);
 
   const [open, setOpen] = React.useState(true);

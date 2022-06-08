@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-public",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "scripts": {
     "link-backend": "(npm link ../backend || (exit 0))",
     "dev": "npm run link-backend && next dev -p 3003",
