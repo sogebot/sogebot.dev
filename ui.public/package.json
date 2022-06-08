@@ -5,7 +5,7 @@
     "link-backend": "(npm link ../backend || (exit 0))",
     "dev": "npm run link-backend && next dev -p 3003",
     "postinstall": "patch-package || (exit 0)",
-    "build": "next build && next export",
+    "build": "npm run link-backend && next build && next export",
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
