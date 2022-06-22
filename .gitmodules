@@ -15,7 +15,7 @@
 	url = https://github.com/sogehige/sogebot-ui-helpers
 [submodule "twitch-token-generator"]
 	path = twitch-token-generator
-	url = git@github.com:sogebot/twitch-token-generator.git
+	url = https://github.com/sogebot/twitch-token-generator.git
 [submodule "cloudflare/tiltify"]
 	path = cloudflare/tiltify
 	url = https://github.com/sogebot/cloudflare-tiltify
