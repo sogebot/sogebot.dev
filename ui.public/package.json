@@ -1,17 +1,17 @@
 {
   "name": "@sogebot/ui-public",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "scripts": {
-    "link-backend": "(npm link ../backend || (exit 0))",
-    "dev": "npm run link-backend && next dev -p 3003",
+    "dev": "next dev -p 3003",
     "postinstall": "patch-package || (exit 0)",
-    "build": "npm run link-backend && next build && next export",
+    "build": "next build && next export",
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "prepublish": "npm run build"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@sogebot/backend": "15.4.0-SNAPSHOT",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/server": "latest",
@@ -28,9 +28,7 @@
     "react-device-detect": "^2.2.2",
     "react-dom": "latest",
     "react-redux": "^8.0.2",
-    "react-router-dom": "^6.3.0"
-  },
-  "devDependencies": {
+    "react-router-dom": "^6.3.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "eslint": "latest",

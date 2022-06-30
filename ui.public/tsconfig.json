@@ -22,7 +22,7 @@
         "./*"
       ],
       "@entity/*": [
-        "./node_modules/@sogebot/backend/src/database/entity/*"
+        "../node_modules/@sogebot/backend/src/database/entity/*"
       ]
     },
   },
