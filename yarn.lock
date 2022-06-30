@@ -2013,9 +2013,9 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@sogebot/ui-admin@^52.0.1":
+"@sogebot/ui-admin@^52.0.4":
   version "52.0.4"
-  resolved "https://registry.npmjs.org/@sogebot/ui-admin/-/ui-admin-52.0.4.tgz"
+  resolved "https://registry.yarnpkg.com/@sogebot/ui-admin/-/ui-admin-52.0.4.tgz#2ffd34756e15bd09683ee0fe997a373fb83c74e1"
   integrity sha512-Fm9FFJ61gL3+a1Km2nZm7SbrwxtAdxGxQ7Fs2ggvfFI/PW+gtx0Pr3DnVaTKWYWBSpaB+Mq7qJgwnWvVDEItrg==
   dependencies:
     drawflow "^0.0.58"
