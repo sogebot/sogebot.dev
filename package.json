@@ -1,4 +1,7 @@
 {
   "private": true,
-  "workspaces": ["ui.admin-mui", "backend", "ui.public"]
+  "workspaces": ["ui.admin-mui", "backend", "ui.public"],
+  "scripts": {
+    "postinstall": "cp package-lock.json backend/"
+  }
 }
