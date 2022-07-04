@@ -7,8 +7,15 @@
 			"path": "backend/",
 			"group": "build",
 			"problemMatcher": [],
-			"label": "npm: build - backend",
+			"label": "yarn: build - backend",
 			"detail": "cross-env ENV=development make bot"
+		},
+		{
+			"type": "markdownlint",
+			"problemMatcher": [
+				"$markdownlint"
+			],
+			"label": "markdownlint: Lint all Markdown files in the workspace with markdownlint"
 		}
 	]
 }
