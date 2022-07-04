@@ -69,7 +69,12 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         <Stack alignContent={'center'}  sx={{ color: isActive || !!anchorEl ? theme.palette.primary.main : 'inherit' }}>
           <ListItemIcon sx={{ placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit' }}>
             {props.icon}
-            <ChevronRight sx={{ position: 'absolute', right: '7px', top: '17px', fontSize: '12px' }}/>
+            <ChevronRight sx={{
+              position: 'absolute',
+              right:    '7px',
+              top:      '17px',
+              fontSize: '12px',
+            }}/>
           </ListItemIcon>
           <Typography variant="caption" sx={{ textAlign: 'center', fontSize: '0.7rem' }}>
             {props.title}
