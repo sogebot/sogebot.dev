@@ -18,8 +18,8 @@ import { useIntervalWhen } from 'rooks';
 import DashboardWidgetBotDialogConfirmRaffleClose from '~/src/components/Dashboard/Widget/Bot/Dialog/ConfirmRaffleClose';
 import DashboardWidgetBotDialogConfirmRafflePick from '~/src/components/Dashboard/Widget/Bot/Dialog/ConfirmRafflePick';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import {
   minLength, required, startsWith,
 } from '~/src/validators';
@@ -28,6 +28,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
   className,
 }) => {
   const [ loading, setLoading ] = React.useState(true);
+  const { translate } = useTranslation();
 
   const [ value, setValue ] = React.useState('1');
   const styles = useStyles();
@@ -47,12 +48,12 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
     { title: translate('everyone'), value: 'all' },
     { title: translate('followers'), value: 'followers' },
     { title: translate('subscribers'), value: 'subscribers' },
-  ], []);
+  ], [translate]);
 
   const typeItems = React.useMemo(() => [
     { title: translate('raffle-type-keywords'), value: true },
     { title: translate('raffle-type-tickets'), value: false },
-  ], []);
+  ], [translate]);
 
   const typeItemSelected = React.useMemo(() => {
     return typeItems[isTypeKeywords ? 0 : 1];

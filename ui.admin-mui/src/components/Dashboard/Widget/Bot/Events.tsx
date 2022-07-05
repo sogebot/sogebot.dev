@@ -12,13 +12,13 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
@@ -38,36 +38,6 @@ function blockquote (event: any) {
   return '';
 }
 
-function prepareMessage (event: any, configuration: any) {
-  let t = translate(`eventlist-events.${event.event}`);
-
-  const values = JSON.parse(event.values_json);
-  if (event.event === 'tip' && values.charityCampaignName) {
-    t = translate(`eventlist-events.tipToCharity`);
-  }
-  const formattedAmount = Intl.NumberFormat(configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
-  t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
-  t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
-
-  t = t.replace('$subType', get(values, 'tier', 'Prime') !== 'Prime' ? `Tier ${get(values, 'tier', 'Prime')}` : 'Prime' );
-  t = t.replace('$viewers', get(values, 'viewers', '0'));
-  t = t.replace('$username', get(values, 'fromId', 'n/a'));
-  t = t.replace('$subCumulativeMonthsName', get(values, 'subCumulativeMonthsName', 'months'));
-  t = t.replace('$subCumulativeMonths', get(values, 'subCumulativeMonths', '0'));
-  t = t.replace('$subStreakName', get(values, 'subStreakName', 'months'));
-  t = t.replace('$subStreak', get(values, 'subStreak', '0'));
-  t = t.replace('$bits', get(values, 'bits', '0'));
-  t = t.replace('$count', get(values, 'count', '0'));
-  t = t.replace('$titleOfReward', get(values, 'titleOfReward', ''));
-  t = t.replace('$campaignName', get(values, 'charityCampaignName', ''));
-
-  let output = `${t}`;
-  if (values.song_url && values.song_title) {
-    output += `<strong>${translate('song-request')}:</strong> <a href="${values.song_url}">${values.song_title}</a>`;
-  }
-  return output;
-}
-
 function emitSkipAlertEvent () {
   console.log('Skipping current alert');
   getSocket('/widgets/eventlist').emit('skip');
@@ -80,8 +50,39 @@ function resendAlert (id: string) {
 
 function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
+  const { translate } = useTranslation();
   const { configuration } = useSelector((state: any) => state.loader);
   const classes = useStyles();
+
+  const prepareMessage = useCallback((event: any) => {
+    let t = translate(`eventlist-events.${event.event}`);
+
+    const values = JSON.parse(event.values_json);
+    if (event.event === 'tip' && values.charityCampaignName) {
+      t = translate(`eventlist-events.tipToCharity`);
+    }
+    const formattedAmount = Intl.NumberFormat(configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
+    t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
+    t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
+
+    t = t.replace('$subType', get(values, 'tier', 'Prime') !== 'Prime' ? `Tier ${get(values, 'tier', 'Prime')}` : 'Prime' );
+    t = t.replace('$viewers', get(values, 'viewers', '0'));
+    t = t.replace('$username', get(values, 'fromId', 'n/a'));
+    t = t.replace('$subCumulativeMonthsName', get(values, 'subCumulativeMonthsName', 'months'));
+    t = t.replace('$subCumulativeMonths', get(values, 'subCumulativeMonths', '0'));
+    t = t.replace('$subStreakName', get(values, 'subStreakName', 'months'));
+    t = t.replace('$subStreak', get(values, 'subStreak', '0'));
+    t = t.replace('$bits', get(values, 'bits', '0'));
+    t = t.replace('$count', get(values, 'count', '0'));
+    t = t.replace('$titleOfReward', get(values, 'titleOfReward', ''));
+    t = t.replace('$campaignName', get(values, 'charityCampaignName', ''));
+
+    let output = `${t}`;
+    if (values.song_url && values.song_title) {
+      output += `<strong>${translate('song-request')}:</strong> <a href="${values.song_url}">${values.song_title}</a>`;
+    }
+    return output;
+  }, [translate, configuration]);
 
   return (
     <ListItem component="div" divider={true} dense key={props.item.id} className={classes.parent} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
@@ -106,7 +107,7 @@ function RenderRow(props: any) {
         {['follow', 'resub', 'tip', 'sub', 'host', 'raid', 'subgift', 'subcommunitygift'].includes(props.item.event) && <Typography component="span" fontWeight={'bold'} pr={0.5}>{ props.item.username }</Typography>}
         <DotDivider/>
         {props.item.event !== 'rewardredeem' && <>
-          <Typography component="span" fontSize={'0.8rem'} pr={0.5}>&nbsp;{parse(prepareMessage(props.item, configuration))}</Typography>
+          <Typography component="span" fontSize={'0.8rem'} pr={0.5}>&nbsp;{parse(prepareMessage(props.item))}</Typography>
           <DotDivider/>
         </>}
         <Typography  component="span" fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{dayjs(props.item.timestamp).fromNow()}</Typography>

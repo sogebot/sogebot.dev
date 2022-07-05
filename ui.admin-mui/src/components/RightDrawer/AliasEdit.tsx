@@ -15,8 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getValidatorErrors } from '~/src/helpers/getValidatorErrors';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { usePermissions } from '~/src/hooks/usePermissions';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import { showEditDialog } from '~/src/store/pageSlice';
 
 interface GroupType {
@@ -40,6 +40,7 @@ export const AliasEdit: React.FC<{
 }> = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { translate } = useTranslation();
   const { editDialog } = useSelector((state: any) => state.page);
   const { permissions } = usePermissions();
   const [ alias, setAlias ] = useState<Alias>(newAlias);

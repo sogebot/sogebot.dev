@@ -10,10 +10,11 @@ import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const UserMenu: React.FC = () => {
+  const { translate } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -90,7 +91,7 @@ export const UserMenu: React.FC = () => {
       >
         <Box sx={{ px: 2 }}>
           <><Typography>{user.display_name}</Typography>
-            <Typography variant='subtitle2' color={theme.palette.secondary.main}>{viewer?.permission.name}</Typography>
+            <Typography variant='subtitle2' color={theme.palette.info.main}>{viewer?.permission.name}</Typography>
             {viewerIs(viewer)
               .map(o => {
                 return (

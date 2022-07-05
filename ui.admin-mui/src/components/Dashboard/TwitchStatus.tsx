@@ -10,8 +10,8 @@ import { useDidMount } from 'rooks';
 
 import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardStatsTwitchStatus: React.FC = () => {
@@ -19,6 +19,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const { configuration } = useSelector((state: any) => state.loader);
+  const { translate } = useTranslation();
 
   const [game, setGame] = useState<null | string>(null);
   const [title, setTitle] = useState<null | string>(null);

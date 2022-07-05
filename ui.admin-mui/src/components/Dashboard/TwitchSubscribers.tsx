@@ -11,11 +11,12 @@ import { useDidMount } from 'rooks';
 import { Trending } from '~/src/components/Dashboard/Stats/Trending';
 import { Value } from '~/src/components/Dashboard/Stats/Value';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardStatsTwitchSubscribers: React.FC = () => {
   const [value, setValue] = useState<number>(0);
+  const { translate } = useTranslation();
   const [type, setType] = useState('');
   const [loading, setLoading] = useState(true);
   const { averageStats, isStreamOnline } = useSelector((state: any) => state.page);

@@ -5,12 +5,13 @@ import {
 import * as React from 'react';
 
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardWidgetTwitch: React.FC = () => {
   const styles = useStyles();
+  const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
   const [room, setRoom] = React.useState('');

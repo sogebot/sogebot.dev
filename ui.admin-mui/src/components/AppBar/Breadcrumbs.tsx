@@ -5,15 +5,16 @@ import {
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const AppBarBreadcrumbs: React.FC = () => {
   const router = useRouter();
+  const { translate } = useTranslation();
 
   const breadcrumbsItems = useMemo(() => {
     const path = router.asPath.split('/').filter(Boolean).map(o => translate(`menu.${o}`)).filter(o => !o.startsWith('{menu.'));
     return path;
-  }, [router]);
+  }, [router, translate]);
 
   return (
     <Fade in={breadcrumbsItems && breadcrumbsItems.length > 0}>

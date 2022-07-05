@@ -11,6 +11,7 @@ export const loaderSlice = createSlice({
     message: null,
     state: false,
     configuration: {},
+    translation: {},
 
     nextVersion: null,
     currentVersion: null,
@@ -37,6 +38,9 @@ export const loaderSlice = createSlice({
       console.debug(`setConfiguration`, action.payload);
       state.configuration = action.payload
     },
+    setTranslation: (state: { translation: any }, action: { payload: any }) => {
+      state.translation = action.payload
+    },
     setCurrentVersion: (state: { currentVersion: any }, action: { payload: any }) => {
       console.debug(`setCurrentVersion`, action.payload);
       state.currentVersion = action.payload
@@ -62,5 +66,5 @@ export const loaderSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion } = loaderSlice.actions
+export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion } = loaderSlice.actions
 export default loaderSlice.reducer

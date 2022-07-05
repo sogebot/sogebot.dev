@@ -1,4 +1,6 @@
-import { ArrowRight, RemoveRedEye } from '@mui/icons-material';
+import {
+  ArrowRight, CheckBoxTwoTone, DeleteTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+} from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import FilterIcon from '@mui/icons-material/FilterAlt';
 import FilterOffIcon from '@mui/icons-material/FilterAltOff';
@@ -8,11 +10,11 @@ import {
   Button,
   Collapse,
   Grid,
-  IconButton, Paper, Stack, Typography,
+  IconButton, Paper, Stack, Tooltip, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import {
-  DataGrid, GridActionsColDef, GridColDef, GridSelectionModel,
+  DataGrid, GridActionsColDef, GridColDef, GridRowId, GridSelectionModel,
 } from '@mui/x-data-grid';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import capitalize from 'lodash/capitalize';
@@ -32,12 +34,13 @@ import { AliasBulk } from '~/src/components/RightDrawer/AliasBulk';
 import { AliasEdit } from '~/src/components/RightDrawer/AliasEdit';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { usePermissions } from '~/src/hooks/usePermissions';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
+  const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -46,9 +49,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const [ groups, setGroups ] = useState<string[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { search } = useSelector((state: any) => state.appbar);
+  const { search, bulkCount } = useSelector((state: any) => state.appbar);
   const { permissions } = usePermissions();
-  const [ selectedItemsObject, setSelectedItems ] = useState<{ [x: string]: string[]}[]>([]);
+  const [ selectedItemsObject, setSelectedItems ] = useState<{ [x: string]: GridRowId[]}>({});
   const [ groupCollapse, setGroupCollapse ] = useState<(string | null)[]>([null]);
 
   const columns: (GridColDef | GridActionsColDef)[] = [
@@ -122,7 +125,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             resolve();
             return console.error(err);
           }
-          console.log({ res });
           setGroupsSettings(res);
           resolve();
         });
@@ -141,6 +143,46 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   useEffect(() => {
     dispatch(setBulkCount(selectedItems.length));
   }, [selectedItems, dispatch]);
+
+  const bulkCanVisOff = useMemo(() => {
+    for (const itemId of selectedItems) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.visible) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selectedItems, items ]);
+
+  const bulkCanVisOn = useMemo(() => {
+    for (const itemId of selectedItems) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.visible) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selectedItems, items ]);
+
+  const bulkCanEnable = useMemo(() => {
+    for (const itemId of selectedItems) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.enabled) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selectedItems, items ]);
+
+  const bulkCanDisable = useMemo(() => {
+    for (const itemId of selectedItems) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.enabled) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selectedItems, items ]);
 
   const filteredItems = useMemo(() => {
     if (search.length === 0) {
@@ -177,18 +219,43 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   return (
     <>
       <DisabledAlert system='alias'/>
-      <Grid container sx={{ mb: 0.5 }} spacing={1}>
+      <Grid container sx={{ mb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/alias/create/');
           }}>Create new alias</Button>
         </Grid>
         <Grid item>
-          <Button disabled variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><RemoveRedEye/></Button>
+          <Tooltip title="Set visibility on">
+            <span><Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><VisibilityTwoTone/></Button></span>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Set visibility off">
+            <span><Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><VisibilityOffTwoTone/></Button></span>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Enable">
+            <span><Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><CheckBoxTwoTone/></Button></span>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Disable">
+            <span><Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><DisabledByDefaultTwoTone/></Button></span>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Delete">
+            <span><Button disabled={bulkCount === 0} variant="contained" color   ="error" sx={{ minWidth: '36px', width: '36px' }}><DeleteTwoTone/></Button></span>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
       </Grid>
       {groups.map((group, idx) => (<div key={group}>
-        <Paper sx={{
+        <Paper sx={{  
           mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
         }}>
           <Stack direction="row" justifyContent="end" alignItems="center">

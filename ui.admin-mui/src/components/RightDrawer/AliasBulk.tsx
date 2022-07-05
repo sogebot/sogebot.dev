@@ -1,15 +1,16 @@
 import {
-  Box, Button, Checkbox, Divider, Drawer, FormControlLabel, FormGroup, FormHelperText, Grid, TextField, 
+  Box, Button, Checkbox, Divider, Drawer, FormControlLabel, FormGroup, FormHelperText, Grid, TextField,
 } from '@mui/material';
 import { capitalize } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
 import { toggleBulkDialog } from '../../store/appbarSlice';
 
 export const AliasBulk: React.FC = () => {
   const dispatch = useDispatch();
+  const { translate } = useTranslation();
   const { showBulkDialog } = useSelector((state: any) => state.appbar);
 
   return(

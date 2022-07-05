@@ -5,8 +5,8 @@ import {
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 import { DashboardWidgetBotChecklist } from './Bot/Checklist';
@@ -20,6 +20,7 @@ import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
 export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useSelector((state: any) => state.loader);
   const styles = useStyles();
+  const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
 

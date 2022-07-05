@@ -2,12 +2,13 @@ import { Alert, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
 type System = { system: string };
 type Integration = { integration: string };
 
 export const DisabledAlert: React.FC<System | Integration> = (props) => {
+  const { translate } = useTranslation();
   const invisible = { display: 'none' };
 
   const { systems, integrations } = useSelector((state: any) => state.loader);

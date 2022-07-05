@@ -9,12 +9,13 @@ import { useDispatch } from 'react-redux';
 
 import { getTime } from '~/src/helpers/getTime';
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
 import { useStyles } from '~/src/hooks/useStyles';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import { setStreamOnline } from '~/src/store/pageSlice';
 import theme from '~/src/theme';
 
 export const DashboardStatsUptime: React.FC = () => {
+  const { translate } = useTranslation();
   const [uptime, setUptime] = useState<null | number>(null);
   const [hover, setHover] = useState(false);
   const [timestamp, setTimestamp] = useState(Date.now());

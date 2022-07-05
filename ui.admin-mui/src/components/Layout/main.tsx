@@ -15,15 +15,13 @@ import { Search } from '~/src/components/AppBar/Search';
 import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getListOf, populateListOf } from '~/src/helpers/getListOf';
 import { isUserLoggedIn } from '~/src/helpers/isUserLoggedIn';
-import { getConfiguration, getTranslations } from '~/src/helpers/socket';
-import { disableBulk, enableBulk } from '~/src/store/appbarSlice';
+import { getConfiguration } from '~/src/helpers/socket';
 
 import checkTokenValidity from '../../helpers/check-token-validity';
 import {
   setConfiguration, setMessage, setState, setSystem,
 } from '../../store/loaderSlice';
 import { setUser } from '../../store/userSlice';
-import { Bulk } from '../AppBar/Bulk';
 import { DashboardStats } from '../Dashboard/Stats';
 import { DashboardWidgetAction } from '../Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../Dashboard/Widget/Bot';
@@ -71,8 +69,6 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   dispatch(setSystem({ type: 'systems', value: cloneDeep(getListOf('systems')) }));
   dispatch(setSystem({ type: 'integrations', value: cloneDeep(getListOf('integrations')) }));
 
-  await getTranslations();
-
   const configuration = await getConfiguration();
   dispatch(setConfiguration(configuration));
   setLocale(configuration.lang as string);
@@ -95,12 +91,6 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
   useEffect(() => {
     setIndexPage(router.asPath === '/');
-
-    if (router.asPath.startsWith('/commands/alias')) {
-      dispatch(enableBulk());
-    } else {
-      dispatch(disableBulk());
-    }
   }, [router, dispatch]);
 
   useEffect(() => {
@@ -118,7 +108,6 @@ export const Layout: React.FC<{ children: any }> = (props) => {
                 <Box sx={{ flexGrow: 1 }}>
                   <AppBarBreadcrumbs/>
                 </Box>
-                <Bulk/>
                 <Search/>
                 <Logo/>
               </Toolbar>

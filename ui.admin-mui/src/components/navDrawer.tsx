@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
 import customTheme, { theme } from '../theme';
 import { MenuItemDeep } from './drawer/menuItemDeep';
@@ -51,6 +51,7 @@ const LinkedListItem = function (props: LinkedListItemProps) {
 };
 
 export default function NavDrawer() {
+  const { translate } = useTranslation();
   const reducer = useSelector((state: any) => state.loader);
   const router = useRouter();
 

@@ -4,8 +4,6 @@ import { io } from 'socket.io-client';
 
 import type { Fn, ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 
-import { setTranslations } from '~/src/helpers/translate';
-
 export const redirectLogin = () => {
   if (window.location.href.includes('popout')) {
     window.location.assign(window.location.origin + '/credentials/login#error=popout+must+be+logged');
@@ -125,20 +123,6 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
   });
   return socket;
 }
-
-export const getTranslations = async () => {
-  if (localStorage.debug) {
-    console.log('getTranslations - getSocket on / allows unauthorized')
-  }
-  getSocket('/', true).emit('translations', (translations) => {
-    if (process.env.IS_DEV) {
-      console.groupCollapsed('GET=>Translations');
-      console.debug({ translations });
-      console.groupEnd();
-    }
-    setTranslations(translations);
-  });
-};
 
 type Configuration = {
   [x:string]: Configuration | string;

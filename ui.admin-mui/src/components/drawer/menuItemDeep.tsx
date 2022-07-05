@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
 import theme from '../../theme';
 
@@ -19,6 +19,7 @@ interface LinkedListItemProps {
 }
 export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   const router = useRouter();
+  const { translate } = useTranslation();
   const reducer = useSelector((state: any) => state.loader);
   const [ menuItems, setMenuItems ] = useState<any[]>([]);
   const [ isActive, setIsActive ] = useState<boolean>(true);
@@ -33,7 +34,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
       }));
     });
-  }, [state, connectedToServer, props]);
+  }, [state, connectedToServer, props, translate]);
 
   useEffect(() => {
     setIsActive(!!menuItems.find((item: any) => '/' + item.id === router.asPath));

@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getSocket } from '~/src/helpers/socket';
-import translate from '~/src/helpers/translate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardStatsTwitchViewers: React.FC = () => {
   const [viewers, setViewers] = useState<null | number>(null);
   const [loading, setLoading] = useState(true);
+  const { translate } = useTranslation();
   const { isStreamOnline } = useSelector((state: any) => state.page);
 
   useEffect(() => {
