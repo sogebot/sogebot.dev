@@ -221,9 +221,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
                 </Typography>
               </>}
             </div>
-            <IconButton sx={{ height: 'fit-content' }}>
+            {group && <IconButton sx={{ height: 'fit-content' }}>
               <SettingsIcon/>
-            </IconButton>
+            </IconButton>}
           </Stack>
           <Collapse in={groupCollapse.includes(group)}>
             <DataGrid
