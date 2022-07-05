@@ -11,7 +11,7 @@ export const AppBarBreadcrumbs: React.FC = () => {
   const router = useRouter();
 
   const breadcrumbsItems = useMemo(() => {
-    const path = router.asPath.split('/').filter(Boolean).map(o => translate(`menu.${o}`));
+    const path = router.asPath.split('/').filter(Boolean).map(o => translate(`menu.${o}`)).filter(o => !o.startsWith('{menu.'));
     return path;
   }, [router]);
 
