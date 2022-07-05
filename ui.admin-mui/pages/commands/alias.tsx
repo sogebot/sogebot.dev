@@ -189,7 +189,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       <DisabledAlert system='alias'/>
       {groups.map((group, idx) => (<div key={group}>
         <Paper sx={{
-          mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 3,
+          mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
         }}>
           <Stack direction="row" justifyContent="end" alignItems="center">
             <Box sx={{ flex: 'auto' }}  onClick={() => handleSetGroupCollapse(group)}>

@@ -1,8 +1,9 @@
 import { MoreVert } from '@mui/icons-material';
 import {
-  Button, Dialog, DialogActions, DialogContent, IconButton, Menu, MenuItem, Typography,
+  IconButton, Menu, MenuItem,
 } from '@mui/material';
 import * as React from 'react';
+import { DialogDelete } from '~/src/components/Dialog/Delete';
 
 export const GridActionAliasMenu: React.FC<{
   onDelete: () => void,
@@ -37,21 +38,7 @@ export const GridActionAliasMenu: React.FC<{
           setOpen2(true); handleClose();
         }}>Delete</MenuItem>
       </Menu>
-      <Dialog
-        sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
-        maxWidth="xs"
-        open={open2}
-      >
-        <DialogContent dividers>
-          <Typography>Do you want to delete this item?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus fullWidth onClick={() => setOpen2(false)}>Cancel</Button>
-          <Button fullWidth color="error" variant="contained" onClick={() => {
-            setOpen2(false); onDelete();
-          }}>Delete</Button>
-        </DialogActions>
-      </Dialog>
+      <DialogDelete open={open2} setOpen={setOpen2} onDelete={onDelete}/>
     </div>
   );
   /**/
