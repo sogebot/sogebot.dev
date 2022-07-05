@@ -1,4 +1,4 @@
-import { ArrowRight } from '@mui/icons-material';
+import { ArrowRight, RemoveRedEye } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import FilterIcon from '@mui/icons-material/FilterAlt';
 import FilterOffIcon from '@mui/icons-material/FilterAltOff';
@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Collapse,
+  Grid,
   IconButton, Paper, Stack, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -176,9 +177,16 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   return (
     <>
       <DisabledAlert system='alias'/>
-      <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-        router.push('/commands/alias/create/');
-      }}>Create new alias</Button>
+      <Grid container sx={{ mb: 0.5 }} spacing={1}>
+        <Grid item>
+          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
+            router.push('/commands/alias/create/');
+          }}>Create new alias</Button>
+        </Grid>
+        <Grid item>
+          <Button disabled variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><RemoveRedEye/></Button>
+        </Grid>
+      </Grid>
       {groups.map((group, idx) => (<div key={group}>
         <Paper sx={{
           mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
