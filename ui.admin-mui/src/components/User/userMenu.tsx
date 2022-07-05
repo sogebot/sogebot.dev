@@ -5,41 +5,27 @@ import {
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 import translate from '~/src/helpers/translate';
 import theme from '~/src/theme';
 
 export const UserMenu: React.FC = () => {
-  const refreshViewer = (user: null | Record<string, any>): Promise<any> => {
-    if (typeof user === 'undefined' || user === null) {
-      return new Promise(resolve => resolve(null));
-    }
-    const socket = getSocket('/core/users', true);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
-    return new Promise((resolve) => {
-      socket.emit('viewers::findOne', user.id, (err: any, recvViewer: unknown) => {
-        if (err) {
-          return console.error(err);
-        }
-        if (recvViewer) {
-          console.log('Logged in as', recvViewer);
-          resolve(recvViewer);
-        } else {
-          console.error('Cannot find user data, try to write something in chat to load data');
-          resolve(null);
-        }
-      });
-    });
-  };
+  const { user } = useSelector((state: any) => state.user);
+  const { configuration } = useSelector((state: any) => state.loader);
+  const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
 
-  const viewerIs = (viewer: any) => {
+  const viewerIs = (data: any) => {
     const status: string[] = [];
     const isArray = ['isFollower', 'isSubscriber', 'isVIP'] as const;
     isArray.forEach((item: typeof isArray[number]) => {
-      if (viewer && viewer[item]) {
+      if (data && data[item]) {
         status.push(item.replace('is', ''));
       }
     });
@@ -59,9 +45,6 @@ export const UserMenu: React.FC = () => {
     localStorage.userType = 'unauthorized';
     window.location.assign(window.location.origin + '/credentials/login#error=logged+out');
   };
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -69,20 +52,28 @@ export const UserMenu: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const { user } = useSelector((state: any) => state.user);
-  const { configuration } = useSelector((state: any) => state.loader);
-  const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
-
-  const [interval, setInterval] = useState<null | number>(null);
-
-  useEffect(() => {
-    refreshViewer(user).then(o => setViewer(o));
-    if (!interval) {
-      setInterval(window.setInterval(() => {
-        refreshViewer(user).then(o => setViewer(o));
-      }, 60000));
+  const refresh = React.useCallback(() => {
+    if (typeof user === 'undefined' || user === null) {
+      return;
     }
-  }, [interval, user]);
+    getSocket('/core/users', true).emit('viewers::findOne', user.id, (err, recvViewer) => {
+      if (err) {
+        return console.error(err);
+      }
+      if (recvViewer) {
+        if (!viewer) {
+          console.log('Logged in as', recvViewer);
+        }
+        setViewer(recvViewer);
+      } else {
+        console.error('Cannot find user data, try to write something in chat to load data');
+        setViewer(null);
+      }
+    });
+  }, [user, viewer]);
+
+  useEffect(refresh, [ refresh ]);
+  useIntervalWhen(refresh, 60000, true, true);
 
   return (
     <>
@@ -137,10 +128,10 @@ export const UserMenu: React.FC = () => {
 
           <Grid container sx={{ pt: 1 }}>
             <Grid item xs={6}>
-              <Button onClick={handleClose}>Close</Button>
+              <Button onClick={handleClose} sx={{ width: 150 }}>Close</Button>
             </Grid>
             <Grid item xs={6} textAlign='right'>
-              <Button onClick={logout} startIcon={<LogoutIcon />} color='error'>Logout</Button>
+              <Button onClick={logout} startIcon={<LogoutIcon />} color='error' sx={{ width: 150 }}>Logout</Button>
             </Grid>
           </Grid>
         </Box>
