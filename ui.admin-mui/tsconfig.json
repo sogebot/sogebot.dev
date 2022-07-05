@@ -25,13 +25,13 @@
         "./*"
       ],
       "@entity/*": [
-        "../node_modules/@sogebot/backend/src/database/entity/*"
+        "../node_modules/@sogebot/backend/dest/database/entity/*"
       ],
       "@/*": [
         "./src/*"
       ]
     },
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts", "./shims/dummy.ts"],
+  "exclude": ["../node_modules"]
 }

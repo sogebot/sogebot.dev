@@ -1,24 +1,23 @@
+import { Alias, AliasGroup } from '@entity/alias';
 import { Error, ThumbUpSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Divider, Drawer, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, TextField,
+  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Divider, Drawer, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-// import { Alias, AliasGroup } from '@entity/alias';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { capitalize, cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { getValidatorErrors } from '~/src/helpers/getValidatorErrors';
 import { getSocket } from '~/src/helpers/socket';
 import translate from '~/src/helpers/translate';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { showEditDialog } from '~/src/store/pageSlice';
-
-type Alias = any;
-type AliasGroup = any;
 
 interface GroupType {
   inputValue?: string;
@@ -27,14 +26,12 @@ interface GroupType {
 
 const filter = createFilterOptions<GroupType>();
 
-//const newAlias = new Alias();
-const newAlias: any = {};
+const newAlias = new Alias();
 newAlias.alias = '';
 newAlias.permission = defaultPermissions.VIEWERS;
 newAlias.command = '';
 newAlias.enabled = true;
 newAlias.visible = true;
-newAlias.id = '';
 newAlias.group = null;
 
 export const AliasEdit: React.FC<{
@@ -51,6 +48,7 @@ export const AliasEdit: React.FC<{
   const [ successButton, setSuccessButton ] = useState(false);
   const [ errorButton, setErrorButton ] = useState(false);
   const { id } = router.query;
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
     if (!alias) {
@@ -70,16 +68,27 @@ export const AliasEdit: React.FC<{
       setLoading(true);
       setAlias(props.aliases?.find(o => o.id === id) ?? newAlias);
       setLoading(false);
+    } else {
+      setAlias(newAlias);
+      setLoading(false);
     }
-  }, [router, id, props.aliases]);
+  }, [router, id, props.aliases, editDialog]);
 
   useEffect(() => {
-    getSocket('/systems/alias').emit('generic::validate', alias, (err) => {
-      if (err) {
-        return console.error(err);
-      }
-    });
-  }, [alias]);
+    if (!loading && editDialog) {
+      getSocket('/systems/alias').emit('generic::validate', alias, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+      });
+    }
+  }, [alias, loading, editDialog, enqueueSnackbar]);
+
+  useEffect(() => {
+    if (router.asPath.includes('alias/edit/') || router.asPath.includes('alias/create') ) {
+      dispatch(showEditDialog(true));
+    }
+  }, [router, dispatch]);
 
   const handleClose = () => {
     dispatch(showEditDialog(false));
@@ -90,14 +99,19 @@ export const AliasEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    getSocket('/systems/alias').emit('generic::save', alias, (err) => {
+    getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
       if (err) {
         setErrorButton(true);
         setTimeout(() => {
           setErrorButton(false);
         }, 500);
+        enqueueSnackbar((<Stack>
+          <Typography variant="body2">Unexpected errors during validation</Typography>
+          <ul>{getValidatorErrors(err).map(o => <li key={o}>{o}</li>)}</ul>
+        </Stack>), { variant: 'error' });
         console.error(err);
       } else {
+        router.push(`/commands/alias/edit/${savedItem.id}`);
         setSuccessButton(true);
         setTimeout(() => {
           setSuccessButton(false);
@@ -114,10 +128,10 @@ export const AliasEdit: React.FC<{
     sx={{
       flexShrink:           0,
       '& .MuiDrawer-paper': {
-        padding:   '10px',
-        marginTop: '58px',
-        width:     500,
-        boxSizing: 'border-box',
+        padding:       '10px',
+        paddingBottom: 0,
+        width:         500,
+        boxSizing:     'border-box',
       },
     }}
   >
@@ -131,7 +145,7 @@ export const AliasEdit: React.FC<{
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       <Container disableGutters sx={{
-        p: 1, height: 'calc(100% - 100px)', maxHeight: 'calc(100% - 100px)', overflow: 'auto',
+        height: '100%', maxHeight: '100%', overflow: 'auto',
       }}>
         <Box
           component="form"
@@ -222,7 +236,7 @@ export const AliasEdit: React.FC<{
             />
           </FormControl>
 
-          <Grid container sx={{ mt: 2 }}>
+          <Grid container sx={{ p: 2 }}>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={alias?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />

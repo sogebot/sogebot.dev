@@ -1,6 +1,7 @@
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import * as React from 'react';
+
 import { DialogDelete } from '~/src/components/Dialog/Delete';
 
 export const DashboardWidgetActionButtonsDelete: React.FC<{

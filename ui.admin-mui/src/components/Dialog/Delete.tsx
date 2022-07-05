@@ -27,5 +27,5 @@ export const DialogDelete: React.FC<{
       }}>Delete</Button>
     </DialogActions>
   </Dialog>
-  )
-}
+  );
+};

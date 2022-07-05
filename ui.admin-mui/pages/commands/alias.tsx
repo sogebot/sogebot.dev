@@ -21,7 +21,6 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDidMount } from 'rooks';
 
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
@@ -35,15 +34,12 @@ import { getSocket } from '~/src/helpers/socket';
 import translate from '~/src/helpers/translate';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { setBulkCount } from '~/src/store/appbarSlice';
-import { showEditDialog } from '~/src/store/pageSlice';
 import theme from '~/src/theme';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { id } = router.query;
 
   const [ items, setItems ] = useState<Alias[]>([]);
   const [ groups, setGroups ] = useState<string[]>([]);
@@ -88,7 +84,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           variant="contained"
           startIcon={<EditIcon/>}
           onClick={() => {
-            router.push('/commands/alias/edit/' + params.row.id); dispatch(showEditDialog(true));
+            router.push('/commands/alias/edit/' + params.row.id);
           }}>Edit</Button>,
         <GridActionAliasMenu key='delete' onDelete={() => deleteItem(params.row)} />,
       ],
@@ -101,16 +97,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     });
   }, [ enqueueSnackbar ]);
 
-  useDidMount(async () => {
-    if (id) {
-      dispatch(showEditDialog(true));
-    }
-    refresh();
-    setLoading(false);
-  });
-
   useEffect(() => {
     refresh();
+    setLoading(false);
   }, [router]);
 
   const refresh = async () => {
@@ -187,6 +176,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   return (
     <>
       <DisabledAlert system='alias'/>
+      <Button sx={{ width: 200 }} variant="contained" onClick={() => {
+        router.push('/commands/alias/create/');
+      }}>Create new alias</Button>
       {groups.map((group, idx) => (<div key={group}>
         <Paper sx={{
           mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,

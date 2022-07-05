@@ -1,7 +1,14 @@
 {
   "private": true,
-  "workspaces": ["ui.admin-mui", "backend", "ui.public"],
+  "workspaces": [
+    "ui.admin-mui",
+    "backend",
+    "ui.public"
+  ],
   "scripts": {
-    "postinstall": "cp package-lock.json backend/"
+    "postinstall": "cp package-lock.json backend/ && (patch-package || (exit 0))"
+  },
+  "dependencies": {
+    "patch-package": "^6.4.7"
   }
 }
