@@ -5,6 +5,7 @@ import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -99,6 +100,15 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
   return (
     <>
+      <Script
+        id="clarityFnc"
+        dangerouslySetInnerHTML={{
+          __html: `(function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "cnni7q4jrp");`,
+        }}/>
       <ServerSelect/>
       <Fade in={state}>
         <Box sx={{ flexGrow: 1 }}>
