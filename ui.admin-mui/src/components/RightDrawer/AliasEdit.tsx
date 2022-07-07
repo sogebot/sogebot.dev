@@ -144,11 +144,11 @@ export const AliasEdit: React.FC<{
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       <Container disableGutters sx={{
-        height: '100%',
+        height:    '100%',
         maxHeight: '100%',
-        overflow: 'auto',
-        px: 1,
-        py: 0,
+        overflow:  'auto',
+        px:        1,
+        py:        0,
       }}>
         <Box
           component="form"

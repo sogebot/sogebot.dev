@@ -1,6 +1,4 @@
-import {
-  DeleteTwoTone,
-} from '@mui/icons-material';
+import { DeleteTwoTone } from '@mui/icons-material';
 import { Button, Tooltip } from '@mui/material';
 import * as React from 'react';
 

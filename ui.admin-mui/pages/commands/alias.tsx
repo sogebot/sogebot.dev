@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
+import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { DotDivider } from '~/src/components/Dashboard/Widget/Bot/Events';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
@@ -38,7 +39,6 @@ import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
-import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
   const { translate } = useTranslation();
@@ -229,7 +229,8 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         });
       }
     }
-    setItems(items.map(item => {
+
+    setItems(i => i.map(item => {
       if (selectedItems.includes(item.id)) {
         item[attribute] = value;
       }
@@ -241,7 +242,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     } else if (attribute === 'enabled') {
       enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
     }
-  }, [ selectedItems ]);
+  }, [ selectedItems, enqueueSnackbar, items ]);
 
   const bulkDelete =  useCallback(async () => {
     for (const selected of selectedItems) {
@@ -254,10 +255,10 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         });
       }
     }
-    setItems(items.filter(item => !selectedItems.includes(item.id)));
+    setItems(i => i.filter(item => !selectedItems.includes(item.id)));
     enqueueSnackbar(`Bulk operation deleted items.`, { variant: 'success' });
     setSelectedItems({});
-  }, [ selectedItems ]);
+  }, [ selectedItems, enqueueSnackbar, items ]);
 
   return (
     <>
