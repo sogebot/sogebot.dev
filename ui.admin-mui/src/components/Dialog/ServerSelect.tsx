@@ -12,6 +12,15 @@ import sogebotLarge from '~/public/sogebot_large.png';
 import { isBotStarted } from '~/src/isBotStarted';
 import { setMessage, setServer } from '~/src/store/loaderSlice';
 
+const checkURLValidity = (serverURL: string) => {
+  try {
+    const url = new URL(serverURL);
+    return url.hostname === 'localhost' || url.protocol === 'https:';
+  } catch (e) {
+    return false;
+  }
+};
+
 export const ServerSelect: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -22,19 +31,11 @@ export const ServerSelect: React.FC = () => {
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
 
+  const { compatibleVersion, state, message, connectedToServer } = useSelector((s: any) => s.loader);
+
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
-    try {
-      const url = new URL(serverInputValue);
-      // localhost is allowed to use without https
-      if (url.hostname === 'localhost') {
-        setIsValidHttps(true);
-      } else {
-        setIsValidHttps(url.protocol === 'https:');
-      }
-    } catch (e) {
-      setIsValidHttps(false);
-    }
+    setIsValidHttps(checkURLValidity(serverInputValue));
   }, [serverInputValue, isValidHttps]);
 
   const handleConnect = useCallback((server: string) => {
@@ -50,36 +51,40 @@ export const ServerSelect: React.FC = () => {
         localStorage.currentServer = server;
         localStorage.serverAutoConnect = JSON.stringify(autoConnectLS || autoConnect);
         localStorage.serverHistory = JSON.stringify(Array.from(new Set([server, ...serverHistoryLS, 'http://localhost:20000'])));
+        router.replace('/'); // get rid of GET params
       });
     }
-  }, [dispatch, autoConnect]);
+  }, [dispatch, autoConnect, router]);
 
   const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAutoConnecting(event.target.checked);
   };
 
   React.useEffect(() => {
-    if (router.isReady) {
+    if (router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
       const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
       const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
       setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000'])));
       setAutoConnecting(autoConnectLS);
 
       // autoconnect by server get paramater
-      if (router.query.server) {
-        setServerInputValue(router.query.server as string);
-        handleConnect(router.query.server as string);
+      const queryServer = router.query.server as string;
+      if (queryServer) {
+        setServerInputValue(queryServer);
+        if (checkURLValidity(queryServer)) {
+          handleConnect(queryServer);
+        }
         return;
       }
 
-      if (localStorage.server && !connecting) {
+      if (localStorage.server) {
         setServerInputValue(localStorage.server);
         if (autoConnectLS) {
           handleConnect(localStorage.server);
         }
       }
     }
-  }, [router.isReady, connecting, handleConnect, router.query.server]);
+  }, [router.isReady, connecting, handleConnect, router.query.server, message]);
 
   const getUser = () => {
     try {
@@ -89,8 +94,6 @@ export const ServerSelect: React.FC = () => {
     }
   };
 
-  const { compatibleVersion, state, message, connectedToServer } = useSelector((s: any) => s.loader);
-
   useEffect(() => {
     if (connectedToServer && state) {
       setOpen(false);
@@ -99,6 +102,7 @@ export const ServerSelect: React.FC = () => {
 
   useEffect(() => {
     if (!message || message.includes('Cannot connect') || message.includes('access to this server')) {
+      setAutoConnecting(false);
       setConnecting(false);
     } else {
       setConnecting(true);
