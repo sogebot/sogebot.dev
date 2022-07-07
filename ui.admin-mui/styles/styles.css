@@ -30,3 +30,7 @@ body, html {
   margin: 0;
   margin-top: 0.5em;
 }
+
+.simplebar-scrollbar:before {
+  background-color: #ffa000 !important;
+}

@@ -8,6 +8,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Box,
   Button,
+  CircularProgress,
   Collapse,
   Grid,
   IconButton, Paper, Stack, Tooltip, Typography,
@@ -24,6 +25,7 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import SimpleBar from 'simplebar-react';
 
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
@@ -39,6 +41,7 @@ import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
+import 'simplebar-react/dist/simplebar.min.css';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
   const { translate } = useTranslation();
@@ -263,7 +266,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   return (
     <>
       <DisabledAlert system='alias'/>
-      <Grid container sx={{ mb: 0.7 }} spacing={1} alignItems='center'>
+      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/alias/create/');
@@ -296,63 +299,69 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
       </Grid>
-      {groups.map((group, idx) => (<div key={group}>
-        <Paper sx={{
-          mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
-        }}>
-          <Stack direction="row" justifyContent="end" alignItems="center">
-            <Box sx={{ flex: 'auto' }}  onClick={() => handleSetGroupCollapse(group)}>
-              <IconButton onClick={() => handleSetGroupCollapse(group)}>
-                <ArrowRight sx={{ transition: 'all 500ms', transform: `rotateZ(${groupCollapse.includes(group) ? '90' : '0'}deg)` }}/>
-              </IconButton>
-              <Typography variant="overline" fontSize={20} fontWeight={'bold'}>
-                {group ? group : 'Ungrouped'}
-              </Typography>
-              <Typography variant="overline" fontSize={15} fontWeight={'bold'} pl={1} sx={{ color: theme.palette.primary.main }}>
-                {items.filter(o => o.group === group).length}
-                { search.length > 0 && <Typography component='span' variant="overline" fontSize={12} pl={0.4}>
-                  <DotDivider/> {filteredItems.filter(o => o.group === group).length}
-                </Typography>}
-              </Typography>
-            </Box>
-            <div>
-              {group && groupsSettings.length > 0 && <>
-                <Typography display={'inline-block'} color={!getGroupSettings(group).options.filter ? theme.palette.grey[600] : 'undefined'}>
-                  {!getGroupSettings(group).options.filter ? <FilterOffIcon/> : <FilterIcon/>}
-                  <Typography component={'span'} sx={{ display: 'inline-block', transform: 'translateY(-5px)' }}>
-                    {getGroupSettings(group).options.filter ? getGroupSettings(group).options.filter : 'No filters set'}
+
+      <SimpleBar style={{ maxHeight: 'calc(100vh - 65px - 61px)' }} autoHide={false}>
+        {loading
+          ? <CircularProgress color="inherit" sx={{
+            position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+          }} />
+          : groups.map((group, idx) => (<div key={group}>
+            <Paper sx={{
+              mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
+            }}>
+              <Stack direction="row" justifyContent="end" alignItems="center">
+                <Box sx={{ flex: 'auto' }}  onClick={() => handleSetGroupCollapse(group)}>
+                  <IconButton onClick={() => handleSetGroupCollapse(group)}>
+                    <ArrowRight sx={{ transition: 'all 500ms', transform: `rotateZ(${groupCollapse.includes(group) ? '90' : '0'}deg)` }}/>
+                  </IconButton>
+                  <Typography variant="overline" fontSize={20} fontWeight={'bold'}>
+                    {group ? group : 'Ungrouped'}
                   </Typography>
-                </Typography>
-                <Typography sx={{
-                  display: 'inline-block', transform: 'translateY(-5px)', ml: 2,
-                }} color={!getGroupSettings(group).options.permission ? theme.palette.error.dark : 'undefined'}>
-                  {getGroupSettings(group).options.permission === null ? '-- unset --' : getPermissionName(getGroupSettings(group).options.permission, permissions || [])}
-                </Typography>
-              </>}
-            </div>
-            {group && <IconButton sx={{ height: 'fit-content' }}>
-              <SettingsIcon/>
-            </IconButton>}
-          </Stack>
-          <Collapse in={groupCollapse.includes(group)}>
-            <DataGrid
-              sx={{
-                border: 0, backgroundColor: grey[900], mt: 2,
-              }}
-              autoHeight
-              onSelectionModelChange={(selectionModel) => handleSelectionChange(group, selectionModel)}
-              loading={loading}
-              rows={filteredItems.filter(o => o.group === group)}
-              columns={columns}
-              hideFooter
-              checkboxSelection
-              disableColumnFilter
-              disableColumnSelector
-              disableColumnMenu
-            />
-          </Collapse>
-        </Paper>
-      </div>))}
+                  <Typography variant="overline" fontSize={15} fontWeight={'bold'} pl={1} sx={{ color: theme.palette.primary.main }}>
+                    {items.filter(o => o.group === group).length}
+                    { search.length > 0 && <Typography component='span' variant="overline" fontSize={12} pl={0.4}>
+                      <DotDivider/> {filteredItems.filter(o => o.group === group).length}
+                    </Typography>}
+                  </Typography>
+                </Box>
+                <div>
+                  {group && groupsSettings.length > 0 && <>
+                    <Typography display={'inline-block'} color={!getGroupSettings(group).options.filter ? theme.palette.grey[600] : 'undefined'}>
+                      {!getGroupSettings(group).options.filter ? <FilterOffIcon/> : <FilterIcon/>}
+                      <Typography component={'span'} sx={{ display: 'inline-block', transform: 'translateY(-5px)' }}>
+                        {getGroupSettings(group).options.filter ? getGroupSettings(group).options.filter : 'No filters set'}
+                      </Typography>
+                    </Typography>
+                    <Typography sx={{
+                      display: 'inline-block', transform: 'translateY(-5px)', ml: 2,
+                    }} color={!getGroupSettings(group).options.permission ? theme.palette.error.dark : 'undefined'}>
+                      {getGroupSettings(group).options.permission === null ? '-- unset --' : getPermissionName(getGroupSettings(group).options.permission, permissions || [])}
+                    </Typography>
+                  </>}
+                </div>
+                {group && <IconButton sx={{ height: 'fit-content' }}>
+                  <SettingsIcon/>
+                </IconButton>}
+              </Stack>
+              <Collapse in={groupCollapse.includes(group)}>
+                <DataGrid
+                  sx={{
+                    border: 0, backgroundColor: grey[900], mt: 2,
+                  }}
+                  autoHeight
+                  onSelectionModelChange={(selectionModel) => handleSelectionChange(group, selectionModel)}
+                  rows={filteredItems.filter(o => o.group === group)}
+                  columns={columns}
+                  hideFooter
+                  checkboxSelection
+                  disableColumnFilter
+                  disableColumnSelector
+                  disableColumnMenu
+                />
+              </Collapse>
+            </Paper>
+          </div>))}
+      </SimpleBar>
       <AliasBulk/>
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
     </>
