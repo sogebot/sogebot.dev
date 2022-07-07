@@ -11,9 +11,11 @@ import { UserSimple } from '@/components/User/Simple';
 import sogebotLarge from '~/public/sogebot_large.png';
 import { isBotStarted } from '~/src/isBotStarted';
 import { setMessage, setServer } from '~/src/store/loaderSlice';
+import { useRouter } from 'next/router';
 
 export const ServerSelect: React.FC = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [open, setOpen] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
@@ -56,19 +58,28 @@ export const ServerSelect: React.FC = () => {
     setAutoConnecting(event.target.checked);
   };
 
-  useDidMount(() => {
-    const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
-    const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-    setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000'])));
-    setAutoConnecting(autoConnectLS);
+  React.useEffect(() => {
+    if (router.isReady) {
+      const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
+      const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+      setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000'])));
+      setAutoConnecting(autoConnectLS);
 
-    if (localStorage.server && !connecting) {
-      setServerInputValue(localStorage.server);
-      if (autoConnectLS) {
-        handleConnect(localStorage.server);
+      // autoconnect by server get paramater
+      if (router.query.server) {
+        setServerInputValue(router.query.server as string);
+        handleConnect(router.query.server as string);
+        return;
+      }
+
+      if (localStorage.server && !connecting) {
+        setServerInputValue(localStorage.server);
+        if (autoConnectLS) {
+          handleConnect(localStorage.server);
+        }
       }
     }
-  });
+  }, [router.isReady]);
 
   const getUser = () => {
     try {
