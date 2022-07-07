@@ -7,10 +7,12 @@ export const DialogDelete: React.FC<{
   onDelete: () => void,
   setOpen: React.Dispatch<React.SetStateAction<boolean>>,
   open: boolean,
+  isBulkOperation?: boolean,
 }> = ({
   onDelete,
   setOpen,
   open,
+  isBulkOperation,
 }) => {
   return (<Dialog
     sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
@@ -18,7 +20,10 @@ export const DialogDelete: React.FC<{
     open={open}
   >
     <DialogContent dividers>
-      <Typography>Do you want to delete this item?</Typography>
+      {isBulkOperation
+        ? <Typography>Do you want to delete these selected items in bulk operation?</Typography>
+        : <Typography>Do you want to delete this item?</Typography>
+      }
     </DialogContent>
     <DialogActions>
       <Button autoFocus fullWidth onClick={() => setOpen(false)}>Cancel</Button>

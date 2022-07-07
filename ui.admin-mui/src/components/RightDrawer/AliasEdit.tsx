@@ -129,10 +129,8 @@ export const AliasEdit: React.FC<{
     sx={{
       flexShrink:           0,
       '& .MuiDrawer-paper': {
-        padding:       '10px',
-        paddingBottom: 0,
-        width:         500,
-        boxSizing:     'border-box',
+        width:     500,
+        boxSizing: 'border-box',
       },
     }}
   >
@@ -146,7 +144,11 @@ export const AliasEdit: React.FC<{
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       <Container disableGutters sx={{
-        height: '100%', maxHeight: '100%', overflow: 'auto',
+        height: '100%',
+        maxHeight: '100%',
+        overflow: 'auto',
+        px: 1,
+        py: 0,
       }}>
         <Box
           component="form"
@@ -259,12 +261,12 @@ export const AliasEdit: React.FC<{
       </Container>
     </Fade>
     <Divider/>
-    <Box sx={{ height: '50px', p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid item alignSelf={'end'}>
+    <Box sx={{ height: '65px', p: 1 }}>
+      <Grid container sx={{ height: '100%' }} justifyContent={'end'}spacing={1}>
+        <Grid item>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
-        <Grid item alignSelf={'center'}>
+        <Grid item>
           {!successButton && !errorButton && <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>}
           {successButton && <Button variant='contained' color='success' sx={{ width: 150 }} startIcon={<ThumbUpSharp/>}>Saved</Button>}
           {errorButton && <Button variant='contained' color='error' sx={{ width: 150 }} startIcon={<Error/>}>Error!</Button>}

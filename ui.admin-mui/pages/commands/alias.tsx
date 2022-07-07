@@ -1,5 +1,5 @@
 import {
-  ArrowRight, CheckBoxTwoTone, DeleteTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+  ArrowRight, CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import FilterIcon from '@mui/icons-material/FilterAlt';
@@ -38,6 +38,7 @@ import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
+import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
   const { translate } = useTranslation();
@@ -216,6 +217,48 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     }
   }, [ groupCollapse ]);
 
+  const bulkToggleAttribute = useCallback(async (attribute: 'visible' | 'enabled', value: boolean) => {
+    for (const selected of selectedItems) {
+      const item = items.find(o => o.id === selected);
+      if (item && item[attribute] !== value) {
+        await new Promise<void>((resolve) => {
+          item[attribute] = value;
+          getSocket('/systems/alias').emit('generic::save', item, () => {
+            resolve();
+          });
+        });
+      }
+    }
+    setItems(items.map(item => {
+      if (selectedItems.includes(item.id)) {
+        item[attribute] = value;
+      }
+      return item;
+    }));
+
+    if (attribute === 'visible') {
+      enqueueSnackbar(`Bulk operation set visibility ${value ? 'on' : 'off'}.`, { variant: 'success' });
+    } else if (attribute === 'enabled') {
+      enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
+    }
+  }, [ selectedItems ]);
+
+  const bulkDelete =  useCallback(async () => {
+    for (const selected of selectedItems) {
+      const item = items.find(o => o.id === selected);
+      if (item) {
+        await new Promise<void>((resolve) => {
+          getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
+            resolve();
+          });
+        });
+      }
+    }
+    setItems(items.filter(item => !selectedItems.includes(item.id)));
+    enqueueSnackbar(`Bulk operation deleted items.`, { variant: 'success' });
+    setSelectedItems({});
+  }, [ selectedItems ]);
+
   return (
     <>
       <DisabledAlert system='alias'/>
@@ -227,35 +270,33 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip title="Set visibility on">
-            <span><Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><VisibilityTwoTone/></Button></span>
+            <span><Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button></span>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip title="Set visibility off">
-            <span><Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><VisibilityOffTwoTone/></Button></span>
+            <span><Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button></span>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip title="Enable">
-            <span><Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><CheckBoxTwoTone/></Button></span>
+            <span><Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button></span>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip title="Disable">
-            <span><Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }}><DisabledByDefaultTwoTone/></Button></span>
+            <span><Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button></span>
           </Tooltip>
         </Grid>
         <Grid item>
-          <Tooltip title="Delete">
-            <span><Button disabled={bulkCount === 0} variant="contained" color   ="error" sx={{ minWidth: '36px', width: '36px' }}><DeleteTwoTone/></Button></span>
-          </Tooltip>
+          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
         </Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
       </Grid>
       {groups.map((group, idx) => (<div key={group}>
-        <Paper sx={{  
+        <Paper sx={{
           mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
         }}>
           <Stack direction="row" justifyContent="end" alignItems="center">
