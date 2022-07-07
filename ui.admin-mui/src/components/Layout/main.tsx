@@ -48,9 +48,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       console.group('isUserLoggedIn::bot::validation');
       console.debug(JSON.stringify({ validation, headers }));
       console.groupEnd();
-      localStorage.accessToken = validation.data.accessToken;
-      localStorage.refreshToken = validation.data.refreshToken;
-      localStorage.userType = validation.data.userType;
+      localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
+      localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
+      localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
       resolve();
     }).catch(e => {
       dispatch(setMessage('You don\'t have access to this server.'));

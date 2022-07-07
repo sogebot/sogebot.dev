@@ -5,7 +5,7 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
 
   // check if we have auth code
   const user = JSON.parse(localStorage.getItem('cached-logged-user') || 'null');
-  const accessToken = localStorage.getItem('accessToken') || '';
+  const accessToken = localStorage[`${localStorage.currentServer}::accessToken`] || '';
   if (accessToken.trim().length === 0 || !user) {
     if (mustBeLogged) {
       console.log('Redirecting, user is not authenticated');

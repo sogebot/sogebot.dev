@@ -3,15 +3,14 @@ import {
   Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, Stack, Switch, TextField,
 } from '@mui/material';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useDidMount } from 'rooks';
 
 import { UserSimple } from '@/components/User/Simple';
 import sogebotLarge from '~/public/sogebot_large.png';
 import { isBotStarted } from '~/src/isBotStarted';
 import { setMessage, setServer } from '~/src/store/loaderSlice';
-import { useRouter } from 'next/router';
 
 export const ServerSelect: React.FC = () => {
   const dispatch = useDispatch();
@@ -38,7 +37,7 @@ export const ServerSelect: React.FC = () => {
     }
   }, [serverInputValue, isValidHttps]);
 
-  function handleConnect (server: string) {
+  const handleConnect = useCallback((server: string) => {
     if (server) {
       setConnecting(true);
       dispatch(setMessage('Connecting to server.'));
@@ -48,11 +47,12 @@ export const ServerSelect: React.FC = () => {
         // set autoconnect after successful load
         const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
         const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+        localStorage.currentServer = server;
         localStorage.serverAutoConnect = JSON.stringify(autoConnectLS || autoConnect);
         localStorage.serverHistory = JSON.stringify(Array.from(new Set([server, ...serverHistoryLS, 'http://localhost:20000'])));
       });
     }
-  }
+  }, [dispatch, autoConnect]);
 
   const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAutoConnecting(event.target.checked);
@@ -79,7 +79,7 @@ export const ServerSelect: React.FC = () => {
         }
       }
     }
-  }, [router.isReady]);
+  }, [router.isReady, connecting, handleConnect, router.query.server]);
 
   const getUser = () => {
     try {

@@ -30,15 +30,15 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
       type:         'getSocket',
       namespace,
       continueOnUnauthorized,
-      accessToken:  localStorage.accessToken,
-      refreshToken: localStorage.refreshToken,
+      accessToken:  localStorage[`${localStorage.currentServer}::accessToken`],
+      refreshToken: localStorage[`${localStorage.currentServer}::refreshToken`],
     });
   }
 
   const socket = io(sessionStorage.wsUrl + (namespace as string), {
     transports: [ 'websocket' ],
     auth:       (cb: (data: { token: string | null}) => void) => {
-      cb({ token: localStorage.getItem('accessToken') });
+      cb({ token: localStorage.getItem(`${localStorage.currentServer}::accessToken`) });
     },
   }) as Socket;
 
@@ -70,20 +70,20 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
           console.group('socket::validation');
           console.debug({ validation, refreshToken });
           console.groupEnd();
-          localStorage.accessToken = validation.data.accessToken;
-          localStorage.refreshToken = validation.data.refreshToken;
-          localStorage.userType = validation.data.userType;
+          localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
+          localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
+          localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
           // reconnect
           socket.disconnect();
           console.debug('Reconnecting with new token');
           socket.connect();
         }).catch((e) => {
           console.error(e);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
+          localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
+          localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
           localStorage.removeItem('code');
           localStorage.removeItem('clientId');
-          localStorage.userType = 'unauthorized';
+          localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';
           if (continueOnUnauthorized) {
             location.reload();
           } else {
@@ -100,7 +100,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
       } else {
         localStorage.userType = 'unauthorized';
         if (error.message.includes('malformed')) {
-          localStorage.accessToken = '';
+          localStorage[`${localStorage.currentServer}::accessToken`] = '';
           location.reload();
         }
       }
@@ -109,11 +109,11 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
   socket.on('forceDisconnect', () => {
     if (localStorage.getItem('userType') === 'viewer' || localStorage.getItem('userType') === 'admin') {
       console.debug('Forced disconnection from bot socket.');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
+      localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
       localStorage.removeItem('code');
       localStorage.removeItem('clientId');
-      localStorage.userType = 'unauthorized';
+      localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';
       if (continueOnUnauthorized) {
         location.reload();
       } else {

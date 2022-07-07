@@ -13,16 +13,16 @@ const refreshToken = debounce(async () => {
     console.group('check-token-validity::refreshToken');
     console.debug('refreshToken', { refreshToken: token, validation });
     console.groupEnd();
-    localStorage.accessToken = validation.data.accessToken;
-    localStorage.refreshToken = validation.data.refreshToken;
-    localStorage.userType = validation.data.userType;
+    localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
+    localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
+    localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
   } catch (e) {
     console.error(e);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
+    localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
     localStorage.removeItem('code');
     localStorage.removeItem('clientId');
-    localStorage.userType = 'unauthorized';
+    localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';
     redirectLogin();
   }
 }, 30000, { leading: true });
@@ -37,9 +37,9 @@ const redirectLogin = () => {
 
 export default function () {
   setInterval(() => {
-    if (localStorage.accessToken) {
+    if (localStorage[`${localStorage.currentServer}::accessToken`]) {
       // we just need to check if token is expired
-      const { exp } = jwt_decode<{exp: number}>(localStorage.accessToken);
+      const { exp } = jwt_decode<{exp: number}>(localStorage[`${localStorage.currentServer}::accessToken`]);
       const expirationTime = (exp * 1000) - 60000;
       if (Date.now() >= expirationTime) {
         refreshToken();

@@ -17,13 +17,13 @@ const Login: NextPage = () => {
 
       console.group('oauth::onMounted');
       console.debug(JSON.stringify({
-        url, code, state, gotoAfterLogin, 
+        url, code, state, gotoAfterLogin,
       }));
       console.groupEnd();
 
       // set it as new authorization
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
+      localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
 
       if (!code) {
         throw new Error('Missing code!');
