@@ -51,8 +51,9 @@ export const ServerSelect: React.FC = () => {
         localStorage.currentServer = server;
         localStorage.serverAutoConnect = JSON.stringify(autoConnectLS || autoConnect);
         localStorage.serverHistory = JSON.stringify(Array.from(new Set([server, ...serverHistoryLS, 'http://localhost:20000'])));
-        if (Object.keys(router.query).length > 0) {
-          router.replace(router.asPath, { query: {} }); // get rid of GET params
+        if (router.query.server) {
+          delete router.query.server;
+          router.replace(router.asPath, { query: router.query }); // get rid of GET params
         }
       });
     }
