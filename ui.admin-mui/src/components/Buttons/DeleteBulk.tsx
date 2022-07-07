@@ -19,8 +19,8 @@ export const ButtonsDeleteBulk: React.FC<{
 
   return (
     <>
-      <Tooltip title="Delete">
-        <span><Button onClick={handleClick} disabled={disabled} variant="contained" color="error" sx={{ minWidth: '36px', width: '36px' }}><DeleteTwoTone/></Button></span>
+      <Tooltip arrow title="Delete">
+        <Button onClick={handleClick} disabled={disabled} variant="contained" color="error" sx={{ minWidth: '36px', width: '36px' }}><DeleteTwoTone/></Button>
       </Tooltip>
       <DialogDelete open={open} setOpen={setOpen} onDelete={onDelete} isBulkOperation={true}/>
     </>
