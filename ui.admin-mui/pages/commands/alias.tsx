@@ -106,8 +106,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [ enqueueSnackbar ]);
 
   useEffect(() => {
-    refresh();
-    setLoading(false);
+    refresh().then(() => setLoading(false));
   }, [router]);
 
   const refresh = async () => {
@@ -300,12 +299,12 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
-      <SimpleBar style={{ maxHeight: 'calc(100vh - 65px - 61px)' }} autoHide={false}>
-        {loading
-          ? <CircularProgress color="inherit" sx={{
-            position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-          }} />
-          : groups.map((group, idx) => (<div key={group}>
+      {loading
+        ? <CircularProgress color="inherit" sx={{
+          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+        }} />
+        : <SimpleBar style={{ maxHeight: 'calc(100vh - 65px - 61px)' }} autoHide={false}>
+          {groups.map((group, idx) => (<div key={group}>
             <Paper sx={{
               mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
             }}>
@@ -361,7 +360,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
               </Collapse>
             </Paper>
           </div>))}
-      </SimpleBar>
+        </SimpleBar>}
       <AliasBulk/>
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
     </>
