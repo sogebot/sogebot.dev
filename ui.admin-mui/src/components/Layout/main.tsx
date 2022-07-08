@@ -16,11 +16,11 @@ import { Search } from '~/src/components/AppBar/Search';
 import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getListOf, populateListOf } from '~/src/helpers/getListOf';
 import { isUserLoggedIn } from '~/src/helpers/isUserLoggedIn';
-import { getConfiguration } from '~/src/helpers/socket';
+import { getConfiguration, getSocket } from '~/src/helpers/socket';
 
 import checkTokenValidity from '../../helpers/check-token-validity';
 import {
-  setConfiguration, setMessage, setState, setSystem,
+  setConfiguration, setMessage, setState, setSystem, setTranslation,
 } from '../../store/loaderSlice';
 import { setUser } from '../../store/userSlice';
 import { DashboardStats } from '../Dashboard/Stats';
@@ -72,6 +72,15 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 
   const configuration = await getConfiguration();
   dispatch(setConfiguration(configuration));
+
+  // translations hydration
+  await new Promise<void>(resolve => {
+    getSocket('/', true).emit('translations', (translations) => {
+      dispatch(setTranslation(translations));
+      resolve();
+    });
+  });
+
   setLocale(configuration.lang as string);
 
   await populateListOf('core');
