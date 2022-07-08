@@ -6,7 +6,7 @@ import { setPermissions } from '~/src/store/pageSlice';
 
 export const usePermissions = () => {
   const dispatch = useDispatch();
-  const { permissions } = useSelector<any, { permissions: PermissionsInterface[] | null } >(state => state.page);
+  const { permissions } = useSelector<any, { permissions: Required<PermissionsInterface>[] } >(state => state.page);
 
   const refresh = React.useCallback(() => {
     getSocket('/core/permissions').emit('generic::getAll', (err, res) => {

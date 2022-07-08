@@ -9,7 +9,7 @@ export const pageSlice = createSlice({
 
     averageStats: {},
     isStreamOnline: false,
-    permissions: null,
+    permissions: [],
 
     widgets: {
       events: {

@@ -147,7 +147,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
             <Fade in={!isIndexPage}>
               <Box sx={{
-                maxHeight: 'calc(100vh - 65px)', padding: '0.3em', overflow: 'auto',
+                maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
               }}>
                 {props.children}
               </Box>

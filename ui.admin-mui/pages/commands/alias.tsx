@@ -1,3 +1,5 @@
+import { nextTick } from 'process';
+
 import {
   ArrowRight, CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
@@ -30,6 +32,8 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
+import { ButtonsPermissionsBulk } from '~/src/components/Buttons/PermissionsBulk';
 import { DotDivider } from '~/src/components/Dashboard/Widget/Bot/Events';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
@@ -41,6 +45,7 @@ import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
+
 import 'simplebar-react/dist/simplebar.min.css';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
@@ -50,13 +55,16 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Alias[]>([]);
-  const [ groups, setGroups ] = useState<string[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { search, bulkCount } = useSelector((state: any) => state.appbar);
   const { permissions } = usePermissions();
-  const [ selectedItemsObject, setSelectedItems ] = useState<{ [x: string]: GridRowId[]}>({});
+  const [ selectedItemsObject, setSelectedItems ] = useState<{ [x: string]: GridRowId[]}>({ });
   const [ groupCollapse, setGroupCollapse ] = useState<(string | null)[]>([null]);
+
+  const groups = useMemo(() => {
+    return Array.from(new Set(items.map(o => o.group)));
+  }, [items]);
 
   const columns: (GridColDef | GridActionsColDef)[] = [
     {
@@ -118,7 +126,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             return console.error(err);
           }
           setItems(res);
-          setGroups(Array.from(new Set(res.map(o => o.group))));
           resolve();
         });
       }),
@@ -135,9 +142,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     ]);
   };
 
-  const handleSelectionChange = (group: string | null, selectionModel: GridSelectionModel) => {
+  const handleSelectionChange = useCallback((group: string | null, selectionModel: GridSelectionModel) => {
     setSelectedItems({ ...selectedItemsObject, [`__%%${group}%%__`]: selectionModel });
-  };
+  }, [selectedItemsObject]);
 
   const selectedItems = useMemo(() => {
     return Object.values(selectedItemsObject).flat();
@@ -219,7 +226,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     }
   }, [ groupCollapse ]);
 
-  const bulkToggleAttribute = useCallback(async (attribute: 'visible' | 'enabled', value: boolean) => {
+  const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
     for (const selected of selectedItems) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
@@ -232,7 +239,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       }
     }
 
-    setItems(i => i.map(item => {
+    setItems(i => i.map((item) => {
       if (selectedItems.includes(item.id)) {
         item[attribute] = value;
       }
@@ -243,8 +250,20 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       enqueueSnackbar(`Bulk operation set visibility ${value ? 'on' : 'off'}.`, { variant: 'success' });
     } else if (attribute === 'enabled') {
       enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
+    } else if (attribute === 'permission') {
+      enqueueSnackbar(`Bulk operation set permission to ${permissions.find(o => o.id === value)?.name}.`, { variant: 'success' });
+    } else if (attribute === 'group') {
+      // we need next tick as it doesn't reselect without it
+      nextTick(() => setSelectedItems({ [`__%%${value}%%__`]: selectedItems }));
+      if (value) {
+        enqueueSnackbar(`Bulk operation set group to ${value}.`, { variant: 'success' });
+      } else {
+        enqueueSnackbar(`Bulk operation removed group.`, { variant: 'success' });
+      }
     }
-  }, [ selectedItems, enqueueSnackbar, items ]);
+
+    refresh();
+  }, [ selectedItems, enqueueSnackbar, items, permissions ]);
 
   const bulkDelete =  useCallback(async () => {
     for (const selected of selectedItems) {
@@ -292,6 +311,12 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           </Tooltip>
         </Grid>
         <Grid item>
+          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+        </Grid>
+        <Grid item>
+          <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
+        </Grid>
+        <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
         </Grid>
         <Grid item>
@@ -303,7 +328,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <SimpleBar style={{ maxHeight: 'calc(100vh - 65px - 61px)' }} autoHide={false}>
+        : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
           {groups.map((group, idx) => (<div key={group}>
             <Paper sx={{
               mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
@@ -348,6 +373,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
                     border: 0, backgroundColor: grey[900], mt: 2,
                   }}
                   autoHeight
+                  selectionModel={selectedItemsObject[`__%%${group}%%__`]}
                   onSelectionModelChange={(selectionModel) => handleSelectionChange(group, selectionModel)}
                   rows={filteredItems.filter(o => o.group === group)}
                   columns={columns}
