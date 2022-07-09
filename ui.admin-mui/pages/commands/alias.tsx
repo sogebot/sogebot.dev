@@ -109,6 +109,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const deleteItem = useCallback((item: Alias) => {
     getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
       enqueueSnackbar(`Alias ${item.alias} deleted successfully.`, { variant: 'success' });
+      refresh();
     });
   }, [ enqueueSnackbar ]);
 
