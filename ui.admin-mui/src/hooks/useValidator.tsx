@@ -44,7 +44,7 @@ export const useValidator = () => {
         }
 
         if (constraint.length === 0) {
-          _errors[error.property].push(capitalize(translate(`errors.${type}`).replace('$property', error.property)));
+          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', error.property)));
         } else {
           _errors[error.property].push(capitalize(`${constraint}`));
         }
