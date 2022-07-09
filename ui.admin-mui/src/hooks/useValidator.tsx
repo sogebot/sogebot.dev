@@ -61,7 +61,7 @@ export const useValidator = () => {
       }
       for (const [type, constraint] of Object.entries(error.constraints)) {
         if (constraint.length === 0) {
-          _errors.push(capitalize(translate(`errors.${type}`).replace('$property', error.property)));
+          _errors.push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', error.property)));
         } else {
           _errors.push(capitalize(`${constraint}`));
         }
