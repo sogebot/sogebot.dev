@@ -75,9 +75,9 @@ export const AliasEdit: React.FC<{
   useEffect(() => {
     if (!loading && editDialog) {
       getSocket('/systems/alias').emit('generic::validate', aliasDebounced, (err) => {
+        setErrors(err);
         if (err) {
-          setErrors(err);
-          return console.error(err);
+          console.error(err);
         }
       });
     }
@@ -99,8 +99,8 @@ export const AliasEdit: React.FC<{
   const handleSave = () => {
     setSaving(true);
     getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
+      setErrors(err);
       if (err) {
-        setErrors(err);
         validate();
         console.error(err);
       } else {
