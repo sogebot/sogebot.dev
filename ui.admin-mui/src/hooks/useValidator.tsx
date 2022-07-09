@@ -1,9 +1,10 @@
 import { Stack, Typography } from '@mui/material';
 import { ValidationError } from 'class-validator';
+import { isEqual } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import {
-  createElement, useCallback, useMemo, useReducer, useState,
+  createElement, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -23,6 +24,13 @@ export const useValidator = () => {
       return err;
     }
   }, []);
+
+  useEffect(() => {
+    const filteredErrors = errors.filter(o => dirty.includes(o.property));
+    if (!isEqual(filteredErrors, errors)) {
+      setErrors(filteredErrors);
+    }
+  }, [ errors, dirty ])
 
   const errorsPerAttribute = useMemo(() => {
     const _errors: { [field:string]: string[] } = {};
