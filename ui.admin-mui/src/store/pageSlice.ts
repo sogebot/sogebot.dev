@@ -5,8 +5,6 @@ import { PermissionsInterface } from '@sogebot/backend/src/database/entity/permi
 export const pageSlice = createSlice({
   name: 'page',
   initialState: {
-    editDialog: false,
-
     averageStats: {},
     isStreamOnline: false,
     permissions: [],
@@ -42,9 +40,6 @@ export const pageSlice = createSlice({
     setWidgetsEvents: (state: any, action: { payload: any }) => {
       state.widgets.events = action.payload;
     },
-    showEditDialog: (state: any, action: { payload: boolean }) => {
-      state.editDialog = action.payload;
-    },
     setStreamOnline: (state: any, action: { payload: boolean }) => {
       state.isStreamOnline = action.payload;
     },
@@ -58,5 +53,5 @@ export const pageSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { showEditDialog, setPermissions, setAverageStats, setStreamOnline, setWidgetsEvents } = pageSlice.actions
+export const { setPermissions, setAverageStats, setStreamOnline, setWidgetsEvents } = pageSlice.actions
 export default pageSlice.reducer

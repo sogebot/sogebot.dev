@@ -37,15 +37,14 @@ import { ButtonsPermissionsBulk } from '~/src/components/Buttons/PermissionsBulk
 import { DotDivider } from '~/src/components/Dashboard/Widget/Bot/Events';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
-import { AliasBulk } from '~/src/components/RightDrawer/AliasBulk';
 import { AliasEdit } from '~/src/components/RightDrawer/AliasEdit';
+import { AliasGroupEdit } from '~/src/components/RightDrawer/AliasGroupEdit';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import theme from '~/src/theme';
-
 import 'simplebar-react/dist/simplebar.min.css';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
@@ -363,7 +362,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
                     </Typography>
                   </>}
                 </div>
-                {group && <IconButton sx={{ height: 'fit-content' }}>
+                {group && <IconButton sx={{ height: 'fit-content', marginLeft: 2 }} onClick={() => router.push(`/commands/alias/group/edit/${getGroupSettings(group).name}`)}>
                   <SettingsIcon/>
                 </IconButton>}
               </Stack>
@@ -387,8 +386,8 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             </Paper>
           </div>))}
         </SimpleBar>}
-      <AliasBulk/>
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
+      <AliasGroupEdit onSave={() => refresh()}/>
     </>
   );
 };
