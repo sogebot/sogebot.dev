@@ -15,10 +15,12 @@ export const useValidator = () => {
   const [ dirty, setDirty ] = useState<string[]>([]);
   const [ errors, setErrors ] = useReducer((_state: ValidationError[], err: string | ValidationError[] | Error | null) => {
     if (typeof err === 'string' || err instanceof Error || err === null) {
-      console.error(err)
+      if (err !== null) {
+        console.error(err);
+      }
       return [];
     } else {
-      return err
+      return err;
     }
   }, []);
 
