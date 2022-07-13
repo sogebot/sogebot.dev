@@ -21,17 +21,23 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   const [ isSaving, setIsSaving ] = React.useState(false);
   const [ hover, setHover ] = React.useState('');
 
+  const [ isOpened, setIsOpened ] = React.useState(false);
+
+
   const [ lastValidGame, setLastValidGame ] = React.useState(props.game);
 
   const classes = useStyles();
 
   React.useEffect(() => {
-    if (props.open) {
+    if (props.open && isOpened) {
       setInputValue(props.game);
       setLastValidGame(props.game);
       setTitleInputValue(props.title);
+      setIsOpened(true);
+    } else {
+      setIsOpened(false);
     }
-  }, [props]);
+  }, [props, isOpened]);
 
   const lastGames = React.useMemo(() => {
     const gameList = [] as string[];
