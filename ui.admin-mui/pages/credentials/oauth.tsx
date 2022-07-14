@@ -22,8 +22,11 @@ const Login: NextPage = () => {
       console.groupEnd();
 
       // set it as new authorization
-      localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
-      localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
+      for (const key of Object.keys(localStorage)) {
+        if (key.includes('::accessToken') || key.includes('::refreshToken')) {
+          localStorage.removeItem(key);
+        }
+      }
 
       if (!code) {
         throw new Error('Missing code!');
@@ -50,6 +53,9 @@ const Login: NextPage = () => {
         localStorage.removeItem('userId');
         throw new Error('User must be logged');
       }
+      console.group('isUserLoggedIn::twitch::cached-logged-user');
+      console.debug(JSON.stringify(data));
+      console.groupEnd();
       localStorage['cached-logged-user'] = JSON.stringify(data);
 
       window.location.assign(`${gotoAfterLogin || state.referrer || state.url}`);

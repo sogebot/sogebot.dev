@@ -107,6 +107,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     }
   });
   socket.on('forceDisconnect', () => {
+    debugger;
     if (localStorage.getItem('userType') === 'viewer' || localStorage.getItem('userType') === 'admin') {
       console.debug('Forced disconnection from bot socket.');
       localStorage.removeItem(`${localStorage.currentServer}::accessToken`);

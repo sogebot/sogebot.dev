@@ -21,6 +21,7 @@ export const UserMenu: React.FC = () => {
   const { user } = useSelector((state: any) => state.user);
   const { configuration } = useSelector((state: any) => state.loader);
   const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
+  const [ logged, setLogged ] = React.useState(false);
 
   const viewerIs = (data: any) => {
     const status: string[] = [];
@@ -62,8 +63,9 @@ export const UserMenu: React.FC = () => {
         return console.error(err);
       }
       if (recvViewer) {
-        if (!viewer) {
+        if (!logged) {
           console.log('Logged in as', recvViewer);
+          setLogged(true);
         }
         setViewer(recvViewer);
       } else {
@@ -71,10 +73,12 @@ export const UserMenu: React.FC = () => {
         setViewer(null);
       }
     });
-  }, [user, viewer]);
+  }, [user, logged]);
 
-  useEffect(refresh, [ refresh ]);
-  useIntervalWhen(refresh, 60000, true, true);
+  useEffect(() => {
+    refresh()
+  }, [ refresh ]);
+  useIntervalWhen(() => refresh(), 60000, true, true);
 
   return (
     <>

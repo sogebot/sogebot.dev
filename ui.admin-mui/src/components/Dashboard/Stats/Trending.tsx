@@ -1,8 +1,8 @@
 import {
-  AllInclusive, TrendingDown, TrendingUp, 
+  AllInclusive, TrendingDown, TrendingUp,
 } from '@mui/icons-material';
 import {
-  Box, Stack, Typography, 
+  Box, Stack, Typography,
 } from '@mui/material';
 import parse from 'html-react-parser';
 import * as React from 'react';
@@ -75,7 +75,7 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
   }, [props, configuration]);
 
   return (
-    <Box sx={{
+    <Box component="span" sx={{
       color:      isTrending ? 'green' : 'red',
       display:    'inline-block',
       position:   'relative',

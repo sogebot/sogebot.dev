@@ -26,7 +26,7 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
       if (mustBeAdmin) {
         await new Promise<void>((resolve, reject) => {
           const check = () => {
-            const userType = localStorage.getItem('userType');
+            const userType = localStorage.getItem(`${localStorage.currentServer}::userType`);
             if (!userType) {
               setTimeout(() => check(), 100);
             }

@@ -70,7 +70,7 @@ export const ServerSelect: React.FC = () => {
       setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000'])));
       setAutoConnecting(autoConnectLS);
 
-      // autoconnect by server get paramater
+      // autoconnect by server get parameter
       const queryServer = router.query.server as string;
       if (queryServer) {
         setServerInputValue(queryServer);
@@ -125,13 +125,12 @@ export const ServerSelect: React.FC = () => {
     <DialogContent>
       <FormGroup>
         <Autocomplete
+          selectOnFocus
           fullWidth
-          disablePortal
+          handleHomeEndKeys
           options={serverHistory}
+          filterOptions={(x) => x}
           value={serverInputValue}
-          onChange={(event: any, newValue: string | null) => {
-            setServerInputValue(newValue ?? serverInputValue);
-          }}
           inputValue={serverInputValue}
           onInputChange={(event, newInputValue) => {
             setServerInputValue(newInputValue);

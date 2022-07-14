@@ -1,5 +1,6 @@
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
-import { setConnectedToServer, setMessage } from './store/loaderSlice'
+
+import { setConnectedToServer, setMessage } from './store/loaderSlice';
 
 function isBotStarted(dispatch: Dispatch<AnyAction>, server: string) {
   return new Promise(resolve => {
@@ -13,10 +14,10 @@ function isBotStarted(dispatch: Dispatch<AnyAction>, server: string) {
           }
           return response.blob();
         }).then(() => {
-            console.log('Bot is started, continue');
-            dispatch(setConnectedToServer())
-            localStorage.server = server;
-            resolve(true);
+          console.log('Bot is started, continue');
+          dispatch(setConnectedToServer());
+          localStorage.server = server;
+          resolve(true);
         }).catch(() => {
           dispatch(setMessage('Cannot connect to bot.'));
         });

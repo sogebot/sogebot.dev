@@ -16,7 +16,7 @@ function castObject (key: string, value: string | { [x: string]: any }) {
 
 export const useTranslation = () => {
   const dispatch = useDispatch();
-  const { translation } = useSelector<any, { translation: Record<string, any> } >(state => state.loader);
+  const { translation, state } = useSelector<any, { translation: Record<string, any>, state: boolean } >(s => s.loader);
 
   const refresh = React.useCallback(() => {
     getSocket('/', true).emit('translations', (translations) => {
@@ -25,8 +25,10 @@ export const useTranslation = () => {
   }, [ dispatch ]);
 
   React.useEffect(() => {
-    refresh();
-  }, [ refresh ]);
+    if (state) {
+      refresh();
+    }
+  }, [ refresh, state ]);
 
   const translate = React.useCallback((key: string) => {
     return isNil(at(translation, key)[0])
