@@ -76,7 +76,7 @@ export const UserMenu: React.FC = () => {
   }, [user, logged]);
 
   useEffect(() => {
-    refresh()
+    refresh();
   }, [ refresh ]);
   useIntervalWhen(() => refresh(), 60000, true, true);
 

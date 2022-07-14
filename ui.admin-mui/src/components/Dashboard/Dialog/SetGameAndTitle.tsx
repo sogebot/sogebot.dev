@@ -23,7 +23,6 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
 
   const [ isOpened, setIsOpened ] = React.useState(false);
 
-
   const [ lastValidGame, setLastValidGame ] = React.useState(props.game);
 
   const classes = useStyles();
