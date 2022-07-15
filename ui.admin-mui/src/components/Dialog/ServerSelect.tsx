@@ -68,7 +68,6 @@ export const ServerSelect: React.FC = () => {
   }, [dispatch, autoConnect, router]);
 
   const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.checked)
     setAutoConnecting(event.target.checked);
   };
 

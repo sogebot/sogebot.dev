@@ -8,6 +8,7 @@ import FilterIcon from '@mui/icons-material/FilterAlt';
 import FilterOffIcon from '@mui/icons-material/FilterAltOff';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -329,6 +330,13 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
         : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+          {groups.length === 0 && <Alert severity="info" variant="outlined" sx={{
+            margin:    'auto',
+            width:     '50%',
+            marginTop: '3rem',
+          }} >
+            No aliases found, please add them with create new alias button.
+          </Alert>}
           {groups.map((group, idx) => (<div key={group}>
             <Paper sx={{
               mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
