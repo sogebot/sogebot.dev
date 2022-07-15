@@ -13,6 +13,9 @@ import { isBotStarted } from '~/src/isBotStarted';
 import { setMessage, setServer } from '~/src/store/loaderSlice';
 
 const checkURLValidity = (serverURL: string) => {
+  if (serverURL === '-- demo bot for demonstration purpose only --') {
+    return true;
+  }
   try {
     const url = new URL(serverURL);
     return url.hostname === 'localhost' || url.protocol === 'https:';
@@ -36,6 +39,7 @@ export const ServerSelect: React.FC = () => {
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
     setIsValidHttps(checkURLValidity(serverInputValue));
+    localStorage.server = serverInputValue;
   }, [serverInputValue, isValidHttps]);
 
   const handleConnect = useCallback((server: string) => {
@@ -43,6 +47,10 @@ export const ServerSelect: React.FC = () => {
       setConnecting(true);
       dispatch(setMessage('Connecting to server.'));
       console.log(`Connecting to ${server}`);
+
+      if (server === '-- demo bot for demonstration purpose only --') {
+        server = 'https://demobot.sogebot.xyz';
+      }
       dispatch(setServer(server));
       isBotStarted(dispatch, server).then(() => {
         // set autoconnect after successful load
@@ -60,16 +68,19 @@ export const ServerSelect: React.FC = () => {
   }, [dispatch, autoConnect, router]);
 
   const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.checked)
     setAutoConnecting(event.target.checked);
   };
 
   React.useEffect(() => {
-    if (router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
-      const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
-      const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-      setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000'])));
-      setAutoConnecting(autoConnectLS);
+    const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
+    const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+    setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])));
+    setAutoConnecting(autoConnectLS);
+  }, []);
 
+  React.useEffect(() => {
+    if (router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
       // autoconnect by server get parameter
       const queryServer = router.query.server as string;
       if (queryServer) {
@@ -82,7 +93,7 @@ export const ServerSelect: React.FC = () => {
 
       if (localStorage.server) {
         setServerInputValue(localStorage.server);
-        if (autoConnectLS) {
+        if (JSON.parse(localStorage.serverAutoConnect ?? 'false')) {
           handleConnect(localStorage.server);
         }
       }
