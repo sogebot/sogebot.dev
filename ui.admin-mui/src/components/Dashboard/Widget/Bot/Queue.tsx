@@ -13,6 +13,9 @@ import { useDidMount, usePreviousImmediate } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 import { useStyles } from '~/src/hooks/useStyles';
+import SimpleBar from 'simplebar-react';
+
+import 'simplebar-react/dist/simplebar.min.css';
 
 export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
   className,
@@ -246,47 +249,49 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
                 </Tooltip>
               </Stack>
             </Box>
-            <Box sx={{ height: 'calc(100% - 40px)', overflow: 'auto' }}>
-              <TextField
-                variant="filled"
-                label='Select count to pick'
-                value={selectCount}
-                fullWidth
-                type='number'
-                inputProps={{
-                  inputMode: 'numeric', pattern: '[0-9]*', min: '1',
-                }}
-                onChange={(event) => setSelectCount(Number(event.target.value))}
-              />
+            <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
+              <Box>
+                <TextField
+                  variant="filled"
+                  label='Select count to pick'
+                  value={selectCount}
+                  fullWidth
+                  type='number'
+                  inputProps={{
+                    inputMode: 'numeric', pattern: '[0-9]*', min: '1',
+                  }}
+                  onChange={(event) => setSelectCount(Number(event.target.value))}
+                />
 
-              <Button fullWidth onClick={() => pickSelected()} disabled={fUsers.length === 0 || selectedUsers.length === 0}>
-                Pick { selectedUsers.length } selected
-              </Button>
-              <Button fullWidth onClick={() => pick(false, selectCount)} disabled={fUsers.length === 0}>
-                Pick first { selectCount }
-              </Button>
-              <Button fullWidth onClick={() => pick(true, selectCount)} disabled={fUsers.length === 0}>
-                Pick random { selectCount }
-              </Button>
+                <Button fullWidth onClick={() => pickSelected()} disabled={fUsers.length === 0 || selectedUsers.length === 0}>
+                  Pick { selectedUsers.length } selected
+                </Button>
+                <Button fullWidth onClick={() => pick(false, selectCount)} disabled={fUsers.length === 0}>
+                  Pick first { selectCount }
+                </Button>
+                <Button fullWidth onClick={() => pick(true, selectCount)} disabled={fUsers.length === 0}>
+                  Pick random { selectCount }
+                </Button>
 
-              <Divider sx={{ my: 1 }}>Users ({fUsers.length})</Divider>
-              <List dense disablePadding>
-                {fUsers.map((user, idx) => <ListItem key={user.username}>
-                  <ListItemButton selected={selectedUsers.includes(idx)} onClick={() => handleSelectOf(idx)}>
-                    <ListItemText>
-                      <Stack direction="row" spacing={0.5} alignItems='center'>
-                        <Typography fontWeight={'bold'}>{user.username}</Typography>
-                        {user.isFollower && <Chip label="Follower" size="small" variant="outlined" />}
-                        {user.isSubscriber && <Chip label="Subscriber" size="small" variant="outlined" />}
-                        <Typography fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{ dayjs(user.createdAt).format('LL LTS') }</Typography>
-                      </Stack>
-                      <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ user.message }</Typography>
-                    </ListItemText>
-                  </ListItemButton>
-                </ListItem>
-                )}
-              </List>
-            </Box>
+                <Divider sx={{ my: 1 }}>Users ({fUsers.length})</Divider>
+                <List dense disablePadding>
+                  {fUsers.map((user, idx) => <ListItem key={user.username}>
+                    <ListItemButton selected={selectedUsers.includes(idx)} onClick={() => handleSelectOf(idx)}>
+                      <ListItemText>
+                        <Stack direction="row" spacing={0.5} alignItems='center'>
+                          <Typography fontWeight={'bold'}>{user.username}</Typography>
+                          {user.isFollower && <Chip label="Follower" size="small" variant="outlined" />}
+                          {user.isSubscriber && <Chip label="Subscriber" size="small" variant="outlined" />}
+                          <Typography fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{ dayjs(user.createdAt).format('LL LTS') }</Typography>
+                        </Stack>
+                        <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ user.message }</Typography>
+                      </ListItemText>
+                    </ListItemButton>
+                  </ListItem>
+                  )}
+                </List>
+              </Box>
+            </SimpleBar>
           </Box>
           <Box className={value === '2' ? styles.showTab : styles.hideTab}>
             {picked.length === 0 && <Alert severity="info">No users were picked yet</Alert>}

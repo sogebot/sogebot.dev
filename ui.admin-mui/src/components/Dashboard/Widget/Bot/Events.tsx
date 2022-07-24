@@ -15,13 +15,14 @@ import get from 'lodash/get';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
+import SimpleBar from 'simplebar-react';
 
+import 'simplebar-react/dist/simplebar.min.css';
+import { DashboardWidgetBotDialogFilterEvents } from '~/src/components/Dashboard/Widget/Bot/Dialog/FilterEvents';
 import { getSocket } from '~/src/helpers/socket';
 import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
-
-import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
 
 export const DotDivider: React.FC = () => {
   return (
@@ -235,9 +236,11 @@ export const DashboardWidgetBotEvents: React.FC<{ className: string }> = (props)
         </IconButton>
       </Tooltip>
     </Box>
-    <List sx={{ height: 'calc(100% - 40px)', overflow: 'auto' }} disablePadding>
-      {filteredEvents.map(event => <RenderRow item={event} key={event.id}/>)}
-    </List>
+    <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
+      <List disablePadding>
+        {filteredEvents.map(event => <RenderRow item={event} key={event.id}/>)}
+      </List>
+    </SimpleBar>
   </Box>
   );
 };
