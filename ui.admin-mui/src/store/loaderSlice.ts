@@ -1,24 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const loaderSlice = createSlice({
-  name: 'loader',
+  name:         'loader',
   initialState: {
-    server: null,
+    server:            null,
     compatibleVersion: '15.2.0',
     connectedToServer: false,
 
-    drawerWidth: 65,
-    message: null,
-    state: false,
+    drawerWidth:   65,
+    message:       null,
+    state:         false,
     configuration: {},
-    translation: {},
+    translation:   {},
 
-    nextVersion: null,
+    nextVersion:    null,
     currentVersion: null,
 
-    core: null,
-    services: null,
-    systems: null,
+    core:         null,
+    services:     null,
+    systems:      null,
     integrations: null,
   },
   reducers: {
@@ -28,30 +28,30 @@ export const loaderSlice = createSlice({
     },
     setMessage: (state: { message: any }, action: { payload: any }) => {
       console.debug(`setMessage`, action.payload);
-      state.message = action.payload
+      state.message = action.payload;
     },
     setState: (state: { state: any }, action: { payload: any }) => {
       console.debug(`setState`, action.payload);
-      state.state = action.payload
+      state.state = action.payload;
     },
     setConfiguration: (state: { configuration: any }, action: { payload: any }) => {
       console.debug(`setConfiguration`, action.payload);
-      state.configuration = action.payload
+      state.configuration = action.payload;
     },
     setTranslation: (state: { translation: any }, action: { payload: any }) => {
-      state.translation = action.payload
+      state.translation = action.payload;
     },
     setCurrentVersion: (state: { currentVersion: any }, action: { payload: any }) => {
       console.debug(`setCurrentVersion`, action.payload);
-      state.currentVersion = action.payload
+      state.currentVersion = action.payload;
     },
     setNextVersion: (state: { nextVersion: any }, action: { payload: any }) => {
       console.debug(`setNextVersion`, action.payload);
-      state.nextVersion = action.payload
+      state.nextVersion = action.payload;
     },
     setServer: (state: { server: any }, action: { payload: any }) => {
       console.debug(`setServer`, action.payload);
-      state.server = action.payload
+      state.server = action.payload;
       sessionStorage.serverUrl = state.server;
       sessionStorage.serverHistory = JSON.stringify([state.server, ...JSON.parse(localStorage.serverHistory ?? '["http://localhost:20000"]')]);
     },
@@ -61,10 +61,10 @@ export const loaderSlice = createSlice({
       const wsUrl = state.server.replace('https', '').replace('http', '');
       console.debug('setConnectedToServer', );
       sessionStorage.wsUrl = `${(state.server.startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
-    }
-  }
-})
+    },
+  },
+});
 
 // Action creators are generated for each case reducer function
-export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion } = loaderSlice.actions
-export default loaderSlice.reducer
+export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion } = loaderSlice.actions;
+export default loaderSlice.reducer;

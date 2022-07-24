@@ -1,7 +1,7 @@
 // eslint-disable-next-line camelcase
+import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { debounce } from 'lodash';
-import axios from 'axios';
 
 const refreshToken = debounce(async () => {
   try {
@@ -35,7 +35,7 @@ const redirectLogin = () => {
   }
 };
 
-export default function () {
+export default function accessTokenCheck () {
   setInterval(() => {
     if (localStorage[`${localStorage.currentServer}::accessToken`]) {
       // we just need to check if token is expired

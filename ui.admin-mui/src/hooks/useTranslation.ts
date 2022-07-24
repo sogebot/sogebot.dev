@@ -39,7 +39,7 @@ export const useTranslation = () => {
   const translateAsObject = React.useCallback((key: string) => {
     return isNil(at(translation, key)[0])
       ? {}
-      : castObject(key, at(translation, key)[0] as { [x: string]: any })
+      : castObject(key, at(translation, key)[0] as { [x: string]: any });
   }, [ translation ]);
 
   return { translate, translateAsObject };

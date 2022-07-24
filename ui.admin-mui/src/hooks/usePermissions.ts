@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PermissionsInterface } from '~/../backend/src/database/entity/permissions';
+
 import { getSocket } from '~/src/helpers/socket';
 import { setPermissions } from '~/src/store/pageSlice';
 
@@ -13,16 +14,14 @@ export const usePermissions = () => {
       if (err) {
         return console.error(err);
       }
-      console.log({res})
+      console.log({ res });
       dispatch(setPermissions(res));
     });
   }, [ dispatch ]);
 
   React.useEffect(() => {
-    refresh()
-  }, [ refresh ])
+    refresh();
+  }, [ refresh ]);
 
-  return {
-    permissions
-  }
-}
+  return { permissions };
+};

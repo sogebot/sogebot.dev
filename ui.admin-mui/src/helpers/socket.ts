@@ -1,8 +1,7 @@
+import type { ClientToServerEventsWithNamespace, Fn } from '@sogebot/backend/d.ts/src/helpers/socket';
 import axios from 'axios';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-
-import type { Fn, ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 
 export const redirectLogin = () => {
   if (window.location.href.includes('popout')) {

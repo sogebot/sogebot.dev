@@ -30,7 +30,7 @@ export const useValidator = () => {
     if (!isEqual(filteredErrors, errors)) {
       setErrors(filteredErrors);
     }
-  }, [ errors, dirty ])
+  }, [ errors, dirty ]);
 
   const errorsPerAttribute = useMemo(() => {
     const _errors: { [field:string]: string[] } = {};
@@ -51,7 +51,7 @@ export const useValidator = () => {
       }
     }
     return _errors;
-  }, [ errors ]);
+  }, [ errors, translate ]);
 
   const errorsList = useMemo(() => {
     const _errors: string[] = [];
@@ -68,7 +68,7 @@ export const useValidator = () => {
       }
     }
     return _errors;
-  }, [ errors ])
+  }, [ errors, translate ]);
 
   const reset = useCallback(() => {
     setDirty([]);
@@ -77,8 +77,8 @@ export const useValidator = () => {
   const propsError = useCallback((attribute: string) => {
     const onInput = () => {
       if (!dirty.includes(attribute)) {
-        console.log('Dirtying', attribute)
-        setDirty([...dirty, attribute])
+        console.log('Dirtying', attribute);
+        setDirty([...dirty, attribute]);
       }
     };
 
