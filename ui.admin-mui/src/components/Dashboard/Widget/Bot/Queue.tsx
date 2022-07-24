@@ -10,10 +10,10 @@ import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import React from 'react';
 import { useDidMount, usePreviousImmediate } from 'rooks';
+import SimpleBar from 'simplebar-react';
 
 import { getSocket } from '~/src/helpers/socket';
 import { useStyles } from '~/src/hooks/useStyles';
-import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 
