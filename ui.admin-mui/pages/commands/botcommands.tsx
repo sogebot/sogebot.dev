@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
+import { Commands } from '~/src/classes/Commands';
 import { Layout } from '~/src/components/Layout/main';
 import { BotCommandEdit } from '~/src/components/RightDrawer/BotCommandEdit';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
@@ -30,20 +31,11 @@ import theme from '~/src/theme';
 
 import 'simplebar-react/dist/simplebar.min.css';
 
-export type CommandsInterface = {
-  id: string,
-  defaultValue: string,
-  type: string,
-  name: string,
-  command: string,
-  permission: string | null,
-};
-
 const PageCommandsBot: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const router = useRouter();
 
-  const [ items, setItems ] = useState<CommandsInterface[]>([]);
+  const [ items, setItems ] = useState<Commands[]>([]);
 
   const [ showGroups, setShowGroups ] = useReducer((state: string[], value: string) => {
     if (state.includes(value)) {

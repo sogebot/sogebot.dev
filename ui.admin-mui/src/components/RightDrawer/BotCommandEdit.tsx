@@ -3,36 +3,43 @@ import {
   Box, Button, CircularProgress, Dialog, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField,
 } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { cloneDeep } from 'lodash';
+import { validateOrReject } from 'class-validator';
+import { cloneDeep, merge } from 'lodash';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { useEffect } from 'react';
-import { useDebouncedValue } from 'rooks';
 
-import type { CommandsInterface } from '~/pages/commands/botcommands';
+import { Commands } from '~/src/classes/Commands';
+import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
 export const BotCommandEdit: React.FC<{
-  items: CommandsInterface[]
+  items: Commands[]
 }> = (props) => {
   const router = useRouter();
   const { translate } = useTranslation();
   const [ editDialog, setEditDialog ] = useState(false);
   const { permissions } = usePermissions();
-  const [ item, setItem ] = useState<CommandsInterface | null>(null);
+  const [ item, setItem ] = useState<Commands | null>(null);
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { id } = router.query;
-  const { propsError, reset, setErrors } = useValidator();
+  const { enqueueSnackbar } = useSnackbar();
+  const { propsError, reset, setErrors, haveErrors } = useValidator();
 
-  const handleValueChange = <T extends keyof CommandsInterface>(key: T, value: CommandsInterface[T]) => {
+  const handleValueChange = <T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
       return;
     }
     const update = cloneDeep(item);
-    update[key] = value;
+    if (key === 'permission' && value === '') {
+      update.permission = null;
+    } else {
+      update[key] = value;
+    }
     setItem(update);
   };
 
@@ -51,18 +58,15 @@ export const BotCommandEdit: React.FC<{
     reset();
   }, [router, id, props.items, editDialog, reset]);
 
-  const [itemDebounced] = useDebouncedValue(item, 100);
   useEffect(() => {
-    if (!loading && editDialog) {
-      /*getSocket('/systems/alias').emit('generic::validate', itemDebounced, (err) => {
-        setErrors(err);
-        if (err) {
-          console.error(err);
-        }
-      });
-      */
+    if (!loading && editDialog && item) {
+      const toCheck = new Commands();
+      merge(toCheck, item);
+      validateOrReject(toCheck)
+        .then(() => setErrors(null))
+        .catch(setErrors);
     }
-  }, [itemDebounced, loading, editDialog, setErrors]);
+  }, [item, loading, editDialog, setErrors]);
 
   useEffect(() => {
     if (router.asPath.includes('botcommands/edit/')) {
@@ -77,20 +81,17 @@ export const BotCommandEdit: React.FC<{
     }, 200);
   };
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
+    if (!item) {
+      return;
+    }
+
     setSaving(true);
-    /*getSocket('/systems/alias').emit('generic::save', item, (err, savedItem) => {
-      setErrors(err);
-      if (err) {
-        validate();
-        console.error(err);
-      } else {
-        enqueueSnackbar('Alias saved.', { variant: 'success' });
-        router.push(`/commands/botcommands/edit/${savedItem.id}`);
-      }
+    getSocket('/core/general').emit('generic::setCoreCommand', item, () => {
+      enqueueSnackbar('Bot command saved.', { variant: 'success' });
       setSaving(false);
-    });*/
-  };
+    });
+  }, [item, enqueueSnackbar]);
 
   return(<Dialog
     open={editDialog}
@@ -138,13 +139,24 @@ export const BotCommandEdit: React.FC<{
           />
 
           <FormControl fullWidth variant="filled" >
-            <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+            <InputLabel id="permission-select-label" shrink>{translate('permissions')}</InputLabel>
             <Select
               label={translate('permissions')}
               labelId="permission-select-label"
+              displayEmpty
               onChange={(event) => handleValueChange('permission', event.target.value)}
-              value={item?.permission || defaultPermissions.VIEWERS}
+              value={item?.permission === undefined ? defaultPermissions.VIEWERS : item.permission}
+              renderValue={(selected) => {
+                if (selected === null) {
+                  return <em>-- unset --</em>;
+                }
+
+                return permissions?.find(o => o.id === selected)?.name;
+              }}
             >
+              <MenuItem value="">
+                <em>-- unset --</em>
+              </MenuItem>
               {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
             </Select>
           </FormControl>
@@ -158,7 +170,7 @@ export const BotCommandEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

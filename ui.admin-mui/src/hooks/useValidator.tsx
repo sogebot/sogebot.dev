@@ -28,7 +28,7 @@ export const useValidator = () => {
   const haveErrors = useMemo(() => {
     const filteredErrors = errors.filter(o => dirty.includes(o.property));
     return filteredErrors.length > 0;
-  }, [ errors ]);
+  }, [ errors, dirty ]);
 
   useEffect(() => {
     const filteredErrors = errors.filter(o => dirty.includes(o.property));

@@ -4,12 +4,14 @@ import {
   Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Dialog, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, TextField,
 } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { capitalize, cloneDeep, merge } from 'lodash';
+import { validateOrReject } from 'class-validator';
+import {
+  capitalize, cloneDeep, merge, 
+} from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { validateOrReject } from 'class-validator';
 
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
