@@ -90,6 +90,7 @@ export const BotCommandEdit: React.FC<{
     getSocket('/core/general').emit('generic::setCoreCommand', item, () => {
       enqueueSnackbar('Bot command saved.', { variant: 'success' });
       setSaving(false);
+      router.push(`/commands/botcommands/edit/${item.id}`);
     });
   }, [item, enqueueSnackbar]);
 
