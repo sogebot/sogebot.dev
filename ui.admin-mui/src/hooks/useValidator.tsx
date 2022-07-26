@@ -25,6 +25,11 @@ export const useValidator = () => {
     }
   }, []);
 
+  const haveErrors = useMemo(() => {
+    const filteredErrors = errors.filter(o => dirty.includes(o.property));
+    return filteredErrors.length > 0;
+  }, [ errors ]);
+
   useEffect(() => {
     const filteredErrors = errors.filter(o => dirty.includes(o.property));
     if (!isEqual(filteredErrors, errors)) {
@@ -107,6 +112,6 @@ export const useValidator = () => {
   }, [errors, errorsList, setDirty, enqueueSnackbar]);
 
   return {
-    propsError, reset, setErrors, errorsList, validate,
+    propsError, reset, setErrors, errorsList, validate, haveErrors,
   };
 };

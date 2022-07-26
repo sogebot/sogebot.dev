@@ -4,12 +4,12 @@ import {
   Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Dialog, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, TextField,
 } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { capitalize, cloneDeep } from 'lodash';
+import { capitalize, cloneDeep, merge } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useDebouncedValue } from 'rooks';
+import { validateOrReject } from 'class-validator';
 
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
@@ -44,7 +44,7 @@ export const AliasEdit: React.FC<{
   const [ saving, setSaving ] = useState(false);
   const { id } = router.query;
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate } = useValidator();
+  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
     if (!alias) {
@@ -71,17 +71,15 @@ export const AliasEdit: React.FC<{
     reset();
   }, [router, id, props.aliases, editDialog, reset]);
 
-  const [aliasDebounced] = useDebouncedValue(alias, 100);
   useEffect(() => {
-    if (!loading && editDialog) {
-      getSocket('/systems/alias').emit('generic::validate', aliasDebounced, (err) => {
-        setErrors(err);
-        if (err) {
-          console.error(err);
-        }
-      });
+    if (!loading && editDialog && alias) {
+      const toCheck = new Alias();
+      merge(toCheck, alias);
+      validateOrReject(toCheck)
+        .then(() => setErrors(null))
+        .catch(setErrors);
     }
-  }, [aliasDebounced, loading, editDialog, setErrors]);
+  }, [alias, loading, editDialog, setErrors]);
 
   useEffect(() => {
     if (router.asPath.includes('alias/edit/') || router.asPath.includes('alias/create') ) {
@@ -251,7 +249,7 @@ export const AliasEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>
