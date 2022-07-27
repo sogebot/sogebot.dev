@@ -22,7 +22,7 @@ export const Search: React.FC = () => {
     /* if (router.asPath.includes('alias')) {
       setHideSearchButton(false);
     } else { */
-      setHideSearchButton(true);
+    setHideSearchButton(true);
     /* } */
   }, [ router ]);
 

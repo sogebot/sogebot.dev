@@ -1,21 +1,17 @@
 import { nextTick } from 'process';
 
 import {
-  ArrowRight, CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
-import FilterIcon from '@mui/icons-material/FilterAlt';
-import FilterOffIcon from '@mui/icons-material/FilterAltOff';
-import SettingsIcon from '@mui/icons-material/Settings';
 import {
-  Alert,
   Badge,
-  Box,
   Button,
   CircularProgress,
-  Collapse,
   Grid,
-  IconButton, Paper, Stack, Tooltip, Typography,
+  Paper,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import {
@@ -95,7 +91,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       field: 'visible', headerName: capitalize(translate('visible')), type: 'boolean', hideable: false,
     },
     {
-      field: 'group', headerName: capitalize(translate('group')), hideable: false, flex: 0.15,
+      field:      'group', headerName: capitalize(translate('group')), hideable:   false, flex:       0.15,
       renderCell: (params) => {
         return (<Typography color={!params.row.group ? grey['400'] : 'undefined'}>
           {params.row.group === null ? 'ungrouped' : params.row.group}
@@ -158,9 +154,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     ]);
   };
 
-  const handleSelectionChange = useCallback((selectionModel: GridSelectionModel) => {
+  const handleSelectionChange = (selectionModel: GridSelectionModel) => {
     setSelectedItems(selectionModel);
-  }, [selectedItemsObject]);
+  };
 
   const selectedItems = useMemo(() => {
     return Object.values(selectedItemsObject).flat();
@@ -326,16 +322,16 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           <Grid item key={idx}>
             <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>
               <Badge badgeContent={items.filter(o => o.group === group).length}
-              sx={{
-                '& .MuiBadge-badge': {
-                  color:      'white',
-                  textShadow: '0px 0px 5px black',
-                  position:   'relative',
-                  transform:  'scale(1) translate(30%, 1px)',
-                  width:      '20px',
-                },
-              }}
-              showZero>
+                sx={{
+                  '& .MuiBadge-badge': {
+                    color:      'white',
+                    textShadow: '0px 0px 5px black',
+                    position:   'relative',
+                    transform:  'scale(1) translate(30%, 1px)',
+                    width:      '20px',
+                  },
+                }}
+                showZero>
                 {group || 'Ungrouped'}
               </Badge>
             </Button>
@@ -353,9 +349,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           m: 0, p: 1, height: 'calc(100vh - 158px)',
         }}>
           <DataGrid
-            sx={{
-              border: 0, backgroundColor: grey[900]
-            }}
+            sx={{ border: 0, backgroundColor: grey[900] }}
             selectionModel={selectedItemsObject}
             onSelectionModelChange={(selectionModel) => handleSelectionChange(selectionModel)}
             rows={items.filter(o => showGroups.length === 0 || showGroups.includes(o.group))}

@@ -46,11 +46,11 @@ export const AliasGroupEdit: React.FC<{
         return console.error(err);
       }
       const _group = res.find(o => o.name === query) ?? {
-        name: query,
+        name:    query,
         options: {
-          filter: null,
+          filter:     null,
           permission: null,
-        }
+        },
       };
       setGroup(_group);
       setLoading(false);
@@ -113,8 +113,8 @@ export const AliasGroupEdit: React.FC<{
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!(router.query.groupId && loading)}>
-      {group ?
-        <Box>
+      {group
+        ? <Box>
           <DialogTitle>{group?.name}</DialogTitle>
           <DialogContent>
             <FormControl fullWidth variant="filled" sx={{ mt: 1 }}>
@@ -160,7 +160,7 @@ export const AliasGroupEdit: React.FC<{
         : <Box>
           <DialogTitle>Select group to edit</DialogTitle>
           <DialogContent>
-              { groups.filter(Boolean).map(group => (<Button onClick={() => router.push('/commands/alias/group/edit/' + group)} variant="contained" sx={{ width: 122, mx: '5px', }}>{group}</Button>)) }
+            { groups.filter(Boolean).map(g => (<Button key={g} onClick={() => router.push('/commands/alias/group/edit/' + g)} variant="contained" sx={{ width: 122, mx: '5px' }}>{g}</Button>)) }
           </DialogContent>
         </Box>
       }

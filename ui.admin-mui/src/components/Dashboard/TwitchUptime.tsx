@@ -31,7 +31,7 @@ export const DashboardStatsUptime: React.FC = () => {
     setInterval(() => {
       setTimestamp(Date.now());
     }, 250);
-  }, [])
+  }, []);
 
   useEffect(() => {
     getSocket('/').on('panel::stats', (data: Record<string, any>) => {
