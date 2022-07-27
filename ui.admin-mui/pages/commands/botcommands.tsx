@@ -172,6 +172,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
             sortModel={sortModel}
             onSortModelChange={(model) => setSortModel(model)}
             autoPageSize
+            isRowSelectable={() => false}
           />
         </Paper>}
       <BotCommandEdit items={items}/>
