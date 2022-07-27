@@ -4,20 +4,20 @@ import {
   Badge,
   Button,
   CircularProgress,
+  FormControlLabel,
+  FormGroup,
   Grid,
-  Paper, Typography,
+  Paper, Switch, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import {
-  DataGrid, GridActionsColDef, GridColDef,
+  DataGrid, GridActionsColDef, GridColDef, GridSortModel,
 } from '@mui/x-data-grid';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import {
   ReactElement, useEffect, useMemo, useReducer, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
-import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Commands } from '~/src/classes/Commands';
@@ -46,8 +46,9 @@ const PageCommandsBot: NextPageWithLayout = () => {
   }, []);
 
   const [ loading, setLoading ] = useState(true);
-  const { search } = useSelector((state: any) => state.appbar);
   const { permissions } = usePermissions();
+
+  const [ showOnlyModified, setShowOnlyModified ] = useState(false);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.type)));
@@ -99,6 +100,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
       ],
     },
   ];
+  const [ sortModel, setSortModel ] = useState<GridSortModel>([{ field: 'command', sort: 'asc' }]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -120,37 +122,24 @@ const PageCommandsBot: NextPageWithLayout = () => {
   };
 
   const filteredItems = useMemo(() => {
-    if (search.length === 0) {
-      return items;
-    }
-
-    return items.filter(item => {
-      const values = Object.values(item).map(o => String(o).toLowerCase());
-      for (const value of values) {
-        if (value.includes(search)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }, [items, search]);
+    return items.filter(item => showOnlyModified ? item.defaultValue !== item.command : true);
+  }, [items, showOnlyModified]);
 
   return (
     <>
-      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+      { groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         {groups.map((group, idx) => (
           <Grid item key={idx}>
             <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>
               <Badge badgeContent={items.filter(o => o.type === group
-                && (search.length === 0
-                || (o.command.includes(search) || o.defaultValue.includes(search))
-                )).length}
+                && ((showOnlyModified && o.defaultValue !== o.command) || !showOnlyModified)).length}
               sx={{
                 '& .MuiBadge-badge': {
                   color:      'white',
                   textShadow: '0px 0px 5px black',
                   position:   'relative',
                   transform:  'scale(1) translate(30%, 1px)',
+                  width:      '20px',
                 },
               }}
               showZero>
@@ -160,26 +149,31 @@ const PageCommandsBot: NextPageWithLayout = () => {
           </Grid>
         )
         )}
+
+        <Grid item xs="auto" mx={2}>
+          <FormGroup>
+            <FormControlLabel control={<Switch onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
+          </FormGroup>
+        </Grid>
       </Grid>
+      }
 
       {loading
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-          <Paper sx={{ m: 0, p: 1 }}>
-            <DataGrid
-              sx={{ border: 0, backgroundColor: grey[900] }}
-              autoHeight
-              rows={filteredItems.filter(o => showGroups.length === 0 || showGroups.includes(o.type))}
-              columns={columns}
-              hideFooter
-              disableColumnFilter
-              disableColumnSelector
-              disableColumnMenu
-            />
-          </Paper>
-        </SimpleBar>}
+        : <Paper sx={{
+          m: 0, p: 1, height: 'calc(100vh - 117px)',
+        }}>
+          <DataGrid
+            sx={{ border: 0, backgroundColor: grey[900] }}
+            rows={filteredItems.filter(o => showGroups.length === 0 || showGroups.includes(o.type))}
+            columns={columns}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+            autoPageSize
+          />
+        </Paper>}
       <BotCommandEdit items={items}/>
     </>
   );

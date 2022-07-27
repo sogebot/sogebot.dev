@@ -92,7 +92,7 @@ export const BotCommandEdit: React.FC<{
       setSaving(false);
       router.push(`/commands/botcommands/edit/${item.id}`);
     });
-  }, [item, enqueueSnackbar]);
+  }, [item, enqueueSnackbar, router]);
 
   return(<Dialog
     open={editDialog}

@@ -6,7 +6,7 @@ import {
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { validateOrReject } from 'class-validator';
 import {
-  capitalize, cloneDeep, merge, 
+  capitalize, cloneDeep, merge,
 } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
