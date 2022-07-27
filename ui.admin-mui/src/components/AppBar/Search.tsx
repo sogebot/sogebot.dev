@@ -19,11 +19,11 @@ export const Search: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.asPath.includes('alias')) {
+    /* if (router.asPath.includes('alias')) {
       setHideSearchButton(false);
-    } else {
+    } else { */
       setHideSearchButton(true);
-    }
+    /* } */
   }, [ router ]);
 
   const handleClearSearch = () => {

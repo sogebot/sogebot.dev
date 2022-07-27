@@ -127,7 +127,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   return (
     <>
-      { groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+      {groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         {groups.map((group, idx) => (
           <Grid item key={idx}>
             <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>

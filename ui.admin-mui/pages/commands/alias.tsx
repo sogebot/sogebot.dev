@@ -9,6 +9,7 @@ import FilterOffIcon from '@mui/icons-material/FilterAltOff';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
   Alert,
+  Badge,
   Box,
   Button,
   CircularProgress,
@@ -18,24 +19,22 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import {
-  DataGrid, GridActionsColDef, GridColDef, GridRowId, GridSelectionModel,
+  DataGrid, GridActionsColDef, GridColDef, GridRowId, GridSelectionModel, GridSortModel,
 } from '@mui/x-data-grid';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import SimpleBar from 'simplebar-react';
 
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
 import { ButtonsPermissionsBulk } from '~/src/components/Buttons/PermissionsBulk';
-import { DotDivider } from '~/src/components/Dashboard/Widget/Bot/Events';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { AliasEdit } from '~/src/components/RightDrawer/AliasEdit';
@@ -57,10 +56,18 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const [ items, setItems ] = useState<Alias[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { search, bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useSelector((state: any) => state.appbar);
   const { permissions } = usePermissions();
-  const [ selectedItemsObject, setSelectedItems ] = useState<{ [x: string]: GridRowId[]}>({ });
-  const [ groupCollapse, setGroupCollapse ] = useState<(string | null)[]>([null]);
+  const [ selectedItemsObject, setSelectedItems ] = useState<GridRowId[]>([]);
+  const [ sortModel, setSortModel ] = useState<GridSortModel>([{ field: 'alias', sort: 'asc' }]);
+
+  const [ showGroups, setShowGroups ] = useReducer((state: (string | null)[], value: string | null) => {
+    if (state.includes(value)) {
+      return state.filter(o => o !== value);
+    } else {
+      return [...state, value];
+    }
+  }, []);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
@@ -86,6 +93,14 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     },
     {
       field: 'visible', headerName: capitalize(translate('visible')), type: 'boolean', hideable: false,
+    },
+    {
+      field: 'group', headerName: capitalize(translate('group')), hideable: false, flex: 0.15,
+      renderCell: (params) => {
+        return (<Typography color={!params.row.group ? grey['400'] : 'undefined'}>
+          {params.row.group === null ? 'ungrouped' : params.row.group}
+        </Typography>);
+      },
     },
     {
       field:      'actions',
@@ -143,8 +158,8 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     ]);
   };
 
-  const handleSelectionChange = useCallback((group: string | null, selectionModel: GridSelectionModel) => {
-    setSelectedItems({ ...selectedItemsObject, [`__%%${group}%%__`]: selectionModel });
+  const handleSelectionChange = useCallback((selectionModel: GridSelectionModel) => {
+    setSelectedItems(selectionModel);
   }, [selectedItemsObject]);
 
   const selectedItems = useMemo(() => {
@@ -195,37 +210,13 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     return false;
   }, [ selectedItems, items ]);
 
-  const filteredItems = useMemo(() => {
-    if (search.length === 0) {
-      return items;
-    }
-
-    return items.filter(item => {
-      const values = Object.values(item).map(o => String(o).toLowerCase());
-      for (const value of values) {
-        if (value.includes(search)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }, [items, search]);
-
-  const getGroupSettings = useCallback((name: string): AliasGroup => {
+  /*const getGroupSettings = useCallback((name: string): AliasGroup => {
     const groupSetting = groupsSettings.find(o => o.name === name);
     if (!groupSetting) {
       return { name, options: { filter: null, permission: null } } as AliasGroup;
     }
     return groupSetting;
-  }, [ groupsSettings ]);
-
-  const handleSetGroupCollapse = useCallback((group: string | null) => {
-    if (groupCollapse.includes(group)) {
-      setGroupCollapse(groupCollapse.filter(o => o !== group));
-    } else {
-      setGroupCollapse([...groupCollapse, group]);
-    }
-  }, [ groupCollapse ]);
+  }, [ groupsSettings ]);*/
 
   const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
     for (const selected of selectedItems) {
@@ -255,7 +246,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       enqueueSnackbar(`Bulk operation set permission to ${permissions.find(o => o.id === value)?.name}.`, { variant: 'success' });
     } else if (attribute === 'group') {
       // we need next tick as it doesn't reselect without it
-      nextTick(() => setSelectedItems({ [`__%%${value}%%__`]: selectedItems }));
+      nextTick(() => setSelectedItems(selectedItems));
       if (value) {
         enqueueSnackbar(`Bulk operation set group to ${value}.`, { variant: 'success' });
       } else {
@@ -279,7 +270,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     }
     setItems(i => i.filter(item => !selectedItems.includes(item.id)));
     enqueueSnackbar(`Bulk operation deleted items.`, { variant: 'success' });
-    setSelectedItems({});
+    setSelectedItems([]);
   }, [ selectedItems, enqueueSnackbar, items ]);
 
   return (
@@ -290,6 +281,11 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/alias/create/');
           }}>Create new alias</Button>
+        </Grid>
+        <Grid item>
+          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
+            router.push('/commands/alias/group/edit');
+          }} color='secondary'>Edit group settings</Button>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">
@@ -325,78 +321,53 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
+      {groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        {groups.map((group, idx) => (
+          <Grid item key={idx}>
+            <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>
+              <Badge badgeContent={items.filter(o => o.group === group).length}
+              sx={{
+                '& .MuiBadge-badge': {
+                  color:      'white',
+                  textShadow: '0px 0px 5px black',
+                  position:   'relative',
+                  transform:  'scale(1) translate(30%, 1px)',
+                  width:      '20px',
+                },
+              }}
+              showZero>
+                {group || 'Ungrouped'}
+              </Badge>
+            </Button>
+          </Grid>
+        )
+        )}
+      </Grid>
+      }
+
       {loading
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-          {groups.length === 0 && <Alert severity="info" variant="outlined" sx={{
-            margin:    'auto',
-            width:     '50%',
-            marginTop: '3rem',
-          }} >
-            No aliases found, please add them with create new alias button.
-          </Alert>}
-          {groups.map((group, idx) => (<div key={group}>
-            <Paper sx={{
-              mx: 0.1, p: 1, px: 3, mt: idx === 0 ? 0 : 1,
-            }}>
-              <Stack direction="row" justifyContent="end" alignItems="center">
-                <Box sx={{ flex: 'auto' }}  onClick={() => handleSetGroupCollapse(group)}>
-                  <IconButton onClick={() => handleSetGroupCollapse(group)}>
-                    <ArrowRight sx={{ transition: 'all 500ms', transform: `rotateZ(${groupCollapse.includes(group) ? '90' : '0'}deg)` }}/>
-                  </IconButton>
-                  <Typography variant="overline" fontSize={20} fontWeight={'bold'}>
-                    {group ? group : 'Ungrouped'}
-                  </Typography>
-                  <Typography variant="overline" fontSize={15} fontWeight={'bold'} pl={1} sx={{ color: theme.palette.primary.main }}>
-                    {items.filter(o => o.group === group).length}
-                    { search.length > 0 && <Typography component='span' variant="overline" fontSize={12} pl={0.4}>
-                      <DotDivider/> {filteredItems.filter(o => o.group === group).length}
-                    </Typography>}
-                  </Typography>
-                </Box>
-                <div>
-                  {group && groupsSettings.length > 0 && <>
-                    <Typography display={'inline-block'} color={!getGroupSettings(group).options.filter ? theme.palette.grey[600] : 'undefined'}>
-                      {!getGroupSettings(group).options.filter ? <FilterOffIcon/> : <FilterIcon/>}
-                      <Typography component={'span'} sx={{ display: 'inline-block', transform: 'translateY(-5px)' }}>
-                        {getGroupSettings(group).options.filter ? getGroupSettings(group).options.filter : 'No filters set'}
-                      </Typography>
-                    </Typography>
-                    <Typography sx={{
-                      display: 'inline-block', transform: 'translateY(-5px)', ml: 2,
-                    }} color={!getGroupSettings(group).options.permission ? theme.palette.error.dark : 'undefined'}>
-                      {getGroupSettings(group).options.permission === null ? '-- unset --' : getPermissionName(getGroupSettings(group).options.permission, permissions || [])}
-                    </Typography>
-                  </>}
-                </div>
-                {group && <IconButton sx={{ height: 'fit-content', marginLeft: 2 }} onClick={() => router.push(`/commands/alias/group/edit/${getGroupSettings(group).name}`)}>
-                  <SettingsIcon/>
-                </IconButton>}
-              </Stack>
-              <Collapse in={groupCollapse.includes(group)}>
-                <DataGrid
-                  sx={{
-                    border: 0, backgroundColor: grey[900], mt: 2,
-                  }}
-                  autoHeight
-                  selectionModel={selectedItemsObject[`__%%${group}%%__`]}
-                  onSelectionModelChange={(selectionModel) => handleSelectionChange(group, selectionModel)}
-                  rows={filteredItems.filter(o => o.group === group)}
-                  columns={columns}
-                  hideFooter
-                  checkboxSelection
-                  disableColumnFilter
-                  disableColumnSelector
-                  disableColumnMenu
-                />
-              </Collapse>
-            </Paper>
-          </div>))}
-        </SimpleBar>}
+        : <Paper sx={{
+          m: 0, p: 1, height: 'calc(100vh - 158px)',
+        }}>
+          <DataGrid
+            sx={{
+              border: 0, backgroundColor: grey[900]
+            }}
+            selectionModel={selectedItemsObject}
+            onSelectionModelChange={(selectionModel) => handleSelectionChange(selectionModel)}
+            rows={items.filter(o => showGroups.length === 0 || showGroups.includes(o.group))}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+            columns={columns}
+            autoPageSize
+            checkboxSelection
+          />
+        </Paper>}
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
-      <AliasGroupEdit onSave={() => refresh()}/>
+      <AliasGroupEdit onSave={() => refresh()} groups={groups}/>
     </>
   );
 };

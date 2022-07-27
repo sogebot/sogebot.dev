@@ -31,6 +31,9 @@ export const DashboardStatsUptime: React.FC = () => {
     setInterval(() => {
       setTimestamp(Date.now());
     }, 250);
+  }, [])
+
+  useEffect(() => {
     getSocket('/').on('panel::stats', (data: Record<string, any>) => {
       setUptime(data.uptime);
       dispatch(setStreamOnline(data.uptime !== null));

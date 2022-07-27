@@ -18,8 +18,10 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const AliasGroupEdit: React.FC<{
   onSave: () => void,
+  groups: (string|null)[]
 }> = ({
   onSave,
+  groups,
 }) => {
   const router = useRouter();
   const classes = useStyles();
@@ -31,18 +33,29 @@ export const AliasGroupEdit: React.FC<{
   const { permissions } = usePermissions();
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
-  const { groupId } = router.query;
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
+    const query = router.query.groupId;
+    if (!query) {
+      setGroup(null);
+      return;
+    }
     getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
       if (err) {
         return console.error(err);
       }
-      setGroup(res.find(o => o.name === groupId));
+      const _group = res.find(o => o.name === query) ?? {
+        name: query,
+        options: {
+          filter: null,
+          permission: null,
+        }
+      };
+      setGroup(_group);
       setLoading(false);
     });
-  }, [router, groupId, editDialog]);
+  }, [router.query, editDialog]);
 
   useEffect(() => {
     if (router.asPath.includes('alias/group/edit')) {
@@ -91,7 +104,7 @@ export const AliasGroupEdit: React.FC<{
     fullWidth
     maxWidth='xs'
   >
-    {loading
+    {router.query.groupId && loading
       && <Grid
         sx={{ pt: 10 }}
         container
@@ -99,50 +112,58 @@ export const AliasGroupEdit: React.FC<{
         justifyContent="flex-start"
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
-      <Box>
-        <DialogTitle>{group?.name}</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth variant="filled" sx={{ mt: 1 }}>
-            <InputLabel id="permission-select-label">Group Permission</InputLabel>
-            <Select
-              label="Group Permission"
-              labelId="permission-select-label"
-              onChange={(event) => handleValueChange('permission', event.target.value)}
-              value={group?.options.permission || ''}
-              endAdornment={
-                group?.options.permission && <InputAdornment className={classes.selectAdornment} position="end">
-                  <IconButton onClick={() => handleValueChange('permission', null)}><Clear fontSize="small" /></IconButton>
-                </InputAdornment>
-              }
-            >
-              {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-            </Select>
-          </FormControl>
+    <Fade in={!(router.query.groupId && loading)}>
+      {group ?
+        <Box>
+          <DialogTitle>{group?.name}</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth variant="filled" sx={{ mt: 1 }}>
+              <InputLabel id="permission-select-label">Group Permission</InputLabel>
+              <Select
+                label="Group Permission"
+                labelId="permission-select-label"
+                onChange={(event) => handleValueChange('permission', event.target.value)}
+                value={group?.options.permission || ''}
+                endAdornment={
+                  group?.options.permission && <InputAdornment className={classes.selectAdornment} position="end">
+                    <IconButton onClick={() => handleValueChange('permission', null)}><Clear fontSize="small" /></IconButton>
+                  </InputAdornment>
+                }
+              >
+                {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+              </Select>
+            </FormControl>
 
-          <TextField
-            sx={{ mt: 1 }}
-            fullWidth
-            variant="filled"
-            multiline
-            onKeyPress={(e) => {
-              e.key === 'Enter' && e.preventDefault();
-            }}
-            value={group?.options.filter || ''}
-            label={capitalize(translate('systems.customcommands.filter.name'))}
-            onChange={(event) => handleValueChange('filter', event.target.value)}
-            InputProps={{
-              endAdornment: <>
-                <InputAdornment position="end" sx={{ alignSelf: 'baseline', paddingTop: '2px' }}>
-                  {group?.options.filter && <IconButton onClick={() => handleValueChange('filter', '')}><Clear fontSize="small" /></IconButton>}
-                  <FormInputAdornmentCustomVariable onSelect={(value) => handleValueChange('filter', value, true)}/>
-                </InputAdornment>
-              </>,
-            }}
-          />
+            <TextField
+              sx={{ mt: 1 }}
+              fullWidth
+              variant="filled"
+              multiline
+              onKeyPress={(e) => {
+                e.key === 'Enter' && e.preventDefault();
+              }}
+              value={group?.options.filter || ''}
+              label={capitalize(translate('systems.customcommands.filter.name'))}
+              onChange={(event) => handleValueChange('filter', event.target.value)}
+              InputProps={{
+                endAdornment: <>
+                  <InputAdornment position="end" sx={{ alignSelf: 'baseline', paddingTop: '2px' }}>
+                    {group?.options.filter && <IconButton onClick={() => handleValueChange('filter', '')}><Clear fontSize="small" /></IconButton>}
+                    <FormInputAdornmentCustomVariable onSelect={(value) => handleValueChange('filter', value, true)}/>
+                  </InputAdornment>
+                </>,
+              }}
+            />
 
-        </DialogContent>
-      </Box>
+          </DialogContent>
+        </Box>
+        : <Box>
+          <DialogTitle>Select group to edit</DialogTitle>
+          <DialogContent>
+              { groups.filter(Boolean).map(group => (<Button onClick={() => router.push('/commands/alias/group/edit/' + group)} variant="contained" sx={{ width: 122, mx: '5px', }}>{group}</Button>)) }
+          </DialogContent>
+        </Box>
+      }
     </Fade>
     <Divider/>
     <Box sx={{ p: 1 }}>
@@ -150,9 +171,9 @@ export const AliasGroupEdit: React.FC<{
         <Grid item>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
-        <Grid item>
+        {group && <Grid item>
           <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>
-        </Grid>
+        </Grid>}
       </Grid>
     </Box>
   </Dialog>);
