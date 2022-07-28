@@ -34,3 +34,23 @@ body, html {
 .simplebar-scrollbar:before {
   background-color: #ffa000 !important;
 }
+
+.TableFilterCell-flexContainer .Mui-disabled {
+  display: none;
+}
+
+.Pager-pager {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-bottom: 0 !important;
+}
+
+.Pagination-pagination * {
+  color: white !important;
+}
+
+.Container-wrapper,
+.IndentCell-indentCell {
+  background-color: transparent !important;
+}

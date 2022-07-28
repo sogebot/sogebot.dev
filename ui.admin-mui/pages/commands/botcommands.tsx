@@ -1,23 +1,40 @@
+import {
+  Column,
+  Filter,
+  FilteringState,
+  GroupingState,
+  IntegratedGrouping,
+  IntegratedPaging,
+  IntegratedSorting,
+  PagingState,
+  SortingState,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid as DataGrid,
+  PagingPanel,
+  Table,
+  TableFilterRow,
+  TableGroupRow,
+  TableHeaderRow,
+} from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  Badge,
   Button,
   CircularProgress,
   FormControlLabel,
   FormGroup,
   Grid,
-  Paper, Switch, Typography,
+  Paper,
+  Switch,
+  Typography,
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import {
-  DataGrid, GridActionsColDef, GridColDef, GridSortModel,
-} from '@mui/x-data-grid';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import {
-  ReactElement, useEffect, useMemo, useReducer, useState,
+  ReactElement, useEffect, useMemo, useState,
 } from 'react';
+import { useDimensionsRef } from 'rooks';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Commands } from '~/src/classes/Commands';
@@ -37,70 +54,69 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const [ items, setItems ] = useState<Commands[]>([]);
 
-  const [ showGroups, setShowGroups ] = useReducer((state: string[], value: string) => {
-    if (state.includes(value)) {
-      return state.filter(o => o !== value);
-    } else {
-      return [...state, value];
-    }
-  }, []);
+  const [ ref, dimensions ] = useDimensionsRef();
+  const itemsPerPage = useMemo(() => {
+    return Math.floor(((dimensions?.height || 0) - 120) / 63.75);
+  }, [dimensions]);
 
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
 
   const [ showOnlyModified, setShowOnlyModified ] = useState(false);
 
-  const groups = useMemo(() => {
-    return Array.from(new Set(items.map(o => o.type)));
-  }, [items]);
-
-  const columns: (GridColDef | GridActionsColDef)[] = [
+  const columns = useMemo<Column[]>(() => [
     {
-      field:      'command', headerName: translate('command'), flex:       1, hideable:   false,renderCell: (params) => {
+      name:         'command',
+      title:        capitalize(translate('command')),
+      getCellValue: (row) => {
         return (<Typography>
-          {params.row.defaultValue !== params.row.command ? (<>
-            <Typography component='span' sx={{ textDecoration: 'line-through' }}>{params.row.defaultValue}</Typography>
+          {row.defaultValue !== row.command ? (<>
+            <Typography component='span' sx={{ textDecoration: 'line-through' }}>{row.defaultValue}</Typography>
             <ArrowRightAltIcon sx={{ mx: 0.5, verticalAlign: 'bottom' }}/>
-            {params.row.command}
+            {row.command}
           </>
-          ) : <>{params.row.defaultValue}</>}
+          ) : <>{row.defaultValue}</>}
 
         </Typography>);
       },
     },
     {
-      field: 'name', headerName: capitalize(translate('name')), flex: 0.5, hideable: false,
+      name:  'name',
+      title: capitalize(translate('name')),
     },
     {
-      field:      'permission', headerName: translate('permission'), flex:       0.5, hideable:   false,
-      renderCell: (params) => {
-        return (<Typography color={!params.row.permission ? theme.palette.error.dark : 'undefined'}>
-          {params.row.permission === null ? '-- unset --' : getPermissionName(params.row.permission, permissions || [])}
+      name:         'permission', title:        translate('permission'),
+      getCellValue: (row) => {
+        return (<Typography color={!row.permission ? theme.palette.error.dark : 'undefined'}>
+          {row.permission === null ? '-- unset --' : getPermissionName(row.permission, permissions || [])}
         </Typography>);
       },
     },
+    { name: 'type', title: capitalize(translate('type')) },
     {
-      field: 'type', headerName: capitalize(translate('type')), hideable: false,
-    },
-    {
-      field:      'actions',
-      type:       'actions',
-      hideable:   false,
-      align:      'right',
-      width:      95,
-      getActions: (params) => [
+      name:         'actions',
+      title:        ' ',
+      getCellValue: (row) => [
         <Button
           size='small'
           key="edit"
           variant="contained"
           startIcon={<EditIcon/>}
           onClick={() => {
-            router.push('/commands/botcommands/edit/' + params.row.id);
+            router.push('/commands/botcommands/edit/' + row.id);
           }}>Edit</Button>,
       ],
     },
-  ];
-  const [ sortModel, setSortModel ] = useState<GridSortModel>([{ field: 'command', sort: 'asc' }]);
+  ], [ permissions, translate, router ]);
+  const [tableColumnExtensions] = useState([
+    { columnName: 'command', width: '40%' },
+    { columnName: 'permission', filteringEnabled: false },
+    { columnName: 'type', filteringEnabled: false },
+    {
+      columnName: 'actions', width: 90, filteringEnabled: false,
+    },
+  ]);
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -122,59 +138,62 @@ const PageCommandsBot: NextPageWithLayout = () => {
   };
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => showOnlyModified ? item.defaultValue !== item.command : true);
-  }, [items, showOnlyModified]);
+    return items.filter(item => {
+      const filterPass = filters.length > 0 ? item.defaultValue.includes(filters[0].value) || item.command.includes(filters[0].value) : true;
+      const modifiedPass = showOnlyModified ? item.defaultValue !== item.command : true;
+      return filterPass && modifiedPass;
+    });
+  }, [items, showOnlyModified, filters]);
 
   return (
     <>
-      {groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        {groups.map((group, idx) => (
-          <Grid item key={idx}>
-            <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>
-              <Badge badgeContent={items.filter(o => o.type === group
-                && ((showOnlyModified && o.defaultValue !== o.command) || !showOnlyModified)).length}
-              sx={{
-                '& .MuiBadge-badge': {
-                  color:      'white',
-                  textShadow: '0px 0px 5px black',
-                  position:   'relative',
-                  transform:  'scale(1) translate(30%, 1px)',
-                  width:      '20px',
-                },
-              }}
-              showZero>
-                {group}
-              </Badge>
-            </Button>
-          </Grid>
-        )
-        )}
 
-        <Grid item xs="auto" mx={2}>
-          <FormGroup>
-            <FormControlLabel control={<Switch onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
-          </FormGroup>
-        </Grid>
-      </Grid>
-      }
-
-      {loading
+      {loading && items.length === 0 && permissions.length === 0
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <Paper sx={{
-          m: 0, p: 1, height: 'calc(100vh - 117px)',
-        }}>
-          <DataGrid
-            sx={{ border: 0, backgroundColor: grey[900] }}
-            rows={filteredItems.filter(o => showGroups.length === 0 || showGroups.includes(o.type))}
-            columns={columns}
-            sortModel={sortModel}
-            onSortModelChange={(model) => setSortModel(model)}
-            autoPageSize
-            isRowSelectable={() => false}
-          />
-        </Paper>}
+        : <>
+          <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+            <Grid item xs="auto" mx={2}>
+              <FormGroup>
+                <FormControlLabel control={<Switch onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
+              </FormGroup>
+            </Grid>
+          </Grid>
+          <div ref={ref}>
+            <Paper sx={{
+              m: 0, p: 1, height: 'calc(100vh - 117px)',
+            }}>
+              <DataGrid
+                rows={filteredItems}
+                columns={columns}
+              >
+                <SortingState
+                  defaultSorting={[{ columnName: 'command', direction: 'asc' }]}
+                />
+                <IntegratedSorting />
+
+                <GroupingState
+                  grouping={[{ columnName: 'type' }, { columnName: 'name' }]}
+                />
+                <IntegratedGrouping />
+                <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+
+                <PagingState
+                  defaultCurrentPage={0}
+                  pageSize={itemsPerPage || 1}
+                />
+                <IntegratedPaging />
+
+                <Table columnExtensions={tableColumnExtensions}/>
+                <TableHeaderRow showSortingControls/>
+                <TableFilterRow />
+                <TableGroupRow />
+                <PagingPanel />
+              </DataGrid>
+            </Paper>
+          </div>
+        </>}
       <BotCommandEdit items={items}/>
     </>
   );
