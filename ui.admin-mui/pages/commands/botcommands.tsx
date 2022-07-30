@@ -11,7 +11,6 @@ import {
   TableFilterRow,
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
-import { Filter } from '@mui/icons-material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import {
