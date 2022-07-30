@@ -2,19 +2,13 @@ import {
   Column,
   Filter,
   FilteringState,
-  GroupingState,
-  IntegratedGrouping,
-  IntegratedPaging,
   IntegratedSorting,
-  PagingState,
   SortingState,
 } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
-  PagingPanel,
   Table,
   TableFilterRow,
-  TableGroupRow,
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
@@ -34,7 +28,7 @@ import { useRouter } from 'next/router';
 import {
   ReactElement, useEffect, useMemo, useState,
 } from 'react';
-import { useDimensionsRef } from 'rooks';
+import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Commands } from '~/src/classes/Commands';
@@ -53,11 +47,6 @@ const PageCommandsBot: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [ items, setItems ] = useState<Commands[]>([]);
-
-  const [ ref, dimensions ] = useDimensionsRef();
-  const itemsPerPage = useMemo(() => {
-    return Math.floor(((dimensions?.height || 0) - 120) / 63.75);
-  }, [dimensions]);
 
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
@@ -111,9 +100,8 @@ const PageCommandsBot: NextPageWithLayout = () => {
   const [tableColumnExtensions] = useState([
     { columnName: 'command', width: '40%' },
     { columnName: 'permission', filteringEnabled: false },
-    { columnName: 'type', filteringEnabled: false },
     {
-      columnName: 'actions', width: 90, filteringEnabled: false,
+      columnName: 'actions', width: 100, filteringEnabled: false,
     },
   ]);
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -139,15 +127,27 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
-      const filterPass = filters.length > 0 ? item.defaultValue.includes(filters[0].value) || item.command.includes(filters[0].value) : true;
-      const modifiedPass = showOnlyModified ? item.defaultValue !== item.command : true;
-      return filterPass && modifiedPass;
+      let shouldShow = true;
+
+      for (const filter of filters) {
+        if (filter.columnName === 'name') {
+          shouldShow = item.name.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'command') {
+          shouldShow = item.defaultValue.toLowerCase().includes(filter.value.toLowerCase()) || item.command.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'type') {
+          shouldShow = item.type.toLowerCase().includes(filter.value.toLowerCase());
+        }
+
+        if (!shouldShow) {
+          break;
+        }
+      }
+      return shouldShow && (showOnlyModified ? item.defaultValue !== item.command : true);
     });
   }, [items, showOnlyModified, filters]);
 
   return (
     <>
-
       {loading && items.length === 0 && permissions.length === 0
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
@@ -160,39 +160,24 @@ const PageCommandsBot: NextPageWithLayout = () => {
               </FormGroup>
             </Grid>
           </Grid>
-          <div ref={ref}>
-            <Paper sx={{
-              m: 0, p: 1, height: 'calc(100vh - 117px)',
-            }}>
+          <Paper>
+            <SimpleBar style={{ maxHeight: 'calc(100vh - 117px)' }} autoHide={false}>
               <DataGrid
                 rows={filteredItems}
                 columns={columns}
               >
                 <SortingState
-                  defaultSorting={[{ columnName: 'command', direction: 'asc' }]}
+                  defaultSorting={[{ columnName: 'command', direction: 'asc' }, { columnName: 'name', direction: 'asc' }, { columnName: 'type', direction: 'asc' }]}
                 />
                 <IntegratedSorting />
-
-                <GroupingState
-                  grouping={[{ columnName: 'type' }, { columnName: 'name' }]}
-                />
-                <IntegratedGrouping />
                 <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
-
-                <PagingState
-                  defaultCurrentPage={0}
-                  pageSize={itemsPerPage || 1}
-                />
-                <IntegratedPaging />
 
                 <Table columnExtensions={tableColumnExtensions}/>
                 <TableHeaderRow showSortingControls/>
                 <TableFilterRow />
-                <TableGroupRow />
-                <PagingPanel />
               </DataGrid>
-            </Paper>
-          </div>
+            </SimpleBar>
+          </Paper>
         </>}
       <BotCommandEdit items={items}/>
     </>
