@@ -19,9 +19,11 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
+  Input,
   MenuItem,
   Paper,
   Select,
+  Stack,
   Switch,
   TableCell,
   Typography,
@@ -86,6 +88,26 @@ const PageCommandsBot: NextPageWithLayout = () => {
     </TableCell>
   ), []);
 
+  const CommandFilterCell = useCallback(({ filter, onFilter }) => (
+    <TableCell sx={{ width: '100%', p: 1, pl: 3 }}>
+      <Grid container spacing={1}>
+        <Grid item xs="auto" alignSelf={'center'}>
+          <FormGroup>
+            <FormControlLabel control={<Switch  size='small' onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
+          </FormGroup>
+        </Grid>
+        <Grid item flexGrow={1}>
+          <Input
+            fullWidth
+            placeholder="Filter..."
+            value={filter ? filter.value : []}
+            onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
+          />
+        </Grid>
+      </Grid>
+    </TableCell>
+  ), [ permissions ]);
+
   const PermissionsFilterCell = useCallback(({ filter, onFilter }) => (
     <TableCell sx={{ width: '100%', p: 1 }}>
       <Select
@@ -119,8 +141,11 @@ const PageCommandsBot: NextPageWithLayout = () => {
     if (column.name === 'permission') {
       return <PermissionsFilterCell {...props} />;
     }
+    if (column.name === 'command') {
+      return <CommandFilterCell {...props} />;
+    }
     return <TableFilterRow.Cell {...props} />;
-  }, [TypeFilterCell, PermissionsFilterCell]);
+  }, [TypeFilterCell, PermissionsFilterCell, CommandFilterCell]);
 
   const columns = useMemo<Column[]>(() => [
     {
@@ -222,35 +247,26 @@ const PageCommandsBot: NextPageWithLayout = () => {
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <>
-          <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-            <Grid item xs="auto" mx={2}>
-              <FormGroup>
-                <FormControlLabel control={<Switch onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
-              </FormGroup>
-            </Grid>
-          </Grid>
-          <Paper>
-            <SimpleBar style={{ maxHeight: 'calc(100vh - 117px)' }} autoHide={false}>
-              <DataGrid
-                rows={filteredItems}
-                columns={columns}
-              >
-                <SortingState
-                  defaultSorting={[{ columnName: 'command', direction: 'asc' }, { columnName: 'name', direction: 'asc' }, { columnName: 'type', direction: 'asc' }]}
-                />
-                <IntegratedSorting />
-                <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+        : <Paper>
+          <SimpleBar style={{ maxHeight: 'calc(100vh - 74px)' }} autoHide={false}>
+            <DataGrid
+              rows={filteredItems}
+              columns={columns}
+            >
+              <SortingState
+                defaultSorting={[{ columnName: 'command', direction: 'asc' }, { columnName: 'name', direction: 'asc' }, { columnName: 'type', direction: 'asc' }]}
+              />
+              <IntegratedSorting />
+              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
 
-                <Table columnExtensions={tableColumnExtensions}/>
-                <TableHeaderRow showSortingControls/>
-                <TableFilterRow
-                  cellComponent={FilterCell}
-                />
-              </DataGrid>
-            </SimpleBar>
-          </Paper>
-        </>}
+              <Table columnExtensions={tableColumnExtensions}/>
+              <TableHeaderRow showSortingControls/>
+              <TableFilterRow
+                cellComponent={FilterCell}
+              />
+            </DataGrid>
+          </SimpleBar>
+        </Paper>}
       <BotCommandEdit items={items}/>
     </>
   );
