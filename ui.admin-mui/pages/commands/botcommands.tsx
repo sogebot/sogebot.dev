@@ -11,6 +11,7 @@ import {
   TableFilterRow,
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
+import { Filter } from '@mui/icons-material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -19,14 +20,18 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
+  MenuItem,
   Paper,
+  Select,
   Switch,
+  TableCell,
   Typography,
 } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import {
-  ReactElement, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import SimpleBar from 'simplebar-react';
 
@@ -53,6 +58,71 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const [ showOnlyModified, setShowOnlyModified ] = useState(false);
 
+  const TypeFilterCell = useCallback(({ filter, onFilter }) => (
+    <TableCell sx={{ width: '100%', p: 1 }}>
+      <Select
+        variant='standard'
+        fullWidth
+        multiple
+        displayEmpty
+        value={filter ? filter.value : []}
+        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
+        renderValue={(selected) => {
+          if (selected.length === 0) {
+            return <Typography sx={{
+              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
+            }}>Filter...</Typography>;
+          }
+
+          return selected.join(', ');
+        }}
+      >
+        <MenuItem value='Services' key='Services'>Services</MenuItem>
+        <MenuItem value='Systems' key='Systems'>Systems</MenuItem>
+        <MenuItem value='Core' key='Core'>Core</MenuItem>
+        <MenuItem value='Intergrations' key='Intergrations'>Intergrations</MenuItem>
+        <MenuItem value='Games' key='Games'>Games</MenuItem>
+        <MenuItem value='Overlays' key='Overlays'>Overlays</MenuItem>
+      </Select>
+    </TableCell>
+  ), []);
+
+  const PermissionsFilterCell = useCallback(({ filter, onFilter }) => (
+    <TableCell sx={{ width: '100%', p: 1 }}>
+      <Select
+        variant='standard'
+        fullWidth
+        multiple
+        displayEmpty
+        value={filter ? filter.value : []}
+        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
+        renderValue={(selected: string[]) => {
+          if (selected.length === 0) {
+            return <Typography sx={{
+              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
+            }}>Filter...</Typography>;
+          }
+
+          return selected.map(o => permissions.find(p => o === p.id)?.name || 'Disabled').join(', ');
+        }}
+      >
+        <MenuItem value="">Disabled</MenuItem>
+        {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+      </Select>
+    </TableCell>
+  ), [ permissions ]);
+
+  const FilterCell = useCallback((props) => {
+    const { column } = props;
+    if (column.name === 'type') {
+      return <TypeFilterCell {...props} />;
+    }
+    if (column.name === 'permission') {
+      return <PermissionsFilterCell {...props} />;
+    }
+    return <TableFilterRow.Cell {...props} />;
+  }, [TypeFilterCell, PermissionsFilterCell]);
+
   const columns = useMemo<Column[]>(() => [
     {
       name:         'command',
@@ -77,7 +147,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
       name:         'permission', title:        translate('permission'),
       getCellValue: (row) => {
         return (<Typography color={!row.permission ? theme.palette.error.dark : 'undefined'}>
-          {row.permission === null ? '-- unset --' : getPermissionName(row.permission, permissions || [])}
+          {row.permission === null ? 'Disabled' : getPermissionName(row.permission, permissions || [])}
         </Typography>);
       },
     },
@@ -99,7 +169,6 @@ const PageCommandsBot: NextPageWithLayout = () => {
   ], [ permissions, translate, router ]);
   const [tableColumnExtensions] = useState([
     { columnName: 'command', width: '40%' },
-    { columnName: 'permission', filteringEnabled: false },
     {
       columnName: 'actions', width: 100, filteringEnabled: false,
     },
@@ -135,7 +204,9 @@ const PageCommandsBot: NextPageWithLayout = () => {
         } else if (filter.columnName === 'command') {
           shouldShow = item.defaultValue.toLowerCase().includes(filter.value.toLowerCase()) || item.command.toLowerCase().includes(filter.value.toLowerCase());
         } else if (filter.columnName === 'type') {
-          shouldShow = item.type.toLowerCase().includes(filter.value.toLowerCase());
+          shouldShow = filter.value.length > 0 ? filter.value.includes(item.type) : true;
+        } else if (filter.columnName === 'permission') {
+          shouldShow = filter.value.length > 0 ? filter.value.includes(item.permission || '') : true;
         }
 
         if (!shouldShow) {
@@ -174,7 +245,9 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
                 <Table columnExtensions={tableColumnExtensions}/>
                 <TableHeaderRow showSortingControls/>
-                <TableFilterRow />
+                <TableFilterRow
+                  cellComponent={FilterCell}
+                />
               </DataGrid>
             </SimpleBar>
           </Paper>
