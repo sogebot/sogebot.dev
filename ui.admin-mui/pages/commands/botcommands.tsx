@@ -23,7 +23,6 @@ import {
   MenuItem,
   Paper,
   Select,
-  Stack,
   Switch,
   TableCell,
   Typography,
@@ -89,7 +88,9 @@ const PageCommandsBot: NextPageWithLayout = () => {
   ), []);
 
   const CommandFilterCell = useCallback(({ filter, onFilter }) => (
-    <TableCell sx={{ width: '100%', p: 1, pl: 3 }}>
+    <TableCell sx={{
+      width: '100%', p: 1, pl: 3,
+    }}>
       <Grid container spacing={1}>
         <Grid item xs="auto" alignSelf={'center'}>
           <FormGroup>
@@ -106,7 +107,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
         </Grid>
       </Grid>
     </TableCell>
-  ), [ permissions ]);
+  ), []);
 
   const PermissionsFilterCell = useCallback(({ filter, onFilter }) => (
     <TableCell sx={{ width: '100%', p: 1 }}>
