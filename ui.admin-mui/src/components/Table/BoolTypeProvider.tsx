@@ -1,0 +1,13 @@
+import { DataTypeProvider, DataTypeProviderProps } from '@devexpress/dx-react-grid';
+import { Check, Clear } from '@mui/icons-material';
+import { ReactNode } from 'react';
+
+export const BoolFormatter = ({ value }: { value: boolean }) => {
+  return value ? <Check/> : <Clear/>;
+};
+export const BoolTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+  <DataTypeProvider
+    formatterComponent={BoolFormatter}
+    {...props}
+  />
+);

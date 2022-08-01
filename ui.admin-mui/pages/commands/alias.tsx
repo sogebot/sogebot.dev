@@ -1,30 +1,45 @@
-import { nextTick } from 'process';
-
+import {
+  Column,
+  Filter,
+  FilteringState,
+  IntegratedSelection,
+  IntegratedSorting,
+  SelectionState,
+  SortingState,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid as DataGrid,
+  Table,
+  TableFilterRow,
+  TableHeaderRow,
+  TableSelection,
+} from '@devexpress/dx-react-grid-material-ui';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  Badge,
   Button,
   CircularProgress,
   Grid,
+  MenuItem,
   Paper,
+  Select,
+  Stack,
+  TableCell,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import {
-  DataGrid, GridActionsColDef, GridColDef, GridRowId, GridSelectionModel, GridSortModel,
-} from '@mui/x-data-grid';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useReducer, useState,
+  ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import SimpleBar from 'simplebar-react';
 
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
@@ -35,13 +50,16 @@ import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { AliasEdit } from '~/src/components/RightDrawer/AliasEdit';
 import { AliasGroupEdit } from '~/src/components/RightDrawer/AliasGroupEdit';
+import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
+import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
+import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
+import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
+import { usePermissionsFilter } from '~/src/hooks/Table/usePermissionsFilter';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
-import theme from '~/src/theme';
-import 'simplebar-react/dist/simplebar.min.css';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
   const { translate } = useTranslation();
@@ -54,69 +72,46 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const { permissions } = usePermissions();
-  const [ selectedItemsObject, setSelectedItems ] = useState<GridRowId[]>([]);
-  const [ sortModel, setSortModel ] = useState<GridSortModel>([{ field: 'alias', sort: 'asc' }]);
-
-  const [ showGroups, setShowGroups ] = useReducer((state: (string | null)[], value: string | null) => {
-    if (state.includes(value)) {
-      return state.filter(o => o !== value);
-    } else {
-      return [...state, value];
-    }
-  }, []);
+  const [ selection, setSelection ] = useState<(string|number)[]>([]);
+  const { Cell: PermissionFilterCell } = usePermissionsFilter();
+  const { Cell: BoolFilterCell } = useBoolFilter();
+  const [tableColumnExtensions] = useState([
+    { columnName: 'command', width: '40%' },
+    { columnName: 'enabled', align: 'center' },
+    { columnName: 'visible', align: 'center' },
+    {
+      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+    },
+  ]);
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
 
-  const columns: (GridColDef | GridActionsColDef)[] = [
-    {
-      field: 'alias', headerName: translate('alias'), flex: 0.3, hideable: false,
-    },
-    {
-      field: 'command', headerName: translate('command'), flex: 1, hideable: false,
-    },
-    {
-      field:      'permission', headerName: translate('permission'), hideable:   false,
-      renderCell: (params) => {
-        return (<Typography color={!params.row.permission ? theme.palette.error.dark : 'undefined'}>
-          {params.row.permission === null ? '-- unset --' : getPermissionName(params.row.permission, permissions || [])}
-        </Typography>);
-      },
-    },
-    {
-      field: 'enabled', headerName: capitalize(translate('enabled')), type: 'boolean', hideable: false,
-    },
-    {
-      field: 'visible', headerName: capitalize(translate('visible')), type: 'boolean', hideable: false,
-    },
-    {
-      field:      'group', headerName: capitalize(translate('group')), hideable:   false, flex:       0.15,
-      renderCell: (params) => {
-        return (<Typography color={!params.row.group ? grey['400'] : 'undefined'}>
-          {params.row.group === null ? 'ungrouped' : params.row.group}
-        </Typography>);
-      },
-    },
-    {
-      field:      'actions',
-      type:       'actions',
-      hideable:   false,
-      align:      'right',
-      minWidth:   150,
-      getActions: (params) => [
-        <Button
-          size='small'
-          key="edit"
-          variant="contained"
-          startIcon={<EditIcon/>}
-          onClick={() => {
-            router.push('/commands/alias/edit/' + params.row.id);
-          }}>Edit</Button>,
-        <GridActionAliasMenu key='delete' onDelete={() => deleteItem(params.row)} />,
-      ],
-    },
-  ];
+  const GroupFilterCell = useCallback(({ filter, onFilter }) => (
+    <TableCell sx={{ width: '100%', p: 1 }}>
+      <Select
+        variant='standard'
+        fullWidth
+        multiple
+        displayEmpty
+        value={filter ? filter.value : []}
+        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
+        renderValue={(selected: string[]) => {
+          if (selected.length === 0) {
+            return <Typography sx={{
+              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
+            }}>Filter...</Typography>;
+          }
+
+          return selected.map(o => o === '' ? 'Ungrouped' : o).join(', ');
+        }}
+      >
+        {groups.map(group => <MenuItem key={group ?? ''} value={group ?? ''}>{group ?? 'Ungrouped'}</MenuItem>)}
+      </Select>
+    </TableCell>
+  ), [groups]);
 
   const deleteItem = useCallback((item: Alias) => {
     getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
@@ -124,6 +119,56 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       refresh();
     });
   }, [ enqueueSnackbar ]);
+
+  const columns = useMemo<Column[]>(() => [
+    {
+      name:  'alias',
+      title: capitalize(translate('alias')),
+    },
+    {
+      name:  'command',
+      title: capitalize(translate('command')),
+    },
+    {
+      name:         'permission', title:        translate('permission'),
+      getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []),
+    },
+    { name: 'enabled', title: capitalize(translate('enabled')) },
+    { name: 'visible', title: capitalize(translate('visible')) },
+    {
+      name: 'group', title: capitalize(translate('group')), getCellValue: (row) => row.group ? row.group : '_ungroup', // ungrouped should be first
+    },
+    {
+      name:         'actions',
+      title:        ' ',
+      getCellValue: (row) => [
+        <Stack direction="row" key="row">
+          <Button
+            size='small'
+            variant="contained"
+            startIcon={<EditIcon/>}
+            onClick={() => {
+              router.push('/commands/alias/edit/' + row.id);
+            }}>Edit</Button>
+          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+        </Stack>,
+      ],
+    },
+  ], [ permissions, translate, router, deleteItem ]);
+
+  const FilterCell = useCallback((props) => {
+    const { column } = props;
+    if (column.name === 'permission') {
+      return <PermissionFilterCell {...props} />;
+    }
+    if (column.name === 'group') {
+      return <GroupFilterCell {...props} />;
+    }
+    if (column.name === 'enabled' || column.name === 'visible') {
+      return <BoolFilterCell {...props} />;
+    }
+    return <TableFilterRow.Cell {...props} />;
+  }, [PermissionFilterCell, GroupFilterCell, BoolFilterCell]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -154,57 +199,76 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     ]);
   };
 
-  const handleSelectionChange = (selectionModel: GridSelectionModel) => {
-    setSelectedItems(selectionModel);
-  };
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      let shouldShow = true;
 
-  const selectedItems = useMemo(() => {
-    return Object.values(selectedItemsObject).flat();
-  }, [selectedItemsObject]);
+      for (const filter of filters) {
+        if (filter.columnName === 'command') {
+          shouldShow = item.command.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'alias') {
+          shouldShow = item.alias.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'group') {
+          shouldShow = filter.value.length > 0 ? filter.value.includes(item.group || '') : true;
+        } else if (filter.columnName === 'permission') {
+          shouldShow = filter.value.length > 0 ? filter.value.includes(item.permission || '') : true;
+        } else if (filter.columnName === 'visible') {
+          shouldShow = filter.value === item.visible;
+        } else if (filter.columnName === 'enabled') {
+          shouldShow = filter.value === item.enabled;
+        }
+
+        if (!shouldShow) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [items, filters]);
 
   useEffect(() => {
-    dispatch(setBulkCount(selectedItems.length));
-  }, [selectedItems, dispatch]);
+    dispatch(setBulkCount(selection.length));
+  }, [selection, dispatch]);
 
   const bulkCanVisOff = useMemo(() => {
-    for (const itemId of selectedItems) {
+    for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
       if (item && item.visible) {
         return true;
       }
     }
     return false;
-  }, [ selectedItems, items ]);
+  }, [ selection, items ]);
 
   const bulkCanVisOn = useMemo(() => {
-    for (const itemId of selectedItems) {
+    for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
       if (item && !item.visible) {
         return true;
       }
     }
     return false;
-  }, [ selectedItems, items ]);
+  }, [ selection, items ]);
 
   const bulkCanEnable = useMemo(() => {
-    for (const itemId of selectedItems) {
+    for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
       if (item && !item.enabled) {
         return true;
       }
     }
     return false;
-  }, [ selectedItems, items ]);
+  }, [ selection, items ]);
 
   const bulkCanDisable = useMemo(() => {
-    for (const itemId of selectedItems) {
+    for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
       if (item && item.enabled) {
         return true;
       }
     }
     return false;
-  }, [ selectedItems, items ]);
+  }, [ selection, items ]);
 
   /*const getGroupSettings = useCallback((name: string): AliasGroup => {
     const groupSetting = groupsSettings.find(o => o.name === name);
@@ -215,7 +279,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [ groupsSettings ]);*/
 
   const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
-    for (const selected of selectedItems) {
+    for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
@@ -228,7 +292,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     }
 
     setItems(i => i.map((item) => {
-      if (selectedItems.includes(item.id)) {
+      if (selection.includes(item.id)) {
         item[attribute] = value;
       }
       return item;
@@ -242,7 +306,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       enqueueSnackbar(`Bulk operation set permission to ${permissions.find(o => o.id === value)?.name}.`, { variant: 'success' });
     } else if (attribute === 'group') {
       // we need next tick as it doesn't reselect without it
-      nextTick(() => setSelectedItems(selectedItems));
+      // nextTick(() => setSelection(selectedItems));
       if (value) {
         enqueueSnackbar(`Bulk operation set group to ${value}.`, { variant: 'success' });
       } else {
@@ -251,10 +315,10 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     }
 
     refresh();
-  }, [ selectedItems, enqueueSnackbar, items, permissions ]);
+  }, [ enqueueSnackbar, items, permissions, selection ]);
 
   const bulkDelete =  useCallback(async () => {
-    for (const selected of selectedItems) {
+    for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
@@ -264,10 +328,10 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         });
       }
     }
-    setItems(i => i.filter(item => !selectedItems.includes(item.id)));
+    setItems(i => i.filter(item => !selection.includes(item.id)));
     enqueueSnackbar(`Bulk operation deleted items.`, { variant: 'success' });
-    setSelectedItems([]);
-  }, [ selectedItems, enqueueSnackbar, items ]);
+    setSelection([]);
+  }, [ selection, enqueueSnackbar, items ]);
 
   return (
     <>
@@ -281,7 +345,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/alias/group/edit');
-          }} color='secondary'>Edit group settings</Button>
+          }} color='secondary'>Group settings</Button>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">
@@ -317,48 +381,47 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
-      {groups.length > 0 && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        {groups.map((group, idx) => (
-          <Grid item key={idx}>
-            <Button variant={showGroups.includes(group) ? 'contained' : 'outlined'} onClick={() => setShowGroups(group)}>
-              <Badge badgeContent={items.filter(o => o.group === group).length}
-                sx={{
-                  '& .MuiBadge-badge': {
-                    color:      'white',
-                    textShadow: '0px 0px 5px black',
-                    position:   'relative',
-                    transform:  'scale(1) translate(30%, 1px)',
-                    width:      '20px',
-                  },
-                }}
-                showZero>
-                {group || 'Ungrouped'}
-              </Badge>
-            </Button>
-          </Grid>
-        )
-        )}
-      </Grid>
-      }
-
       {loading
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
-        : <Paper sx={{
-          m: 0, p: 1, height: 'calc(100vh - 158px)',
-        }}>
-          <DataGrid
-            sx={{ border: 0, backgroundColor: grey[900] }}
-            selectionModel={selectedItemsObject}
-            onSelectionModelChange={(selectionModel) => handleSelectionChange(selectionModel)}
-            rows={items.filter(o => showGroups.length === 0 || showGroups.includes(o.group))}
-            sortModel={sortModel}
-            onSortModelChange={(model) => setSortModel(model)}
-            columns={columns}
-            autoPageSize
-            checkboxSelection
-          />
+        : <Paper>
+          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+            <DataGrid
+              rows={filteredItems}
+              columns={columns}
+              getRowId={row => row.id}
+            >
+              <PermissionTypeProvider
+                for={['permission']}
+              />
+              <GroupTypeProvider
+                for={['group']}
+              />
+              <BoolTypeProvider
+                for={['visible', 'enabled']}
+              />
+
+              <SortingState
+                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'alias', direction: 'asc' }, { columnName: 'enabled', direction: 'asc' }]}
+                columnExtensions={tableColumnExtensions as any}
+              />
+              <IntegratedSorting />
+              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+
+              <SelectionState
+                selection={selection}
+                onSelectionChange={setSelection}
+              />
+              <IntegratedSelection/>
+              <Table columnExtensions={tableColumnExtensions as any}/>
+              <TableHeaderRow showSortingControls/>
+              <TableFilterRow
+                cellComponent={FilterCell}
+              />
+              <TableSelection showSelectAll/>
+            </DataGrid>
+          </SimpleBar>
         </Paper>}
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
       <AliasGroupEdit onSave={() => refresh()} groups={groups}/>

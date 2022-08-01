@@ -39,13 +39,12 @@ import { NextPageWithLayout } from '~/pages/_app';
 import { Commands } from '~/src/classes/Commands';
 import { Layout } from '~/src/components/Layout/main';
 import { BotCommandEdit } from '~/src/components/RightDrawer/BotCommandEdit';
+import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
+import { usePermissionsFilter } from '~/src/hooks/Table/usePermissionsFilter';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
-
-import 'simplebar-react/dist/simplebar.min.css';
 
 const PageCommandsBot: NextPageWithLayout = () => {
   const { translate } = useTranslation();
@@ -55,6 +54,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
+  const { Cell: PermissionFilterCell } = usePermissionsFilter({ showDisabled: true });
 
   const [ showOnlyModified, setShowOnlyModified ] = useState(false);
 
@@ -109,44 +109,19 @@ const PageCommandsBot: NextPageWithLayout = () => {
     </TableCell>
   ), []);
 
-  const PermissionsFilterCell = useCallback(({ filter, onFilter }) => (
-    <TableCell sx={{ width: '100%', p: 1 }}>
-      <Select
-        variant='standard'
-        fullWidth
-        multiple
-        displayEmpty
-        value={filter ? filter.value : []}
-        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
-        renderValue={(selected: string[]) => {
-          if (selected.length === 0) {
-            return <Typography sx={{
-              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
-            }}>Filter...</Typography>;
-          }
-
-          return selected.map(o => permissions.find(p => o === p.id)?.name || 'Disabled').join(', ');
-        }}
-      >
-        <MenuItem value="">Disabled</MenuItem>
-        {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-      </Select>
-    </TableCell>
-  ), [ permissions ]);
-
   const FilterCell = useCallback((props) => {
     const { column } = props;
     if (column.name === 'type') {
       return <TypeFilterCell {...props} />;
     }
     if (column.name === 'permission') {
-      return <PermissionsFilterCell {...props} />;
+      return <PermissionFilterCell {...props} />;
     }
     if (column.name === 'command') {
       return <CommandFilterCell {...props} />;
     }
     return <TableFilterRow.Cell {...props} />;
-  }, [TypeFilterCell, PermissionsFilterCell, CommandFilterCell]);
+  }, [TypeFilterCell, PermissionFilterCell, CommandFilterCell]);
 
   const columns = useMemo<Column[]>(() => [
     {
@@ -170,11 +145,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
     },
     {
       name:         'permission', title:        translate('permission'),
-      getCellValue: (row) => {
-        return (<Typography color={!row.permission ? theme.palette.error.dark : 'undefined'}>
-          {row.permission === null ? 'Disabled' : getPermissionName(row.permission, permissions || [])}
-        </Typography>);
-      },
+      getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []),
     },
     { name: 'type', title: capitalize(translate('type')) },
     {
@@ -195,7 +166,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
   const [tableColumnExtensions] = useState([
     { columnName: 'command', width: '40%' },
     {
-      columnName: 'actions', width: 100, filteringEnabled: false,
+      columnName: 'actions', width: 100, filteringEnabled: false, sortingEnabled: false,
     },
   ]);
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -254,8 +225,11 @@ const PageCommandsBot: NextPageWithLayout = () => {
               rows={filteredItems}
               columns={columns}
             >
+              <PermissionTypeProvider for={['permission']}/>
+
               <SortingState
                 defaultSorting={[{ columnName: 'command', direction: 'asc' }, { columnName: 'name', direction: 'asc' }, { columnName: 'type', direction: 'asc' }]}
+                columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
               <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
