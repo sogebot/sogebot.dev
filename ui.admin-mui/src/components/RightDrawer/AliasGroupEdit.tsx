@@ -64,7 +64,7 @@ export const AliasGroupEdit: React.FC<{
   const handleClose = () => {
     setEditDialog(false);
     setTimeout(() => {
-      router.push('/commands/alias');
+      router.push('/commands/alias/group/edit');
     }, 200);
   };
 
