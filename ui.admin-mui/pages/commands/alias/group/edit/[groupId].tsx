@@ -1,4 +1,4 @@
-import PageCommandsAlias from '../../../alias';
+import PageCommandsAlias from '../edit';
 
 const PageCommandsAliasEdit = PageCommandsAlias;
 

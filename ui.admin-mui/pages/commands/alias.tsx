@@ -49,7 +49,6 @@ import { ButtonsPermissionsBulk } from '~/src/components/Buttons/PermissionsBulk
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { AliasEdit } from '~/src/components/RightDrawer/AliasEdit';
-import { AliasGroupEdit } from '~/src/components/RightDrawer/AliasGroupEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
@@ -270,14 +269,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     return false;
   }, [ selection, items ]);
 
-  /*const getGroupSettings = useCallback((name: string): AliasGroup => {
-    const groupSetting = groupsSettings.find(o => o.name === name);
-    if (!groupSetting) {
-      return { name, options: { filter: null, permission: null } } as AliasGroup;
-    }
-    return groupSetting;
-  }, [ groupsSettings ]);*/
-
   const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
@@ -424,7 +415,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           </SimpleBar>
         </Paper>}
       <AliasEdit aliasGroups={groupsSettings} aliases={items}/>
-      <AliasGroupEdit onSave={() => refresh()} groups={groups}/>
     </>
   );
 };
