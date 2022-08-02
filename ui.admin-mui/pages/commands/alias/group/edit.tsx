@@ -65,7 +65,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: AliasGroup) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
+    getSocket('/systems/alias').emit('generic::deleteById', item.name, () => {
       enqueueSnackbar(`Alias group ${item.name} deleted successfully. You can still see this group if it is being activelly used by aliases.`, { variant: 'success' });
       refresh();
     });
@@ -171,7 +171,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
-      <AliasGroupEdit onSave={() => refresh()}/>
+      <AliasGroupEdit onSave={()=> refresh()}/>
     </>
   );
 };
