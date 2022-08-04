@@ -99,10 +99,8 @@ export const AliasEdit: React.FC<{
   const handleSave = () => {
     setSaving(true);
     getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
-      setErrors(err);
       if (err) {
-        validate();
-        console.error(err);
+        validate(err as any);
       } else {
         enqueueSnackbar('Alias saved.', { variant: 'success' });
         router.push(`/commands/alias/edit/${savedItem.id}`);

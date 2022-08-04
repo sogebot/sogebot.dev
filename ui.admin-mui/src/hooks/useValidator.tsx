@@ -48,32 +48,35 @@ export const useValidator = () => {
           _errors[error.property] = [];
         }
 
-        if (constraint.length === 0) {
-          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', error.property)));
-        } else {
+        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.' + error.property));
+        if (translation.startsWith('{')) {
           _errors[error.property].push(capitalize(`${constraint}`));
+        } else {
+          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.thisvalue'))));
         }
       }
     }
     return _errors;
   }, [ errors, translate ]);
 
-  const errorsList = useMemo(() => {
+  const errorsList = useCallback((errorsArg: ValidationError[]) => {
     const _errors: string[] = [];
-    for (const error of errors) {
+    for (const error of errorsArg) {
       if (!error.constraints) {
         continue;
       }
       for (const [type, constraint] of Object.entries(error.constraints)) {
-        if (constraint.length === 0) {
-          _errors.push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', error.property)));
-        } else {
+        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.' + error.property));
+        if (translation.startsWith('{')) {
+          // no translation found
           _errors.push(capitalize(`${constraint}`));
+        } else {
+          _errors.push(capitalize(translation));
         }
       }
     }
     return _errors;
-  }, [ errors, translate ]);
+  }, [ translate ]);
 
   const reset = useCallback(() => {
     setDirty([]);
@@ -103,13 +106,15 @@ export const useValidator = () => {
     }
   }, [ dirty, errorsPerAttribute ]);
 
-  const validate = useCallback(() => {
-    setDirty(errors.map(o => o.property));
+  const validate = useCallback((err: typeof errors) => {
+    console.error('Errors during validation', { err });
+    setDirty(err.map(o => o.property));
+    setErrors(err);
     enqueueSnackbar((<Stack>
       <Typography variant="body2">Unexpected errors during validation</Typography>
-      <ul>{errorsList.map((o, i) => <li key={i}>{o}</li>)}</ul>
+      <ul>{errorsList(err).map((o, i) => <li key={i}>{o}</li>)}</ul>
     </Stack>), { variant: 'error' });
-  }, [errors, errorsList, setDirty, enqueueSnackbar]);
+  }, [errorsList, setDirty, enqueueSnackbar]);
 
   return {
     propsError, reset, setErrors, errorsList, validate, haveErrors,

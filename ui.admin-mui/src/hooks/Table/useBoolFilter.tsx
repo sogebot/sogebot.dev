@@ -14,7 +14,7 @@ export const useBoolFilter = () => {
 
   const Cell = useCallback(({ filter, onFilter }) => (
     <TableCell sx={{
-      width: '100%', p: 1, textAlign: 'center', 
+      width: '100%', p: 1, textAlign: 'center',
     }}>
       <Checkbox
         checked={filter === null ? false : filter.value}
