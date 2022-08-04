@@ -14,6 +14,7 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
+import { Price } from '@entity/price';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, SignalWifi4Bar, SignalWifiOffTwoTone,
 } from '@mui/icons-material';
@@ -27,7 +28,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { PriceInterface } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
@@ -56,7 +56,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Required<PriceInterface>[]>([]);
+  const [ items, setItems ] = useState<Required<Price>[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
@@ -74,7 +74,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   ]);
   const [filters, setFilters] = useState<Filter[]>([]);
 
-  const deleteItem = useCallback((item: PriceInterface) => {
+  const deleteItem = useCallback((item: Price) => {
     axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
       .finally(() => {
         enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
@@ -217,7 +217,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
     return false;
   }, [ selection, items ]);
 
-  const bulkToggleAttribute = useCallback(async <T extends keyof Required<PriceInterface>>(attribute: T, value: Required<PriceInterface>[T]) => {
+  const bulkToggleAttribute = useCallback(async <T extends keyof Required<Price>>(attribute: T, value: Required<Price>[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {

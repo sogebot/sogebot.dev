@@ -14,6 +14,7 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
+import { Alias, AliasGroup } from '@entity/alias';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
@@ -31,7 +32,6 @@ import {
   Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';

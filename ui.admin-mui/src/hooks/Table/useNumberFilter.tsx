@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 const types = ['=', '>', '<'];
 
 export const useNumberFilter = () => {
-  const handleChange = (value, filter, onFilter) => {
+  const handleChange = (value: any, filter: any, onFilter: (arg0: any) => void) => {
     onFilter({ ...filter, value });
   };
 
