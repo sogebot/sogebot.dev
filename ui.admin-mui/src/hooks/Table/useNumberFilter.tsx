@@ -38,6 +38,7 @@ export const useNumberFilter = () => {
       width: '100%', p: 1, textAlign: 'center',
     }}>
       <Input
+        fullWidth
         placeholder='Filter...'
         value={filter?.value ?? ''}
         type='number'

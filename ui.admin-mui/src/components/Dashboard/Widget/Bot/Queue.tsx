@@ -31,7 +31,6 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
 
   const [ eligibility, setEligibilty ] = React.useState({
     all:         true,
-    followers:   false,
     subscribers: false,
   });
   const eligibilityCache = usePreviousImmediate(eligibility);
@@ -63,7 +62,6 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
       }
       setEligibilty({
         all:         data.eligibility.eligibilityAll[0],
-        followers:   data.eligibility.eligibilityFollowers[0],
         subscribers: data.eligibility.eligibilitySubscribers[0],
       });
     });
@@ -78,39 +76,30 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
   const triggerEligibilityUpdate = React.useCallback(() => {
     if (eligibilityCache) {
       // all was disabled
-      if (!eligibility.all && !eligibility.followers && !eligibility.subscribers) {
-        setEligibilty({
-          all: true, subscribers: false, followers: false,
-        });
+      if (!eligibility.all && !eligibility.subscribers) {
+        setEligibilty({ all: true, subscribers: false });
         return;
       }
       if (!eligibility.all && eligibilityCache.all) {
         // we cannot disable if flws and subs are disabled
-        if (!eligibility.followers && !eligibility.subscribers) {
-          setEligibilty({
-            all: true, subscribers: false, followers: false,
-          });
+        if (!eligibility.subscribers) {
+          setEligibilty({ all: true, subscribers: false });
           return;
         }
       } else if (eligibility.all && !eligibilityCache.all) {
-        // remove followers and subscribers if all was enabeld
-        setEligibilty({
-          all: true, subscribers: false, followers: false,
-        });
+        // remove subscribers if all was enabled
+        setEligibilty({ all: true, subscribers: false });
         return;
       }
 
-      if (eligibility.all && (eligibility.followers || eligibility.subscribers)) {
-        setEligibilty({
-          all: false, subscribers: eligibility.subscribers, followers: eligibility.followers,
-        });
+      if (eligibility.all && eligibility.subscribers) {
+        setEligibilty({ all: false, subscribers: eligibility.subscribers });
         return;
       }
     }
     const data = {
       eligibility: {
         eligibilityAll:         eligibility.all,
-        eligibilityFollowers:   eligibility.followers,
         eligibilitySubscribers: eligibility.subscribers,
       },
     };
@@ -162,11 +151,7 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
       return items;
     } else {
       let filteredUsers = items;
-      if (eligibility.followers && eligibility.subscribers) {
-        filteredUsers = filteredUsers.filter(o => o.isFollower || o.isSubscriber);
-      } else if (eligibility.followers) {
-        filteredUsers = filteredUsers.filter(o => o.isFollower);
-      } else if (eligibility.subscribers) {
+      if (eligibility.subscribers) {
         filteredUsers = filteredUsers.filter(o => o.isSubscriber);
       }
       return filteredUsers.sort(o => -(new Date(o.createdAt).getTime()));
@@ -222,20 +207,11 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
               <Stack direction="row" alignItems={'center'}>
                 <ButtonGroup color={'secondary'} variant="text" size='small' sx={{ p: 0.5, width: '100%' }}>
                   <Button
-                    onClick={() => setEligibilty({
-                      all: true, subscribers: false, followers: false,
-                    })}
+                    onClick={() => setEligibilty({ all: true, subscribers: false })}
                     color={eligibility.all ? 'success' : 'error'}
                   >ALL</Button>
                   <Button
-                    onClick={() => setEligibilty({
-                      all: false, subscribers: eligibility.subscribers, followers: !eligibility.followers,
-                    })}
-                    color={eligibility.followers ? 'success' : 'error'}>FOLLOWERS</Button>
-                  <Button
-                    onClick={() => setEligibilty({
-                      all: false, subscribers: !eligibility.subscribers, followers: eligibility.followers,
-                    })}
+                    onClick={() => setEligibilty({ all: false, subscribers: !eligibility.subscribers })}
                     color={eligibility.subscribers ? 'success' : 'error'}>SUBSCRIBERS</Button>
                 </ButtonGroup>
                 <Tooltip title="Clear list">
@@ -280,7 +256,6 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
                       <ListItemText>
                         <Stack direction="row" spacing={0.5} alignItems='center'>
                           <Typography fontWeight={'bold'}>{user.username}</Typography>
-                          {user.isFollower && <Chip label="Follower" size="small" variant="outlined" />}
                           {user.isSubscriber && <Chip label="Subscriber" size="small" variant="outlined" />}
                           <Typography fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{ dayjs(user.createdAt).format('LL LTS') }</Typography>
                         </Stack>
@@ -300,7 +275,6 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
                 <ListItemText>
                   <Stack direction="row" spacing={0.5} alignItems='center'>
                     <Typography fontWeight={'bold'}>{user.username}</Typography>
-                    {user.isFollower && <Chip label="Follower" size="small" variant="outlined" />}
                     {user.isSubscriber && <Chip label="Subscriber" size="small" variant="outlined" />}
                     <Typography fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{ dayjs(user.createdAt).format('LL LTS') }</Typography>
                   </Stack>

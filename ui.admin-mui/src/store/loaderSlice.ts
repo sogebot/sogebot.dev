@@ -4,7 +4,7 @@ export const loaderSlice = createSlice({
   name:         'loader',
   initialState: {
     server:            null,
-    compatibleVersion: '15.2.0',
+    compatibleVersion: '15.5.0',
     connectedToServer: false,
 
     drawerWidth:   65,

@@ -46,7 +46,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
 
   const eligibleItems = React.useMemo(() => [
     { title: translate('everyone'), value: 'all' },
-    { title: translate('followers'), value: 'followers' },
     { title: translate('subscribers'), value: 'subscribers' },
   ], [translate]);
 
@@ -111,8 +110,8 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
   const open = React.useCallback(() => {
     const out = [];
     out.push(keyword);
-    if (eligible.find(o => o.value === 'followers') || eligible.find(o => o.value === 'subscribers')) {
-      out.push('-for ' + (eligible.find(o => o.value === 'followers') ? 'followers' : ' ') + (eligible.find(o => o.value === 'subscribers') ? 'subscribers' : ' '));
+    if (eligible.find(o => o.value === 'subscribers')) {
+      out.push('-for ' + (eligible.find(o => o.value === 'subscribers') ? 'subscribers' : ' '));
     }
 
     if (!isTypeKeywords) {
@@ -181,14 +180,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
           setRange([raffle.minTickets ?? 0, raffle.maxTickets ?? 0]);
 
           // set eligibility
-          if (!raffle.forSubscribers && !raffle.forFollowers) {
+          if (!raffle.forSubscribers) {
             setEligible([eligibleItems[0]]);
           } else {
             setEligible([]);
             const eligibilitySet = [];
-            if (raffle.forFollowers) {
-              eligibilitySet.push(eligibleItems[1]);
-            }
             if (raffle.forSubscribers) {
               eligibilitySet.push(eligibleItems[2]);
             }
@@ -400,10 +396,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               <Grid container>
                 <Grid item xs={12} textAlign={'center'}>
                   <Typography variant="h3">{ winner.userName }</Typography>
-                </Grid>
-
-                <Grid item xs={6} textAlign={'center'}>
-                  <Typography variant="button" color={winner.isFollower ? green[400] : red[400]}>{ translate('follower') }</Typography>
                 </Grid>
                 <Grid item xs={6} textAlign={'center'}>
                   <Typography variant="button" color={winner.isSubscriber ? green[400] : red[400]}>{ translate('subscriber') }</Typography>
