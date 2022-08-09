@@ -247,8 +247,8 @@ export const CooldownEdit: React.FC<{
               value={item ? item.type : 'global'}
               onChange={event => handleValueChange('type', event.target.value as any)}
             >
-              <MenuItem value="global">Global</MenuItem>
-              <MenuItem value="user">User</MenuItem>
+              <MenuItem value="global">{translate('global')}</MenuItem>
+              <MenuItem value="user">{translate('user')}</MenuItem>
             </Select>
             <FormHelperText>
               {item.type === 'global' ? 'Cooldown will be shared among users.' : 'Each user will have own cooldown'}
