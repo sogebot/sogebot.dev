@@ -9,9 +9,8 @@ import React, { useEffect, useMemo } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDidMount, useIntervalWhen } from 'rooks';
 
+import { getSocket } from '~/src/helpers/socket';
 import theme from '~/src/theme';
-
-import { getSocket } from '../../../../helpers/socket';
 
 const emptyCurrentSong: currentSongType = {
   videoId: null, title: '', type: '', username: '', volume: 0, loudness: 0, forceVolume: false, startTime: 0, endTime: Number.MAX_SAFE_INTEGER,
@@ -22,7 +21,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ className: string }> = ({
 }) => {
   const [ autoplay, setAutoplay ] = React.useState(false);
   const [ currentTag, setCurrentTag ] = React.useState('general');
-  const [ availableTags, setAvailableTags ] = React.useState<string[]>([]);
+  const [ availableTags, setAvailableTags ] = React.useState<string[]>(['general']);
   const [ currentSong, setCurrentSong ] = React.useState(emptyCurrentSong);
   const [ requests, setRequests ] = React.useState<any[]>([]);
   const [ playing, setPlaying ] = React.useState(true);
@@ -62,7 +61,11 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ className: string }> = ({
       if (err) {
         return console.error(err);
       }
-      setAvailableTags(tags);
+      if (!tags.includes('general')) {
+        setAvailableTags(['general', ...tags]);
+      } else {
+        setAvailableTags(tags);
+      }
     });
   };
 

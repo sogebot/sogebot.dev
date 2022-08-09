@@ -174,7 +174,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
           });
         }
 
-        if (running) {
+        if (!raffle.isClosed) {
           setKeyword(raffle.keyword);
           setIsTypeKeywords(raffle.type === 0);
           setRange([raffle.minTickets ?? 0, raffle.maxTickets ?? 0]);

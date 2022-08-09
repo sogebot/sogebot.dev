@@ -3,6 +3,7 @@ import { LoadingButton } from '@mui/lab';
 import {
   Box, Button, Checkbox, CircularProgress, Dialog, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, TextField,
 } from '@mui/material';
+import { useWhatChanged } from '@simbathesailor/use-what-changed';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -10,7 +11,7 @@ import axios from 'axios';
 import { validateOrReject } from 'class-validator';
 import {
   capitalize,
-  cloneDeep, merge,
+  merge,
 } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
@@ -21,6 +22,7 @@ import getAccessToken from '~/src/getAccessToken';
 import { timestampToObject } from '~/src/helpers/getTime';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
+import { StripTypeORMEntity } from '~/src/types/stripTypeORMEntity';
 
 const newItem = new Cooldown();
 newItem.name = '';
@@ -39,10 +41,9 @@ export const CooldownEdit: React.FC<{
   const router = useRouter();
   const { translate } = useTranslation();
   const [ editDialog, setEditDialog ] = useState(false);
-  const [ item, setItem ] = useState(newItem);
+  const [ item, setItem ] = useState<StripTypeORMEntity<Cooldown>>(newItem);
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
-  const { id } = router.query;
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
@@ -108,30 +109,28 @@ export const CooldownEdit: React.FC<{
   };
 
   const handleValueChange = useCallback(<T extends keyof Cooldown>(key: T, value: Cooldown[T]) => {
-    const update = cloneDeep(item);
-    update[key] = value;
-    setItem(update);
-  }, [item]);
+    setItem(i => ({ ...i, [key]: value }));
+  }, []);
 
   useEffect(() => {
     handleValueChange('miliseconds', time.days * DAY + time.hours * HOUR + time.minutes * MINUTE + time.seconds * SECOND);
   }, [time, handleValueChange]);
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      const it = props.items?.find(o => o.id === id) ?? newItem;
-      setItem(it);
+    setLoading(true);
+    if (router.query.id) {
+      const it = props.items?.find(o => o.id === router.query.id) ?? newItem;
+      //setItem(it);
       setTime(timestampToObject(it.miliseconds));
-      setLoading(false);
     } else {
-      setItem(newItem);
+      //setItem(newItem);
       setTime(timestampToObject(0));
-      setLoading(false);
     }
+    setLoading(false);
     reset();
-  }, [router, id, props.items, editDialog, reset]);
+  }, [router.query.id, props.items, editDialog, reset]);
 
+  useWhatChanged([item]);
   useEffect(() => {
     if (!loading && editDialog && item) {
       const toCheck = new Cooldown();

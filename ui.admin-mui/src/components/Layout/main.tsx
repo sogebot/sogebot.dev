@@ -2,6 +2,7 @@ import {
   AppBar, Box, Fade, Grid, Slide, Toolbar,
 } from '@mui/material';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
+import { setUseWhatChange } from '@simbathesailor/use-what-changed';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
@@ -28,6 +29,8 @@ import { DashboardWidgetAction } from '../Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../Dashboard/Widget/Twitch';
 import NavDrawer from '../navDrawer';
+
+setUseWhatChange(process.env.NODE_ENV === 'development');
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {

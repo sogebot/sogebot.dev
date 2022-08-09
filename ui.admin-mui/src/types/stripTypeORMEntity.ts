@@ -1,0 +1,1 @@
+export type StripTypeORMEntity<T> = Omit<T, 'hasId' | 'save' | 'remove' | 'softRemove'>;

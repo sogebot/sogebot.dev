@@ -55,6 +55,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "@types/lodash": "^4.14.182",
     "@types/node": "latest",
     "@types/react": "^17",
