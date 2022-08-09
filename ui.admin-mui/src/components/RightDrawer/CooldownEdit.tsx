@@ -54,8 +54,8 @@ export const CooldownEdit: React.FC<{
   const handleTimeChange = <T extends keyof typeof time>(input: typeof time, key: T, value: string) => {
     let numberVal = Number(value);
 
-    if (key === 'seconds' && numberVal <= 0) {
-      if (input.minutes > 0) {
+    if (key === 'seconds' && numberVal < 0) {
+      if (input.minutes > 0 || input.hours > 0 || input.days > 0) {
         const updatedInput = { ...input, [key]: 59 };
         handleTimeChange(updatedInput, 'minutes', String(input.minutes - 1));
         return;
@@ -64,8 +64,8 @@ export const CooldownEdit: React.FC<{
       }
     }
 
-    if (key === 'minutes' && numberVal <= 0) {
-      if (input.hours > 0) {
+    if (key === 'minutes' && numberVal < 0) {
+      if (input.hours > 0 || input.days > 0) {
         const updatedInput = { ...input, [key]: 59 };
         handleTimeChange(updatedInput, 'hours', String(input.hours - 1));
         return;
@@ -74,7 +74,7 @@ export const CooldownEdit: React.FC<{
       }
     }
 
-    if (key === 'hours' && numberVal <= 0) {
+    if (key === 'hours' && numberVal < 0) {
       if (input.days > 0) {
         const updatedInput = { ...input, [key]: 23 };
         handleTimeChange(updatedInput, 'days', String(input.days - 1));
@@ -120,10 +120,10 @@ export const CooldownEdit: React.FC<{
     setLoading(true);
     if (router.query.id) {
       const it = props.items?.find(o => o.id === router.query.id) ?? newItem;
-      //setItem(it);
+      setItem(it);
       setTime(timestampToObject(it.miliseconds));
     } else {
-      //setItem(newItem);
+      setItem(newItem);
       setTime(timestampToObject(0));
     }
     setLoading(false);
