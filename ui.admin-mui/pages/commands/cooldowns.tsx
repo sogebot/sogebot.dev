@@ -92,8 +92,9 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       title: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
     },
     {
-      name:  'type',
-      title: capitalize(translate('type')),
+      name:         'type',
+      title:        capitalize(translate('type')),
+      getCellValue: (row) => translate(row.type),
     },
     {
       name:         'miliseconds',
