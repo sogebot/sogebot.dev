@@ -45,6 +45,7 @@ import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { PriceEdit } from '~/src/components/RightDrawer/PriceEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
+import getAccessToken from '~/src/getAccessToken';
 import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
 import { useNumberFilter } from '~/src/hooks/Table/useNumberFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -75,7 +76,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const deleteItem = useCallback((item: Price) => {
-    axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -127,7 +128,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/price`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        axios.get(`${localStorage.server}/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -225,7 +226,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
           item[attribute] = value;
           axios.post(`${localStorage.server}/api/systems/price`,
             { ...item },
-            { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -256,7 +257,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }

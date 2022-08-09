@@ -17,6 +17,7 @@ import { useSnackbar } from 'notistack';
 import {  useCallback, useState } from 'react';
 import { useEffect } from 'react';
 
+import getAccessToken from '~/src/getAccessToken';
 import { timestampToObject } from '~/src/helpers/getTime';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
@@ -158,7 +159,7 @@ export const CooldownEdit: React.FC<{
     setSaving(true);
     axios.post(`${localStorage.server}/api/systems/cooldown`,
       { ...item },
-      { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
         enqueueSnackbar('Cooldown saved.', { variant: 'success' });
         router.push(`/commands/cooldowns/edit/${response.data.data.id}`);

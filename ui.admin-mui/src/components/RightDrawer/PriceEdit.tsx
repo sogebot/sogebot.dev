@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
+import getAccessToken from '~/src/getAccessToken';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
@@ -84,7 +85,7 @@ export const PriceEdit: React.FC<{
     setSaving(true);
     axios.post(`${localStorage.server}/api/systems/price`,
       { ...item },
-      { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
         enqueueSnackbar('Price saved.', { variant: 'success' });
         router.push(`/commands/price/edit/${response.data.data.id}`);

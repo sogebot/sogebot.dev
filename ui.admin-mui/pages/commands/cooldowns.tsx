@@ -43,6 +43,7 @@ import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { CooldownEdit } from '~/src/components/RightDrawer/CooldownEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
+import getAccessToken from '~/src/getAccessToken';
 import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
 import { useNumberFilter } from '~/src/hooks/Table/useNumberFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -78,7 +79,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const deleteItem = useCallback((item: Cooldown) => {
-    axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Cooldown ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -140,7 +141,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        axios.get(`${localStorage.server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -218,7 +219,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
           item[attribute] = value;
           axios.post(`${localStorage.server}/api/systems/cooldown`,
             { ...item },
-            { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -245,7 +246,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }
