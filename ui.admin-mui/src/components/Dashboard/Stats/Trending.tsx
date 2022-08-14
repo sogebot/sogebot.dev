@@ -15,7 +15,7 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
 
   const numberReducer = (out: string, item: any) => {
     if (['currency', 'compact'].includes(item.type)) {
-      out += `<small style="color: ${theme.palette.primary.dark};">${item.value}</small>`;
+      out += `<small style="color: ${theme.palette.primary.dark};">${Math.abs(item.value)}</small>`;
     } else {
       out += item.value;
     }
@@ -23,7 +23,7 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
   };
 
   const isTrending = React.useMemo(() => {
-    return props.average > props.current;
+    return props.average < props.current;
   }, [props]);
 
   const htmlProps = React.useMemo(() => {
@@ -44,14 +44,14 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
         style:                 configuration.core.ui.percentage ? 'percent' : 'decimal',
         notation:              configuration.core.ui.shortennumbers && !configuration.core.ui.percentage ? 'compact' : 'standard',
         maximumFractionDigits: configuration.core.ui.shortennumbers && !configuration.core.ui.percentage ? 1 : 0,
-      }).format(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / props.average : props.current - props.average);
+      }).format(Math.abs(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / props.average : props.current - props.average));
     }
 
     if (type === 'currency') {
       return Intl.NumberFormat(configuration.lang, {
         style:    configuration.core.ui.percentage ? 'percent' : 'currency',
         currency: configuration.currency,
-      }).format(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / (props.average || 1) : props.current - props.average);
+      }).format(Math.abs(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / (props.average || 1) : props.current - props.average));
     }
 
     if (type ==='hours') {
@@ -71,7 +71,7 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
       }
     }
 
-    return Intl.NumberFormat(configuration.lang, { style: configuration.core.ui.percentage ? 'percent' : 'decimal' }).format(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / (props.average || 1) : props.current - props.average);
+    return Intl.NumberFormat(configuration.lang, { style: configuration.core.ui.percentage ? 'percent' : 'decimal' }).format(Math.abs(configuration.core.ui.percentage ? Math.abs(props.current - props.average) / (props.average || 1) : props.current - props.average));
   }, [props, configuration]);
 
   return (
