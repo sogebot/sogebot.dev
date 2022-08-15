@@ -74,14 +74,14 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const { Cell: PermissionFilterCell } = usePermissionsFilter();
   const { Cell: BoolFilterCell } = useBoolFilter();
-  const [tableColumnExtensions] = useState([
+  const tableColumnExtensions = [
     { columnName: 'command', width: '40%' },
     { columnName: 'enabled', align: 'center' },
     { columnName: 'visible', align: 'center' },
     {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
-  ]);
+  ];
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const groups = useMemo(() => {
@@ -174,6 +174,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [router]);
 
   const refresh = async () => {
+    console.log('Refreshing');
     await Promise.all([
       new Promise<void>(resolve => {
         getSocket('/systems/alias').emit('generic::getAll', (err, res) => {

@@ -42,11 +42,11 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const [ groupsSettings, setGroupsSettings ] = useState<KeywordGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
-  const [tableColumnExtensions] = useState([
+  const tableColumnExtensions = [
     {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
-  ]);
+  ];
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));

@@ -62,7 +62,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const { Cell: BoolFilterCell } = useBoolFilter();
   const { Cell: NumberFilterCell } = useNumberFilter();
-  const [tableColumnExtensions] = useState([
+  const tableColumnExtensions = [
     { columnName: 'name', width: '40%' },
 
     { columnName: 'miliseconds', align: 'right' },
@@ -75,7 +75,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
     {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
-  ]);
+  ];
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const deleteItem = useCallback((item: Cooldown) => {

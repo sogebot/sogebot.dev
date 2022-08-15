@@ -9,7 +9,9 @@ import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import React from 'react';
-import { useDidMount, usePreviousImmediate } from 'rooks';
+import {
+  useDidMount, useIntervalWhen, usePreviousImmediate, 
+} from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { getSocket } from '~/src/helpers/socket';
@@ -41,21 +43,23 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
     }
   }, [selectCount]);
 
-  useDidMount(() => {
-    setInterval(() => getSocket('/systems/queue').emit('queue::getAllPicked', (err, users2: QueueInterface[]) => {
+  useIntervalWhen(() => {
+    getSocket('/systems/queue').emit('queue::getAllPicked', (err, users2: QueueInterface[]) => {
       if (err) {
         return console.error(err);
       }
       setPicked(users2);
-    }), 1000);
+    });
 
-    setInterval(() => getSocket('/systems/queue').emit('generic::getAll', (err, usersGetAll: QueueInterface[]) => {
+    getSocket('/systems/queue').emit('generic::getAll', (err, usersGetAll: QueueInterface[]) => {
       if (err) {
         return console.error(err);
       }
       setItems(usersGetAll);
-    }), 1000);
+    });
+  }, 1000, true, true);
 
+  useDidMount(() => {
     getSocket('/systems/queue').emit('settings', (err, data: any) => {
       if (err) {
         return console.error(err);

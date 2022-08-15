@@ -14,7 +14,7 @@ import parse from 'html-react-parser';
 import get from 'lodash/get';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useDidMount } from 'rooks';
+import { useDidMount, useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
@@ -206,8 +206,11 @@ export const DashboardWidgetBotEvents: React.FC<{ className: string }> = (props)
       setEvents(values);
     });
     getSocket('/widgets/eventlist').emit('eventlist::get', 100);
-    setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
   });
+
+  useIntervalWhen(() => {
+    getSocket('/widgets/eventlist').emit('eventlist::get', 100);
+  }, 60000, true, true);
 
   return (<Box className={props.className} sx={{ height: '100%' }}>
     <Box sx={{

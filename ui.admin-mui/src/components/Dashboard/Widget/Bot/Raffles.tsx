@@ -8,9 +8,11 @@ import {
 import {
   green, grey, red,
 } from '@mui/material/colors';
+import { RaffleInterface } from '@sogebot/backend/dest/database/entity/raffle';
 import { RaffleParticipantInterface } from '@sogebot/backend/src/database/entity/raffle';
 import { UserInterface } from '@sogebot/backend/src/database/entity/user';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { isEqual } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React, { useCallback, useEffect } from 'react';
 import { useIntervalWhen } from 'rooks';
@@ -40,8 +42,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
   const [ range, setRange ] = React.useState<[min: number, max: number]>([0, 1000]);
   const [ eligible, setEligible ] = React.useState([{ title: translate('everyone'), value: 'all' }]);
 
-  const [ participants, setParticipants ] = React.useState<RaffleParticipantInterface[]>([]);
-  const [ running, setRunning ] = React.useState(false);
+  const [ raffle, setRaffle ] = React.useState<RaffleInterface | null>(null);
   const [ winner, setWinner ] = React.useState<null | UserInterface>(null);
 
   const eligibleItems = React.useMemo(() => [
@@ -88,24 +89,24 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
 
   const fParticipants = React.useMemo(() => {
     if (participantSearch.trim().length === 0) {
-      return participants;
+      return (raffle?.participants || []);
     } else {
-      return participants.filter(o => o.username.includes(participantSearch.trim()));
+      return (raffle?.participants || []).filter(o => o.username.includes(participantSearch.trim()));
     }
-  }, [participants, participantSearch]);
+  }, [raffle, participantSearch]);
 
   const countEligibleParticipants = React.useMemo(() => {
-    return (participants.filter(o => o.isEligible)).length;
-  }, [participants]);
+    return ((raffle?.participants || []).filter(o => o.isEligible)).length;
+  }, [raffle]);
 
   const winnerMessages = React.useMemo(() => {
     if (winner) {
-      const messages = orderBy(participants.find(o => o.username === winner?.userName)?.messages ?? [], 'timestamp', 'desc');
+      const messages = orderBy((raffle?.participants || []).find(o => o.username === winner?.userName)?.messages ?? [], 'timestamp', 'desc');
       return messages.slice(Math.max(messages.length - 5, 0));
     } else {
       return [];
     }
-  }, [participants, winner]);
+  }, [raffle, winner]);
 
   const open = React.useCallback(() => {
     const out = [];
@@ -148,7 +149,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
       ticketsMin:     range[0],
     }));
 
-    getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffle) => {
+    getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffleResponse) => {
       console.groupCollapsed('raffle:getLatest');
       console.log({ err, raffle });
       console.groupEnd();
@@ -157,43 +158,47 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
         console.error(err);
         return;
       }
-      if (raffle) {
-        setParticipants(raffle.participants);
-        setRunning(!raffle.isClosed);
 
-        if (!raffle.winner) {
-          setWinner(null);
-        } else if (winner === null || winner.userName !== raffle.winner) {
-          getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user) => {
-            if (err2) {
-              return console.error(err2);
-            }
-            if (user) {
-              setWinner(user);
-            }
-          });
-        }
-
-        if (!raffle.isClosed) {
-          setKeyword(raffle.keyword);
-          setIsTypeKeywords(raffle.type === 0);
-          setRange([raffle.minTickets ?? 0, raffle.maxTickets ?? 0]);
-
-          // set eligibility
-          if (!raffle.forSubscribers) {
-            setEligible([eligibleItems[0]]);
-          } else {
-            setEligible([]);
-            const eligibilitySet = [];
-            if (raffle.forSubscribers) {
-              eligibilitySet.push(eligibleItems[2]);
-            }
-            setEligible(eligibilitySet);
-          }
-        }
+      if (!isEqual(raffle, raffleResponse)) {
+        setRaffle(raffleResponse || null);
       }
     });
   }, 1000, true, true);
+
+  useEffect(() => {
+    if (raffle) {
+      if (!raffle.winner) {
+        setWinner(null);
+      } else if (winner === null || winner.userName !== raffle.winner) {
+        getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user) => {
+          if (err2) {
+            return console.error(err2);
+          }
+          if (user) {
+            setWinner(user);
+          }
+        });
+      }
+
+      if (!raffle?.isClosed) {
+        setKeyword(raffle.keyword);
+        setIsTypeKeywords(raffle.type === 0);
+        setRange([raffle.minTickets ?? 0, raffle.maxTickets ?? 0]);
+
+        // set eligibility
+        if (!raffle.forSubscribers) {
+          setEligible([eligibleItems[0]]);
+        } else {
+          setEligible([]);
+          const eligibilitySet = [];
+          if (raffle.forSubscribers) {
+            eligibilitySet.push(eligibleItems[2]);
+          }
+          setEligible(eligibilitySet);
+        }
+      }
+    }
+  }, [ raffle, eligibleItems, winner ]);
 
   useEffect(() => {
     const cache = localStorage.getItem('/widget/raffles/');
@@ -209,7 +214,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
 
   const handleUserEligibility = (participant: RaffleParticipantInterface) => {
     participant.isEligible = !participant.isEligible;
-    setParticipants([...participants.filter(o => o.id !== participant.id), participant]);
+    setRaffle(r => r ? { ...r, participants: [...r.participants.filter(o => o.id !== participant.id), participant] } : null);
 
     getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id as string, isEligible: participant.isEligible }, (err) => {
       if (err) {
@@ -248,10 +253,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               variant="filled"
               label='Raffle command'
               fullWidth
-              disabled={running}
+              disabled={!raffle?.isClosed}
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              InputProps={{ endAdornment: <InputAdornment position="end">{running && <CircularProgress size={20}/>}</InputAdornment> }}
+              InputProps={{ endAdornment: <InputAdornment position="end">{!raffle?.isClosed && <CircularProgress size={20}/>}</InputAdornment> }}
             />
             <Autocomplete
               multiple
@@ -259,7 +264,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               isOptionEqualToValue={(option, v) => {
                 return option.value === v.value;
               }}
-              disabled={running}
+              disabled={!raffle?.isClosed}
               getOptionLabel={(option) => option.title}
               disableClearable
               disablePortal
@@ -282,7 +287,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               value={typeItemSelected}
               disablePortal
               options={typeItems}
-              disabled={running}
+              disabled={!raffle?.isClosed}
               disableClearable
               onChange={(event, newValue) => setIsTypeKeywords(newValue ? newValue.value : true)}
               getOptionLabel={(option) => option.title}
@@ -297,14 +302,14 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
             />
 
             {!isTypeKeywords && <Box sx={{ width: '100%', p: 1 }}>
-              <Typography id="input-slider" gutterBottom color={running ? grey[500] : styles.whiteColor}>
+              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed ? grey[500] : styles.whiteColor}>
                 { translate('raffle-tickets-range') }
               </Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
                   <Input
                     value={range[0]}
-                    disabled={running}
+                    disabled={!raffle?.isClosed}
                     size="small"
                     onChange={(event) => setRange([Number(event.target.value), range[1]])}
                     inputProps={{
@@ -319,7 +324,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
                 <Grid item xs>
                   <Slider
                     value={range}
-                    disabled={running}
+                    disabled={!raffle?.isClosed}
                     valueLabelDisplay="auto"
                     max={10000}
                     onChange={(event, newValue) => setRange(newValue as [min: number, max: number])}
@@ -329,7 +334,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
                   <Input
                     value={range[1]}
                     size="small"
-                    disabled={running}
+                    disabled={!raffle?.isClosed}
                     onChange={(event) => setRange([range[0], Number(event.target.value)])}
                     inputProps={{
                       step:              10,
@@ -346,11 +351,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
             <Box sx={{
               width: '100%', p: 1, textAlign: 'center',
             }}>
-              {!running && <Button onClick={open} disabled={!isValid} sx={{ width: '400px' }} variant='contained'>
+              {!!raffle?.isClosed && <Button onClick={open} disabled={!isValid} sx={{ width: '400px' }} variant='contained'>
                 Open raffle
               </Button>}
 
-              {running && <Stack spacing={1} sx={{ alignItems: 'center' }}>
+              {!raffle?.isClosed && <Stack spacing={1} sx={{ alignItems: 'center' }}>
                 <DashboardWidgetBotDialogConfirmRaffleClose/>
                 <DashboardWidgetBotDialogConfirmRafflePick onPick={() => setValue('3')}/>
               </Stack>}
@@ -379,12 +384,12 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
                   </ListItemButton>
                 </ListItem>)}
 
-                {Math.abs(fParticipants.length - participants.length) > 0 && <ListItem>
+                {Math.abs(fParticipants.length - (raffle?.participants || []).length) > 0 && <ListItem>
                   <ListItemIcon>
                     <VisibilityOff/>
                   </ListItemIcon>
                   <ListItemText>
-                    { Math.abs(fParticipants.length - participants.length) } { translate('hidden') }
+                    { Math.abs(fParticipants.length - (raffle?.participants || []).length) } { translate('hidden') }
                   </ListItemText>
                 </ListItem>}
               </List>

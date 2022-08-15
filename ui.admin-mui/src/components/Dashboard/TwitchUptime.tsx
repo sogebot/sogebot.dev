@@ -6,6 +6,7 @@ import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { getTime } from '~/src/helpers/getTime';
 import { getSocket } from '~/src/helpers/socket';
@@ -27,11 +28,9 @@ export const DashboardStatsUptime: React.FC = () => {
     getSocket('/systems/highlights').emit('highlight');
   };
 
-  useEffect(() => {
-    setInterval(() => {
-      setTimestamp(Date.now());
-    }, 250);
-  }, []);
+  useIntervalWhen(() => {
+    setTimestamp(Date.now());
+  }, 500, true, true);
 
   useEffect(() => {
     getSocket('/').on('panel::stats', (data: Record<string, any>) => {

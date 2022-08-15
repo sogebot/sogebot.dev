@@ -163,12 +163,12 @@ const PageCommandsBot: NextPageWithLayout = () => {
       ],
     },
   ], [ permissions, translate, router ]);
-  const [tableColumnExtensions] = useState([
+  const tableColumnExtensions = [
     { columnName: 'command', width: '40%' },
     {
       columnName: 'actions', width: 100, filteringEnabled: false, sortingEnabled: false,
     },
-  ]);
+  ];
   const [filters, setFilters] = useState<Filter[]>([]);
 
   useEffect(() => {

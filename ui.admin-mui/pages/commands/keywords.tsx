@@ -70,13 +70,13 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const { Cell: PermissionFilterCell } = usePermissionsFilter();
   const { Cell: BoolFilterCell } = useBoolFilter();
-  const [tableColumnExtensions] = useState([
+  const tableColumnExtensions = [
     { columnName: 'keyword', width: '70%' },
     { columnName: 'enabled', align: 'center' },
     {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
-  ]);
+  ];
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const groups = useMemo(() => {
