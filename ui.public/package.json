@@ -10,7 +10,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@sogebot/backend": "16.1.0-SNAPSHOT",
+    "@sogebot/backend": "16.2.0-SNAPSHOT",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/server": "latest",
