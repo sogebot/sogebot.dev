@@ -12,7 +12,8 @@ import {
   Paper,
   Stack,
 } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
+import { Keyword, KeywordGroup } from '@sogebot/backend/src/database/entity/keyword';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
@@ -24,21 +25,21 @@ import SimpleBar from 'simplebar-react';
 import { NextPageWithLayout } from '~/pages/_app';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
-import { AliasGroupEdit } from '~/src/components/RightDrawer/AliasGroupEdit';
+import { KeywordGroupEdit } from '~/src/components/RightDrawer/KeywordGroupEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
+import getAccessToken from '~/src/getAccessToken';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
-import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-const PageCommandsAlias: NextPageWithLayout = () => {
+const PageCommandsKeyword: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Alias[]>([]);
-  const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
+  const [ items, setItems ] = useState<Keyword[]>([]);
+  const [ groupsSettings, setGroupsSettings ] = useState<KeywordGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
   const [tableColumnExtensions] = useState([
@@ -51,23 +52,24 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
 
-  const groupsSettingsAll = useMemo((): AliasGroup[] => {
-    const groupSet: AliasGroup[] = [...groupsSettings];
+  const groupsSettingsAll = useMemo((): KeywordGroup[] => {
+    const groupSet: KeywordGroup[] = [...groupsSettings];
     for (const group of groups) {
       if (group) {
         if (!groupsSettings.find(o => o.name === group)) {
-          groupSet.push({ name: group, options: { filter: null, permission: null } } as AliasGroup);
+          groupSet.push({ name: group, options: { filter: null, permission: null } } as KeywordGroup);
         }
       }
     }
     return groupSet;
   }, [ groupsSettings, groups ]);
 
-  const deleteItem = useCallback((item: AliasGroup) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.name, () => {
-      enqueueSnackbar(`Alias group ${item.name} deleted successfully. You can still see this group if it is being activelly used by aliases.`, { variant: 'success' });
-      refresh();
-    });
+  const deleteItem = useCallback((item: KeywordGroup) => {
+    axios.delete(`${localStorage.server}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Keyword group ${item.name} deleted successfully. You can still see this group if it is being activelly used by keywords.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   const columns = useMemo<Column[]>(() => [
@@ -99,7 +101,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             variant="contained"
             startIcon={<EditIcon/>}
             onClick={() => {
-              router.push('/commands/alias/group/edit/' + row.name);
+              router.push('/commands/keywords/group/edit/' + row.name);
             }}>Edit</Button>
           <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
@@ -112,27 +114,20 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [router]);
 
   const refresh = async () => {
-    console.log('Refresh');
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${localStorage.server}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setItems(data.data);
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
+          });
       }),
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${localStorage.server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setGroupsSettings(data.data);
             resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };
@@ -141,9 +136,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Button sx={{ width: 220 }} color="secondary" variant="contained" onClick={() => {
-            router.push('/commands/alias/');
-          }}>Back to Alias settings</Button>
+          <Button sx={{ width: 240 }} color="secondary" variant="contained" onClick={() => {
+            router.push('/commands/keywords/');
+          }}>Back to Keyword settings</Button>
         </Grid>
       </Grid>
 
@@ -169,12 +164,12 @@ const PageCommandsAlias: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
-      <AliasGroupEdit onSave={()=> refresh()}/>
+      <KeywordGroupEdit onSave={()=> refresh()}/>
     </>
   );
 };
 
-PageCommandsAlias.getLayout = function getLayout(page: ReactElement) {
+PageCommandsKeyword.getLayout = function getLayout(page: ReactElement) {
   return (
     <Layout>
       {page}
@@ -182,4 +177,4 @@ PageCommandsAlias.getLayout = function getLayout(page: ReactElement) {
   );
 };
 
-export default PageCommandsAlias;
+export default PageCommandsKeyword;
