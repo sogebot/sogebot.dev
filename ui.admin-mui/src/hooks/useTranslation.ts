@@ -19,18 +19,16 @@ export const useTranslation = () => {
   const { translation, state } = useSelector<any, { translation: Record<string, any>, state: boolean } >(s => s.loader);
 
   const refresh = React.useCallback(() => {
-    if (Object.keys(translation).length === 0) {
-      getSocket('/', true).emit('translations', (translations) => {
-        dispatch(setTranslation(translations));
-      });
-    }
-  }, [ dispatch, translation ]);
+    getSocket('/', true).emit('translations', (translations) => {
+      dispatch(setTranslation(translations));
+    });
+  }, [dispatch]);
 
   React.useEffect(() => {
-    if (state) {
+    if (state && Object.keys(translation).length === 0) {
       refresh();
     }
-  }, [ refresh, state ]);
+}, [ refresh, state, translation ]);
 
   const translate = React.useCallback((key: string) => {
     return isNil(at(translation, key)[0])

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PermissionsInterface } from '~/../backend/src/database/entity/permissions';
 
@@ -10,20 +10,19 @@ export const usePermissions = () => {
   const { permissions } = useSelector<any, { permissions: Required<PermissionsInterface>[] } >(state => state.page);
 
   const refresh = React.useCallback(() => {
-    if (permissions.length === 0) {
-      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-        if (err) {
-          return console.error(err);
-        }
-        dispatch(setPermissions(res));
-      });
-    } else {
-    }
-  }, [ dispatch, permissions ]);
+    getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+      if (err) {
+        return console.error(err);
+      }
+      dispatch(setPermissions(res));
+    });
+  }, [ dispatch ]);
 
   React.useEffect(() => {
-    refresh();
-  }, [ refresh ]);
+    if (permissions.length === 0) {
+      refresh();
+    }
+  }, [ refresh, permissions ]);
 
   return { permissions };
 };
