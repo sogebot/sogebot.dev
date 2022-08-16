@@ -19,10 +19,12 @@ export const useTranslation = () => {
   const { translation, state } = useSelector<any, { translation: Record<string, any>, state: boolean } >(s => s.loader);
 
   const refresh = React.useCallback(() => {
-    getSocket('/', true).emit('translations', (translations) => {
-      dispatch(setTranslation(translations));
-    });
-  }, [ dispatch ]);
+    if (Object.keys(translation).length === 0) {
+      getSocket('/', true).emit('translations', (translations) => {
+        dispatch(setTranslation(translations));
+      });
+    }
+  }, [ dispatch, translation ]);
 
   React.useEffect(() => {
     if (state) {
