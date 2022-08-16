@@ -28,7 +28,7 @@ export const useTranslation = () => {
     if (state && Object.keys(translation).length === 0) {
       refresh();
     }
-}, [ refresh, state, translation ]);
+  }, [ refresh, state, translation ]);
 
   const translate = React.useCallback((key: string) => {
     return isNil(at(translation, key)[0])

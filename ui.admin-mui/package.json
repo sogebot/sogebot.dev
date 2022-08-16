@@ -59,6 +59,7 @@
     "@types/react": "^17.0.48",
     "@types/react-color": "^3.0.6",
     "@types/react-window": "^1.8.5",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "eslint-plugin-react": "^7.30.1",
