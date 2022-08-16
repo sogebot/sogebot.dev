@@ -1,6 +1,6 @@
 import { Link, Twitter } from '@mui/icons-material';
 import {
-  Alert, Box, CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Typography,
+  Alert, Box, CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, SxProps, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { WidgetSocialInterface } from '@sogebot/backend/src/database/entity/widget';
@@ -10,8 +10,8 @@ import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 
-export const DashboardWidgetBotSocial: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotSocial: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ items, setItems ] = React.useState<WidgetSocialInterface[]>([]);
   const [ loading, setLoading ] = React.useState(true);
@@ -27,7 +27,7 @@ export const DashboardWidgetBotSocial: React.FC<{ className: string }> = ({
   }, 1000, true, true);
 
   return (
-    <Box className={className}>
+    <Box sx={sx}>
       {loading && <Box sx={{
         display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center',
       }}>

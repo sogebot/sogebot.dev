@@ -88,7 +88,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
 
-  const GroupFilterCell = useCallback(({ filter, onFilter }) => (
+  const GroupFilterCell = useCallback(({ filter, onFilter }: any) => (
     <TableCell sx={{ width: '100%', p: 1 }}>
       <Select
         variant='standard'
@@ -155,7 +155,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     },
   ], [ permissions, translate, router, deleteItem ]);
 
-  const FilterCell = useCallback((props) => {
+  const FilterCell = useCallback((props: any) => {
     const { column } = props;
     if (column.name === 'permission') {
       return <PermissionFilterCell {...props} />;

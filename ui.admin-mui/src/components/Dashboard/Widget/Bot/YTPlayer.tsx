@@ -1,6 +1,7 @@
 import {
   Delete, PlayArrow, PlaylistRemove, SkipNext, Stop,
 } from '@mui/icons-material';
+import { SxProps } from '@mui/material';
 import {
   Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip,
 } from '@mui/material';
@@ -16,8 +17,8 @@ const emptyCurrentSong: currentSongType = {
   videoId: null, title: '', type: '', username: '', volume: 0, loudness: 0, forceVolume: false, startTime: 0, endTime: Number.MAX_SAFE_INTEGER,
 };
 
-export const DashboardWidgetBotYTPlayer: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ autoplay, setAutoplay ] = React.useState(false);
   const [ currentTag, setCurrentTag ] = React.useState('general');
@@ -175,7 +176,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ className: string }> = ({
   }, [autoplay, currentSong]);
 
   return (
-    <Box className={className} sx={{ height: '100%' }}>
+    <Box sx={{ height: '100%', ...sx }}>
       <Box sx={{
         borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
       }}>

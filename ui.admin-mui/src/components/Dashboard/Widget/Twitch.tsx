@@ -4,13 +4,12 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardWidgetTwitch: React.FC = () => {
-  const styles = useStyles();
   const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
@@ -63,22 +62,28 @@ export const DashboardWidgetTwitch: React.FC = () => {
           </TabList>
         </Box>
         <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
-          <iframe
-            className={value === '1' ? styles.showTab : styles.hideTab}
-            frameBorder="0"
-            scrolling="no"
-            src={chatUrl}
-            width="100%"
-            height="100%"
-          />
-          <iframe
-            className={value === '2' ? styles.showTab : styles.hideTab}
-            frameBorder="0"
-            scrolling="no"
-            src={videoUrl}
-            width="100%"
-            height="100%"
-          />
+          <Box sx={{
+            ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', 
+          }}>
+            <iframe
+              frameBorder="0"
+              scrolling="no"
+              src={chatUrl}
+              width="100%"
+              height="100%"
+            />
+          </Box>
+          <Box sx={{
+            ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', 
+          }}>
+            <iframe
+              frameBorder="0"
+              scrolling="no"
+              src={videoUrl}
+              width="100%"
+              height="100%"
+            />
+          </Box>
         </Box>
       </TabContext>
     </Card>

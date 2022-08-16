@@ -8,8 +8,8 @@ import orderBy from 'lodash/orderBy';
 import Image from 'next/image';
 import * as React from 'react';
 
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import theme from '~/src/theme';
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
@@ -24,8 +24,6 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   const [ isOpened, setIsOpened ] = React.useState(false);
 
   const [ lastValidGame, setLastValidGame ] = React.useState(props.game);
-
-  const classes = useStyles();
 
   React.useEffect(() => {
     if (props.open && isOpened) {
@@ -179,9 +177,11 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
         <Grid container spacing={1} pl={1}>
           {lastGames.map((game) => {
             return (
-              <Grid sx={{ padding: '0px !important', height: '114px' }} item key={game} xs={2} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')} className={classes.parent}>
+              <Grid sx={{
+                padding: '0px !important', height: '114px', ...classes.parent,
+              }} item key={game} xs={2} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
                 <Image alt='' width="200px" height="280px" src={'https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(game) + '-200x280.jpg'}/>
-                <Backdrop open={hover === game || inputValue === game} className={classes.backdrop} onClick={() => setInputValue(game)}>
+                <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
                   <CheckSharp/>
                 </Backdrop>
               </Grid>

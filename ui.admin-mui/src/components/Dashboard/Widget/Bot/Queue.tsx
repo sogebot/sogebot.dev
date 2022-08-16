@@ -3,7 +3,7 @@ import {
 } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Tab, TextField, Tooltip, Typography,
+  Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, SxProps, Tab, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
@@ -14,16 +14,15 @@ import {
 } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 
 import 'simplebar-react/dist/simplebar.min.css';
 
-export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ value, setValue ] = React.useState('1');
-  const styles = useStyles();
 
   const [ picked, setPicked ] = React.useState<QueueInterface[]>([]);
   const [ items, setItems ] = React.useState<QueueInterface[]>([]);
@@ -189,7 +188,7 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
   };
 
   return (
-    <Box className={className}>
+    <Box sx={sx}>
       <TabContext value={value}>
         <Box sx={{
           borderBottom: 1, borderColor: 'divider', backgroundColor: grey[900],
@@ -204,7 +203,7 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
           </Stack>
         </Box>
         <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
-          <Box className={value === '1' ? styles.showTab : styles.hideTab}>
+          <Box sx={value === '1' ? classes.showTab : classes.hideTab}>
             <Box sx={{
               borderBottom: 1, borderColor: 'divider', backgroundColor: grey[900],
             }}>
@@ -272,7 +271,7 @@ export const DashboardWidgetBotQueue: React.FC<{ className: string }> = ({
               </Box>
             </SimpleBar>
           </Box>
-          <Box className={value === '2' ? styles.showTab : styles.hideTab}>
+          <Box sx={value === '2' ? classes.showTab : classes.hideTab}>
             {picked.length === 0 && <Alert severity="info">No users were picked yet</Alert>}
             {picked.length > 0 && <List dense disablePadding sx={{ height: '100%', overflow: 'auto' }}>
               {picked.map((user) => <ListItem key={user.username}>

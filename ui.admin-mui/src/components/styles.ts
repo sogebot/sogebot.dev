@@ -1,15 +1,10 @@
 import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
 
 import theme from '~/src/theme';
 
-export const useStyles = makeStyles({
-  selectAdornment:   { marginRight: theme.spacing(3) },
-  colorSliderPicker: {
-    width:  '100%',
-    height: '50px',
-  },
-  showTab: {
+export const classes  = {
+  selectAdornment: { marginRight: theme.spacing(3) },
+  showTab:         {
     opacity:    1,
     transition: 'all 200ms',
     zIndex:     2,
@@ -39,4 +34,4 @@ export const useStyles = makeStyles({
     textOverflow: 'ellipsis',
   },
   backdrop: { position: 'absolute' },
-});
+};

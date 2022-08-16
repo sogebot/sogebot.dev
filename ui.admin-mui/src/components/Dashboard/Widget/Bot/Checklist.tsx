@@ -1,12 +1,12 @@
 import {
-  Box, Checkbox, CircularProgress, List, ListItem, ListItemButton, ListItemText,
+  Box, Checkbox, CircularProgress, List, ListItem, ListItemButton, ListItemText, SxProps,
 } from '@mui/material';
 import React from 'react';
 
 import { getSocket } from '~/src/helpers/socket';
 
-export const DashboardWidgetBotChecklist: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotChecklist: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ items, setItems ] = React.useState<string[]>([]);
   const [ checkedIdx, setCheckedIdx ] = React.useState<number[]>([]);
@@ -63,7 +63,7 @@ export const DashboardWidgetBotChecklist: React.FC<{ className: string }> = ({
   };
 
   return (
-    <Box className={className}>
+    <Box sx={sx}>
       {loading && <Box sx={{
         display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center',
       }}>

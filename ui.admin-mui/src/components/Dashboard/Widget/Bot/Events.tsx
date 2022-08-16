@@ -4,7 +4,7 @@ import {
   Adjust, Cast, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, Tv, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
-  Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip, Typography,
+  Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, SxProps, Tooltip, Typography,
 } from '@mui/material';
 import {
   blue, deepPurple, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
@@ -19,8 +19,8 @@ import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from '~/src/components/Dashboard/Widget/Bot/Dialog/FilterEvents';
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
@@ -53,7 +53,6 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useSelector((state: any) => state.loader);
-  const classes = useStyles();
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
@@ -86,7 +85,7 @@ function RenderRow(props: any) {
   }, [translate, configuration]);
 
   return (
-    <ListItem component="div" divider={true} dense key={props.item.id} className={classes.parent} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+    <ListItem component="div" divider={true} dense key={props.item.id} sx={classes.parent} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <ListItemIcon>
         {props.item.event === 'follow' && <Favorite htmlColor={pink[400]}/>}
         {props.item.event === 'rewardredeem' && <Adjust htmlColor={orange[300]}/>}
@@ -118,14 +117,14 @@ function RenderRow(props: any) {
       {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, { style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD') }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'amount', '0') }</Typography>}
 
-      <Backdrop open={hover} className={classes.backdrop} onClick={() => resendAlert(props.item.id)}>
+      <Backdrop open={hover} sx={classes.backdrop} onClick={() => resendAlert(props.item.id)}>
         <Typography variant="button">Resend Alert</Typography>
       </Backdrop>
     </ListItem>
   );
 }
 
-export const DashboardWidgetBotEvents: React.FC<{ className: string }> = (props) => {
+export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   const [ events, setEvents ] = React.useState<any[]>([]);
   const { events: widgetSettings } = useSelector((state: any) => state.page.widgets);
 
@@ -212,7 +211,7 @@ export const DashboardWidgetBotEvents: React.FC<{ className: string }> = (props)
     getSocket('/widgets/eventlist').emit('eventlist::get', 100);
   }, 60000, true, true);
 
-  return (<Box className={props.className} sx={{ height: '100%' }}>
+  return (<Box sx={{ height: '100%', ...props.sx }}>
     <Box sx={{
       borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
     }}>

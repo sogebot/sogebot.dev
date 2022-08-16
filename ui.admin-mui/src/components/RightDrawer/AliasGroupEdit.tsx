@@ -11,9 +11,9 @@ import React, { useCallback, useState } from 'react';
 import { useEffect } from 'react';
 
 import { FormInputAdornmentCustomVariable } from '~/src/components/Form/Input/Adornment/CustomVariables';
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
-import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const AliasGroupEdit: React.FC<{
@@ -22,7 +22,6 @@ export const AliasGroupEdit: React.FC<{
   onSave,
 }) => {
   const router = useRouter();
-  const classes = useStyles();
 
   const [ group, setGroup ] = useState<AliasGroup | null>(null);
 
@@ -122,7 +121,7 @@ export const AliasGroupEdit: React.FC<{
               onChange={(event) => handleValueChange('permission', event.target.value)}
               value={group?.options.permission || ''}
               endAdornment={
-                group?.options.permission && <InputAdornment className={classes.selectAdornment} position="end">
+                group?.options.permission && <InputAdornment sx={classes.selectAdornment} position="end">
                   <IconButton onClick={() => handleValueChange('permission', null)}><Clear fontSize="small" /></IconButton>
                 </InputAdornment>
               }

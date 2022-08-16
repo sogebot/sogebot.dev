@@ -1,25 +1,24 @@
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Alert, Box, Stack, Tab,
+  Alert, Box, Stack, SxProps, Tab,
 } from '@mui/material';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import theme from '~/src/theme';
 
 import { DashboardWidgetBotDialogCustomURLsEdit } from './Dialog/CustomURLsEdit';
 
-export const DashboardWidgetBotCustom: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ custom, setCustom ] = React.useState<WidgetCustomInterface[]>([]);
   const { user } = useSelector((state: any) => state.user);
   const [ tab, setTab ] = React.useState('1');
   const [ refreshTimestamp, setRefreshTimestamp ] = React.useState(Date.now());
-  const styles = useStyles();
 
   useEffect(() => {
     getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
@@ -36,7 +35,7 @@ export const DashboardWidgetBotCustom: React.FC<{ className: string }> = ({
   };
 
   return (
-    <Box className={className}>
+    <Box sx={sx}>
       <TabContext value={tab}>
         <Box sx={{
           borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
@@ -51,7 +50,11 @@ export const DashboardWidgetBotCustom: React.FC<{ className: string }> = ({
           </Stack>
         </Box>
         <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
-          {custom.map((item, idx) => <iframe className={tab === String(idx+1) ? styles.showTab : styles.hideTab} frameBorder="0" key={item.id} src={item.url} width="100%" height="100%"/>)}
+          {custom.map((item, idx) => <Box sx={{
+            ...(tab === String(idx+1) ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
+          }} key={item.id} >
+            <iframe frameBorder="0" src={item.url} width="100%" height="100%"/>
+          </Box>)}
 
           {custom.length === 0 && <Alert severity="info">No URLs are defined yet.</Alert>}
         </Box>

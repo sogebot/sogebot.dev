@@ -5,7 +5,7 @@ import {
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import { useStyles } from '~/src/hooks/useStyles';
+import { classes } from '~/src/components/styles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
@@ -19,7 +19,6 @@ import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
 
 export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useSelector((state: any) => state.loader);
-  const styles = useStyles();
   const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
@@ -57,13 +56,13 @@ export const DashboardWidgetBot: React.FC = () => {
           </TabList>
         </Box>
         <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
-          <DashboardWidgetBotEvents className={value === '1' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotYTPlayer className={value === '2' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotQueue className={value === '3' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotRaffles className={value === '4' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotSocial className={value === '5' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotChecklist className={value === '6' ? styles.showTab : styles.hideTab}/>
-          <DashboardWidgetBotCustom className={value === '7' ? styles.showTab : styles.hideTab}/>
+          <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotRaffles sx={value === '4' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotSocial sx={value === '5' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotChecklist sx={value === '6' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotCustom sx={value === '7' ? classes.showTab : classes.hideTab}/>
         </Box>
       </TabContext>
     </Card>

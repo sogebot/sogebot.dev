@@ -3,7 +3,7 @@ import {
 } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography,
+  Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, SxProps, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography,
 } from '@mui/material';
 import {
   green, grey, red,
@@ -19,21 +19,20 @@ import { useIntervalWhen } from 'rooks';
 
 import DashboardWidgetBotDialogConfirmRaffleClose from '~/src/components/Dashboard/Widget/Bot/Dialog/ConfirmRaffleClose';
 import DashboardWidgetBotDialogConfirmRafflePick from '~/src/components/Dashboard/Widget/Bot/Dialog/ConfirmRafflePick';
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import {
   minLength, required, startsWith,
 } from '~/src/validators';
 
-export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
-  className,
+export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const [ loading, setLoading ] = React.useState(true);
   const { translate } = useTranslation();
 
   const [ value, setValue ] = React.useState('1');
-  const styles = useStyles();
 
   const [ participantSearch, setParticipantSearch ] = React.useState('');
   const [ keyword, setKeyword ] = React.useState('');
@@ -224,7 +223,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
   };
 
   return (
-    <Box className={className}>
+    <Box sx={sx}>
       {loading && <Box sx={{
         display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center',
       }}>
@@ -246,7 +245,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
           </Stack>
         </Box>
         <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
-          <Box className={value === '1' ? styles.showTab : styles.hideTab}>
+          <Box sx={value === '1' ? classes.showTab : classes.hideTab}>
             <TextField
               error={keywordError.length > 0}
               helperText={keywordError.length > 0 ? keywordError[0] : undefined}
@@ -302,7 +301,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
             />
 
             {!isTypeKeywords && <Box sx={{ width: '100%', p: 1 }}>
-              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed ? grey[500] : styles.whiteColor}>
+              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed ? grey[500] : classes.whiteColor}>
                 { translate('raffle-tickets-range') }
               </Typography>
               <Grid container spacing={2} alignItems="center">
@@ -361,7 +360,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               </Stack>}
             </Box>
           </Box>
-          <Box className={value === '2' ? styles.showTab : styles.hideTab}>
+          <Box sx={value === '2' ? classes.showTab : classes.hideTab}>
             <TextField
               variant="filled"
               label='Search'
@@ -395,7 +394,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ className: string }> = ({
               </List>
             </Box>
           </Box>
-          <Box className={value === '3' ? styles.showTab : styles.hideTab}>
+          <Box sx={value === '3' ? classes.showTab : classes.hideTab}>
             {!winner && <Alert severity="info">No winner was picked yet.</Alert>}
             {winner && <Box>
               <Grid container>

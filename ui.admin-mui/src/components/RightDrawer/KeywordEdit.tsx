@@ -1,3 +1,6 @@
+import {
+  DragDropContext, Draggable, Droppable,
+} from '@hello-pangea/dnd';
 import { Delete, DragIndicator } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -14,9 +17,6 @@ import React, {
   useCallback, useMemo, useState,
 } from 'react';
 import { useEffect } from 'react';
-import {
-  DragDropContext, Draggable, Droppable,
-} from 'react-beautiful-dnd';
 import { v4 } from 'uuid';
 import {
   Keyword, KeywordGroup, KeywordResponses,

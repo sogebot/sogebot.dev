@@ -1,6 +1,9 @@
 /* eslint-disable react/display-name */
 
 import { QuickActions } from '@entity/dashboard';
+import {
+  DragDropContext, Draggable, Droppable,
+} from '@hello-pangea/dnd';
 import { DragIndicator, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -13,9 +16,6 @@ import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import * as React from 'react';
-import {
-  DragDropContext, Draggable, Droppable,
-} from 'react-beautiful-dnd';
 import { SliderPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -24,7 +24,6 @@ import { v4 } from 'uuid';
 import { DashboardWidgetActionButtonsDelete } from '~/src/components/Buttons/Delete';
 import { DashboardWidgetActionButtonsAddItem } from '~/src/components/Dashboard/Widget/Action/Buttons/AddItem';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import {
   setCountdowns, setMarathons, setRandomizers, setStopwatchs,
 } from '~/src/store/quickActionsSlice';
@@ -86,7 +85,6 @@ const DraggableComponent: React.FC<{
 }> = ({
   item, index, actions, setActions, editingItem, setEditingItem, ...props
 }) => {
-  const styles = useStyles();
 
   const [updateItem, setUpdateItem] = React.useState(item);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -275,7 +273,7 @@ const DraggableComponent: React.FC<{
                             lineHeight:    '1.4375em',
                             letterSpacing: '0.00938em',
                           }}>Button Color</InputLabel>
-                          <SliderPicker className={styles.colorSliderPicker} onChangeComplete={onChange} color={isHexColor(updateItem.options.color) ? updateItem.options.color : '#111111'}/>
+                          <SliderPicker onChangeComplete={onChange} color={isHexColor(updateItem.options.color) ? updateItem.options.color : '#111111'}/>
 
                           <Stack spacing={2} direction="row">
                             <Button onClick={handleReset} fullWidth>Cancel</Button>

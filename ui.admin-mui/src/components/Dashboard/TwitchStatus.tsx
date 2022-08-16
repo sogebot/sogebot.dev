@@ -9,8 +9,8 @@ import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
 
 import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
+import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { useStyles } from '~/src/hooks/useStyles';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
@@ -28,7 +28,6 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const [tags, setTags] = useState<{ is_auto: boolean; localization_names: { [x:string]: string } }[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const classes = useStyles();
 
   useDidMount(() => {
     getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
@@ -93,8 +92,8 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   return (
     <Grid item xs={12} sm={12} md={12} lg={12} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Paper sx={{
-        p: 0.5, position: 'relative', overflow: 'hidden',
-      }} className={classes.parent}>
+        p: 0.5, overflow: 'hidden', ...classes.parent,
+      }}>
         {loading && <Box sx={{
           width: '100%', position: 'absolute', top: '0', left: '0',
         }}>
@@ -103,33 +102,33 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
 
         <Grid container justifyContent={'left'}>
           <Grid item sm={4} xs={12}>
-            <Typography className={classes.truncate} sx={{ transform: 'translateY(5px)' }}>{ game ?? capitalize(translate('not-available')) }</Typography>
+            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>{ game ?? capitalize(translate('not-available')) }</Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('game')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
-            <Typography className={classes.truncate} sx={{ transform: 'translateY(5px)' }}>{ title ?? capitalize(translate('not-available')) }</Typography>
+            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>{ title ?? capitalize(translate('not-available')) }</Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('title')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
-            <Typography className={classes.truncate} sx={{ transform: 'translateY(5px)' }}>
+            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>
               { tags.length === 0 && <Typography component="span">{capitalize(translate('not-available'))}</Typography> }
               {filterTags(true).map((tag, idx) => {
-                return(<Typography component="span" key={tag.name} classes={{ [classes.greyColor]: tag.is_auto }}>
+                return(<Typography component="span" key={tag.name} sx={tag.is_auto ? classes.greyColor : {}}>
                   { tag.name }
-                  {(idx + 1) < tags.length && <span className={classes.whiteColor}>,&nbsp;</span>}
+                  {(idx + 1) < tags.length && <Typography component="span" sx={classes.whiteColor}>,&nbsp;</Typography>}
                 </Typography>);
               })}
               {filterTags(false).map((tag, idx) => {
-                return(<Typography key={tag.name} classes={{ [classes.greyColor]: tag.is_auto }}>
+                return(<Typography key={tag.name} sx={tag.is_auto ? classes.greyColor : {}}>
                   { tag.name }
-                  {(idx + 1) < tags.length && <span className={classes.whiteColor}>,&nbsp;</span>}
+                  {(idx + 1) < tags.length && <Typography component="span" sx={classes.whiteColor}>,&nbsp;</Typography>}
                 </Typography>);
               })}
             </Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
-        {!loading && <Backdrop open={hover} className={classes.backdrop} onClick={() => setOpen(true)}>
+        {!loading && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
           <Typography variant="button">{translate('click-to-change')}</Typography>
         </Backdrop>}
       </Paper>
