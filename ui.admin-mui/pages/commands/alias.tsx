@@ -174,7 +174,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   }, [router]);
 
   const refresh = async () => {
-    console.log('Refreshing');
     await Promise.all([
       new Promise<void>(resolve => {
         getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
