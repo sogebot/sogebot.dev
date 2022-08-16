@@ -48,7 +48,7 @@ export const CooldownEdit: React.FC<{
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
   const [ time, setTime ] = useState({
-    days: 0, hours: 0, minutes: 0, seconds: 0,
+    days: 0, hours: 0, minutes: 5, seconds: 0,
   });
 
   const handleTimeChange = <T extends keyof typeof time>(input: typeof time, key: T, value: string) => {
@@ -124,7 +124,7 @@ export const CooldownEdit: React.FC<{
       setTime(timestampToObject(it.miliseconds));
     } else {
       setItem(newItem);
-      setTime(timestampToObject(0));
+      setTime(timestampToObject(5 * 60000));
     }
     setLoading(false);
     reset();
