@@ -14,8 +14,10 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
-import { Keyword, KeywordGroup } from '@entity/keyword';
-import { CheckBoxTwoTone, DisabledByDefaultTwoTone } from '@mui/icons-material';
+import { Commands, CommandsGroup } from '@entity/commands';
+import {
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, RestartAltTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+} from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
@@ -46,33 +48,40 @@ import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
-import { KeywordEdit } from '~/src/components/RightDrawer/KeywordEdit';
+import { CommandsEdit } from '~/src/components/RightDrawer/CommandsEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { Responses } from '~/src/components/Table/Responses';
 import getAccessToken from '~/src/getAccessToken';
 import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
+import { useNumberFilter } from '~/src/hooks/Table/useNumberFilter';
 import { usePermissionsFilter } from '~/src/hooks/Table/usePermissionsFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
-const PageCommandsKeyword: NextPageWithLayout = () => {
+type CommandWithCount = Commands & { count:number };
+
+const PageCommandsCommands: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Keyword[]>([]);
-  const [ groupsSettings, setGroupsSettings ] = useState<KeywordGroup[]>([]);
+  const { Cell: NumberFilterCell } = useNumberFilter();
+
+  const [ items, setItems ] = useState<CommandWithCount[]>([]);
+  const [ groupsSettings, setGroupsSettings ] = useState<CommandsGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const { Cell: PermissionFilterCell } = usePermissionsFilter();
   const { Cell: BoolFilterCell } = useBoolFilter();
   const tableColumnExtensions = [
-    { columnName: 'keyword', width: '70%' },
+    { columnName: 'command', width: '70%' },
+    { columnName: 'count', align: 'right' },
     { columnName: 'enabled', align: 'center' },
+    { columnName: 'visible', align: 'center' },
     {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
@@ -107,26 +116,28 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     </TableCell>
   ), [groups]);
 
-  const deleteItem = useCallback((item: Keyword) => {
-    axios.delete(`${localStorage.server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+  const deleteItem = useCallback((item: Commands) => {
+    axios.delete(`${localStorage.server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
-        enqueueSnackbar(`Keyword ${item.keyword} deleted successfully.`, { variant: 'success' });
+        enqueueSnackbar(`Commands ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
       });
   }, [ enqueueSnackbar ]);
 
   const columns = useMemo<Column[]>(() => [
     {
-      name:         'keyword',
-      title:        capitalize(translate('keyword')),
+      name:         'command',
+      title:        capitalize(translate('command')),
       getCellValue: (row) => [
-        <Stack key="kwdStack">
-          <strong key="keyword">{row.keyword}</strong>
+        <Stack key="cmdStack">
+          <strong key="command">{row.command}</strong>
           <Responses key="responses" responses={row.responses}/>
         </Stack>,
       ],
     },
+    { name: 'count', title: capitalize(translate('count')) },
     { name: 'enabled', title: capitalize(translate('enabled')) },
+    { name: 'visible', title: capitalize(translate('visible')) },
     {
       name: 'group', title: capitalize(translate('group')), getCellValue: (row) => row.group ? row.group : '_ungroup', // ungrouped should be first
     },
@@ -140,7 +151,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
             variant="contained"
             startIcon={<EditIcon/>}
             onClick={() => {
-              router.push('/commands/keywords/edit/' + row.id);
+              router.push('/commands/customcommands/edit/' + row.id);
             }}>Edit</Button>
           <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
@@ -153,6 +164,9 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     if (column.name === 'permission') {
       return <PermissionFilterCell {...props} />;
     }
+    if (column.name === 'count') {
+      return <NumberFilterCell {...props} />;
+    }
     if (column.name === 'group') {
       return <GroupFilterCell {...props} />;
     }
@@ -160,7 +174,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       return <BoolFilterCell {...props} />;
     }
     return <TableFilterRow.Cell {...props} />;
-  }, [PermissionFilterCell, GroupFilterCell, BoolFilterCell]);
+  }, [PermissionFilterCell, GroupFilterCell, BoolFilterCell, NumberFilterCell]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -169,14 +183,18 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${localStorage.server}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data);
+            const commands = data.data;
+            for (const command of commands) {
+              command.count = data.count.find((o: any) => o.command === command.command)?.count || 0;
+            }
+            setItems(commands);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${localStorage.server}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();
@@ -190,12 +208,22 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       let shouldShow = true;
 
       for (const filter of filters) {
-        if (filter.columnName === 'keyword') {
-          shouldShow = item.keyword.toLowerCase().includes(filter.value.toLowerCase()) || item.responses.map(o => o.response.toLowerCase()).filter(o => o.includes(filter.value.toLowerCase())).length > 0;
+        if (filter.columnName === 'command') {
+          shouldShow = item.command.toLowerCase().includes(filter.value.toLowerCase()) || item.responses.map(o => o.response.toLowerCase()).filter(o => o.includes(filter.value.toLowerCase())).length > 0;
         } else if (filter.columnName === 'group') {
           shouldShow = filter.value.length > 0 ? filter.value.includes(item.group || '') : true;
-        } if (filter.columnName === 'enabled') {
+        } else if (filter.columnName === 'enabled') {
           shouldShow = filter.value === item.enabled;
+        } else if (filter.columnName === 'visible') {
+          shouldShow = filter.value === item.visible;
+        } else if (filter.columnName === 'count' && filter.value !== '') {
+          if ((filter as any).type === '>') {
+            shouldShow = item.count > Number(filter.value);
+          } else if ((filter as any).type === '=') {
+            shouldShow = item.count === Number(filter.value);
+          } else if ((filter as any).type === '<') {
+            shouldShow = item.count < Number(filter.value);
+          }
         }
 
         if (!shouldShow) {
@@ -209,6 +237,26 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
   }, [selection, dispatch]);
+
+  const bulkCanVisOff = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.visible) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkCanVisOn = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.visible) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
 
   const bulkCanEnable = useMemo(() => {
     for (const itemId of selection) {
@@ -230,13 +278,13 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     return false;
   }, [ selection, items ]);
 
-  const bulkToggleAttribute = useCallback(async <T extends keyof Keyword>(attribute: T, value: Keyword[T]) => {
+  const bulkToggleAttribute = useCallback(async <T extends keyof CommandWithCount>(attribute: T, value: CommandWithCount[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${localStorage.server}/api/systems/keywords`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${localStorage.server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -266,12 +314,38 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     refresh();
   }, [ enqueueSnackbar, items, selection ]);
 
+  const bulkResetCount =  useCallback(async () => {
+    for (const selected of selection) {
+      const item = items.find(o => o.id === selected);
+      if (item) {
+        item.count = 0;
+        await new Promise<void>((resolve) => {
+          axios.post(`${localStorage.server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .then(() => {
+              resolve();
+            });
+        });
+      }
+    }
+
+    setItems(i => i.map((item) => {
+      if (selection.includes(item.id)) {
+        item.count = 0;
+      }
+      return item;
+    }));
+
+    enqueueSnackbar(`Bulk operation reset commands usage count`);
+
+    refresh();
+  }, [ enqueueSnackbar, items, selection ]);
+
   const bulkDelete =  useCallback(async () => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${localStorage.server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
@@ -285,17 +359,27 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='keywords'/>
+      <DisabledAlert system='customcommands'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/keywords/create/');
-          }}>Create new keyword</Button>
+          <Button variant="contained" onClick={() => {
+            router.push('/commands/customcommands/create/');
+          }}>Create new custom command</Button>
         </Grid>
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/keywords/group/edit');
+            router.push('/commands/customcommands/group/edit');
           }} color='secondary'>Group settings</Button>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Set visibility on">
+            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Set visibility off">
+            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
@@ -309,6 +393,11 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Reset usage count">
+            <Button disabled={bulkCount === 0} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkResetCount()}><RestartAltTwoTone/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
@@ -340,7 +429,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'keyword', direction: 'asc' }]}
+                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'command', direction: 'asc' }]}
                 columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
@@ -360,12 +449,12 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
-      <KeywordEdit groups={groupsSettings}/>
+      <CommandsEdit groups={groupsSettings}/>
     </>
   );
 };
 
-PageCommandsKeyword.getLayout = function getLayout(page: ReactElement) {
+PageCommandsCommands.getLayout = function getLayout(page: ReactElement) {
   return (
     <Layout>
       {page}
@@ -373,4 +462,4 @@ PageCommandsKeyword.getLayout = function getLayout(page: ReactElement) {
   );
 };
 
-export default PageCommandsKeyword;
+export default PageCommandsCommands;

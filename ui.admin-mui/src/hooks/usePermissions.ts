@@ -10,13 +10,15 @@ export const usePermissions = () => {
   const { permissions } = useSelector<any, { permissions: Required<PermissionsInterface>[] } >(state => state.page);
 
   const refresh = React.useCallback(() => {
-    getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-      if (err) {
-        return console.error(err);
-      }
-      dispatch(setPermissions(res));
-    });
-  }, [ dispatch ]);
+    if (permissions.length === 0) {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        dispatch(setPermissions(res));
+      });
+    }
+  }, [ dispatch, permissions ]);
 
   React.useEffect(() => {
     if (permissions.length === 0) {

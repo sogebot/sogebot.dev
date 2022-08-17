@@ -14,7 +14,9 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
-import { CheckBoxTwoTone, DisabledByDefaultTwoTone } from '@mui/icons-material';
+import {
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, 
+} from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
@@ -192,6 +194,26 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
     dispatch(setBulkCount(selection.length));
   }, [selection, dispatch]);
 
+  const bulkCanBeLoud = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.isErrorMsgQuiet) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkCanBeQuiet = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.isErrorMsgQuiet) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
   const bulkCanEnable = useMemo(() => {
     for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
@@ -274,6 +296,16 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
         <Grid item>
           <Tooltip arrow title="Disable">
             <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Error message will appear in chat">
+            <Button disabled={!bulkCanBeLoud} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', false)}><NotificationsActiveTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Hide error messages in chat">
+            <Button disabled={!bulkCanBeQuiet} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', true)}><NotificationsOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>

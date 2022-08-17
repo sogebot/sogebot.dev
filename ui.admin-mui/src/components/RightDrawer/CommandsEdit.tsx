@@ -1,14 +1,17 @@
 import {
   DragDropContext, Draggable, Droppable,
 } from '@hello-pangea/dnd';
-import { Delete, DragIndicator } from '@mui/icons-material';
+import {
+  Delete, DragIndicator, RestartAltTwoTone,
+} from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Dialog, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Stack, TextField,
+  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, Dialog, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, Stack, TextField,
 } from '@mui/material';
 import axios from 'axios';
 import { validateOrReject } from 'class-validator';
 import {
+  capitalize,
   cloneDeep, merge, orderBy,
 } from 'lodash';
 import { useRouter } from 'next/router';
@@ -19,8 +22,8 @@ import React, {
 import { useEffect } from 'react';
 import { v4 } from 'uuid';
 import {
-  Keyword, KeywordGroup, KeywordResponses,
-} from '~/../backend/dest/database/entity/keyword';
+  Commands, CommandsGroup, CommandsResponses,
+} from '~/../backend/dest/database/entity/commands';
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 
 import { FormResponse } from '~/src/components/Form/Input/Response';
@@ -36,26 +39,30 @@ interface GroupType {
 
 const filter = createFilterOptions<GroupType>();
 
-const defaultItem = new Keyword();
-defaultItem.keyword = '';
+const defaultItem = new Commands();
+defaultItem.command = '';
 defaultItem.responses = [];
 defaultItem.enabled = true;
+defaultItem.visible = true;
 defaultItem.group = null;
 
-export const KeywordEdit: React.FC<{
-  groups: KeywordGroup[]
+export const CommandsEdit: React.FC<{
+  groups: CommandsGroup[]
 }> = (props) => {
   const router = useRouter();
   const { translate } = useTranslation();
   const [ editDialog, setEditDialog ] = useState(false);
-  const [ item, setItem ] = useState<StripTypeORMEntity<Keyword>>(defaultItem);
+  const [ item, setItem ] = useState<StripTypeORMEntity<Commands>>(defaultItem);
+
+  const [ count, setCount ] = useState(-1);
+
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { id } = router.query;
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
-  const handleValueChange = <T extends keyof StripTypeORMEntity<Keyword>>(key: T, value: StripTypeORMEntity<Keyword>[T]) => {
+  const handleValueChange = <T extends keyof StripTypeORMEntity<Commands>>(key: T, value: StripTypeORMEntity<Commands>[T]) => {
     if (!item) {
       return;
     }
@@ -70,7 +77,7 @@ export const KeywordEdit: React.FC<{
 
   const addResponse = useCallback(() => {
     setItem((o) => {
-      const response = new KeywordResponses();
+      const response = new CommandsResponses();
       response.id = v4();
       response.order = o.responses.length;
       response.filter = '';
@@ -84,13 +91,15 @@ export const KeywordEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${localStorage.server}/api/systems/keywords/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`${localStorage.server}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           setItem(data.data);
+          setCount(data.count);
           setLoading(false);
         });
     } else {
       setItem(defaultItem);
+      setCount(-1);
       setLoading(false);
     }
     reset();
@@ -98,7 +107,7 @@ export const KeywordEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && editDialog && item) {
-      const toCheck = new Keyword();
+      const toCheck = new Commands();
       merge(toCheck, item);
       validateOrReject(toCheck)
         .then(() => setErrors(null))
@@ -107,7 +116,7 @@ export const KeywordEdit: React.FC<{
   }, [item, loading, editDialog, setErrors]);
 
   useEffect(() => {
-    if (router.asPath.includes('keywords/edit/') || router.asPath.includes('keywords/create') ) {
+    if (router.asPath.includes('customcommands/edit/') || router.asPath.includes('customcommands/create') ) {
       setEditDialog(true);
     }
   }, [router]);
@@ -115,18 +124,18 @@ export const KeywordEdit: React.FC<{
   const handleClose = () => {
     setEditDialog(false);
     setTimeout(() => {
-      router.push('/commands/keywords');
+      router.push('/commands/customcommands');
     }, 200);
   };
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/keywords`,
-      item,
+    axios.post(`${localStorage.server}/api/systems/customcommands`,
+      { ...item, count },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
-        enqueueSnackbar('Keyword saved.', { variant: 'success' });
-        router.push(`/commands/keywords/edit/${response.data.data.id}`);
+        enqueueSnackbar('Commands saved.', { variant: 'success' });
+        router.push(`/commands/customcommands/edit/${response.data.data.id}`);
       })
       .catch(e => {
         validate(e.response.data.errors);
@@ -138,12 +147,12 @@ export const KeywordEdit: React.FC<{
     return orderBy(item.responses, 'order', 'asc');
   }, [ item.responses ]);
 
-  const updateResponse = useCallback((value: KeywordResponses) => {
+  const updateResponse = useCallback((value: CommandsResponses) => {
     setItem((it) => {
       const responses = it.responses;
       for (let i = 0; i < responses.length; i++) {
         if (responses[i].id === value.id) {
-          responses[i] = value as KeywordResponses;
+          responses[i] = value as CommandsResponses;
         }
       }
       return { ...it, responses: responses };
@@ -152,7 +161,7 @@ export const KeywordEdit: React.FC<{
 
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
-      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({ ...o, order: idx })) as KeywordResponses[];
+      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({ ...o, order: idx })) as CommandsResponses[];
       return { ...it, responses: responses };
     });
   }, []);
@@ -163,7 +172,7 @@ export const KeywordEdit: React.FC<{
     const handledIds: string[] = [];
 
     setItem((o: any) => {
-      const responses: StripTypeORMEntity<KeywordResponses>[] = [];
+      const responses: StripTypeORMEntity<CommandsResponses>[] = [];
       for (let idx = 0; idx < o.responses.length; idx++) {
         if (!handledIds.includes(o.responses[idx].id)) {
           if (idx === destIdx) {
@@ -210,14 +219,14 @@ export const KeywordEdit: React.FC<{
         >
 
           <TextField
-            {...propsError('keyword')}
+            {...propsError('command')}
             variant="filled"
             required
-            value={item?.keyword || ''}
-            label={translate('keyword')}
-            onChange={(event) => handleValueChange('keyword', event.target.value)}
+            value={item?.command || ''}
+            label={translate('command')}
+            onChange={(event) => handleValueChange('command', event.target.value)}
           />
-          <FormControl fullWidth variant="filled">
+          <FormControl fullWidth variant="filled" sx={{ mt: '8px' }}>
             <Autocomplete
               sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
               selectOnFocus
@@ -269,12 +278,31 @@ export const KeywordEdit: React.FC<{
             />
           </FormControl>
 
+          {count > -1 && <TextField
+            fullWidth
+            label={capitalize(translate('count'))}
+            variant="filled"
+            value={count}
+            InputProps={{
+              readOnly:     true,
+              endAdornment: <InputAdornment position="end"><IconButton onClick={() => setCount(0)}><RestartAltTwoTone/></IconButton></InputAdornment>,
+            }}
+          />}
+
           <Grid container sx={{ mt: 1 }}columnSpacing={2}>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
-                  {item?.enabled ? 'Keyword is enabled': 'Keyword is disabled'}
+                  {item?.enabled ? 'Command is enabled': 'Command is disabled'}
+                </FormHelperText>
+              </FormGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel control={<Checkbox checked={item?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
+                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                  {item?.visible ? 'Command is visible': 'Command is hidden'}
                 </FormHelperText>
               </FormGroup>
             </Grid>

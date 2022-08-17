@@ -10,16 +10,15 @@ import {
   useCallback,
   useEffect, useState,
 } from 'react';
-import { KeywordResponses } from '~/../backend/dest/database/entity/keyword';
 
 import { FormInputAdornmentCustomVariable } from '~/src/components/Form/Input/Adornment/CustomVariables';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const FormResponse: React.FC<{
-  value: KeywordResponses,
+  value: any,
   idx: number,
-  onChange?: (value: KeywordResponses) => void,
+  onChange?: (value: any) => void,
 }> = ({
   value,
   idx,
@@ -36,44 +35,38 @@ export const FormResponse: React.FC<{
   }, [ propsValue, onChange ]);
 
   const onResponseChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
-    setPropsValue((o) => {
-      o.response = event.target.value;
-      return o;
+    setPropsValue((o: any) => {
+      return { ...o, response: event.target.value };
     });
   }, []);
 
   const onResponseAddHandler = useCallback((val: string) => {
-    setPropsValue((o) => {
-      o.response = o.response + val;
-      return o;
+    setPropsValue((o: { response: string; }) => {
+      return { ...o, response: o.response + val };
     });
   }, []);
 
   const onFilterChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
-    setPropsValue((o) => {
-      o.filter = event.target.value;
-      return o;
+    setPropsValue((o: any) => {
+      return { ...o, filter: event.target.value };
     });
   }, []);
 
   const onFilterAddHandler = useCallback((val: string) => {
-    setPropsValue((o) => {
-      o.filter = o.filter + val;
-      return o;
+    setPropsValue((o: { filter: string; }) => {
+      return { ...o, filter: o.filter + val };
     });
   }, []);
 
   const onPermissionChangeHandler = useCallback((val: string | null) => {
-    setPropsValue((o) => {
-      o.permission = String(val).length === 0 ? null : val;
-      return o;
+    setPropsValue((o: any) => {
+      return { ...o, permission: String(val).length === 0 ? null : val };
     });
   }, []);
 
   const onExecutionToggleHandler = useCallback(() => {
-    setPropsValue((o) => {
-      o.stopIfExecuted = !o.stopIfExecuted;
-      return o;
+    setPropsValue((o: { stopIfExecuted: any; }) => {
+      return { ...o, stopIfExecuted: !o.stopIfExecuted };
     });
   }, []);
 

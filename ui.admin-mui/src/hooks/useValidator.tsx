@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import {
-  createElement, useCallback, useEffect, useMemo, useReducer, useState,
+  useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -91,7 +91,7 @@ export const useValidator = () => {
     };
 
     if (errorsPerAttribute[attribute] && errorsPerAttribute[attribute].length > 0 && dirty.includes(attribute)) {
-      const helperText: React.ReactNode = createElement(Typography, undefined, errorsPerAttribute[attribute][0]);
+      const helperText = <Typography component='span'>{errorsPerAttribute[attribute][0]}</Typography>;
       return {
         className: 'prop-' + attribute,
         error:     true,
