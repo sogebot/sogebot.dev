@@ -70,5 +70,5 @@ export const loaderSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion } = loaderSlice.actions;
+export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 export default loaderSlice.reducer;
