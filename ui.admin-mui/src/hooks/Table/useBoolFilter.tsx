@@ -2,7 +2,7 @@ import { Checkbox, TableCell } from '@mui/material';
 import { useCallback } from 'react';
 
 export const useBoolFilter = () => {
-  const handleChange = useCallback((filter, onFilter) => {
+  const handleChange = useCallback((filter: { value: boolean; } | null, onFilter: (arg0: { value: boolean; } | null) => void) => {
     if (filter === null) {
       onFilter({ value: false });
     } else if (filter.value === false) {
@@ -12,7 +12,7 @@ export const useBoolFilter = () => {
     }
   }, [ ]);
 
-  const Cell = useCallback(({ filter, onFilter }) => (
+  const Cell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
     <TableCell sx={{
       width: '100%', p: 1, textAlign: 'center',
     }}>

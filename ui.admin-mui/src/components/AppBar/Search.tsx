@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { useDispatch } from 'react-redux';
-import { useDebounce } from 'rooks';
 
 import { setSearch } from '~/src/store/appbarSlice';
 
@@ -30,13 +29,9 @@ export const Search: React.FC = () => {
     setInput('');
   };
 
-  const setSearchInput = useDebounce((value: string) => {
-    dispatch(setSearch(value));
-  }, 100);
-
   useEffect(() => {
-    setSearchInput(input);
-  }, [input, setSearchInput]);
+    dispatch(setSearch(input));
+  }, [input, dispatch]);
 
   return (
     <Fade in={!hideSearchButton}>

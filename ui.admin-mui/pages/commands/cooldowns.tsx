@@ -15,7 +15,7 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
-  CheckBoxTwoTone, DisabledByDefaultTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, 
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone,
 } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -126,7 +126,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
     },
   ], [ translate, router, deleteItem ]);
 
-  const FilterCell = useCallback((props) => {
+  const FilterCell = useCallback((props: any) => {
     const { column } = props;
     if (['isEnabled', 'isErrorMsgQuiet', 'isOwnerAffected', 'isModeratorAffected', 'isSubscriberAffected'].includes(column.name)) {
       return <BoolFilterCell {...props} />;

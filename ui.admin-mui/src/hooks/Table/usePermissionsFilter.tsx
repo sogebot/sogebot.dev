@@ -9,7 +9,7 @@ import { usePermissions } from '~/src/hooks/usePermissions';
 export const usePermissionsFilter = (props?: { showDisabled: boolean }) => {
   const { permissions } = usePermissions();
 
-  const Cell = useCallback(({ filter, onFilter }) => (
+  const Cell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
     <TableCell sx={{ width: '100%', p: 1 }}>
       <Select
         variant='standard'

@@ -58,7 +58,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const [ showOnlyModified, setShowOnlyModified ] = useState(false);
 
-  const TypeFilterCell = useCallback(({ filter, onFilter }) => (
+  const TypeFilterCell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
     <TableCell sx={{ width: '100%', p: 1 }}>
       <Select
         variant='standard'
@@ -88,7 +88,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
     </TableCell>
   ), []);
 
-  const CommandFilterCell = useCallback(({ filter, onFilter }) => (
+  const CommandFilterCell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
     <TableCell sx={{
       width: '100%', p: 1, pl: 3,
     }}>
@@ -110,7 +110,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
     </TableCell>
   ), []);
 
-  const FilterCell = useCallback((props) => {
+  const FilterCell = useCallback((props: any) => {
     const { column } = props;
     if (column.name === 'type') {
       return <TypeFilterCell {...props} />;

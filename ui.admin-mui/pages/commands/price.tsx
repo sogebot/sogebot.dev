@@ -110,7 +110,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
     },
   ], [ translate, router, deleteItem ]);
 
-  const FilterCell = useCallback((props) => {
+  const FilterCell = useCallback((props: any) => {
     const { column } = props;
     if (column.name === 'enabled' || column.name === 'emitRedeemEvent') {
       return <BoolFilterCell {...props} />;

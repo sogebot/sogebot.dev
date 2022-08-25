@@ -166,7 +166,7 @@ export const CommandsEdit: React.FC<{
     });
   }, []);
 
-  const onDragEndHandler = useCallback((value) => {
+  const onDragEndHandler = useCallback((value: any) => {
     const destIdx = value.destination.index;
     const responseId = value.draggableId;
     const handledIds: string[] = [];

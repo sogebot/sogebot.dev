@@ -10,7 +10,7 @@ export const useNumberFilter = () => {
     onFilter({ ...filter, value });
   };
 
-  const handleFilterType = useCallback((filter, onFilter) => {
+  const handleFilterType = useCallback((filter: any, onFilter: any) => {
     const idx = types.indexOf(filter.type);
     if (types[idx + 1]) {
       onFilter({
@@ -25,7 +25,7 @@ export const useNumberFilter = () => {
     }
   }, []);
 
-  const Icon = useCallback(({ filter, onFilter }) => {
+  const Icon = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => {
     if (!filter) {
       onFilter({ type: '=', value: '' });
       return <Button onClick={() => handleFilterType(filter, onFilter)}>=</Button>;
@@ -33,7 +33,7 @@ export const useNumberFilter = () => {
     return <Button onClick={() => handleFilterType(filter, onFilter)}>{filter.type}</Button>;
   }, [handleFilterType]);
 
-  const Cell = useCallback(({ filter, onFilter }) => (
+  const Cell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
     <TableCell sx={{
       width: '100%', p: 1, textAlign: 'center',
     }}>
