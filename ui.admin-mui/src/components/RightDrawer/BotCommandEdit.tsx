@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 
 import { Commands } from '~/src/classes/Commands';
 import { getSocket } from '~/src/helpers/socket';
+import { useBotCommandsSpecificSettings } from '~/src/hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
@@ -24,7 +25,11 @@ export const BotCommandEdit: React.FC<{
   const [ editDialog, setEditDialog ] = useState(false);
   const { permissions } = usePermissions();
   const [ item, setItem ] = useState<Commands | null>(null);
+
+  const { loading: loading2, inputs, handleSave: handleBotCommandSpecificSettingsSave } = useBotCommandsSpecificSettings(item);
+
   const [ loading, setLoading ] = useState(true);
+
   const [ saving, setSaving ] = useState(false);
   const { id } = router.query;
   const { enqueueSnackbar } = useSnackbar();
@@ -50,23 +55,25 @@ export const BotCommandEdit: React.FC<{
   }, [ item ]);
 
   useEffect(() => {
+    setLoading(true);
     if (id) {
-      setLoading(true);
       setItem(props.items?.find(o => o.id === id) ?? null);
       setLoading(false);
+    } else {
+      setItem(null);
     }
     reset();
   }, [router, id, props.items, editDialog, reset]);
 
   useEffect(() => {
-    if (!loading && editDialog && item) {
+    if (!loading && !loading2 && editDialog && item) {
       const toCheck = new Commands();
       merge(toCheck, item);
       validateOrReject(toCheck)
         .then(() => setErrors(null))
         .catch(setErrors);
     }
-  }, [item, loading, editDialog, setErrors]);
+  }, [item, loading, loading2, editDialog, setErrors]);
 
   useEffect(() => {
     if (router.asPath.includes('botcommands/edit/')) {
@@ -81,33 +88,34 @@ export const BotCommandEdit: React.FC<{
     }, 200);
   };
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!item) {
       return;
     }
 
     setSaving(true);
+    await handleBotCommandSpecificSettingsSave();
     getSocket('/core/general').emit('generic::setCoreCommand', item, () => {
       enqueueSnackbar('Bot command saved.', { variant: 'success' });
       setSaving(false);
       router.push(`/commands/botcommands/edit/${item.id}`);
     });
-  }, [item, enqueueSnackbar, router]);
+  }, [item, enqueueSnackbar, router, handleBotCommandSpecificSettingsSave]);
 
   return(<Dialog
     open={editDialog}
     fullWidth
     maxWidth='md'
   >
-    {loading
+    {(loading || loading2)
       && <Grid
-        sx={{ pt: 10 }}
+        sx={{ py: 10 }}
         container
         direction="column"
         justifyContent="flex-start"
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {!loading && !loading2 && <Fade in={true}>
       <DialogContent>
         <Box
           component="form"
@@ -115,8 +123,8 @@ export const BotCommandEdit: React.FC<{
           noValidate
           autoComplete="off"
         >
-
           <TextField
+            sx={{ pb: '8px' }}
             {...propsError('command')}
             variant="filled"
             value={item?.command || ''}
@@ -161,9 +169,11 @@ export const BotCommandEdit: React.FC<{
               {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
             </Select>
           </FormControl>
+          {inputs}
         </Box>
       </DialogContent>
-    </Fade>
+
+    </Fade>}
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>

@@ -83,6 +83,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
         <MenuItem value='Intergrations' key='Intergrations'>Intergrations</MenuItem>
         <MenuItem value='Games' key='Games'>Games</MenuItem>
         <MenuItem value='Overlays' key='Overlays'>Overlays</MenuItem>
+        <MenuItem value='Registries' key='Registries'>Registries</MenuItem>
       </Select>
     </TableCell>
   ), []);
