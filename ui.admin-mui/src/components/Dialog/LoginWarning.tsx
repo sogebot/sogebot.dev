@@ -1,11 +1,9 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-  Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Typography, FormGroup, Stack, Switch, TextField,
+  Alert, Dialog, DialogActions, DialogContent, DialogTitle,
 } from '@mui/material';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 export const LoginWarning: React.FC = () => {
@@ -14,13 +12,13 @@ export const LoginWarning: React.FC = () => {
 
   useIntervalWhen(() => {
     setSeconds(o => o - 1);
-  }, 1000, seconds > 0 && showLoginWarning, true)
+  }, 1000, seconds > 0 && showLoginWarning, true);
 
   useEffect(() => {
     if (seconds === 0) {
-      handleLogin()
+      handleLogin();
     }
-  }, [seconds])
+  }, [seconds]);
 
   const handleLogin = () => {
     window.location.assign(window.location.origin + '/credentials/login');

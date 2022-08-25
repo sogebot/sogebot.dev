@@ -14,6 +14,7 @@ import { Logo } from '@/components/AppBar/Logo';
 import { ServerSelect } from '@/components/Dialog/ServerSelect';
 import { AppBarBreadcrumbs } from '~/src/components/AppBar/Breadcrumbs';
 import { Search } from '~/src/components/AppBar/Search';
+import { LoginWarning } from '~/src/components/Dialog/LoginWarning';
 import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getListOf, populateListOf } from '~/src/helpers/getListOf';
 import { isUserLoggedIn } from '~/src/helpers/isUserLoggedIn';
@@ -21,7 +22,7 @@ import { getConfiguration, getSocket } from '~/src/helpers/socket';
 
 import checkTokenValidity from '../../helpers/check-token-validity';
 import {
-  setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning
+  setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
 } from '../../store/loaderSlice';
 import { setUser } from '../../store/userSlice';
 import { DashboardStats } from '../Dashboard/Stats';
@@ -29,7 +30,6 @@ import { DashboardWidgetAction } from '../Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../Dashboard/Widget/Twitch';
 import NavDrawer from '../navDrawer';
-import { LoginWarning } from '~/src/components/Dialog/LoginWarning';
 
 setUseWhatChange(process.env.NODE_ENV === 'development');
 
@@ -58,7 +58,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       resolve();
     }).catch(e => {
       dispatch(setMessage('You don\'t have access to this server.'));
-      dispatch(showLoginWarning())
+      dispatch(showLoginWarning());
       reject(e);
     });
   });
