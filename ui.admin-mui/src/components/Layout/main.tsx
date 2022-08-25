@@ -21,7 +21,7 @@ import { getConfiguration, getSocket } from '~/src/helpers/socket';
 
 import checkTokenValidity from '../../helpers/check-token-validity';
 import {
-  setConfiguration, setMessage, setState, setSystem, setTranslation,
+  setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning
 } from '../../store/loaderSlice';
 import { setUser } from '../../store/userSlice';
 import { DashboardStats } from '../Dashboard/Stats';
@@ -29,6 +29,7 @@ import { DashboardWidgetAction } from '../Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../Dashboard/Widget/Twitch';
 import NavDrawer from '../navDrawer';
+import { LoginWarning } from '~/src/components/Dialog/LoginWarning';
 
 setUseWhatChange(process.env.NODE_ENV === 'development');
 
@@ -57,6 +58,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       resolve();
     }).catch(e => {
       dispatch(setMessage('You don\'t have access to this server.'));
+      dispatch(showLoginWarning())
       reject(e);
     });
   });
@@ -122,6 +124,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
           })(window, document, "clarity", "script", "cnni7q4jrp");`,
         }}/>
       <ServerSelect/>
+      <LoginWarning/>
       <Fade in={state}>
         <Box sx={{ flexGrow: 1 }}>
           <Slide in={!isIndexPage}>

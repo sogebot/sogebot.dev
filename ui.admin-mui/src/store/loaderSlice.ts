@@ -6,6 +6,7 @@ export const loaderSlice = createSlice({
     server:            null,
     compatibleVersion: '15.5.0',
     connectedToServer: false,
+    showLoginWarning:  false,
 
     drawerWidth:   65,
     message:       null,
@@ -61,6 +62,9 @@ export const loaderSlice = createSlice({
       const wsUrl = state.server.replace('https', '').replace('http', '');
       console.debug('setConnectedToServer', );
       sessionStorage.wsUrl = `${(state.server.startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
+    },
+    showLoginWarning: (state: any) => {
+      state.showLoginWarning = true;
     },
   },
 });
