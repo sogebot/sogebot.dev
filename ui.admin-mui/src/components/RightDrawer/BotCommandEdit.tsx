@@ -57,6 +57,10 @@ export const BotCommandEdit: React.FC<{
     }
   }, [ item ]);
 
+  const loading = useMemo(() => {
+    return loading1 || loading2 || loading3;
+  }, [ loading1, loading2, loading3 ]);
+
   useEffect(() => {
     setLoading(true);
     if (id) {
@@ -78,7 +82,7 @@ export const BotCommandEdit: React.FC<{
         .then(() => setErrors(null))
         .catch(setErrors);
     }
-  }, [item, loading, loading2, editDialog, setErrors]);
+  }, [item, loading, editDialog, setErrors]);
 
   useEffect(() => {
     if (router.asPath.includes('botcommands/edit/')) {
@@ -112,7 +116,7 @@ export const BotCommandEdit: React.FC<{
     fullWidth
     maxWidth='md'
   >
-    {(loading || loading2)
+    {(loading)
       && <Grid
         sx={{ py: 10 }}
         container
