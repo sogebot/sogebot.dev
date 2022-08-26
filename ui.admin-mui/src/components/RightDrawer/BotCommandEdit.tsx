@@ -7,11 +7,14 @@ import { validateOrReject } from 'class-validator';
 import { cloneDeep, merge } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import {
+  useCallback, useMemo, useState, 
+} from 'react';
 import { useEffect } from 'react';
 
 import { Commands } from '~/src/classes/Commands';
 import { getSocket } from '~/src/helpers/socket';
+import { useBotCommandsExample } from '~/src/hooks/useBotCommandsExample';
 import { useBotCommandsSpecificSettings } from '~/src/hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -25,10 +28,10 @@ export const BotCommandEdit: React.FC<{
   const [ editDialog, setEditDialog ] = useState(false);
   const { permissions } = usePermissions();
   const [ item, setItem ] = useState<Commands | null>(null);
-
-  const { loading: loading2, inputs, handleSave: handleBotCommandSpecificSettingsSave } = useBotCommandsSpecificSettings(item);
-
-  const [ loading, setLoading ] = useState(true);
+  const [ cachedItem, setCachedItem ] = useState<Commands | null>(null);
+  const [ loading1, setLoading ] = useState(true);
+  const { loading: loading2, inputs, handleSave: handleBotCommandSpecificSettingsSave } = useBotCommandsSpecificSettings(cachedItem);
+  const { loading: loading3, examples } = useBotCommandsExample(cachedItem);
 
   const [ saving, setSaving ] = useState(false);
   const { id } = router.query;
@@ -54,19 +57,25 @@ export const BotCommandEdit: React.FC<{
     }
   }, [ item ]);
 
+  const loading = useMemo(() => {
+    return loading1 || loading2 || loading3;
+  }, [ loading1, loading2, loading3 ]);
+
   useEffect(() => {
     setLoading(true);
     if (id) {
       setItem(props.items?.find(o => o.id === id) ?? null);
+      setCachedItem(props.items?.find(o => o.id === id) ?? null);
       setLoading(false);
     } else {
       setItem(null);
+      setCachedItem(null);
     }
     reset();
   }, [router, id, props.items, editDialog, reset]);
 
   useEffect(() => {
-    if (!loading && !loading2 && editDialog && item) {
+    if (!loading && editDialog && item) {
       const toCheck = new Commands();
       merge(toCheck, item);
       validateOrReject(toCheck)
@@ -115,7 +124,7 @@ export const BotCommandEdit: React.FC<{
         justifyContent="flex-start"
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
-    {!loading && !loading2 && <Fade in={true}>
+    {!loading && <Fade in={true}>
       <DialogContent>
         <Box
           component="form"
@@ -170,6 +179,7 @@ export const BotCommandEdit: React.FC<{
             </Select>
           </FormControl>
           {inputs}
+          {examples}
         </Box>
       </DialogContent>
 
