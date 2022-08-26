@@ -8,7 +8,7 @@ import { cloneDeep, merge } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  useCallback, useMemo, useState, 
+  useCallback, useMemo, useState,
 } from 'react';
 import { useEffect } from 'react';
 
@@ -56,10 +56,6 @@ export const BotCommandEdit: React.FC<{
       setItem({ ...item, command: item.defaultValue });
     }
   }, [ item ]);
-
-  const loading = useMemo(() => {
-    return loading1 || loading2 || loading3;
-  }, [ loading1, loading2, loading3 ]);
 
   useEffect(() => {
     setLoading(true);

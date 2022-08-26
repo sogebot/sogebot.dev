@@ -5,6 +5,7 @@ import {
 import { Stack } from '@mui/system';
 import axios from 'axios';
 import camelCase from 'lodash/camelCase';
+import { useRouter } from 'next/router';
 import {
   useCallback, useEffect, useState,
 } from 'react';
@@ -15,6 +16,7 @@ import getAccessToken from '~/src/getAccessToken';
 import { getSocket } from '~/src/helpers/socket';
 
 export const useBotCommandsExample = (item: Commands | null) => {
+  const router = useRouter();
   const { user } = useSelector((state: any) => state.user);
 
   const [ loading, setLoading ] = useState(true);
@@ -24,9 +26,11 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
   useEffect(() => {
     setLoading(true);
+  }, [ router ]);
+
+  useEffect(() => {
     if (!item) {
       setExampleData([]);
-      setLoading(false);
       return;
     }
     getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any)
@@ -50,7 +54,6 @@ export const useBotCommandsExample = (item: Commands | null) => {
           }
         }
         setSettings(commandSettings);
-
         setLoading(false);
       });
   }, [ item ]);
