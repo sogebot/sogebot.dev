@@ -12,9 +12,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
-import React, {
-  useCallback, useEffect, useState, 
-} from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount, useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -22,7 +20,6 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from '~/src/components/Dashboard/Widget/Bot/Dialog/FilterEvents';
 import { classes } from '~/src/components/styles';
-import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
@@ -56,10 +53,6 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useSelector((state: any) => state.loader);
-
-  useEffect(() => {
-    setLocale(configuration.lang);
-  }, [ configuration ]);
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
@@ -117,7 +110,7 @@ function RenderRow(props: any) {
           <Typography component="span" fontSize={'0.8rem'} pr={0.5}>&nbsp;{parse(prepareMessage(props.item))}</Typography>
           <DotDivider/>
         </>}
-        <Typography  component="span" fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{dayjs(props.item.timestamp).fromNow()}</Typography>
+        <Typography  component="span" fontSize={'0.8rem'} pl={0.5} color={grey[500]}>{dayjs(props.item.timestamp).locale(configuration.lang).fromNow()}</Typography>
       </Box>
       } secondary={blockquote(props.item).length > 0 && <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ parse(blockquote(props.item)) }</Typography>}/>
 
