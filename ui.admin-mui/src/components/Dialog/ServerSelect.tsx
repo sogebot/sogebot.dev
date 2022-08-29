@@ -38,7 +38,12 @@ export const ServerSelect: React.FC = () => {
 
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
-    setIsValidHttps(checkURLValidity(serverInputValue));
+    const isValid = checkURLValidity(serverInputValue);
+    setIsValidHttps(isValid);
+
+    if (isValid) {
+      localStorage.server = serverInputValue;
+    }
   }, [serverInputValue, isValidHttps]);
 
   const handleConnect = useCallback((server: string) => {
