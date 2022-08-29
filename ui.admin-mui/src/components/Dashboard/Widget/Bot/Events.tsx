@@ -12,7 +12,9 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useState, 
+} from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount, useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
