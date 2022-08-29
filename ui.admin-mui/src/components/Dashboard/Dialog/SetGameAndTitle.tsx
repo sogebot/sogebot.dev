@@ -1,7 +1,7 @@
 import { CheckSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Container, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography,
+  Autocomplete, Backdrop, Box, Button, Container, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography, CircularProgress
 } from '@mui/material';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
@@ -10,11 +10,14 @@ import * as React from 'react';
 
 import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
+import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import theme from '~/src/theme';
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
+  const [ loading, setLoading ] = React.useState(true);
   const [ titles, setTitles ] = React.useState<{ game: string, title: string, timestamp: number }[]>([]);
+  const [ cacheGames, setCacheGames ] = React.useState<CacheGamesInterface[]>([]);
   const [ inputValue, setInputValue ] = React.useState(props.game);
   const [ titleInputValue, setTitleInputValue ] = React.useState(props.title);
   const [ isSearching, setIsSearching ] = React.useState(false);
@@ -31,6 +34,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       setLastValidGame(props.game);
       setTitleInputValue(props.title);
       setIsOpened(true);
+      setLoading(true);
     } else {
       setIsOpened(false);
     }
@@ -55,7 +59,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       if (!value.includes(title.title)) {
         value.push(title.title);
       }
-      if (value.length === 12) {
+      if (value.length === 5) {
         break;
       }
     }
@@ -110,11 +114,13 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
 
   React.useEffect(() => {
     if (props.open) {
-      getSocket('/').emit('getUserTwitchGames', (values) => {
+      getSocket('/').emit('getUserTwitchGames', (_titles, games) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
-        console.log(values);
+        console.log({ _titles, games });
         console.groupEnd();
-        setTitles(values);
+        setTitles(_titles);
+        setCacheGames(games);
+        setLoading(false);
       });
     }
   }, [props.open]);
@@ -173,30 +179,35 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           value={titleInputValue}
           onChange={(event) => setTitleInputValue(event.target.value)}/>
 
-        <Typography component="div" variant="caption" sx={{ p: 2 }}>Last used games</Typography>
-        <Grid container spacing={1} pl={1}>
-          {lastGames.map((game) => {
-            return (
-              <Grid sx={{
-                padding: '0px !important', height: '114px', ...classes.parent,
-              }} item key={game} xs={2} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
-                <Image alt='' width="200px" height="280px" src={'https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(game) + '-200x280.jpg'}/>
-                <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
-                  <CheckSharp/>
-                </Backdrop>
-              </Grid>
-            );
-          })}
-        </Grid>
+        {loading
+          ? <CircularProgress/>
+          : <>
+            <Typography component="div" variant="caption" sx={{ p: 2 }}>Last used games</Typography>
+            <Grid container spacing={1} pl={1}>
+              {lastGames.map((game) => {
+                return (
+                  <Grid sx={{
+                    padding: '0px !important', height: '114px', ...classes.parent,
+                  }} item key={game} xs={2} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
+                    <Image title={game} alt={game} width="200px" height="280px" src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
+                    <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
+                      <CheckSharp/>
+                    </Backdrop>
+                  </Grid>
+                );
+              })}
+            </Grid>
 
-        <Typography component="div" variant="caption" sx={{ p: 2, pb: 0 }}>Last used titles for {inputValue}</Typography>
-        <List>
-          {lastTitles.map((title) => {
-            return (
-              <ListItem sx={{ color: title === titleInputValue ? theme.palette.primary.main : 'inherit' }}disablePadding key={title}><ListItemButton onClick={() => setTitleInputValue(title)}>{title}</ListItemButton></ListItem>
-            );
-          })}
-        </List>
+            <Typography component="div" variant="caption" sx={{ p: 2, pb: 0 }}>Last used titles for {inputValue}</Typography>
+            <List>
+              {lastTitles.map((title) => {
+                return (
+                  <ListItem sx={{ color: title === titleInputValue ? theme.palette.primary.main : 'inherit' }}disablePadding key={title}><ListItemButton onClick={() => setTitleInputValue(title)}>{title}</ListItemButton></ListItem>
+                );
+              })}
+            </List>
+          </>
+        }
       </Container>
       <Divider/>
       <Box sx={{ height: '50px', p: 1 }}>
