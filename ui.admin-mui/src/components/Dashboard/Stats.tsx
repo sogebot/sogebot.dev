@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 import { setAverageStats } from '~/src/store/pageSlice';
@@ -20,9 +21,10 @@ import { DashboardStatsTwitchWatchedTime } from './TwitchWatchedTime';
 
 export const DashboardStats: React.FC = () => {
   const { configuration } = useSelector((state: any) => state.loader);
+  const isStreamOnline = useSelector<any, boolean>((state: any) => state.page.isStreamOnline);
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
+  useIntervalWhen(() => {
     getSocket('/').emit('getLatestStats', (err, data: any) => {
       console.groupCollapsed('navbar::getLatestStats');
       console.log(data);
@@ -32,7 +34,7 @@ export const DashboardStats: React.FC = () => {
       console.groupEnd();
       dispatch(setAverageStats(data));
     });
-  }, [ dispatch ]);
+  }, 10000, !isStreamOnline, true);
 
   return (
     <Grid container spacing={0.5}>
