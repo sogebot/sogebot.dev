@@ -29,6 +29,7 @@ export const ServerSelect: React.FC = () => {
   const router = useRouter();
 
   const [open, setOpen] = React.useState(true);
+  const [isInitial, setIsInitial] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
   const [autoConnect, setAutoConnect] = React.useState(false);
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
@@ -38,13 +39,19 @@ export const ServerSelect: React.FC = () => {
 
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
-    const isValid = checkURLValidity(serverInputValue);
-    setIsValidHttps(isValid);
+    setIsValidHttps(checkURLValidity(serverInputValue));
+  }, [serverInputValue]);
 
-    if (isValid) {
-      localStorage.server = serverInputValue;
-    }
-  }, [serverInputValue, isValidHttps]);
+  const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutoConnect(event.target.checked);
+  };
+
+  React.useEffect(() => {
+    const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
+    const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+    setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])));
+    setAutoConnect(autoConnectLS);
+  }, []);
 
   const handleConnect = useCallback((server: string) => {
     if (server) {
@@ -71,19 +78,8 @@ export const ServerSelect: React.FC = () => {
     }
   }, [dispatch, autoConnect, router]);
 
-  const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAutoConnect(event.target.checked);
-  };
-
   React.useEffect(() => {
-    const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
-    const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-    setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])));
-    setAutoConnect(autoConnectLS);
-  }, []);
-
-  React.useEffect(() => {
-    if (router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
+    if (isInitial && router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
       // autoconnect by server get parameter
       const queryServer = router.query.server as string;
       if (queryServer) {
@@ -101,8 +97,9 @@ export const ServerSelect: React.FC = () => {
           handleConnect(localStorage.server);
         }
       }
+      setIsInitial(false);
     }
-  }, [router.isReady, connecting, handleConnect, router.query.server, message]);
+  }, [router, connecting, message, isInitial, handleConnect]);
 
   const getUser = () => {
     try {
