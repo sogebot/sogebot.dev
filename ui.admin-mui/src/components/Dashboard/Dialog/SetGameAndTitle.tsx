@@ -1,8 +1,9 @@
 import { CheckSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Container, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography, CircularProgress
+  Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography,
 } from '@mui/material';
+import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import Image from 'next/image';
@@ -10,7 +11,6 @@ import * as React from 'react';
 
 import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
-import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import theme from '~/src/theme';
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
