@@ -4,13 +4,16 @@ import {
   Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography,
 } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
+import { capitalize } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import Image from 'next/image';
 import * as React from 'react';
+import SimpleBar from 'simplebar-react';
 
 import { classes } from '~/src/components/styles';
 import { getSocket } from '~/src/helpers/socket';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
@@ -23,6 +26,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   const [ isSearching, setIsSearching ] = React.useState(false);
   const [ isSaving, setIsSaving ] = React.useState(false);
   const [ hover, setHover ] = React.useState('');
+  const { translate } = useTranslation();
 
   const [ isOpened, setIsOpened ] = React.useState(false);
 
@@ -59,7 +63,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       if (!value.includes(title.title)) {
         value.push(title.title);
       }
-      if (value.length === 5) {
+      if (value.length === 20) {
         break;
       }
     }
@@ -166,21 +170,21 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           value={inputValue}
           renderInput={(params) =>
             <TextField
-              label='Game'
+              label={capitalize(translate('game'))}
               variant="filled"
               placeholder='Start typing to Search game on Twitch'
               {...params}/>
           }
         />
         <TextField
-          label='Title'
+          label={capitalize(translate('title'))}
           fullWidth
           variant="filled"
           value={titleInputValue}
           onChange={(event) => setTitleInputValue(event.target.value)}/>
 
         {loading
-          ? <CircularProgress/>
+          ? <Grid container sx={{ placeContent: 'center', pt: 2 }}><Grid item><CircularProgress/></Grid></Grid>
           : <>
             <Typography component="div" variant="caption" sx={{ p: 2 }}>Last used games</Typography>
             <Grid container spacing={1} pl={1}>
@@ -199,13 +203,15 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
             </Grid>
 
             <Typography component="div" variant="caption" sx={{ p: 2, pb: 0 }}>Last used titles for {inputValue}</Typography>
-            <List>
-              {lastTitles.map((title) => {
-                return (
-                  <ListItem sx={{ color: title === titleInputValue ? theme.palette.primary.main : 'inherit' }}disablePadding key={title}><ListItemButton onClick={() => setTitleInputValue(title)}>{title}</ListItemButton></ListItem>
-                );
-              })}
-            </List>
+            <SimpleBar style={{ height: 'calc(100% - 420px)' }} autoHide={false}>
+              <List>
+                {lastTitles.map((title) => {
+                  return (
+                    <ListItem sx={{ color: title === titleInputValue ? theme.palette.primary.main : 'inherit' }}disablePadding key={title}><ListItemButton onClick={() => setTitleInputValue(title)}>{title}</ListItemButton></ListItem>
+                  );
+                })}
+              </List>
+            </SimpleBar>
           </>
         }
       </Container>
