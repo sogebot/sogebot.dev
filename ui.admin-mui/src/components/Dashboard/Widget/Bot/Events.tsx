@@ -12,7 +12,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount, useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -20,6 +20,7 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from '~/src/components/Dashboard/Widget/Bot/Dialog/FilterEvents';
 import { classes } from '~/src/components/styles';
+import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import theme from '~/src/theme';
@@ -53,6 +54,10 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useSelector((state: any) => state.loader);
+
+  useEffect(() => {
+    setLocale(configuration.lang);
+  }, [ configuration ]);
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
