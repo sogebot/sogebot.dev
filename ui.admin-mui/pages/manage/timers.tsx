@@ -1,0 +1,344 @@
+import {
+  Column,
+  FilteringState,
+  IntegratedFiltering,
+  IntegratedSelection,
+  IntegratedSorting,
+  SelectionState,
+  SortingState,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid as DataGrid,
+  Table,
+  TableHeaderRow,
+  TableSelection,
+} from '@devexpress/dx-react-grid-material-ui';
+import { Timer } from '@entity/timer';
+import {
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, Edit, TimerOffTwoTone, TimerTwoTone,
+} from '@mui/icons-material';
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Paper,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import axios from 'axios';
+import { capitalize } from 'lodash';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import {
+  ReactElement, useCallback, useEffect, useMemo, useState,
+} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import SimpleBar from 'simplebar-react';
+
+import { DisabledAlert } from '@/components/System/DisabledAlert';
+import { NextPageWithLayout } from '~/pages/_app';
+import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
+import { Layout } from '~/src/components/Layout/main';
+import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
+import getAccessToken from '~/src/getAccessToken';
+import { useFilter } from '~/src/hooks/useFilter';
+import { useTranslation } from '~/src/hooks/useTranslation';
+import { setBulkCount } from '~/src/store/appbarSlice';
+
+const PageManageTimers: NextPageWithLayout = () => {
+  const { translate } = useTranslation();
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [ items, setItems ] = useState<Timer[]>([]);
+  const [ loading, setLoading ] = useState(true);
+  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const [ selection, setSelection ] = useState<(string|number)[]>([]);
+
+  const { element: filterElement, filters } = useFilter<Timer>([
+    { columnName: 'name', type: 'string' },
+    {
+      columnName: 'triggerEveryMessage', type: 'number', translationKey: 'messages', 
+    },
+    {
+      columnName: 'triggerEverySecond', type: 'number', translationKey: 'seconds', 
+    },
+    {
+      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled', 
+    },
+    {
+      columnName: 'tickOffline', type: 'boolean', translationKey: 'timers.dialog.tickOffline', 
+    },
+  ]);
+
+  const deleteItem = useCallback((item: Timer) => {
+    axios.delete(`${localStorage.server}/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Commands ${item.name} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
+  }, [ enqueueSnackbar ]);
+
+  const tableColumnExtensions = [
+    { columnName: 'name', width: '60%' },
+    { columnName: 'isEnabled', align: 'center' },
+    { columnName: 'tickOffline', align: 'center' },
+    { columnName: 'triggerEveryMessage', align: 'right' },
+    { columnName: 'triggerEverySecond', align: 'right' },
+    {
+      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+    },
+  ];
+
+  const columns = useMemo<Column[]>(() => [
+    {
+      name:  'name',
+      title: capitalize(translate('name')),
+    },
+    { name: 'isEnabled', title: capitalize(translate('enabled')) },
+    { name: 'tickOffline', title: capitalize(translate('timers.dialog.tickOffline')) },
+    { name: 'triggerEveryMessage', title: capitalize(translate('messages')) },
+    { name: 'triggerEverySecond', title: capitalize(translate('seconds')) },
+    {
+      name:         'actions',
+      title:        ' ',
+      getCellValue: (row) => [
+        <Stack direction="row" key="row">
+          <Button
+            size='small'
+            variant="contained"
+            startIcon={<Edit/>}
+            onClick={() => {
+              router.push('/manage/timers/edit/' + row.id);
+            }}>Edit</Button>
+          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+        </Stack>,
+      ],
+    },
+  ], [ translate, router, deleteItem ]);
+
+  useEffect(() => {
+    refresh().then(() => setLoading(false));
+  }, [router]);
+
+  const refresh = async () => {
+    await Promise.all([
+      new Promise<void>(resolve => {
+        axios.get(`${localStorage.server}/api/systems/timer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setItems(data.data);
+            resolve();
+          });
+      }),
+    ]);
+  };
+
+  useEffect(() => {
+    dispatch(setBulkCount(selection.length));
+  }, [selection, dispatch]);
+
+  const bulkCanEnableCount = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.tickOffline) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkCanDisableCount = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.tickOffline) {
+        return true;
+      }
+    }
+  }, [ selection, items ]);
+
+  const bulkCanEnable = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.isEnabled) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkCanDisable = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.isEnabled) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkToggleAttribute = useCallback(async <T extends keyof Timer>(attribute: T, value: Timer[T]) => {
+    for (const selected of selection) {
+      const item = items.find(o => o.id === selected);
+      if (item && item[attribute] !== value) {
+        await new Promise<void>((resolve) => {
+          item[attribute] = value;
+          axios.post(`${localStorage.server}/api/systems/timer`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .then(() => {
+              resolve();
+            });
+        });
+      }
+    }
+
+    setItems(i => i.map((item) => {
+      if (selection.includes(item.id)) {
+        item[attribute] = value;
+      }
+      return item;
+    }));
+
+    if (attribute === 'isEnabled') {
+      enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
+    } else if (attribute === 'tickOffline') {
+      enqueueSnackbar(`Bulk operation set timer to ${value ? '' : 'not '} tick when stream is offline.`, { variant: 'success' });
+    }
+
+    refresh();
+  }, [ enqueueSnackbar, items, selection ]);
+
+  const bulkDelete =  useCallback(async () => {
+    for (const selected of selection) {
+      const item = items.find(o => o.id === selected);
+      if (item) {
+        await new Promise<void>((resolve) => {
+          axios.delete(`${localStorage.server}/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => {
+              resolve();
+            });
+        });
+      }
+    }
+    setItems(i => i.filter(item => !selection.includes(item.id)));
+    enqueueSnackbar(`Bulk operation deleted items.`, { variant: 'success' });
+    setSelection([]);
+  }, [ selection, enqueueSnackbar, items ]);
+
+  /*const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      let shouldShow = true;
+
+      for (const filter of filters) {
+        /*console.log({filter})
+        if (filter.columnName === 'name') {
+          shouldShow = item.name.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'isEnabled') {
+          shouldShow = filter.value === item.isEnabled;
+        } else if (filter.columnName === 'tickOffline') {
+          shouldShow = filter.value === item.tickOffline;
+        } else if ((filter.columnName === 'triggerEveryMessage' || filter.columnName === 'triggerEverySecond') && filter.value !== '') {
+          if ((filter as any).type === '>') {
+            shouldShow = item[filter.columnName] > Number(filter.value);
+          } else if ((filter as any).type === '=') {
+            shouldShow = item[filter.columnName] === Number(filter.value);
+          } else if ((filter as any).type === '<') {
+            shouldShow = item[filter.columnName] < Number(filter.value);
+          }
+        }/
+
+        if (!shouldShow) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [items, filters]);*/
+
+  return (
+    <>
+      <DisabledAlert system='timers'/>
+      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <Grid item>
+          <Button variant="contained" onClick={() => {
+            router.push('/manage/timers/create/');
+          }}>Create new timer</Button>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Enable">
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Disable">
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Enable countdown on offline stream">
+            <Button disabled={!bulkCanEnableCount} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('tickOffline', true)}><TimerTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip arrow title="Disable countdown on offline stream">
+            <Button disabled={!bulkCanDisableCount} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('tickOffline', false)}><TimerOffTwoTone/></Button>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+        </Grid>
+        <Grid item>{filterElement}</Grid>
+        <Grid item>
+          {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
+        </Grid>
+      </Grid>
+
+      {loading
+        ? <CircularProgress color="inherit" sx={{
+          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+        }} />
+        : <Paper>
+          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+            <DataGrid
+              rows={items}
+              columns={columns}
+              getRowId={row => row.id}
+            >
+              <BoolTypeProvider
+                for={['tickOffline', 'isEnabled']}
+              />
+
+              <SortingState
+                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'keyword', direction: 'asc' }]}
+                columnExtensions={tableColumnExtensions as any}
+              />
+              <IntegratedSorting />
+
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering/>
+
+              <SelectionState
+                selection={selection}
+                onSelectionChange={setSelection}
+              />
+              <IntegratedSelection/>
+              <Table columnExtensions={tableColumnExtensions as any}/>
+              <TableHeaderRow showSortingControls/>
+              <TableSelection showSelectAll/>
+            </DataGrid>
+          </SimpleBar>
+        </Paper>}
+    </>
+  );
+};
+
+PageManageTimers.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>
+  );
+};
+
+export default PageManageTimers;
