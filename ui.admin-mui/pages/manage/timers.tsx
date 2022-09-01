@@ -41,6 +41,7 @@ import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
+import { TimerEdit } from '~/src/components/RightDrawer/TimerEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
 import { useFilter } from '~/src/hooks/useFilter';
@@ -61,23 +62,23 @@ const PageManageTimers: NextPageWithLayout = () => {
   const { element: filterElement, filters } = useFilter<Timer>([
     { columnName: 'name', type: 'string' },
     {
-      columnName: 'triggerEveryMessage', type: 'number', translationKey: 'messages', 
+      columnName: 'triggerEveryMessage', type: 'number', translationKey: 'messages',
     },
     {
-      columnName: 'triggerEverySecond', type: 'number', translationKey: 'seconds', 
+      columnName: 'triggerEverySecond', type: 'number', translationKey: 'seconds',
     },
     {
-      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled', 
+      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled',
     },
     {
-      columnName: 'tickOffline', type: 'boolean', translationKey: 'timers.dialog.tickOffline', 
+      columnName: 'tickOffline', type: 'boolean', translationKey: 'timers.dialog.tickOffline',
     },
   ]);
 
   const deleteItem = useCallback((item: Timer) => {
     axios.delete(`${localStorage.server}/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
-        enqueueSnackbar(`Commands ${item.name} deleted successfully.`, { variant: 'success' });
+        enqueueSnackbar(`Timer ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
       });
   }, [ enqueueSnackbar ]);
@@ -226,36 +227,6 @@ const PageManageTimers: NextPageWithLayout = () => {
     setSelection([]);
   }, [ selection, enqueueSnackbar, items ]);
 
-  /*const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      let shouldShow = true;
-
-      for (const filter of filters) {
-        /*console.log({filter})
-        if (filter.columnName === 'name') {
-          shouldShow = item.name.toLowerCase().includes(filter.value.toLowerCase());
-        } else if (filter.columnName === 'isEnabled') {
-          shouldShow = filter.value === item.isEnabled;
-        } else if (filter.columnName === 'tickOffline') {
-          shouldShow = filter.value === item.tickOffline;
-        } else if ((filter.columnName === 'triggerEveryMessage' || filter.columnName === 'triggerEverySecond') && filter.value !== '') {
-          if ((filter as any).type === '>') {
-            shouldShow = item[filter.columnName] > Number(filter.value);
-          } else if ((filter as any).type === '=') {
-            shouldShow = item[filter.columnName] === Number(filter.value);
-          } else if ((filter as any).type === '<') {
-            shouldShow = item[filter.columnName] < Number(filter.value);
-          }
-        }/
-
-        if (!shouldShow) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [items, filters]);*/
-
   return (
     <>
       <DisabledAlert system='timers'/>
@@ -329,6 +300,7 @@ const PageManageTimers: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
+      <TimerEdit items={items}/>
     </>
   );
 };

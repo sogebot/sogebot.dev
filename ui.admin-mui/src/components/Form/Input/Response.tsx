@@ -19,10 +19,16 @@ export const FormResponse: React.FC<{
   value: any,
   idx: number,
   onChange?: (value: any) => void,
+  disablePermission?: boolean,
+  disableFilter?: boolean,
+  disableExecution?: boolean,
 }> = ({
   value,
   idx,
   onChange,
+  disablePermission,
+  disableFilter,
+  disableExecution,
 }) => {
   const [propsValue, setPropsValue] = useState(value);
   const { translate } = useTranslation();
@@ -86,8 +92,8 @@ export const FormResponse: React.FC<{
         }}
       />
 
-      <Grid container spacing={1} mb={1}>
-        <Grid item sm>
+      {(!disableFilter || !disablePermission || !disableExecution) && <Grid container spacing={1} mb={1}>
+        {!disableFilter && <Grid item sm>
           <FormControl fullWidth variant="filled" >
             <InputLabel id="permission-select-label">{translate('filter')}</InputLabel>
             <FilledInput
@@ -101,8 +107,8 @@ export const FormResponse: React.FC<{
               }
             />
           </FormControl>
-        </Grid>
-        <Grid item sm>
+        </Grid>}
+        {!disablePermission && <Grid item sm>
           <FormControl fullWidth variant="filled" >
             <InputLabel id="permission-select-label" shrink>{translate('permissions')}</InputLabel>
             <Select
@@ -125,11 +131,11 @@ export const FormResponse: React.FC<{
               {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid item>
+        </Grid>}
+        {!disableExecution && <Grid item>
           <Button sx={{ height: '100%' }} variant="contained" color={propsValue.stopIfExecuted ? 'error' : 'success'} onClick={onExecutionToggleHandler}>{ propsValue.stopIfExecuted ? translate('commons.stop-if-executed') : translate('commons.continue-if-executed') }</Button>
-        </Grid>
-      </Grid>
+        </Grid>}
+      </Grid>}
     </>
   );
 };
