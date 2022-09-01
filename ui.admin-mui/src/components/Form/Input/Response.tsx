@@ -82,6 +82,10 @@ export const FormResponse: React.FC<{
         variant='filled'
         label={`${translate('response')}#${idx + 1}`}
         value={propsValue.response}
+        multiline
+        onKeyPress={(e) => {
+          e.key === 'Enter' && e.preventDefault();
+        }}
         onChange={onResponseChangeHandler}
         InputProps={{
           endAdornment: <>

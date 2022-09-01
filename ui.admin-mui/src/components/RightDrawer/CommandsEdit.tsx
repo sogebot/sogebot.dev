@@ -21,6 +21,7 @@ import React, {
 } from 'react';
 import { useEffect } from 'react';
 import { v4 } from 'uuid';
+import { CommandResponse } from '~/../backend/d.ts/src/parser';
 import {
   Commands, CommandsGroup, CommandsResponses,
 } from '~/../backend/dest/database/entity/commands';
@@ -169,28 +170,38 @@ export const CommandsEdit: React.FC<{
   const onDragEndHandler = useCallback((value: any) => {
     const destIdx = value.destination.index;
     const responseId = value.draggableId;
-    const handledIds: string[] = [];
 
     setItem((o: any) => {
-      const responses: StripTypeORMEntity<CommandsResponses>[] = [];
-      for (let idx = 0; idx < o.responses.length; idx++) {
-        if (!handledIds.includes(o.responses[idx].id)) {
-          if (idx === destIdx) {
-            const response2 = o.responses.find((res: { id: any; }) => res.id === responseId);
-            if (response2) {
-              response2.order = handledIds.length;
-              responses.push(response2);
-              handledIds.push(response2.id);
-            }
-          }
+      const responses: StripTypeORMEntity<CommandResponse>[] = [];
 
-          const response = o.responses.find((res: { id: any; }) => res.id === o.responses[idx].id);
-          if (response && response.id !== responseId) { // already handled by drag
-            response.order = handledIds.length;
-            responses.push(o.responses[idx]);
-            handledIds.push(o.responses[idx].id);
-          }
+      const ordered = orderBy(o.responses, 'order', 'asc');
+      const fromIdx = ordered.findIndex(m => m.id === responseId);
+
+      if (fromIdx === destIdx) {
+        return o;
+      }
+
+      for (let idx = 0; idx < o.responses.length; idx++) {
+        const message = ordered[idx];
+        if (message.id === responseId) {
+          continue;
         }
+
+        if (idx === destIdx && destIdx === 0) {
+          const draggedMessage = ordered[fromIdx];
+          draggedMessage.order = responses.length;
+          responses.push(draggedMessage);
+        }
+
+        message.order = responses.length;
+        responses.push(message);
+
+        if (idx === destIdx && destIdx > 0) {
+          const draggedMessage = ordered[fromIdx];
+          draggedMessage.order = responses.length;
+          responses.push(draggedMessage);
+        }
+
       }
       return { ...o, responses };
     });

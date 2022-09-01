@@ -84,7 +84,6 @@ const PageManageTimers: NextPageWithLayout = () => {
   }, [ enqueueSnackbar ]);
 
   const tableColumnExtensions = [
-    { columnName: 'name', width: '60%' },
     { columnName: 'isEnabled', align: 'center' },
     { columnName: 'tickOffline', align: 'center' },
     { columnName: 'triggerEveryMessage', align: 'right' },

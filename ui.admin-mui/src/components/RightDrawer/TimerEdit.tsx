@@ -3,7 +3,7 @@ import {
   DragDropContext, Draggable, Droppable,
 } from '@hello-pangea/dnd';
 import {
-  CheckCircleTwoTone, Delete, DragIndicator, RadioButtonUncheckedTwoTone,
+  CheckCircleTwoTone, DeleteTwoTone, DragIndicatorTwoTone, RadioButtonUncheckedTwoTone,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -149,28 +149,38 @@ export const TimerEdit: React.FC<{
   const onDragEndHandler = useCallback((value: any) => {
     const destIdx = value.destination.index;
     const responseId = value.draggableId;
-    const handledIds: string[] = [];
 
     setItem((o: any) => {
       const messages: StripTypeORMEntity<TimerResponse>[] = [];
-      for (let idx = 0; idx < o.messages.length; idx++) {
-        if (!handledIds.includes(o.messages[idx].id)) {
-          if (idx === destIdx) {
-            const response2 = o.messages.find((res: { id: any; }) => res.id === responseId);
-            if (response2) {
-              response2.timestamp = new Date(handledIds.length).toISOString();
-              messages.push(response2);
-              handledIds.push(response2.id);
-            }
-          }
 
-          const response = o.messages.find((res: { id: any; }) => res.id === o.messages[idx].id);
-          if (response && response.id !== responseId) { // already handled by drag
-            response.timestamp = new Date(handledIds.length).toISOString();
-            messages.push(o.messages[idx]);
-            handledIds.push(o.messages[idx].id);
-          }
+      const orderedMessages = orderBy(o.messages, 'timestamp', 'asc');
+      const fromIdx = orderedMessages.findIndex(m => m.id === responseId);
+
+      if (fromIdx === destIdx) {
+        return o;
+      }
+
+      for (let idx = 0; idx < o.messages.length; idx++) {
+        const message = orderedMessages[idx];
+        if (message.id === responseId) {
+          continue;
         }
+
+        if (idx === destIdx && destIdx === 0) {
+          const draggedMessage = orderedMessages[fromIdx];
+          draggedMessage.timestamp = new Date(messages.length).toISOString();
+          messages.push(draggedMessage);
+        }
+
+        message.timestamp = new Date(messages.length).toISOString();
+        messages.push(message);
+
+        if (idx === destIdx && destIdx > 0) {
+          const draggedMessage = orderedMessages[fromIdx];
+          draggedMessage.timestamp = new Date(messages.length).toISOString();
+          messages.push(draggedMessage);
+        }
+
       }
       return { ...o, messages };
     });
@@ -254,7 +264,7 @@ export const TimerEdit: React.FC<{
                   ref={droppableProvided.innerRef}
                 >
                   {orderedResponses.map((o, idx) => (
-                    <Draggable key={o.id} draggableId={o.id} index={new Date(o.timestamp).getTime()}>
+                    <Draggable key={o.id} draggableId={o.id} index={idx}>
                       {(draggableProvided) => (
                         <Grid container spacing={2}
                           ref={draggableProvided.innerRef}
@@ -263,7 +273,7 @@ export const TimerEdit: React.FC<{
                           <Grid item sm='auto' sx={{ placeSelf: 'center' }}
                             {...draggableProvided.dragHandleProps}
                           >
-                            <DragIndicator/>
+                            <DragIndicatorTwoTone/>
                           </Grid>
                           <Grid item sm>
                             <FormResponse value={o} idx={idx} onChange={updateResponse} disableExecution disableFilter disablePermission/>
@@ -272,9 +282,7 @@ export const TimerEdit: React.FC<{
                             <IconButton color={ o.isEnabled ? 'success' : 'error' }  onClick={() => toggleResponseEnabled(o.id)} sx={{ mx: 0 }}>
                               {o.isEnabled ? <CheckCircleTwoTone/> : <RadioButtonUncheckedTwoTone/>}
                             </IconButton>
-                          </Grid>
-                          <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
-                            <IconButton color="error"  onClick={() => deleteResponse(o.id)} sx={{ mx: 0 }}><Delete/></IconButton>
+                            <IconButton color="error"  onClick={() => deleteResponse(o.id)} sx={{ mx: 0 }}><DeleteTwoTone/></IconButton>
                           </Grid>
                         </Grid>
                       )}
