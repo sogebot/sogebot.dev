@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-public",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "scripts": {
     "dev": "next dev -p 3003",
     "postinstall": "patch-package || (exit 0)",
