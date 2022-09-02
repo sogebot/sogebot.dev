@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import type { QuotesInterface } from '@entity/quotes';
+import type { Quotes } from '@entity/quotes';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
@@ -8,6 +8,7 @@ import { Alert, Backdrop, Card, CardActions, CardContent, Chip, CircularProgress
 import { setTag, setTags } from '../store/quotesSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import { orderBy } from 'lodash';
+import axios from 'axios';
 
 export default function ListQuotes() {
   const [page, setPage] = React.useState(1);
@@ -16,7 +17,8 @@ export default function ListQuotes() {
   const { tag } = useSelector((state: any) => state.quotes);
   const dispatch = useDispatch()
 
-  const [ items, setItems ] = useState<(QuotesInterface & { quotedByName: string; })[]>([])
+  const [ items, setItems ] = useState<Quotes[]>([])
+  const [ users, setUsers ] = useState<[string, string][]>([])
   const [ loading, setLoading ] = useState<boolean>(true)
 
   const filteredItems = () => {
@@ -25,17 +27,14 @@ export default function ListQuotes() {
   }
 
   React.useEffect(() => {
-    getSocket('/systems/quotes', true).emit('quotes:getAll', {}, (err, itemsGetAll) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      console.debug('Loaded', { itemsGetAll });
-      setItems(itemsGetAll as any);
-
-      dispatch(setTags(Array.from(new Set([...itemsGetAll.map(o => o.tags)].flat()))))
-      setLoading(false);
-    });
+    axios.get(`/api/systems/quotes`)
+      .then(({ data }) => {
+        console.debug('Loaded', { data });
+        setItems(data.data);
+        setUsers(data.users);
+        dispatch(setTags(Array.from(new Set([...data.data.map((o: Quotes) => o.tags)].flat()))))
+        setLoading(false);
+      });
   }, [dispatch])
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -66,7 +65,7 @@ export default function ListQuotes() {
                   #{row.id}
                 </Typography>
                 <Typography variant="body2" display="inline" sx={{ ml:1, mr:1 }} fontWeight={'bold'} color="text.secondary">
-                  {row.quotedByName}
+                  {(users.find(o => o[0] === row.quotedBy) ?? ['', 'unknown user'])[1]}
                 </Typography>
                 <Typography variant="body2" display="inline" sx={{ mr:1 }} color="text.secondary">
                   {dayjs(row.createdAt).format('LL LTS')}
