@@ -1,13 +1,13 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
-  Adjust, Cast, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, Tv, VolumeOff, VolumeUp,
+  Adjust, Cast, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
   Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, SxProps, Tooltip, Typography,
 } from '@mui/material';
 import {
-  blue, deepPurple, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
+  blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
 } from '@mui/material/colors';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
@@ -92,7 +92,6 @@ function RenderRow(props: any) {
         {props.item.event === 'tip' && <MonetizationOn htmlColor={green[300]}/>}
         {props.item.event === 'resub' && <Icon size={1} path={mdiCrown} horizontal vertical color={blue[300]} rotate={180}/>}
         {props.item.event === 'sub' && <Icon size={1} path={mdiCrown} horizontal vertical color={lightBlue[300]} rotate={180}/>}
-        {props.item.event === 'host' && <Tv htmlColor={deepPurple[300]}/>}
         {props.item.event === 'raid' && <Cast htmlColor={lime[300]}/>}
         {props.item.event === 'subgift' && <Redeem htmlColor={pink[300]}/>}
         {props.item.event === 'subcommunitygift' && <Redeem htmlColor={indigo[300]}/>}
@@ -104,7 +103,7 @@ function RenderRow(props: any) {
           <DotDivider/>
           <Typography component="span" px={0.5}>{ props.item.username }</Typography>
         </>}
-        {['follow', 'resub', 'tip', 'sub', 'host', 'raid', 'subgift', 'subcommunitygift'].includes(props.item.event) && <Typography component="span" fontWeight={'bold'} pr={0.5}>{ props.item.username }</Typography>}
+        {['follow', 'resub', 'tip', 'sub', 'raid', 'subgift', 'subcommunitygift'].includes(props.item.event) && <Typography component="span" fontWeight={'bold'} pr={0.5}>{ props.item.username }</Typography>}
         <DotDivider/>
         {props.item.event !== 'rewardredeem' && <>
           <Typography component="span" fontSize={'0.8rem'} pr={0.5}>&nbsp;{parse(prepareMessage(props.item))}</Typography>
@@ -160,7 +159,6 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   const filteredEvents = React.useMemo(() => {
     return events.filter(event => {
       const follow = widgetSettings.showFollows && event.event === 'follow';
-      const host = widgetSettings.showHosts && event.event === 'host';
       const raid = widgetSettings.showRaids && event.event === 'raid';
       const bit = widgetSettings.showBits && event.event === 'cheer';
       const redeem = widgetSettings.showRedeems && event.event === 'rewardredeem';
@@ -188,7 +186,6 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
 
       return follow
             || redeem
-            || host
             || raid
             || (tip && tipMinimal)
             || bit

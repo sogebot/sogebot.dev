@@ -11,7 +11,6 @@ export const pageSlice = createSlice({
     widgets: {
       events: {
         showFollows:             true,
-        showHosts:               true,
         showBits:                true,
         showRaids:               true,
         showRedeems:             true,

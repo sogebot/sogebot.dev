@@ -1,7 +1,7 @@
 import { ArrowDropDown, FilterAlt } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip, 
+  Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip,
 } from '@mui/material';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,7 +45,7 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
         <IconButton onClick={handleClick}>
           <FilterAlt sx={{ position: 'relative', right: '2px' }}/>
           <ArrowDropDown sx={{
-            position: 'absolute', right: '2px', bottom: 0, fontSize: '20px', 
+            position: 'absolute', right: '2px', bottom: 0, fontSize: '20px',
           }}/>
         </IconButton>
       </Tooltip>
@@ -55,13 +55,12 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
         onClose={handleClose}
       >
         <Container disableGutters sx={{
-          p: 1, height: 'calc(100% - 50px)', maxHeight: 'calc(100% - 50px)', overflow: 'auto', 
+          p: 1, height: 'calc(100% - 50px)', maxHeight: 'calc(100% - 50px)', overflow: 'auto',
         }}>
           <Grid container>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Switch checked={events.showFollows} onClick={() => handleEventChange('showFollows', !events.showFollows)}/>} label="Follows" />
-                <FormControlLabel control={<Switch checked={events.showHosts} onClick={() => handleEventChange('showHosts', !events.showHosts)}/>} label="Hosts" />
                 <FormControlLabel control={<Switch checked={events.showBits} onClick={() => handleEventChange('showBits', !events.showBits)}/>} label="Bits" />
                 <FormControlLabel control={<Switch checked={events.showRaids} onClick={() => handleEventChange('showRaids', !events.showRaids)}/>} label="Raids" />
                 <FormControlLabel control={<Switch checked={events.showRedeems} onClick={() => handleEventChange('showRedeems', !events.showRedeems)}/>} label="Reward Redeems" />
@@ -126,7 +125,7 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
           </Grid>
         </Container>
         <Grid container justifyContent={'end'} sx={{
-          height: 'fit-content', pt: 1, pr: 1, 
+          height: 'fit-content', pt: 1, pr: 1,
         }}>
           <Grid item alignSelf={'center'}>
             <LoadingButton onClick={handleClose}>Close</LoadingButton>
