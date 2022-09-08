@@ -1,13 +1,14 @@
 module.exports = {
   extends: [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
+    'next/core-web-vitals',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/typescript',
   ],
   rules: {
-    'func-call-spacing':                    'off',
-    '@typescript-eslint/func-call-spacing': ['error'],
-    'key-spacing':                          ['error', {
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'func-call-spacing':                        'off',
+    '@typescript-eslint/func-call-spacing':     ['error'],
+    'key-spacing':                              ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
     'object-curly-spacing': ['error', 'always'],
@@ -74,4 +75,4 @@ module.exports = {
     'brace-style':        'error',
     'no-useless-call':    'error',
   },
-}
+};

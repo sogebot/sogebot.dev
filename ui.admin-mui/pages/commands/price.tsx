@@ -1,7 +1,7 @@
 import {
   Column,
-  Filter,
   FilteringState,
+  IntegratedFiltering,
   IntegratedSelection,
   IntegratedSorting,
   SelectionState,
@@ -10,7 +10,6 @@ import {
 import {
   Grid as DataGrid,
   Table,
-  TableFilterRow,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -46,8 +45,7 @@ import { Layout } from '~/src/components/Layout/main';
 import { PriceEdit } from '~/src/components/RightDrawer/PriceEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
-import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
-import { useNumberFilter } from '~/src/hooks/Table/useNumberFilter';
+import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
@@ -61,8 +59,6 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
-  const { Cell: BoolFilterCell } = useBoolFilter();
-  const { Cell: NumberFilterCell } = useNumberFilter();
   const tableColumnExtensions = [
     { columnName: 'command', width: '40%' },
     { columnName: 'enabled', align: 'center' },
@@ -73,7 +69,20 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
   ];
-  const [filters, setFilters] = useState<Filter[]>([]);
+
+  const { element: filterElement, filters } = useFilter<Price>([
+    { columnName: 'command', type: 'string' },
+    { columnName: 'enabled', type: 'boolean' },
+    {
+      columnName: 'emitRedeemEvent', type: 'boolean', translationKey: 'systems.price.emitRedeemEvent',
+    },
+    {
+      columnName: 'price', type: 'number', translation: capitalize(translate('systems.price.price.name') + ' (points)'),
+    },
+    {
+      columnName: 'priceBits', type: 'number', translation: capitalize(translate('systems.price.price.name') + ' (bits)'),
+    },
+  ]);
 
   const deleteItem = useCallback((item: Price) => {
     axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -109,17 +118,6 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       ],
     },
   ], [ translate, router, deleteItem ]);
-
-  const FilterCell = useCallback((props: any) => {
-    const { column } = props;
-    if (column.name === 'enabled' || column.name === 'emitRedeemEvent') {
-      return <BoolFilterCell {...props} />;
-    }
-    if (column.name === 'price' || column.name === 'priceBits') {
-      return <NumberFilterCell {...props} />;
-    }
-    return <TableFilterRow.Cell {...props} />;
-  }, [BoolFilterCell, NumberFilterCell]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -299,6 +297,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
         </Grid>
+        <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
@@ -324,7 +323,9 @@ const PageCommandsPrice: NextPageWithLayout = () => {
                 columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
-              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+
+              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
 
               <SelectionState
                 selection={selection}
@@ -333,9 +334,6 @@ const PageCommandsPrice: NextPageWithLayout = () => {
               <IntegratedSelection/>
               <Table columnExtensions={tableColumnExtensions as any}/>
               <TableHeaderRow showSortingControls/>
-              <TableFilterRow
-                cellComponent={FilterCell}
-              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

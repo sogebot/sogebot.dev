@@ -1,25 +1,43 @@
-import { Filter } from '@devexpress/dx-react-grid';
+import { Filter, IntegratedFiltering } from '@devexpress/dx-react-grid';
 import { Add } from '@mui/icons-material';
 import {
-  Box, Button, Chip, FormControl, FormControlLabel, FormLabel, Input, MenuItem, Popover, Radio, RadioGroup,
+  Box, Button, Chip, FormControl, FormControlLabel, FormLabel, Input, MenuItem, Popover, Radio, RadioGroup, Select,
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import React from 'react';
 
+import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const useFilter = <T,>(availableFilters: {
   columnName: keyof T;
   translationKey?: string;
-  type: 'string' | 'number' | 'boolean';
+  translation?: string;
+  type: 'string' | 'number' | 'boolean' | 'permission' | 'list';
+  options?: {
+    showDisabled?: boolean,
+    disabledName?: string,
+    disabledValue?: string,
+    listValues?: string[],
+  }
 }[]) => {
   const { translate } = useTranslation();
+  const { permissions } = usePermissions();
 
   const [ filters, setFilters ] = React.useState<Filter[]>([]);
-
   const [ newFilter, setNewFilter ] = React.useState<Filter>();
+
+  const includesPredicate = (value: string, filter: Filter) => {
+    return filter.value.map((o: string) => o.toLowerCase()).includes(value.toLowerCase());
+  };
+
+  const customPredicate = (value: string, filter: Filter, row: any) => {
+    return filter.operation === 'includes'
+      ? includesPredicate(value, filter)
+      : IntegratedFiltering.defaultPredicate(value, filter, row);
+  };
 
   const initializeDefaultFilter = React.useCallback((filter: typeof availableFilters[number]) => {
     if (filter.type === 'boolean') {
@@ -41,6 +59,20 @@ export const useFilter = <T,>(availableFilters: {
         columnName: filter.columnName as string,
         operation:  'contains',
         value:      '',
+      });
+    }
+    if (filter.type === 'permission') {
+      setNewFilter({
+        columnName: filter.columnName as string,
+        operation:  'includes',
+        value:      [],
+      });
+    }
+    if (filter.type === 'list') {
+      setNewFilter({
+        columnName: filter.columnName as string,
+        operation:  'includes',
+        value:      [],
       });
     }
   }, []);
@@ -84,6 +116,15 @@ export const useFilter = <T,>(availableFilters: {
     }
   }, [ newFilter ]);
 
+  const handleListChange = React.useCallback((value: null | string[] | string) => {
+    if (newFilter) {
+      setNewFilter({
+        ...newFilter,
+        value: value,
+      });
+    }
+  }, [ newFilter ]);
+
   const applyFilter = React.useCallback((popups: any[]) => {
     if (newFilter && String(newFilter.value).length > 0) {
       setFilters([
@@ -105,16 +146,38 @@ export const useFilter = <T,>(availableFilters: {
   const handleDeleteAll = React.useCallback(() => {
     console.log('Deleting all filters');
     setFilters([]);
-  }, [ filters ]);
+  }, [ ]);
 
-  const getTranslationKeyOfColumnName = React.useCallback((columnName: string) => {
-    return availableFilters.find(o => o.columnName === columnName)?.translationKey || columnName;
+  const getTranslationOfColumnName = React.useCallback((columnName: string) => {
+    const current = availableFilters.find(o => o.columnName === columnName)!;
+    return current.translation || capitalize(translate(current.translationKey|| columnName)) ;
+  }, [ availableFilters, translate ]);
+
+  const getValueOfColumnName = React.useCallback((columnName: string, value: string | string[]) => {
+    const current = availableFilters.find(o => o.columnName === columnName)!;
+    if (!Array.isArray(value)) {
+      return String(current.options?.disabledValue === value ? current.options?.disabledValue : value);
+    }
+
+    const out: string[] = [];
+    for (const val of value) {
+      if (val === current.options?.disabledValue) {
+        out.push(current.options?.disabledName || 'Disabled');
+      } else {
+        out.push(val);
+      }
+    }
+    return out.join(', ');
   }, [ availableFilters ]);
 
   const element = React.useMemo(() => {
     return <>
       { filters.map((filter, idx) => <Chip key={idx} label={
-        <><strong>{capitalize(translate(getTranslationKeyOfColumnName(filter.columnName)))}</strong> { translate('registry.alerts.filter.' + filter.operation) } <strong>{String(filter.value)}</strong></>
+        <>
+          <strong>{getTranslationOfColumnName(filter.columnName)}</strong>
+          &nbsp;{ translate('registry.alerts.filter.' + filter.operation) }&nbsp;
+          <strong>{getValueOfColumnName(filter.columnName, filter.value)}</strong>
+        </>
       } onDelete={() => handleDelete(idx)} />)}
       { filters.length > 0 &&<Button variant='text' color="error" onClick={() => handleDeleteAll()}>Clear all</Button> }
       <PopupState variant="popover" popupId="demo-popup-menu">
@@ -146,7 +209,7 @@ export const useFilter = <T,>(availableFilters: {
                           onTouchStart={(event) => {
                             bindTrigger(popupState2).onTouchStart(event); initializeDefaultFilter(f);
                           }}
-                        >{capitalize(translate(f.translationKey || (f.columnName as string)))}</MenuItem>
+                        >{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</MenuItem>
                         <Popover
                           {...bindPopover(popupState2)}
                           anchorEl={() => {
@@ -162,9 +225,9 @@ export const useFilter = <T,>(availableFilters: {
                           }}
                           sx={{ marginLeft: '5px' }}
                         >
-                          {newFilter && <Box sx={{ padding: '5px' }}>
+                          {newFilter && <Box sx={{ padding: '10px' }}>
                             {f.type === 'boolean' && <FormControl>
-                              <FormLabel id="boolean-group-label">{capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel id="boolean-group-label">{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 aria-labelledby="boolean-group-label"
@@ -176,7 +239,7 @@ export const useFilter = <T,>(availableFilters: {
                               </RadioGroup>
                             </FormControl>}
                             {f.type === 'number' && <>
-                              <FormLabel>{capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 value={newFilter.operation}
@@ -199,7 +262,7 @@ export const useFilter = <T,>(availableFilters: {
                               </Box>
                             </>}
                             {f.type === 'string' && <>
-                              <FormLabel>{capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 value={newFilter.operation}
@@ -216,6 +279,45 @@ export const useFilter = <T,>(availableFilters: {
                                   onChange={handleStringChange}
                                 />
                               </Box>
+                            </>}
+                            {f.type === 'permission' && <>
+                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <Select
+                                variant='standard'
+                                fullWidth
+                                multiple
+                                displayEmpty
+                                value={newFilter.value}
+                                onChange={e => handleListChange(e.target.value ? e.target.value : null)}
+                                renderValue={(selected: string[]) => {
+                                  return selected.map(o => o || f.options?.disabledName || 'Disabled').join(', ');
+                                }}
+                              >
+                                {f.options?.showDisabled && <MenuItem value="">{f.options?.disabledName || 'Disabled'}</MenuItem>}
+                                {permissions?.map(o => (<MenuItem key={o.id} value={o.name}>{o.name}</MenuItem>))}
+                              </Select>
+                            </>}
+                            {f.type === 'list' && <>
+                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <Select
+                                variant='standard'
+                                fullWidth
+                                multiple
+                                displayEmpty
+                                value={newFilter.value}
+                                onChange={e => handleListChange(e.target.value ? e.target.value : null)}
+                                renderValue={(selected: string[]) => {
+                                  return selected.map(o => {
+                                    if (o !== f.options?.disabledValue) {
+                                      return o;
+                                    }
+                                    return f.options?.disabledName || 'Disabled';
+                                  }).join(', ');
+                                }}
+                              >
+                                {f.options?.showDisabled && <MenuItem value={f.options?.disabledValue || 'Disabled'}>{f.options?.disabledName || 'Disabled'}</MenuItem>}
+                                {f.options?.listValues?.map(o => (<MenuItem key={o} value={o}>{o}</MenuItem>))}
+                              </Select>
                             </>}
 
                             <Stack direction="row" spacing={2}>
@@ -237,8 +339,10 @@ export const useFilter = <T,>(availableFilters: {
         )}
       </PopupState>
     </>;
-  }, [ handleDelete, availableFilters, applyFilter, filters, getTranslationKeyOfColumnName, handleNumberChange, handleStringChange, handleTypeChange, initializeDefaultFilter, newFilter, translate ]);
+  }, [ handleListChange, handleDeleteAll, permissions, handleDelete, availableFilters, applyFilter, filters, getTranslationOfColumnName, getValueOfColumnName, handleNumberChange, handleStringChange, handleTypeChange, initializeDefaultFilter, newFilter, translate ]);
 
-  return { element, filters };
+  return {
+    customPredicate, element, filters,
+  };
 
 };
