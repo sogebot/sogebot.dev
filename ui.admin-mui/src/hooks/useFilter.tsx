@@ -102,6 +102,11 @@ export const useFilter = <T,>(availableFilters: {
     setFilters(filters.filter((_, i) => i !== idx));
   }, [ filters ]);
 
+  const handleDeleteAll = React.useCallback(() => {
+    console.log('Deleting all filters');
+    setFilters([]);
+  }, [ filters ]);
+
   const getTranslationKeyOfColumnName = React.useCallback((columnName: string) => {
     return availableFilters.find(o => o.columnName === columnName)?.translationKey || columnName;
   }, [ availableFilters ]);
@@ -111,6 +116,7 @@ export const useFilter = <T,>(availableFilters: {
       { filters.map((filter, idx) => <Chip key={idx} label={
         <><strong>{capitalize(translate(getTranslationKeyOfColumnName(filter.columnName)))}</strong> { translate('registry.alerts.filter.' + filter.operation) } <strong>{String(filter.value)}</strong></>
       } onDelete={() => handleDelete(idx)} />)}
+      { filters.length > 0 &&<Button variant='text' color="error" onClick={() => handleDeleteAll()}>Clear all</Button> }
       <PopupState variant="popover" popupId="demo-popup-menu">
         {(popupState) => (
           <React.Fragment>
