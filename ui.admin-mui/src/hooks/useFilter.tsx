@@ -31,7 +31,11 @@ export const useFilter = <T,>(availableFilters: {
   const [ newFilter, setNewFilter ] = React.useState<Filter>();
 
   const includesPredicate = (value: string, filter: Filter) => {
-    return filter.value.map((o: string) => o.toLowerCase()).includes(value.toLowerCase());
+    if (value) {
+      return filter.value.map((o: string) => o.toLowerCase()).includes(value.toLowerCase());
+    } else {
+      return value === filter.value;
+    }
   };
 
   const customPredicate = (value: string, filter: Filter, row: any) => {
@@ -127,11 +131,13 @@ export const useFilter = <T,>(availableFilters: {
   }, [ newFilter ]);
 
   const applyFilter = React.useCallback((popups: any[]) => {
-    if (newFilter && String(newFilter.value).length > 0) {
-      setFilters([
-        ...filters,
-        newFilter,
-      ]);
+    if (newFilter) {
+      if ((Array.isArray(newFilter.value) && newFilter.value.length > 0) || String(newFilter.value).length > 0) {
+        setFilters([
+          ...filters,
+          newFilter,
+        ]);
+      }
     }
 
     for (const popup of popups) {
@@ -164,7 +170,7 @@ export const useFilter = <T,>(availableFilters: {
 
     const out: string[] = [];
     for (const val of value) {
-      if (val === current.options?.disabledValue) {
+      if (val === current.options?.disabledValue || val === '_disabled') {
         out.push(current.options?.disabledName || 'Disabled');
       } else {
         out.push((current.valueRender || defaultRender)(val));
@@ -293,10 +299,10 @@ export const useFilter = <T,>(availableFilters: {
                                 value={newFilter.value}
                                 onChange={e => handleListChange(e.target.value ? e.target.value : null)}
                                 renderValue={(selected: string[]) => {
-                                  return selected.map(o => o || f.options?.disabledName || 'Disabled').join(', ');
+                                  return selected.map(o => o !== '_disabled' ? o : f.options?.disabledName || 'Disabled').join(', ');
                                 }}
                               >
-                                {f.options?.showDisabled && <MenuItem value="">{f.options?.disabledName || 'Disabled'}</MenuItem>}
+                                {f.options?.showDisabled && <MenuItem value='_disabled'>{f.options?.disabledName || 'Disabled'}</MenuItem>}
                                 {permissions?.map(o => (<MenuItem key={o.id} value={o.name}>{o.name}</MenuItem>))}
                               </Select>
                             </>}

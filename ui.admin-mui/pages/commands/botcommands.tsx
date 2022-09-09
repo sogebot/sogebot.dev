@@ -2,13 +2,14 @@ import {
   Column,
   Filter,
   FilteringState,
+  IntegratedFiltering,
   IntegratedSorting,
   SortingState,
 } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
   Table,
-  TableFilterRow,
+  TableColumnVisibility,
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
@@ -16,22 +17,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
-  FormControlLabel,
-  FormGroup,
   Grid,
-  Input,
-  MenuItem,
   Paper,
-  Select,
-  Switch,
-  TableCell,
   Typography,
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useEffect, useMemo, useState,
 } from 'react';
 import SimpleBar from 'simplebar-react';
 
@@ -42,7 +35,7 @@ import { BotCommandEdit } from '~/src/components/RightDrawer/BotCommandEdit';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
-import { usePermissionsFilter } from '~/src/hooks/Table/usePermissionsFilter';
+import { useFilter } from '~/src/hooks/useFilter';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -54,77 +47,25 @@ const PageCommandsBot: NextPageWithLayout = () => {
 
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
-  const { Cell: PermissionFilterCell } = usePermissionsFilter({ showDisabled: true });
 
-  const [ showOnlyModified, setShowOnlyModified ] = useState(false);
-
-  const TypeFilterCell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
-    <TableCell sx={{ width: '100%', p: 1 }}>
-      <Select
-        variant='standard'
-        fullWidth
-        multiple
-        displayEmpty
-        value={filter ? filter.value : []}
-        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
-        renderValue={(selected) => {
-          if (selected.length === 0) {
-            return <Typography sx={{
-              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
-            }}>Filter...</Typography>;
-          }
-
-          return selected.join(', ');
-        }}
-      >
-        <MenuItem value='Services' key='Services'>Services</MenuItem>
-        <MenuItem value='Systems' key='Systems'>Systems</MenuItem>
-        <MenuItem value='Core' key='Core'>Core</MenuItem>
-        <MenuItem value='Intergrations' key='Intergrations'>Intergrations</MenuItem>
-        <MenuItem value='Games' key='Games'>Games</MenuItem>
-        <MenuItem value='Overlays' key='Overlays'>Overlays</MenuItem>
-        <MenuItem value='Registries' key='Registries'>Registries</MenuItem>
-      </Select>
-    </TableCell>
-  ), []);
-
-  const CommandFilterCell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
-    <TableCell sx={{
-      width: '100%', p: 1, pl: 3,
-    }}>
-      <Grid container spacing={1}>
-        <Grid item xs="auto" alignSelf={'center'}>
-          <FormGroup>
-            <FormControlLabel control={<Switch  size='small' onChange={event => setShowOnlyModified(event.target.checked)} />} label="Show only modified" />
-          </FormGroup>
-        </Grid>
-        <Grid item flexGrow={1}>
-          <Input
-            fullWidth
-            placeholder="Filter..."
-            value={filter ? filter.value : []}
-            onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
-          />
-        </Grid>
-      </Grid>
-    </TableCell>
-  ), []);
-
-  const FilterCell = useCallback((props: any) => {
-    const { column } = props;
-    if (column.name === 'type') {
-      return <TypeFilterCell {...props} />;
-    }
-    if (column.name === 'permission') {
-      return <PermissionFilterCell {...props} />;
-    }
-    if (column.name === 'command') {
-      return <CommandFilterCell {...props} />;
-    }
-    return <TableFilterRow.Cell {...props} />;
-  }, [TypeFilterCell, PermissionFilterCell, CommandFilterCell]);
+  const { element: filterElement, filters, customPredicate } = useFilter<Commands & { isModified: boolean }>([
+    {
+      columnName: 'isModified', type: 'boolean', translation: 'Is modified',
+    },
+    { columnName: 'command', type: 'string' },
+    {
+      columnName: 'name', type: 'list', options: { listValues: Array.from(new Set(items.map(o => o.name))).sort() },
+    },
+    {
+      columnName: 'type', type: 'list', options: { listValues: Array.from(new Set(items.map(o => o.type))).sort() },
+    },
+    {
+      columnName: 'permission', type: 'permission', options: { showDisabled: true },
+    },
+  ]);
 
   const columns = useMemo<Column[]>(() => [
+    { name: 'isModified', getCellValue: (row) => row.defaultValue !== row.command },
     {
       name:         'command',
       title:        capitalize(translate('command')),
@@ -165,12 +106,32 @@ const PageCommandsBot: NextPageWithLayout = () => {
     },
   ], [ permissions, translate, router ]);
   const tableColumnExtensions = [
-    { columnName: 'command', width: '40%' },
+    { columnName: 'isModified' },
+    { columnName: 'name', predicate: customPredicate },
+    { columnName: 'type', predicate: customPredicate },
+    {
+      columnName: 'command', width:      '40%', predicate:  (value: string, filter: Filter, row: any) => {
+        const fValue = filter.value.toLowerCase();
+        if (filter.operation === 'contains') {
+          return row.command.toLowerCase().includes(fValue) || row.defaultValue.toLowerCase().includes(fValue);
+        }
+
+        if (filter.operation === 'equal') {
+          return row.command.toLowerCase() === fValue || row.command.toLowerCase() === fValue;
+        }
+
+        if (filter.operation === 'notEqual') {
+          return row.command.toLowerCase() !== fValue && row.command.toLowerCase() !== fValue;
+        }
+
+        return IntegratedFiltering.defaultPredicate(value, filter, row);
+      },
+    },
+    { columnName: 'permission', predicate: customPredicate },
     {
       columnName: 'actions', width: 100, filteringEnabled: false, sortingEnabled: false,
     },
   ];
-  const [filters, setFilters] = useState<Filter[]>([]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -191,39 +152,19 @@ const PageCommandsBot: NextPageWithLayout = () => {
     ]);
   };
 
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      let shouldShow = true;
-
-      for (const filter of filters) {
-        if (filter.columnName === 'name') {
-          shouldShow = item.name.toLowerCase().includes(filter.value.toLowerCase());
-        } else if (filter.columnName === 'command') {
-          shouldShow = item.defaultValue.toLowerCase().includes(filter.value.toLowerCase()) || item.command.toLowerCase().includes(filter.value.toLowerCase());
-        } else if (filter.columnName === 'type') {
-          shouldShow = filter.value.length > 0 ? filter.value.includes(item.type) : true;
-        } else if (filter.columnName === 'permission') {
-          shouldShow = filter.value.length > 0 ? filter.value.includes(item.permission || '') : true;
-        }
-
-        if (!shouldShow) {
-          break;
-        }
-      }
-      return shouldShow && (showOnlyModified ? item.defaultValue !== item.command : true);
-    });
-  }, [items, showOnlyModified, filters]);
-
   return (
     <>
+      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <Grid item>{filterElement}</Grid>
+      </Grid>
       {loading && items.length === 0 && permissions.length === 0
         ? <CircularProgress color="inherit" sx={{
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
         : <Paper>
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 74px)' }} autoHide={false}>
+          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
             <DataGrid
-              rows={filteredItems}
+              rows={items}
               columns={columns}
             >
               <PermissionTypeProvider for={['permission']}/>
@@ -233,12 +174,13 @@ const PageCommandsBot: NextPageWithLayout = () => {
                 columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
-              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
 
               <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
-              <TableFilterRow
-                cellComponent={FilterCell}
+              <TableColumnVisibility
+                defaultHiddenColumnNames={['isModified']}
               />
             </DataGrid>
           </SimpleBar>
