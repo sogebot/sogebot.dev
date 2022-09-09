@@ -16,6 +16,7 @@ export const useFilter = <T,>(availableFilters: {
   translationKey?: string;
   translation?: string;
   type: 'string' | 'number' | 'boolean' | 'permission' | 'list';
+  valueRender?: (value: string) => string;
   options?: {
     showDisabled?: boolean,
     disabledName?: string,
@@ -154,9 +155,11 @@ export const useFilter = <T,>(availableFilters: {
   }, [ availableFilters, translate ]);
 
   const getValueOfColumnName = React.useCallback((columnName: string, value: string | string[]) => {
+    const defaultRender: (v: string) => string = (v) => v;
+
     const current = availableFilters.find(o => o.columnName === columnName)!;
     if (!Array.isArray(value)) {
-      return String(current.options?.disabledValue === value ? current.options?.disabledValue : value);
+      return (current.valueRender || defaultRender)(String(current.options?.disabledValue === value ? current.options?.disabledValue : value));
     }
 
     const out: string[] = [];
@@ -164,7 +167,7 @@ export const useFilter = <T,>(availableFilters: {
       if (val === current.options?.disabledValue) {
         out.push(current.options?.disabledName || 'Disabled');
       } else {
-        out.push(val);
+        out.push((current.valueRender || defaultRender)(val));
       }
     }
     return out.join(', ');

@@ -1,7 +1,7 @@
 import {
   Column,
-  Filter,
   FilteringState,
+  IntegratedFiltering,
   IntegratedSelection,
   IntegratedSorting,
   SelectionState,
@@ -10,7 +10,6 @@ import {
 import {
   Grid as DataGrid,
   Table,
-  TableFilterRow,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -46,8 +45,7 @@ import { Layout } from '~/src/components/Layout/main';
 import { CooldownEdit } from '~/src/components/RightDrawer/CooldownEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
-import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
-import { useNumberFilter } from '~/src/hooks/Table/useNumberFilter';
+import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import toReadableMiliseconds from '~/src/toReadableMiliseconds';
@@ -62,8 +60,6 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
-  const { Cell: BoolFilterCell } = useBoolFilter();
-  const { Cell: NumberFilterCell } = useNumberFilter();
   const tableColumnExtensions = [
     { columnName: 'name', width: '40%' },
 
@@ -78,7 +74,6 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
     },
   ];
-  const [filters, setFilters] = useState<Filter[]>([]);
 
   const deleteItem = useCallback((item: Cooldown) => {
     axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -126,16 +121,27 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
     },
   ], [ translate, router, deleteItem ]);
 
-  const FilterCell = useCallback((props: any) => {
-    const { column } = props;
-    if (['isEnabled', 'isErrorMsgQuiet', 'isOwnerAffected', 'isModeratorAffected', 'isSubscriberAffected'].includes(column.name)) {
-      return <BoolFilterCell {...props} />;
-    }
-    if (column.name === 'miliseconds') {
-      return <NumberFilterCell {...props} />;
-    }
-    return <TableFilterRow.Cell {...props} />;
-  }, [BoolFilterCell, NumberFilterCell]);
+  const { element: filterElement, filters } = useFilter<Cooldown>([
+    {
+      columnName: 'name', type: 'string', translation: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
+    },
+    { columnName: 'type', type: 'string' },
+    {
+      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled',
+    },
+    {
+      columnName: 'isErrorMsgQuiet', type: 'boolean', translationKey: 'quiet',
+    },
+    {
+      columnName: 'isOwnerAffected', type: 'boolean', translationKey: 'core.permissions.casters',
+    },
+    {
+      columnName: 'isModeratorAffected', type: 'boolean', translationKey: 'core.permissions.moderators',
+    },
+    {
+      columnName: 'isSubscriberAffected', type: 'boolean', translationKey: 'core.permissions.subscribers',
+    },
+  ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -152,43 +158,6 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       }),
     ]);
   };
-
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      let shouldShow = true;
-
-      for (const filter of filters) {
-        if (filter.columnName === 'name') {
-          shouldShow = item.name.toLowerCase().includes(filter.value.toLowerCase());
-        } else if (filter.columnName === 'type') {
-          shouldShow = item.type.toLowerCase().includes(filter.value.toLowerCase());
-        } else if (filter.columnName === 'isEnabled') {
-          shouldShow = filter.value === item.isEnabled;
-        } else if (filter.columnName === 'isErrorMsgQuiet') {
-          shouldShow = filter.value === item.isErrorMsgQuiet;
-        } else if (filter.columnName === 'isOwnerAffected') {
-          shouldShow = filter.value === item.isOwnerAffected;
-        } else if (filter.columnName === 'isModeratorAffected') {
-          shouldShow = filter.value === item.isModeratorAffected;
-        } else if (filter.columnName === 'isSubscriberAffected') {
-          shouldShow = filter.value === item.isSubscriberAffected;
-        } else if (filter.columnName === 'miliseconds' && filter.value !== '') {
-          if ((filter as any).type === '>') {
-            shouldShow = item.miliseconds > Number(filter.value);
-          } else if ((filter as any).type === '=') {
-            shouldShow = item.miliseconds === Number(filter.value);
-          } else if ((filter as any).type === '<') {
-            shouldShow = item.miliseconds < Number(filter.value);
-          }
-        }
-
-        if (!shouldShow) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [items, filters]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -311,6 +280,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
         </Grid>
+        <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
@@ -323,7 +293,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
         : <Paper>
           <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
             <DataGrid
-              rows={filteredItems}
+              rows={items}
               columns={columns}
               getRowId={row => row.id}
             >
@@ -336,7 +306,8 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
                 columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
-              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
 
               <SelectionState
                 selection={selection}
@@ -345,9 +316,6 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
               <IntegratedSelection/>
               <Table columnExtensions={tableColumnExtensions as any}/>
               <TableHeaderRow showSortingControls/>
-              <TableFilterRow
-                cellComponent={FilterCell}
-              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

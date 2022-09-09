@@ -2,6 +2,7 @@ import {
   Column,
   Filter,
   FilteringState,
+  IntegratedFiltering,
   IntegratedSelection,
   IntegratedSorting,
   SelectionState,
@@ -10,7 +11,6 @@ import {
 import {
   Grid as DataGrid,
   Table,
-  TableFilterRow,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -21,15 +21,11 @@ import {
   Button,
   CircularProgress,
   Grid,
-  MenuItem,
   Paper,
-  Select,
   Stack,
-  TableCell,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
@@ -52,8 +48,7 @@ import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { Responses } from '~/src/components/Table/Responses';
 import getAccessToken from '~/src/getAccessToken';
-import { useBoolFilter } from '~/src/hooks/Table/useBoolFilter';
-import { usePermissionsFilter } from '~/src/hooks/Table/usePermissionsFilter';
+import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
@@ -68,44 +63,10 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
-  const { Cell: PermissionFilterCell } = usePermissionsFilter();
-  const { Cell: BoolFilterCell } = useBoolFilter();
-  const tableColumnExtensions = [
-    { columnName: 'keyword', width: '70%' },
-    { columnName: 'enabled', align: 'center' },
-    {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
-    },
-  ];
-  const [filters, setFilters] = useState<Filter[]>([]);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
-
-  const GroupFilterCell = useCallback(({ filter, onFilter }: { filter: any, onFilter: any }) => (
-    <TableCell sx={{ width: '100%', p: 1 }}>
-      <Select
-        variant='standard'
-        fullWidth
-        multiple
-        displayEmpty
-        value={filter ? filter.value : []}
-        onChange={e => onFilter(e.target.value ? { value: e.target.value } : null)}
-        renderValue={(selected: string[]) => {
-          if (selected.length === 0) {
-            return <Typography sx={{
-              color: grey[600], fontSize: '14px', fontWeight: 'bold', position: 'relative', top: '2px',
-            }}>Filter...</Typography>;
-          }
-
-          return selected.map(o => o === '' ? 'Ungrouped' : o).join(', ');
-        }}
-      >
-        {groups.map(group => <MenuItem key={group ?? ''} value={group ?? ''}>{group ?? 'Ungrouped'}</MenuItem>)}
-      </Select>
-    </TableCell>
-  ), [groups]);
 
   const deleteItem = useCallback((item: Keyword) => {
     axios.delete(`${localStorage.server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -125,6 +86,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
           <Responses key="responses" responses={row.responses}/>
         </Stack>,
       ],
+
     },
     { name: 'enabled', title: capitalize(translate('enabled')) },
     {
@@ -148,19 +110,46 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     },
   ], [ translate, router, deleteItem ]);
 
-  const FilterCell = useCallback((props: any) => {
-    const { column } = props;
-    if (column.name === 'permission') {
-      return <PermissionFilterCell {...props} />;
-    }
-    if (column.name === 'group') {
-      return <GroupFilterCell {...props} />;
-    }
-    if (column.name === 'enabled' || column.name === 'visible') {
-      return <BoolFilterCell {...props} />;
-    }
-    return <TableFilterRow.Cell {...props} />;
-  }, [PermissionFilterCell, GroupFilterCell, BoolFilterCell]);
+  const { element: filterElement, filters, customPredicate } = useFilter<Keyword>([
+    { columnName: 'keyword', type: 'string' },
+    { columnName: 'enabled', type: 'boolean' },
+    {
+      columnName: 'group', type:       'list', options:    {
+        showDisabled:  true,
+        disabledName:  'Ungrouped',
+        disabledValue: '_ungroup',
+        listValues:    groupsSettings
+          .filter(group => group.name !== 'undefined')
+          .map(group => group.name),
+      },
+    },
+  ]);
+
+  const tableColumnExtensions = [
+    {
+      columnName: 'keyword', predicate:  (value: string, filter: Filter, row: any) => {
+        const fValue = filter.value.toLowerCase();
+        if (filter.operation === 'contains') {
+          return row.keyword.toLowerCase().includes(fValue) || row.responses.filter((response: any) => response.response.toLowerCase().includes(fValue)).length > 0;
+        }
+
+        if (filter.operation === 'equal') {
+          return row.keyword.toLowerCase() === fValue || row.responses.filter((response: any) => response.response.toLowerCase() === fValue).length > 0;
+        }
+
+        if (filter.operation === 'notEqual') {
+          return row.keyword.toLowerCase() !== fValue && row.responses.filter((response: any) => response.response.toLowerCase() !== fValue).length > 0;
+        }
+
+        return IntegratedFiltering.defaultPredicate(value, filter, row);
+      },
+    },
+    { columnName: 'enabled', align: 'center' },
+    { columnName: 'group', predicate: customPredicate },
+    {
+      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+    },
+  ];
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -184,27 +173,6 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       }),
     ]);
   };
-
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      let shouldShow = true;
-
-      for (const filter of filters) {
-        if (filter.columnName === 'keyword') {
-          shouldShow = item.keyword.toLowerCase().includes(filter.value.toLowerCase()) || item.responses.map(o => o.response.toLowerCase()).filter(o => o.includes(filter.value.toLowerCase())).length > 0;
-        } else if (filter.columnName === 'group') {
-          shouldShow = filter.value.length > 0 ? filter.value.includes(item.group || '') : true;
-        } if (filter.columnName === 'enabled') {
-          shouldShow = filter.value === item.enabled;
-        }
-
-        if (!shouldShow) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [items, filters]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -313,6 +281,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
         </Grid>
+        <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
         </Grid>
@@ -325,7 +294,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
         : <Paper>
           <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
             <DataGrid
-              rows={filteredItems}
+              rows={items}
               columns={columns}
               getRowId={row => row.id}
             >
@@ -344,7 +313,8 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
                 columnExtensions={tableColumnExtensions as any}
               />
               <IntegratedSorting />
-              <FilteringState filters={filters} onFiltersChange={setFilters} columnExtensions={tableColumnExtensions as any}/>
+              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
 
               <SelectionState
                 selection={selection}
@@ -353,9 +323,6 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
               <IntegratedSelection/>
               <Table columnExtensions={tableColumnExtensions as any}/>
               <TableHeaderRow showSortingControls/>
-              <TableFilterRow
-                cellComponent={FilterCell}
-              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>
