@@ -39,19 +39,29 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   const [ keywordError, setKeywordError ] = React.useState<string[]>([]);
   const [ isTypeKeywords, setIsTypeKeywords ] = React.useState(false);
   const [ range, setRange ] = React.useState<[min: number, max: number]>([0, 1000]);
-  const [ eligible, setEligible ] = React.useState([{ title: translate('everyone'), value: 'all' }]);
+  const [ eligible, setEligible ] = React.useState([{
+    title: translate('everyone'), value: 'all', 
+  }]);
 
   const [ raffle, setRaffle ] = React.useState<RaffleInterface | null>(null);
   const [ winner, setWinner ] = React.useState<null | UserInterface>(null);
 
   const eligibleItems = React.useMemo(() => [
-    { title: translate('everyone'), value: 'all' },
-    { title: translate('subscribers'), value: 'subscribers' },
+    {
+      title: translate('everyone'), value: 'all', 
+    },
+    {
+      title: translate('subscribers'), value: 'subscribers', 
+    },
   ], [translate]);
 
   const typeItems = React.useMemo(() => [
-    { title: translate('raffle-type-keywords'), value: true },
-    { title: translate('raffle-type-tickets'), value: false },
+    {
+      title: translate('raffle-type-keywords'), value: true, 
+    },
+    {
+      title: translate('raffle-type-tickets'), value: false, 
+    },
   ], [translate]);
 
   const typeItemSelected = React.useMemo(() => {
@@ -150,7 +160,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
 
     getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffleResponse) => {
       console.groupCollapsed('raffle:getLatest');
-      console.log({ err, raffle });
+      console.log({
+        err, raffle, 
+      });
       console.groupEnd();
       setLoading(false);
       if (err) {
@@ -213,9 +225,13 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
 
   const handleUserEligibility = (participant: RaffleParticipantInterface) => {
     participant.isEligible = !participant.isEligible;
-    setRaffle(r => r ? { ...r, participants: [...r.participants.filter(o => o.id !== participant.id), participant] } : null);
+    setRaffle(r => r ? {
+      ...r, participants: [...r.participants.filter(o => o.id !== participant.id), participant], 
+    } : null);
 
-    getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id as string, isEligible: participant.isEligible }, (err) => {
+    getSocket('/systems/raffles').emit('raffle::setEligibility', {
+      id: participant.id as string, isEligible: participant.isEligible, 
+    }, (err) => {
       if (err) {
         return console.error(err);
       }
@@ -244,7 +260,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
             </Box>
           </Stack>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           <Box sx={value === '1' ? classes.showTab : classes.hideTab}>
             <TextField
               error={keywordError.length > 0}
@@ -300,7 +318,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
               )}
             />
 
-            {!isTypeKeywords && <Box sx={{ width: '100%', p: 1 }}>
+            {!isTypeKeywords && <Box sx={{
+              width: '100%', p: 1, 
+            }}>
               <Typography id="input-slider" gutterBottom color={!raffle?.isClosed ? grey[500] : classes.whiteColor}>
                 { translate('raffle-tickets-range') }
               </Typography>
@@ -405,7 +425,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
                   <Typography variant="button" color={winner.isSubscriber ? green[400] : red[400]}>{ translate('subscriber') }</Typography>
                 </Grid>
 
-                <Grid item xs={12} sx={{ pt: 2, textAlign: 'center' }}>
+                <Grid item xs={12} sx={{
+                  pt: 2, textAlign: 'center', 
+                }}>
                   {countEligibleParticipants > 0 && <DashboardWidgetBotDialogConfirmRafflePick onPick={() => setValue('3')} color="primary" title={<Stack direction="row"><Sync/>{ translate('roll-again')}</Stack>}/>}
                   {countEligibleParticipants === 0 && <Button disabled sx={{ width: '400px' }} variant='contained'><SyncDisabled/>{ translate('no-eligible-participants') }</Button>}
                 </Grid>

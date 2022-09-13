@@ -169,7 +169,9 @@ export const ServerSelect: React.FC = () => {
       </Stack>
     </DialogContent>
     <DialogActions>
-      {(connecting || message) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{ padding: '0 20px', marginRight: '20px' }}>
+      {(connecting || message) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
+        padding: '0 20px', marginRight: '20px', 
+      }}>
         {message}
       </Alert>}
       {getUser() && <LoadingButton

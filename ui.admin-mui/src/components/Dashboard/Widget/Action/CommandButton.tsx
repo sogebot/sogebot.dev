@@ -13,8 +13,10 @@ export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }>
   const trigger = useCallback(() => {
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {
-      user: { userId: user.id, userName: user.login },
-      id:   item.id,
+      user: {
+        userId: user.id, userName: user.login, 
+      },
+      id: item.id,
     });
   }, [ user, item ]);
 

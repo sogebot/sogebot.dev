@@ -50,7 +50,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     };
     axios.get(`${sessionStorage.serverUrl}/socket/validate`, { headers }).then(async (validation) => {
       console.group('isUserLoggedIn::bot::validation');
-      console.debug(JSON.stringify({ validation, headers }));
+      console.debug(JSON.stringify({
+        validation, headers, 
+      }));
       console.groupEnd();
       localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
       localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
@@ -70,10 +72,18 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   await populateListOf('services');
   await populateListOf('integrations');
 
-  dispatch(setSystem({ type: 'core', value: cloneDeep(getListOf('core')) }));
-  dispatch(setSystem({ type: 'services', value: cloneDeep(getListOf('services')) }));
-  dispatch(setSystem({ type: 'systems', value: cloneDeep(getListOf('systems')) }));
-  dispatch(setSystem({ type: 'integrations', value: cloneDeep(getListOf('integrations')) }));
+  dispatch(setSystem({
+    type: 'core', value: cloneDeep(getListOf('core')), 
+  }));
+  dispatch(setSystem({
+    type: 'services', value: cloneDeep(getListOf('services')), 
+  }));
+  dispatch(setSystem({
+    type: 'systems', value: cloneDeep(getListOf('systems')), 
+  }));
+  dispatch(setSystem({
+    type: 'integrations', value: cloneDeep(getListOf('integrations')), 
+  }));
 
   const configuration = await getConfiguration();
   dispatch(setConfiguration(configuration));

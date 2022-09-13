@@ -144,7 +144,9 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimesta
           })}
         </Container>
         <Divider/>
-        <Box sx={{ height: '50px', p: 1 }}>
+        <Box sx={{
+          height: '50px', p: 1, 
+        }}>
           <Grid container sx={{ height: '100%' }} spacing={1}>
             <Grid item flexGrow={1}><Button onClick={addNewItem} sx={{ width: '150px' }}>Add item</Button></Grid>
             <Grid item xs={'auto'}><Button onClick={() => setOpen(false)} sx={{ width: '150px' }}>Close</Button></Grid>

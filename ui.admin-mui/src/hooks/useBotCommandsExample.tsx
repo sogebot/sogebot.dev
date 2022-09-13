@@ -64,7 +64,9 @@ export const useBotCommandsExample = (item: Commands | null) => {
     }
 
     return (<>
-      {idx > 0 && <Divider sx={{ mx: 5, my: 1 }}/>}
+      {idx > 0 && <Divider sx={{
+        mx: 5, my: 1, 
+      }}/>}
       <div>
         {
           data.map((value) => {
@@ -76,7 +78,9 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
               if (value.startsWith('?')) {
                 value = value.replace('?', '');
-                return <Alert key={value} variant="filled" color="info" icon={false} sx={{ mb: 1, width: 'fit-content' }}>{value}</Alert>;
+                return <Alert key={value} variant="filled" color="info" icon={false} sx={{
+                  mb: 1, width: 'fit-content', 
+                }}>{value}</Alert>;
               } else if (value.startsWith('+')) {
                 value = value.replace('+', '');
                 return <Stack key={value} direction="row" spacing={1}>
@@ -111,10 +115,17 @@ export const useBotCommandsExample = (item: Commands | null) => {
               if (!parsed[message]) {
                 // parse messages
                 axios.post(`${localStorage.server}/api/core/parse`,
-                  { message, user: { id: user.id, username: user.login } },
+                  {
+                    message,
+                    user: {
+                      id: user.id, username: user.login, 
+                    }, 
+                  },
                   { headers: { authorization: `Bearer ${getAccessToken()}` } })
                   .then((response) => {
-                    setParsed(d => ({ ...d, [message]: response.data.data }));
+                    setParsed(d => ({
+                      ...d, [message]: response.data.data, 
+                    }));
                   });
               }
               const messageElement = parsed[message]
@@ -149,5 +160,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
     { item && exampleData.map((data, idx) => generateExamples(data, idx))}
   </>;
 
-  return { loading, examples };
+  return {
+    loading, examples, 
+  };
 };

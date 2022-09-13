@@ -41,7 +41,9 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
     await Promise.all(
       Object.keys(settings).map(key => {
         return new Promise<void>(resolve => {
-          getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any).emit('set.value', { variable: key, value: settings[key][0] }, () => {
+          getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any).emit('set.value', {
+            variable: key, value: settings[key][0], 
+          }, () => {
             resolve();
           });
         });

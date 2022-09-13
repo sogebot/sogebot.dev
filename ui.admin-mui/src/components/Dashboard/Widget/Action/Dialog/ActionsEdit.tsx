@@ -159,7 +159,9 @@ const DraggableComponent: React.FC<{
             <TableCellKeepWidth dragHandleProps={provided.dragHandleProps} snapshot={snapshot} ><DragIndicator/></TableCellKeepWidth>
             {props.children.map((child: React.DetailedReactHTMLElement<any, HTMLElement>, idx: number) => {
               return (<React.Fragment key={'child' + idx}>
-                {React.cloneElement(child, { provided, snapshot })}
+                {React.cloneElement(child, {
+                  provided, snapshot, 
+                })}
               </React.Fragment>);
             })}
             <TableCellKeepWidth snapshot={snapshot} sx={{ textAlign: 'right' }}>
@@ -171,9 +173,13 @@ const DraggableComponent: React.FC<{
           </TableRow>
 
           <TableRow>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+            <TableCell style={{
+              paddingBottom: 0, paddingTop: 0, 
+            }} colSpan={5}>
               <Collapse in={editingItem === updateItem.id}>
-                <Box sx={{ width: '100%', p: 2 }}>
+                <Box sx={{
+                  width: '100%', p: 2, 
+                }}>
                   <Grid container spacing={2} justifyContent='center'>
                     <Grid item xs={6}>
                       {updateItem.type === 'command'
@@ -361,7 +367,9 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
         return console.error(err);
       }
       dispatch(
-        setRandomizers(items.map(o => ({ id: o.id, label: o.name })))
+        setRandomizers(items.map(o => ({
+          id: o.id, label: o.name, 
+        })))
       );
     });
 
@@ -370,13 +378,19 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
         return console.error(err);
       }
       dispatch(
-        setCountdowns((result.filter(o => o.value === 'countdown') as OverlayMapperCountdown[]).map(o => ({ id: o.id, label: o.name })))
+        setCountdowns((result.filter(o => o.value === 'countdown') as OverlayMapperCountdown[]).map(o => ({
+          id: o.id, label: o.name, 
+        })))
       );
       dispatch(
-        setMarathons((result.filter(o => o.value === 'marathon') as OverlayMapperCountdown[]).map(o => ({ id: o.id, label: o.name })))
+        setMarathons((result.filter(o => o.value === 'marathon') as OverlayMapperCountdown[]).map(o => ({
+          id: o.id, label: o.name, 
+        })))
       );
       dispatch(
-        setStopwatchs((result.filter(o => o.value === 'stopwatch') as OverlayMapperCountdown[]).map(o => ({ id: o.id, label: o.name })))
+        setStopwatchs((result.filter(o => o.value === 'stopwatch') as OverlayMapperCountdown[]).map(o => ({
+          id: o.id, label: o.name, 
+        })))
       );
     });
 
@@ -475,7 +489,9 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
           </TableContainer>
         </Container>
         <Divider/>
-        <Box sx={{ height: '50px', p: 1 }}>
+        <Box sx={{
+          height: '50px', p: 1, 
+        }}>
           <Grid container sx={{ height: '100%' }} spacing={1}>
             <Grid item flexGrow={1}>
               <DashboardWidgetActionButtonsAddItem onItemAdd={(itemType) => addItem(itemType)}/>

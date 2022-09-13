@@ -57,7 +57,12 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     for (const group of groups) {
       if (group) {
         if (!groupsSettings.find(o => o.name === group)) {
-          groupSet.push({ name: group, options: { filter: null, permission: null } } as KeywordGroup);
+          groupSet.push({
+            name:    group,
+            options: {
+              filter: null, permission: null, 
+            }, 
+          } as KeywordGroup);
         }
       }
     }
@@ -88,7 +93,8 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       getCellValue: (row) => row.options.filter === null ? 'No filter set' : row.options.filter,
     },
     {
-      name:         'permission', title:        translate('permission'),
+      name:         'permission',
+      title:        translate('permission'),
       getCellValue: (row) => row.options.permission === null ? 'No permission set' : getPermissionName(row.options.permission, permissions || []),
     },
     {

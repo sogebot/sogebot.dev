@@ -126,7 +126,11 @@ export const AliasEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -225,7 +229,9 @@ export const AliasEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={alias?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {alias?.enabled ? 'Alias is enabled': 'Alias is disabled'}
                 </FormHelperText>
               </FormGroup>
@@ -233,7 +239,9 @@ export const AliasEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={alias?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {alias?.visible ? 'Alias will be visible in lists': 'Alias won\'t be visible in lists'}
                 </FormHelperText>
               </FormGroup>

@@ -65,8 +65,12 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }).formatToParts((props.current - props.average) / 1000 / 60 / 60),
-          { type: '', value: ' ' },
-          { type: '', value: 'h' },
+          {
+            type: '', value: ' ', 
+          },
+          {
+            type: '', value: 'h', 
+          },
         ].reduce(numberReducer, '');
       }
     }

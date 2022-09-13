@@ -77,7 +77,9 @@ export const KeywordEdit: React.FC<{
       response.response = '';
       response.stopIfExecuted = false;
       response.permission = defaultPermissions.VIEWERS;
-      return { ...o, responses: [...o.responses, response] };
+      return {
+        ...o, responses: [...o.responses, response], 
+      };
     });
   }, []);
 
@@ -146,14 +148,20 @@ export const KeywordEdit: React.FC<{
           responses[i] = value as KeywordResponses;
         }
       }
-      return { ...it, responses: responses };
+      return {
+        ...it, responses: responses, 
+      };
     });
   }, []);
 
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
-      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({ ...o, order: idx })) as KeywordResponses[];
-      return { ...it, responses: responses };
+      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({
+        ...o, order: idx, 
+      })) as KeywordResponses[];
+      return {
+        ...it, responses: responses, 
+      };
     });
   }, []);
 
@@ -193,7 +201,9 @@ export const KeywordEdit: React.FC<{
         }
 
       }
-      return { ...o, responses };
+      return {
+        ...o, responses, 
+      };
     });
   }, [ ]);
 
@@ -214,7 +224,11 @@ export const KeywordEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -283,7 +297,9 @@ export const KeywordEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.enabled ? 'Keyword is enabled': 'Keyword is disabled'}
                 </FormHelperText>
               </FormGroup>

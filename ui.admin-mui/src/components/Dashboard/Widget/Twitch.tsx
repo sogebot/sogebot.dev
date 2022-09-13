@@ -61,7 +61,9 @@ export const DashboardWidgetTwitch: React.FC = () => {
             <Tab label={translate('widget-title-monitor')} value="2" />
           </TabList>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           <Box sx={{
             ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', 
           }}>

@@ -143,7 +143,9 @@ export const AliasGroupEdit: React.FC<{
             onChange={(event) => handleValueChange('filter', event.target.value)}
             InputProps={{
               endAdornment: <>
-                <InputAdornment position="end" sx={{ alignSelf: 'baseline', paddingTop: '2px' }}>
+                <InputAdornment position="end" sx={{
+                  alignSelf: 'baseline', paddingTop: '2px', 
+                }}>
                   {group?.options.filter && <IconButton onClick={() => handleValueChange('filter', '')}><Clear fontSize="small" /></IconButton>}
                   <FormInputAdornmentCustomVariable onSelect={(value) => handleValueChange('filter', value, true)}/>
                 </InputAdornment>

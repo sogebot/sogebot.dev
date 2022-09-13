@@ -61,7 +61,7 @@ export const useColumnMaker = <T,>(props: {
           listValues:    item.filtering?.options?.listValues,
         },
       })) as Parameters<typeof useFilter>[0];
-  }, [ props, translate, getTranslationOfColumnName ]);
+  }, [ props, getTranslationOfColumnName ]);
 
   const columns = useMemo(() => props.map((item: typeof props[number]) => {
     return ({
@@ -69,7 +69,7 @@ export const useColumnMaker = <T,>(props: {
       title: getTranslationOfColumnName(item.columnName as string),
       ...item.column,
     }) as Column;
-  }), [ props, translate, getTranslationOfColumnName ]);
+  }), [ props, getTranslationOfColumnName ]);
 
   const defaultHiddenColumnNames = props
     .filter((item: typeof props[number]) => item.hidden)

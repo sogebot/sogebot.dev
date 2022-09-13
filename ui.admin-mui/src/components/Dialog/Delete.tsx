@@ -15,7 +15,11 @@ export const DialogDelete: React.FC<{
   isBulkOperation,
 }) => {
   return (<Dialog
-    sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
+    sx={{
+      '& .MuiDialog-paper': {
+        width: '80%', maxHeight: 435, 
+      }, 
+    }}
     maxWidth="xs"
     open={open}
   >

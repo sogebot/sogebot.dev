@@ -46,7 +46,9 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
       }, 5000);
     } else {
       getSocket('/widgets/quickaction').emit('trigger', {
-        user:  { userId: user.id, userName: user.login },
+        user: {
+          userId: user.id, userName: user.login, 
+        },
         id:    item.id,
         value: !currentRandomizer.isShown,
       });

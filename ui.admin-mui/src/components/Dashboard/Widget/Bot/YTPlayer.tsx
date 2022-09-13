@@ -176,7 +176,9 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   }, [autoplay, currentSong]);
 
   return (
-    <Box sx={{ height: '100%', ...sx }}>
+    <Box sx={{
+      height: '100%', ...sx, 
+    }}>
       <Box sx={{
         borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
       }}>

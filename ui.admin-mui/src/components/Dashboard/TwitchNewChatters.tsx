@@ -47,7 +47,9 @@ export const DashboardStatsTwitchNewChatters: React.FC = () => {
           <Value current={value} isStreamOnline={isStreamOnline}/>
           <Trending current={value} average={average} isStreamOnline={isStreamOnline}/>
         </Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('new-chatters')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('new-chatters')) }</Typography>
       </Paper>
     </Grid>
   );

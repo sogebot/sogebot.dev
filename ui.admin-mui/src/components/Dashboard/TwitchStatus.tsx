@@ -77,7 +77,9 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const filterTags = (is_auto: boolean) => {
     return tags.filter(o => !!o.is_auto === is_auto).map((o) => {
       const key = Object.keys(o.localization_names).find(key2 => key2.includes(configuration.lang));
-      return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
+      return {
+        name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto, 
+      };
     }).sort((a, b) => {
       if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
         return -1;
@@ -102,15 +104,25 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
 
         <Grid container justifyContent={'left'}>
           <Grid item sm={4} xs={12}>
-            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>{ game ?? capitalize(translate('not-available')) }</Typography>
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('game')) }</Typography>
+            <Typography sx={{
+              transform: 'translateY(5px)', ...classes.truncate, 
+            }}>{ game ?? capitalize(translate('not-available')) }</Typography>
+            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+              pt: 2, pa: 1, 
+            }}>{ capitalize(translate('game')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
-            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>{ title ?? capitalize(translate('not-available')) }</Typography>
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('title')) }</Typography>
+            <Typography sx={{
+              transform: 'translateY(5px)', ...classes.truncate, 
+            }}>{ title ?? capitalize(translate('not-available')) }</Typography>
+            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+              pt: 2, pa: 1, 
+            }}>{ capitalize(translate('title')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
-            <Typography sx={{ transform: 'translateY(5px)', ...classes.truncate }}>
+            <Typography sx={{
+              transform: 'translateY(5px)', ...classes.truncate, 
+            }}>
               { tags.length === 0 && <Typography component="span">{capitalize(translate('not-available'))}</Typography> }
               {filterTags(true).map((tag, idx) => {
                 return(<Typography component="span" key={tag.name} sx={tag.is_auto ? classes.greyColor : {}}>
@@ -125,7 +137,9 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
                 </Typography>);
               })}
             </Typography>
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('tags')) }</Typography>
+            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+              pt: 2, pa: 1, 
+            }}>{ capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
         {!loading && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>

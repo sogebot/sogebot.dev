@@ -120,7 +120,9 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
     if (props.open) {
       getSocket('/').emit('getUserTwitchGames', (_titles, games) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
-        console.log({ _titles, games });
+        console.log({
+          _titles, games, 
+        });
         console.groupEnd();
         setTitles(_titles);
         setCacheGames(games);
@@ -184,7 +186,9 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           onChange={(event) => setTitleInputValue(event.target.value)}/>
 
         {loading
-          ? <Grid container sx={{ placeContent: 'center', pt: 2 }}><Grid item><CircularProgress/></Grid></Grid>
+          ? <Grid container sx={{
+            placeContent: 'center', pt: 2, 
+          }}><Grid item><CircularProgress/></Grid></Grid>
           : <>
             <Typography component="div" variant="caption" sx={{ p: 2 }}>Last used games</Typography>
             <Grid container spacing={1} pl={1}>
@@ -202,7 +206,9 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
               })}
             </Grid>
 
-            <Typography component="div" variant="caption" sx={{ p: 2, pb: 0 }}>Last used titles for {inputValue}</Typography>
+            <Typography component="div" variant="caption" sx={{
+              p: 2, pb: 0, 
+            }}>Last used titles for {inputValue}</Typography>
             <SimpleBar style={{ height: 'calc(100% - 420px)' }} autoHide={false}>
               <List>
                 {lastTitles.map((title) => {
@@ -216,7 +222,9 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
         }
       </Container>
       <Divider/>
-      <Box sx={{ height: '50px', p: 1 }}>
+      <Box sx={{
+        height: '50px', p: 1, 
+      }}>
         <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
           <Grid item alignSelf={'end'}><Button sx={{ width: 150 }} onClick={() => props.setOpen(false)}>Close</Button></Grid>
           <Grid item alignSelf={'center'}>

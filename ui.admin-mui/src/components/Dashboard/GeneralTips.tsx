@@ -47,7 +47,9 @@ export const DashboardStatsGeneralTips: React.FC = () => {
           <Value current={value} isStreamOnline={isStreamOnline} type="currency" />
           <Trending current={value} average={average} isStreamOnline={isStreamOnline} />
         </Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('tips')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('tips')) }</Typography>
       </Paper>
     </Grid>
   );

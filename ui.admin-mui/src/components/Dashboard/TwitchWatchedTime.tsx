@@ -47,7 +47,9 @@ export const DashboardStatsTwitchWatchedTime: React.FC = () => {
           <Value current={value} isStreamOnline={isStreamOnline} type="hours"/>
           <Trending current={value} average={average} isStreamOnline={isStreamOnline}/>
         </Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('watched-time')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('watched-time')) }</Typography>
       </Paper>
     </Grid>
   );

@@ -41,7 +41,9 @@ export const ButtonsPermissionsBulk: React.FC<{
           disabled={disabled}
           variant="contained"
           color="info"
-          sx={{ minWidth: '36px', width: '36px' }}
+          sx={{
+            minWidth: '36px', width: '36px', 
+          }}
         >
           <KeyTwoTone/>
         </Button>

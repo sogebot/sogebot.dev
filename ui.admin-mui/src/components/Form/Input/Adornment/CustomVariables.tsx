@@ -37,7 +37,9 @@ export const FormInputAdornmentCustomVariable: React.FC<{
       'toptip.stream.currency', 'toptip.stream.message', 'latestCheerAmount', 'latestCheerMessage',
       'latestCheer', 'isBotSubscriber', 'isStreamOnline', 'uptime',
     ];
-    return globalFilters.map(o => ({ label: translate('responses.variable.' + o), id: `$${o}` }));
+    return globalFilters.map(o => ({
+      label: translate('responses.variable.' + o), id: `$${o}`, 
+    }));
   }, [translate]);
 
   const onChangeHandle = useCallback((value: {

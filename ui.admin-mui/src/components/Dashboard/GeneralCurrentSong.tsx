@@ -36,7 +36,9 @@ export const DashboardStatsGeneralCurrentSong: React.FC = () => {
         <Typography sx={{
           transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{ song || capitalize(translate('not-available')) }</Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('currentsong')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('currentsong')) }</Typography>
       </Paper>
     </Grid>
   );

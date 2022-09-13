@@ -40,7 +40,9 @@ export const Logo: React.FC = () => {
         });
         const botVersion = version.replace('-SNAPSHOT', '').split('.').map(o => Number(o));
         const gitVersion = (response.tag_name as string).split('.').map(o => Number(o));
-        console.debug({ botVersion, gitVersion });
+        console.debug({
+          botVersion, gitVersion, 
+        });
 
         let isNewer = false;
         for (let index = 0; index < botVersion.length; index++) {

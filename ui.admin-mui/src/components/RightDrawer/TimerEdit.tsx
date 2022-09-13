@@ -46,7 +46,9 @@ export const TimerEdit: React.FC<{
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof Timer>(key: T, value: Timer[T]) => {
-    setItem(i => ({ ...i, [key]: value }));
+    setItem(i => ({
+      ...i, [key]: value, 
+    }));
   }, []);
 
   useEffect(() => {
@@ -111,7 +113,9 @@ export const TimerEdit: React.FC<{
       response.timestamp = new Date().toISOString();
       response.response = '';
       response.isEnabled = true;
-      return { ...o, messages: [...o.messages, response] };
+      return {
+        ...o, messages: [...o.messages, response], 
+      };
     });
   }, []);
 
@@ -123,7 +127,9 @@ export const TimerEdit: React.FC<{
           responses[i] = value as TimerResponse;
         }
       }
-      return { ...it, messages: responses };
+      return {
+        ...it, messages: responses, 
+      };
     });
   }, []);
 
@@ -133,7 +139,9 @@ export const TimerEdit: React.FC<{
       if (updateMessage) {
         updateMessage.isEnabled = !updateMessage.isEnabled;
         const messages = it.messages.filter(o => o.id !== responseId);
-        return { ...it, messages: [...messages, updateMessage] };
+        return {
+          ...it, messages: [...messages, updateMessage], 
+        };
       }
       return it;
     });
@@ -141,8 +149,12 @@ export const TimerEdit: React.FC<{
 
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
-      const messages = it.messages.filter(o => o.id !== responseId).map((o, idx) => ({ ...o, timestamp: new Date(idx).toISOString() })) as TimerResponse[];
-      return { ...it, messages: messages };
+      const messages = it.messages.filter(o => o.id !== responseId).map((o, idx) => ({
+        ...o, timestamp: new Date(idx).toISOString(), 
+      })) as TimerResponse[];
+      return {
+        ...it, messages: messages, 
+      };
     });
   }, []);
 
@@ -182,7 +194,9 @@ export const TimerEdit: React.FC<{
         }
 
       }
-      return { ...o, messages };
+      return {
+        ...o, messages, 
+      };
     });
   }, [ ]);
 
@@ -203,7 +217,11 @@ export const TimerEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -240,7 +258,9 @@ export const TimerEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isEnabled ? 'Timer is enabled': 'Timer is disabled'}
                 </FormHelperText>
               </FormGroup>
@@ -248,7 +268,9 @@ export const TimerEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.tickOffline || false} onChange={(event) => handleValueChange('tickOffline', event.target.checked)}/>} label={capitalize(translate('timers.dialog.tickOffline'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.tickOffline
                     ? 'Timers will be ticking, when stream is offline.'
                     : 'Timers will be stopped, when stream is offline.'}

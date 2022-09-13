@@ -50,7 +50,9 @@ export const DashboardStatsUptime: React.FC = () => {
           <LinearProgress />
         </Box>}
         <Typography sx={{ transform: 'translateY(5px)' }}>{ getTime(uptime, false) }</Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }} key={timestamp}>{ capitalize(translate('uptime')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }} key={timestamp}>{ capitalize(translate('uptime')) }</Typography>
         <Backdrop open={hover} sx={classes.backdrop} onClick={() => saveHighlight()}>
           <Typography variant="button">{translate('click-to-highlight')}</Typography>
         </Backdrop>

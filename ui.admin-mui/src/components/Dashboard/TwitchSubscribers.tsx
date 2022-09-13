@@ -49,7 +49,9 @@ export const DashboardStatsTwitchSubscribers: React.FC = () => {
           {type !== '' && (<><Value current={value} isStreamOnline={isStreamOnline} showValueIfOffline type="bigNumber" /><Trending current={value} average={average} isStreamOnline={isStreamOnline} /></>)}
           {type === '' && <span>{translate('not-available')}</span>}
         </Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('subscribers')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('subscribers')) }</Typography>
       </Paper>
     </Grid>
   );

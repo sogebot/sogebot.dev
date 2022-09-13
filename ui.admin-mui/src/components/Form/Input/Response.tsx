@@ -42,37 +42,49 @@ export const FormResponse: React.FC<{
 
   const onResponseChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {
-      return { ...o, response: event.target.value };
+      return {
+        ...o, response: event.target.value, 
+      };
     });
   }, []);
 
   const onResponseAddHandler = useCallback((val: string) => {
     setPropsValue((o: { response: string; }) => {
-      return { ...o, response: o.response + val };
+      return {
+        ...o, response: o.response + val, 
+      };
     });
   }, []);
 
   const onFilterChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {
-      return { ...o, filter: event.target.value };
+      return {
+        ...o, filter: event.target.value, 
+      };
     });
   }, []);
 
   const onFilterAddHandler = useCallback((val: string) => {
     setPropsValue((o: { filter: string; }) => {
-      return { ...o, filter: o.filter + val };
+      return {
+        ...o, filter: o.filter + val, 
+      };
     });
   }, []);
 
   const onPermissionChangeHandler = useCallback((val: string | null) => {
     setPropsValue((o: any) => {
-      return { ...o, permission: String(val).length === 0 ? null : val };
+      return {
+        ...o, permission: String(val).length === 0 ? null : val, 
+      };
     });
   }, []);
 
   const onExecutionToggleHandler = useCallback(() => {
     setPropsValue((o: { stopIfExecuted: any; }) => {
-      return { ...o, stopIfExecuted: !o.stopIfExecuted };
+      return {
+        ...o, stopIfExecuted: !o.stopIfExecuted, 
+      };
     });
   }, []);
 

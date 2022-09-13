@@ -61,7 +61,9 @@ function RenderRow(props: any) {
     if (event.event === 'tip' && values.charityCampaignName) {
       t = translate(`eventlist-events.tipToCharity`);
     }
-    const formattedAmount = Intl.NumberFormat(configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
+    const formattedAmount = Intl.NumberFormat(configuration.lang, {
+      style: 'currency', currency: get(values, 'currency', 'USD'), 
+    }).format(get(values, 'amount', '0'));
     t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
     t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
 
@@ -113,7 +115,9 @@ function RenderRow(props: any) {
       </Box>
       } secondary={blockquote(props.item).length > 0 && <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ parse(blockquote(props.item)) }</Typography>}/>
 
-      {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, { style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD') }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
+      {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, {
+        style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'), 
+      }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'amount', '0') }</Typography>}
 
       <Backdrop open={hover} sx={classes.backdrop} onClick={() => resendAlert(props.item.id)}>
@@ -208,7 +212,9 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     getSocket('/widgets/eventlist').emit('eventlist::get', 100);
   }, 60000, true, true);
 
-  return (<Box sx={{ height: '100%', ...props.sx }}>
+  return (<Box sx={{
+    height: '100%', ...props.sx, 
+  }}>
     <Box sx={{
       borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
     }}>

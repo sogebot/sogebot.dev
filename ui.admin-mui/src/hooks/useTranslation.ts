@@ -42,5 +42,7 @@ export const useTranslation = () => {
       : castObject(key, at(translation, key)[0] as { [x: string]: any });
   }, [ translation ]);
 
-  return { translate, translateAsObject };
+  return {
+    translate, translateAsObject, 
+  };
 };

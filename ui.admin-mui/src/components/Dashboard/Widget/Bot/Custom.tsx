@@ -49,7 +49,9 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
             <DashboardWidgetBotDialogCustomURLsEdit setRefreshTimestamp={setRefreshTimestamp}/>
           </Stack>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           {custom.map((item, idx) => <Box sx={{
             ...(tab === String(idx+1) ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
           }} key={item.id} >

@@ -64,7 +64,9 @@ export const DashboardWidgetAction: React.FC = () => {
             <DashboardWidgetBotDialogActionsEdit onClose={React.useCallback(() => setTimestamp(Date.now()), [])}/>
           </Stack>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           {actions.map(action => {
             if (action.type === 'command') {
               return <DashboardWidgetActionCommandButton key={action.id} item={action}/>;

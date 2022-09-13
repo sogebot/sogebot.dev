@@ -25,7 +25,9 @@ export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomV
 
   const onUpdateHandle = useCallback((value: number | string) => {
     if (variable) {
-      setVariable({ ...variable, currentValue: String(value) });
+      setVariable({
+        ...variable, currentValue: String(value), 
+      });
     }
   }, [ variable ]);
 

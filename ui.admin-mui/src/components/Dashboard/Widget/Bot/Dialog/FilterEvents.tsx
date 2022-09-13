@@ -43,7 +43,9 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
     <>
       <Tooltip title="Filter Events">
         <IconButton onClick={handleClick}>
-          <FilterAlt sx={{ position: 'relative', right: '2px' }}/>
+          <FilterAlt sx={{
+            position: 'relative', right: '2px', 
+          }}/>
           <ArrowDropDown sx={{
             position: 'absolute', right: '2px', bottom: 0, fontSize: '20px',
           }}/>

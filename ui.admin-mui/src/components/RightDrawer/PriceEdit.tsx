@@ -113,7 +113,11 @@ export const PriceEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -160,7 +164,9 @@ export const PriceEdit: React.FC<{
             <Grid item>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.enabled ? 'Price is enabled': 'Price is disabled'}
                 </FormHelperText>
               </FormGroup>
@@ -170,7 +176,9 @@ export const PriceEdit: React.FC<{
             <Grid item>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.emitRedeemEvent || false} onChange={(event) => handleValueChange('emitRedeemEvent', event.target.checked)}/>} label={capitalize(translate('systems.price.emitRedeemEvent'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.emitRedeemEvent ? 'If price is paid, redeem event / alert will be triggered.': 'No event will be triggered.'}
                 </FormHelperText>
               </FormGroup>

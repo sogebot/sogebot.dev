@@ -83,7 +83,9 @@ export const UserMenu: React.FC = () => {
   return (
     <>
       {user && Object.keys(configuration).length > 0
-      && <><IconButton onClick={handleClick} sx={{ width: 'fit-content', alignSelf: 'center' }}>
+      && <><IconButton onClick={handleClick} sx={{
+        width: 'fit-content', alignSelf: 'center', 
+      }}>
         <Avatar src={user.profile_image_url}></Avatar>
       </IconButton>
       <Menu
@@ -119,11 +121,15 @@ export const UserMenu: React.FC = () => {
                 <Typography fontWeight={100}>{ translate('bits') }</Typography>
               </Grid>
               <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
-                { Intl.NumberFormat(configuration.lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((viewer.watchedTime ?? 0) / 1000 / 60 / 60) } h
+                { Intl.NumberFormat(configuration.lang, {
+                  minimumFractionDigits: 2, maximumFractionDigits: 2, 
+                }).format((viewer.watchedTime ?? 0) / 1000 / 60 / 60) } h
                 <Typography fontWeight={100}>{ translate('watched-time') }</Typography>
               </Grid>
               <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
-                { Intl.NumberFormat(configuration.lang, { style: 'currency', currency: configuration.currency }).format(viewer.aggregatedTips) }
+                { Intl.NumberFormat(configuration.lang, {
+                  style: 'currency', currency: configuration.currency, 
+                }).format(viewer.aggregatedTips) }
                 <Typography fontWeight={100}>{ translate('tips') }</Typography>
               </Grid>
             </Grid>

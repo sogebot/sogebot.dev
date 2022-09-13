@@ -55,7 +55,9 @@ export const DashboardWidgetBot: React.FC = () => {
             <Tab label={translate('widget-title-custom')} value="7" />
           </TabList>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>

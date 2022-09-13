@@ -56,7 +56,9 @@ export const CooldownEdit: React.FC<{
 
     if (key === 'seconds' && numberVal < 0) {
       if (input.minutes > 0 || input.hours > 0 || input.days > 0) {
-        const updatedInput = { ...input, [key]: 59 };
+        const updatedInput = {
+          ...input, [key]: 59, 
+        };
         handleTimeChange(updatedInput, 'minutes', String(input.minutes - 1));
         return;
       } else {
@@ -66,7 +68,9 @@ export const CooldownEdit: React.FC<{
 
     if (key === 'minutes' && numberVal < 0) {
       if (input.hours > 0 || input.days > 0) {
-        const updatedInput = { ...input, [key]: 59 };
+        const updatedInput = {
+          ...input, [key]: 59, 
+        };
         handleTimeChange(updatedInput, 'hours', String(input.hours - 1));
         return;
       } else {
@@ -76,7 +80,9 @@ export const CooldownEdit: React.FC<{
 
     if (key === 'hours' && numberVal < 0) {
       if (input.days > 0) {
-        const updatedInput = { ...input, [key]: 23 };
+        const updatedInput = {
+          ...input, [key]: 23, 
+        };
         handleTimeChange(updatedInput, 'days', String(input.days - 1));
         return;
       } else {
@@ -85,7 +91,9 @@ export const CooldownEdit: React.FC<{
     }
 
     if ((key === 'seconds' || key === 'minutes') && numberVal >= 60) {
-      const updatedInput = { ...input, [key]: 0 };
+      const updatedInput = {
+        ...input, [key]: 0, 
+      };
       if(key === 'seconds') {
         handleTimeChange(updatedInput, 'minutes', String(input.minutes + 1));
       } else {
@@ -95,7 +103,9 @@ export const CooldownEdit: React.FC<{
     }
 
     if (key === 'hours' && numberVal >= 24) {
-      const updatedInput = { ...input, [key]: 0 };
+      const updatedInput = {
+        ...input, [key]: 0, 
+      };
       handleTimeChange(updatedInput, 'days', String(input.days + 1));
       return;
 
@@ -105,11 +115,15 @@ export const CooldownEdit: React.FC<{
       numberVal = 0;
     }
 
-    setTime({ ...input, [key]: numberVal });
+    setTime({
+      ...input, [key]: numberVal, 
+    });
   };
 
   const handleValueChange = useCallback(<T extends keyof Cooldown>(key: T, value: Cooldown[T]) => {
-    setItem(i => ({ ...i, [key]: value }));
+    setItem(i => ({
+      ...i, [key]: value, 
+    }));
   }, []);
 
   useEffect(() => {
@@ -186,7 +200,11 @@ export const CooldownEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -259,7 +277,9 @@ export const CooldownEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isEnabled ? 'Cooldown is enabled': 'Cooldown is disabled'}
                 </FormHelperText>
               </FormGroup>
@@ -267,7 +287,9 @@ export const CooldownEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isErrorMsgQuiet || false} onChange={(event) => handleValueChange('isErrorMsgQuiet', event.target.checked)}/>} label={capitalize(translate('quiet'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isErrorMsgQuiet
                     ? 'Cooldown won\'t send message if triggered.'
                     : 'Cooldown will send message if triggered.'}
@@ -277,7 +299,9 @@ export const CooldownEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isOwnerAffected || false} onChange={(event) => handleValueChange('isOwnerAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.casters'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isOwnerAffected
                     ? 'Owners will be affected with cooldown.'
                     : 'Owners won\'t be affected with cooldown.'}
@@ -287,7 +311,9 @@ export const CooldownEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isModeratorAffected || false} onChange={(event) => handleValueChange('isModeratorAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.moderators'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isModeratorAffected
                     ? 'Moderators will be affected with cooldown.'
                     : 'Moderators won\'t be affected with cooldown.'}
@@ -297,7 +323,9 @@ export const CooldownEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isSubscriberAffected || false} onChange={(event) => handleValueChange('isSubscriberAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.subscribers'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.isSubscriberAffected
                     ? 'Subscribers will be affected with cooldown.'
                     : 'Subscribers won\'t be affected with cooldown.'}

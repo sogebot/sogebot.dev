@@ -1,4 +1,4 @@
-import { Filter, IntegratedFiltering } from '@devexpress/dx-react-grid';
+import { Filter } from '@devexpress/dx-react-grid';
 import { Add } from '@mui/icons-material';
 import {
   Box, Button, Chip, FormControl, FormControlLabel, FormLabel, Input, MenuItem, Popover, Radio, RadioGroup, Select,
@@ -162,7 +162,7 @@ export const useFilter = <T,>(availableFilters: {
   const getTranslationOfColumnName = React.useCallback((columnName: string) => {
     const current = availableFilters.find(o => o.columnName === columnName)!;
     return current.translation;
-  }, [ availableFilters, translate ]);
+  }, [ availableFilters ]);
 
   const element = React.useMemo(() => {
     return <>
@@ -246,7 +246,9 @@ export const useFilter = <T,>(availableFilters: {
                                 <FormControlLabel value='lessThanOrEqual' control={<Radio />} label={capitalize(translate('registry.alerts.filter.lessThanOrEqual'))} />
                                 <FormControlLabel value='notEqual' control={<Radio />} label={capitalize(translate('registry.alerts.filter.notEqual'))} />
                               </RadioGroup>
-                              <Box sx={{ width: '100%', p: 2 }}>
+                              <Box sx={{
+                                width: '100%', p: 2,
+                              }}>
                                 <Input
                                   fullWidth
                                   value={newFilter.value}
@@ -266,7 +268,9 @@ export const useFilter = <T,>(availableFilters: {
                                 <FormControlLabel value='notEqual' control={<Radio />} label={capitalize(translate('registry.alerts.filter.notEqual'))} />
                                 <FormControlLabel value='contains' control={<Radio />} label={capitalize(translate('registry.alerts.filter.contain'))} />
                               </RadioGroup>
-                              <Box sx={{ width: '100%', p: 2 }}>
+                              <Box sx={{
+                                width: '100%', p: 2,
+                              }}>
                                 <Input
                                   fullWidth
                                   value={newFilter.value}

@@ -55,7 +55,9 @@ export const ButtonsGroupBulk: React.FC<{
           disabled={disabled}
           variant="contained"
           color="info"
-          sx={{ minWidth: '36px', width: '36px' }}
+          sx={{
+            minWidth: '36px', width: '36px', 
+          }}
         >
           <WorkspacesTwoTone/>
         </Button>

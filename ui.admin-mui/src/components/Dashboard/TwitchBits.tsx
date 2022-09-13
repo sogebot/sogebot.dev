@@ -49,7 +49,9 @@ export const DashboardStatsTwitchBits: React.FC = () => {
           {type !== '' && (<><Value current={value} isStreamOnline={isStreamOnline} type="bigNumber" /><Trending current={value} average={average} isStreamOnline={isStreamOnline} /></>)}
           {type === '' && <span>{translate('not-available')}</span>}
         </Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('bits')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('bits')) }</Typography>
       </Paper>
     </Grid>
   );

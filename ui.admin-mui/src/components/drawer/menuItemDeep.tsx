@@ -64,11 +64,15 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
     <>
       <MuiListItemButton
         selected={isActive || !!anchorEl}
-        sx={{ justifyContent: 'center', height: reducer.drawerWidth }}
+        sx={{
+          justifyContent: 'center', height: reducer.drawerWidth, 
+        }}
         key={props.title}
         onClick={handleClick}>
         <Stack alignContent={'center'}  sx={{ color: isActive || !!anchorEl ? theme.palette.primary.main : 'inherit' }}>
-          <ListItemIcon sx={{ placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit' }}>
+          <ListItemIcon sx={{
+            placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit', 
+          }}>
             {props.icon}
             <ChevronRight sx={{
               position: 'absolute',
@@ -77,7 +81,9 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
               fontSize: '12px',
             }}/>
           </ListItemIcon>
-          <Typography variant="caption" sx={{ textAlign: 'center', fontSize: '0.7rem' }}>
+          <Typography variant="caption" sx={{
+            textAlign: 'center', fontSize: '0.7rem', 
+          }}>
             {props.title}
           </Typography>
         </Stack>
@@ -97,7 +103,9 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
       >
         {menuItems.map(item => {
           return (
-            <MenuItem selected={isItemActive(item)} sx={{ fontSize: '14px', color: getColorOfItem(item) }} onClick={() => {
+            <MenuItem selected={isItemActive(item)} sx={{
+              fontSize: '14px', color: getColorOfItem(item), 
+            }} onClick={() => {
               handleClose(); router.push(`/${item.id}`);
             }} key={item.id}>{translate(`menu.${item.name}`)}</MenuItem>
           );

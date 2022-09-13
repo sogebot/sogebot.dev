@@ -42,7 +42,9 @@ export const Search: React.FC = () => {
           }}>
             <SearchIcon />
             <InputBase
-              sx={{ flex: 1, ml: 1 }}
+              sx={{
+                flex: 1, ml: 1, 
+              }}
               value={input}
               placeholder="Type to search"
               onChange={(event) => setInput(event.target.value)}

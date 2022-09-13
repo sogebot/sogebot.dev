@@ -80,23 +80,31 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
     if (eligibilityCache) {
       // all was disabled
       if (!eligibility.all && !eligibility.subscribers) {
-        setEligibilty({ all: true, subscribers: false });
+        setEligibilty({
+          all: true, subscribers: false, 
+        });
         return;
       }
       if (!eligibility.all && eligibilityCache.all) {
         // we cannot disable if flws and subs are disabled
         if (!eligibility.subscribers) {
-          setEligibilty({ all: true, subscribers: false });
+          setEligibilty({
+            all: true, subscribers: false, 
+          });
           return;
         }
       } else if (eligibility.all && !eligibilityCache.all) {
         // remove subscribers if all was enabled
-        setEligibilty({ all: true, subscribers: false });
+        setEligibilty({
+          all: true, subscribers: false, 
+        });
         return;
       }
 
       if (eligibility.all && eligibility.subscribers) {
-        setEligibilty({ all: false, subscribers: eligibility.subscribers });
+        setEligibilty({
+          all: false, subscribers: eligibility.subscribers, 
+        });
         return;
       }
     }
@@ -112,7 +120,9 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, [eligibility, eligibilityCache]);
 
   React.useEffect(() => {
-    getSocket('/systems/queue').emit('set.value', { variable: 'locked', value: locked }, () => {
+    getSocket('/systems/queue').emit('set.value', {
+      variable: 'locked', value: locked, 
+    }, () => {
       return true;
     });
   }, [locked]);
@@ -202,19 +212,27 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
             </Box>
           </Stack>
         </Box>
-        <Box sx={{ position: 'relative', height: 'calc(100% - 48px);' }}>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', 
+        }}>
           <Box sx={value === '1' ? classes.showTab : classes.hideTab}>
             <Box sx={{
               borderBottom: 1, borderColor: 'divider', backgroundColor: grey[900],
             }}>
               <Stack direction="row" alignItems={'center'}>
-                <ButtonGroup color={'secondary'} variant="text" size='small' sx={{ p: 0.5, width: '100%' }}>
+                <ButtonGroup color={'secondary'} variant="text" size='small' sx={{
+                  p: 0.5, width: '100%', 
+                }}>
                   <Button
-                    onClick={() => setEligibilty({ all: true, subscribers: false })}
+                    onClick={() => setEligibilty({
+                      all: true, subscribers: false, 
+                    })}
                     color={eligibility.all ? 'success' : 'error'}
                   >ALL</Button>
                   <Button
-                    onClick={() => setEligibilty({ all: false, subscribers: !eligibility.subscribers })}
+                    onClick={() => setEligibilty({
+                      all: false, subscribers: !eligibility.subscribers, 
+                    })}
                     color={eligibility.subscribers ? 'success' : 'error'}>SUBSCRIBERS</Button>
                 </ButtonGroup>
                 <Tooltip title="Clear list">
@@ -273,7 +291,9 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
           </Box>
           <Box sx={value === '2' ? classes.showTab : classes.hideTab}>
             {picked.length === 0 && <Alert severity="info">No users were picked yet</Alert>}
-            {picked.length > 0 && <List dense disablePadding sx={{ height: '100%', overflow: 'auto' }}>
+            {picked.length > 0 && <List dense disablePadding sx={{
+              height: '100%', overflow: 'auto', 
+            }}>
               {picked.map((user) => <ListItem key={user.username}>
                 <ListItemText>
                   <Stack direction="row" spacing={0.5} alignItems='center'>

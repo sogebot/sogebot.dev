@@ -40,8 +40,12 @@ export const Value: React.FC<{current: number, isStreamOnline: boolean, showValu
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }).formatToParts(((props.isStreamOnline || props.showValueIfOffline) ? props.current || 0 : 0) / 1000 / 60 / 60),
-        { type: '', value: ' ' },
-        { type: 'currency', value: 'h' },
+        {
+          type: '', value: ' ', 
+        },
+        {
+          type: 'currency', value: 'h', 
+        },
       ].reduce(numberReducer, '');
     }
 

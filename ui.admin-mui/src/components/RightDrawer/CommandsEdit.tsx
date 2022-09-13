@@ -85,7 +85,9 @@ export const CommandsEdit: React.FC<{
       response.response = '';
       response.stopIfExecuted = false;
       response.permission = defaultPermissions.VIEWERS;
-      return { ...o, responses: [...o.responses, response] };
+      return {
+        ...o, responses: [...o.responses, response], 
+      };
     });
   }, []);
 
@@ -132,7 +134,9 @@ export const CommandsEdit: React.FC<{
   const handleSave = () => {
     setSaving(true);
     axios.post(`${localStorage.server}/api/systems/customcommands`,
-      { ...item, count },
+      {
+        ...item, count, 
+      },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
         enqueueSnackbar('Commands saved.', { variant: 'success' });
@@ -156,14 +160,20 @@ export const CommandsEdit: React.FC<{
           responses[i] = value as CommandsResponses;
         }
       }
-      return { ...it, responses: responses };
+      return {
+        ...it, responses: responses, 
+      };
     });
   }, []);
 
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
-      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({ ...o, order: idx })) as CommandsResponses[];
-      return { ...it, responses: responses };
+      const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({
+        ...o, order: idx, 
+      })) as CommandsResponses[];
+      return {
+        ...it, responses: responses, 
+      };
     });
   }, []);
 
@@ -203,7 +213,9 @@ export const CommandsEdit: React.FC<{
         }
 
       }
-      return { ...o, responses };
+      return {
+        ...o, responses, 
+      };
     });
   }, [ ]);
 
@@ -224,7 +236,11 @@ export const CommandsEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
@@ -304,7 +320,9 @@ export const CommandsEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.enabled ? 'Command is enabled': 'Command is disabled'}
                 </FormHelperText>
               </FormGroup>
@@ -312,7 +330,9 @@ export const CommandsEdit: React.FC<{
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
-                <FormHelperText sx={{ position: 'relative', top: '-10px' }}>
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px', 
+                }}>
                   {item?.visible ? 'Command is visible': 'Command is hidden'}
                 </FormHelperText>
               </FormGroup>

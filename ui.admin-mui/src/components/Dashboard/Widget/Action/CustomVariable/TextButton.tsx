@@ -36,7 +36,9 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
     onUpdate(value);
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {
-      user:  { userId: user.id, userName: user.login },
+      user: {
+        userId: user.id, userName: user.login, 
+      },
       id:    item.id,
       value: value,
     });

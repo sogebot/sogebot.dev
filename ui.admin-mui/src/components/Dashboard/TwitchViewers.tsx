@@ -34,7 +34,9 @@ export const DashboardStatsTwitchViewers: React.FC = () => {
           <LinearProgress />
         </Box>}
         <Typography sx={{ transform: 'translateY(5px)' }}>{ isStreamOnline ? viewers : 0 }</Typography>
-        <Typography color={theme.palette.grey[400]} variant='caption' sx={{ pt: 2, pa: 1 }}>{ capitalize(translate('viewers')) }</Typography>
+        <Typography color={theme.palette.grey[400]} variant='caption' sx={{
+          pt: 2, pa: 1, 
+        }}>{ capitalize(translate('viewers')) }</Typography>
       </Paper>
     </Grid>
   );

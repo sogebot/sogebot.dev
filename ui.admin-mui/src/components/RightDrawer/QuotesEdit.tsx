@@ -35,7 +35,9 @@ export const QuotesEdit: React.FC<{
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof Quotes>(key: T, value: Quotes[T]) => {
-    setItem(i => ({ ...i, [key]: value }));
+    setItem(i => ({
+      ...i, [key]: value, 
+    }));
   }, []);
 
   useEffect(() => {
@@ -106,7 +108,11 @@ export const QuotesEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}
+          sx={{
+            '& .MuiTextField-root': {
+              my: 1, width: '100%', 
+            }, 
+          }}
           noValidate
           autoComplete="off"
         >
