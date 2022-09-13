@@ -1,5 +1,4 @@
 import {
-  Column,
   FilteringState,
   IntegratedFiltering,
   IntegratedSelection,
@@ -10,6 +9,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -45,6 +45,7 @@ import { Layout } from '~/src/components/Layout/main';
 import { CooldownEdit } from '~/src/components/RightDrawer/CooldownEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
@@ -60,20 +61,76 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
-  const tableColumnExtensions = [
-    { columnName: 'name', width: '40%' },
 
-    { columnName: 'miliseconds', align: 'right' },
-
-    { columnName: 'isEnabled', align: 'center' },
-    { columnName: 'isErrorMsgQuiet', align: 'center' },
-    { columnName: 'isOwnerAffected', align: 'center' },
-    { columnName: 'isModeratorAffected', align: 'center' },
-    { columnName: 'isSubscriberAffected', align: 'center' },
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Cooldown>([
     {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+      columnName:  'name',
+      table:       { width: '40%' },
+      translation: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
+      filtering:   { type: 'string' },
     },
-  ];
+    {
+      columnName: 'type',
+      column:     { getCellValue: (row) => capitalize(translate(row.type)) },
+      filtering:  { type: 'string' },
+    },
+    {
+      columnName:     'miliseconds',
+      translationKey: 'cooldown',
+      table:          { align: 'right' },
+      column:         { getCellValue: (row) => toReadableMiliseconds(row.miliseconds) },
+    },
+    {
+      columnName:     'isEnabled',
+      table:          { align: 'center' },
+      translationKey: 'enabled',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isErrorMsgQuiet',
+      table:          { align: 'center' },
+      translationKey: 'quiet',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isOwnerAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.casters',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isModeratorAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.moderators',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isSubscriberAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.subscribers',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:  'actions',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      translation: ' ',
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}
+              onClick={() => {
+                router.push('/commands/cooldowns/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
+    },
+  ]);
 
   const deleteItem = useCallback((item: Cooldown) => {
     axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -83,65 +140,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       });
   }, [ enqueueSnackbar ]);
 
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'name',
-      title: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
-    },
-    {
-      name:         'type',
-      title:        capitalize(translate('type')),
-      getCellValue: (row) => capitalize(translate(row.type)),
-    },
-    {
-      name:         'miliseconds',
-      title:        capitalize(translate('cooldown')),
-      getCellValue: (row) => toReadableMiliseconds(row.miliseconds),
-    },
-    { name: 'isEnabled', title: capitalize(translate('enabled')) },
-    { name: 'isErrorMsgQuiet', title: capitalize(translate('quiet')) },
-    { name: 'isOwnerAffected', title: capitalize(translate('core.permissions.casters')) },
-    { name: 'isModeratorAffected', title: capitalize(translate('core.permissions.moderators')) },
-    { name: 'isSubscriberAffected', title: capitalize(translate('core.permissions.subscribers')) },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/cooldowns/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ translate, router, deleteItem ]);
-
-  const { element: filterElement, filters } = useFilter<Cooldown>([
-    {
-      columnName: 'name', type: 'string', translation: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
-    },
-    { columnName: 'type', type: 'string' },
-    {
-      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled',
-    },
-    {
-      columnName: 'isErrorMsgQuiet', type: 'boolean', translationKey: 'quiet',
-    },
-    {
-      columnName: 'isOwnerAffected', type: 'boolean', translationKey: 'core.permissions.casters',
-    },
-    {
-      columnName: 'isModeratorAffected', type: 'boolean', translationKey: 'core.permissions.moderators',
-    },
-    {
-      columnName: 'isSubscriberAffected', type: 'boolean', translationKey: 'core.permissions.subscribers',
-    },
-  ]);
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -259,22 +258,30 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Error message will appear in chat">
-            <Button disabled={!bulkCanBeLoud} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', false)}><NotificationsActiveTwoTone/></Button>
+            <Button disabled={!bulkCanBeLoud} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', false)}><NotificationsActiveTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Hide error messages in chat">
-            <Button disabled={!bulkCanBeQuiet} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', true)}><NotificationsOffTwoTone/></Button>
+            <Button disabled={!bulkCanBeQuiet} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', true)}><NotificationsOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -302,20 +309,26 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'command', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'command', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
-              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
-              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
+
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

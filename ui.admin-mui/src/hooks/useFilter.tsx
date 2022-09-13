@@ -13,9 +13,8 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 
 export const useFilter = <T,>(availableFilters: {
   columnName: keyof T;
-  translationKey?: string;
-  translation?: string;
-  type: 'string' | 'number' | 'boolean' | 'permission' | 'list';
+  translation: string;
+  type: 'string' | 'number' | 'boolean' | 'permission' | 'list' | 'datetime';
   valueRender?: (value: string) => string;
   options?: {
     showDisabled?: boolean,
@@ -29,20 +28,6 @@ export const useFilter = <T,>(availableFilters: {
 
   const [ filters, setFilters ] = React.useState<Filter[]>([]);
   const [ newFilter, setNewFilter ] = React.useState<Filter>();
-
-  const includesPredicate = (value: string, filter: Filter) => {
-    if (value) {
-      return filter.value.map((o: string) => o.toLowerCase()).includes(value.toLowerCase());
-    } else {
-      return value === filter.value;
-    }
-  };
-
-  const customPredicate = (value: string, filter: Filter, row: any) => {
-    return filter.operation === 'includes'
-      ? includesPredicate(value, filter)
-      : IntegratedFiltering.defaultPredicate(value, filter, row);
-  };
 
   const initializeDefaultFilter = React.useCallback((filter: typeof availableFilters[number]) => {
     if (filter.type === 'boolean') {
@@ -155,11 +140,6 @@ export const useFilter = <T,>(availableFilters: {
     setFilters([]);
   }, [ ]);
 
-  const getTranslationOfColumnName = React.useCallback((columnName: string) => {
-    const current = availableFilters.find(o => o.columnName === columnName)!;
-    return current.translation || capitalize(translate(current.translationKey|| columnName)) ;
-  }, [ availableFilters, translate ]);
-
   const getValueOfColumnName = React.useCallback((columnName: string, value: string | string[]) => {
     const defaultRender: (v: string) => string = (v) => v;
 
@@ -178,6 +158,11 @@ export const useFilter = <T,>(availableFilters: {
     }
     return out.join(', ');
   }, [ availableFilters ]);
+
+  const getTranslationOfColumnName = React.useCallback((columnName: string) => {
+    const current = availableFilters.find(o => o.columnName === columnName)!;
+    return current.translation;
+  }, [ availableFilters, translate ]);
 
   const element = React.useMemo(() => {
     return <>
@@ -218,7 +203,7 @@ export const useFilter = <T,>(availableFilters: {
                           onTouchStart={(event) => {
                             bindTrigger(popupState2).onTouchStart(event); initializeDefaultFilter(f);
                           }}
-                        >{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</MenuItem>
+                        >{f.translation}</MenuItem>
                         <Popover
                           {...bindPopover(popupState2)}
                           anchorEl={() => {
@@ -236,7 +221,7 @@ export const useFilter = <T,>(availableFilters: {
                         >
                           {newFilter && <Box sx={{ padding: '10px' }}>
                             {f.type === 'boolean' && <FormControl>
-                              <FormLabel id="boolean-group-label">{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel id="boolean-group-label">{f.translation}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 aria-labelledby="boolean-group-label"
@@ -248,7 +233,7 @@ export const useFilter = <T,>(availableFilters: {
                               </RadioGroup>
                             </FormControl>}
                             {f.type === 'number' && <>
-                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 value={newFilter.operation}
@@ -271,7 +256,7 @@ export const useFilter = <T,>(availableFilters: {
                               </Box>
                             </>}
                             {f.type === 'string' && <>
-                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation}</FormLabel>
                               <RadioGroup
                                 sx={{ ml: 2 }}
                                 value={newFilter.operation}
@@ -290,7 +275,7 @@ export const useFilter = <T,>(availableFilters: {
                               </Box>
                             </>}
                             {f.type === 'permission' && <>
-                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation}</FormLabel>
                               <Select
                                 variant='standard'
                                 fullWidth
@@ -307,7 +292,7 @@ export const useFilter = <T,>(availableFilters: {
                               </Select>
                             </>}
                             {f.type === 'list' && <>
-                              <FormLabel>{f.translation ?? capitalize(translate(f.translationKey || (f.columnName as string)))}</FormLabel>
+                              <FormLabel>{f.translation}</FormLabel>
                               <Select
                                 variant='standard'
                                 fullWidth
@@ -351,7 +336,7 @@ export const useFilter = <T,>(availableFilters: {
   }, [ handleListChange, handleDeleteAll, permissions, handleDelete, availableFilters, applyFilter, filters, getTranslationOfColumnName, getValueOfColumnName, handleNumberChange, handleStringChange, handleTypeChange, initializeDefaultFilter, newFilter, translate ]);
 
   return {
-    customPredicate, element, filters,
+    element, filters,
   };
 
 };

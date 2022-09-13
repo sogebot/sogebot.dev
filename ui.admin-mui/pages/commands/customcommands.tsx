@@ -1,5 +1,4 @@
 import {
-  Column,
   Filter,
   FilteringState,
   IntegratedFiltering,
@@ -11,6 +10,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -29,7 +29,6 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -50,14 +49,13 @@ import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { Responses } from '~/src/components/Table/Responses';
 import getAccessToken from '~/src/getAccessToken';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
-import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
 type CommandWithCount = Commands & { count:number };
 
 const PageCommandsCommands: NextPageWithLayout = () => {
-  const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -68,26 +66,11 @@ const PageCommandsCommands: NextPageWithLayout = () => {
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { element: filterElement, filters, customPredicate } = useFilter<CommandWithCount>([
-    { columnName: 'command', type: 'string' },
-    { columnName: 'enabled', type: 'boolean' },
-    { columnName: 'visible', type: 'boolean' },
-    { columnName: 'count', type: 'number' },
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<CommandWithCount>([
     {
-      columnName: 'group', type:       'list', options:    {
-        showDisabled:  true,
-        disabledName:  'Ungrouped',
-        disabledValue: '_ungroup',
-        listValues:    groupsSettings
-          .filter(group => group.name !== 'undefined')
-          .map(group => group.name),
-      },
-    },
-  ]);
-
-  const tableColumnExtensions = [
-    {
-      columnName: 'command', width:      '50%', predicate:  (value: string, filter: Filter, row: any) => {
+      columnName: 'command',
+      filtering:  { type: 'string' },
+      predicate:  (value: string, filter: Filter, row: any) => {
         const fValue = filter.value.toLowerCase();
         if (filter.operation === 'contains') {
           return row.command.toLowerCase().includes(fValue) || row.responses.filter((response: any) => response.response.toLowerCase().includes(fValue)).length > 0;
@@ -103,15 +86,63 @@ const PageCommandsCommands: NextPageWithLayout = () => {
 
         return IntegratedFiltering.defaultPredicate(value, filter, row);
       },
+      table:  { width: '50%' },
+      column: {
+        getCellValue: (row) => [
+          <Stack key="cmdStack">
+            <strong key="command">{row.command}</strong>
+            <Responses key="responses" responses={row.responses}/>
+          </Stack>,
+        ],
+      },
     },
-    { columnName: 'count', align: 'right' },
-    { columnName: 'enabled', align: 'center' },
-    { columnName: 'visible', align: 'center' },
-    { columnName: 'group', predicate: customPredicate },
     {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+      columnName: 'count', filtering: { type: 'number' }, table: { align: 'right' },
     },
-  ];
+    {
+      columnName: 'enabled', filtering: { type: 'boolean' }, table: { align: 'center' },
+    },
+    {
+      columnName: 'visible', filtering: { type: 'boolean' }, table: { align: 'center' },
+    },
+    {
+      columnName: 'group',
+      column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' /* ungrouped should be first */ },
+      filtering:  {
+        type:    'list',
+        options: {
+          showDisabled:  true,
+          disabledName:  'Ungrouped',
+          disabledValue: '_ungroup',
+          listValues:    groupsSettings
+            .filter(group => group.name !== 'undefined')
+            .map(group => group.name),
+        },
+      },
+    },
+    {
+      columnName:  'actions',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      translation: ' ',
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}
+              onClick={() => {
+                router.push('/commands/customcommands/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
+    },
+  ]);
+
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
@@ -124,41 +155,6 @@ const PageCommandsCommands: NextPageWithLayout = () => {
         refresh();
       });
   }, [ enqueueSnackbar ]);
-
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:         'command',
-      title:        capitalize(translate('command')),
-      getCellValue: (row) => [
-        <Stack key="cmdStack">
-          <strong key="command">{row.command}</strong>
-          <Responses key="responses" responses={row.responses}/>
-        </Stack>,
-      ],
-    },
-    { name: 'count', title: capitalize(translate('count')) },
-    { name: 'enabled', title: capitalize(translate('enabled')) },
-    { name: 'visible', title: capitalize(translate('visible')) },
-    {
-      name: 'group', title: capitalize(translate('group')), getCellValue: (row) => row.group ? row.group : '_ungroup', // ungrouped should be first
-    },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/customcommands/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ translate, router, deleteItem ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -326,22 +322,30 @@ const PageCommandsCommands: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
+            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
+            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -349,7 +353,9 @@ const PageCommandsCommands: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Reset usage count">
-            <Button disabled={bulkCount === 0} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkResetCount()}><RestartAltTwoTone/></Button>
+            <Button disabled={bulkCount === 0} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkResetCount()}><RestartAltTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -383,20 +389,28 @@ const PageCommandsCommands: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'command', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'group', direction: 'asc',
+                }, {
+                  columnName: 'command', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
-              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
-              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
+
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

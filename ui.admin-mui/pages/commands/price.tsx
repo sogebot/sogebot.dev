@@ -1,5 +1,4 @@
 import {
-  Column,
   FilteringState,
   IntegratedFiltering,
   IntegratedSelection,
@@ -10,6 +9,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -45,6 +45,7 @@ import { Layout } from '~/src/components/Layout/main';
 import { PriceEdit } from '~/src/components/RightDrawer/PriceEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
@@ -59,30 +60,46 @@ const PageCommandsPrice: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
-  const tableColumnExtensions = [
-    { columnName: 'command', width: '40%' },
-    { columnName: 'enabled', align: 'center' },
-    { columnName: 'emitRedeemEvent', align: 'center' },
-    { columnName: 'price', align: 'right' },
-    { columnName: 'priceBits', align: 'right' },
-    {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
-    },
-  ];
 
-  const { element: filterElement, filters } = useFilter<Price>([
-    { columnName: 'command', type: 'string' },
-    { columnName: 'enabled', type: 'boolean' },
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Price>([
     {
-      columnName: 'emitRedeemEvent', type: 'boolean', translationKey: 'systems.price.emitRedeemEvent',
+      columnName: 'command', filtering: { type: 'string' }, table: { width: '40%' },
     },
     {
-      columnName: 'price', type: 'number', translation: capitalize(translate('systems.price.price.name') + ' (points)'),
+      columnName: 'enabled', filtering: { type: 'boolean' }, table: { align: 'center' },
     },
     {
-      columnName: 'priceBits', type: 'number', translation: capitalize(translate('systems.price.price.name') + ' (bits)'),
+      columnName: 'emitRedeemEvent', filtering: { type: 'boolean' }, translationKey: 'systems.price.emitRedeemEvent', table: { align: 'center' },
+    },
+    {
+      columnName: 'price', filtering: { type: 'number' }, translation: capitalize(translate('systems.price.price.name') + ' (points)'), table: { align: 'right' },
+    },
+    {
+      columnName: 'priceBits', filtering: { type: 'number' }, translation: capitalize(translate('systems.price.price.name') + ' (bits)'), table: { align: 'right' },
+    },
+    {
+      columnName:  'actions',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      translation: ' ',
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}
+              onClick={() => {
+                router.push('/commands/price/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
     },
   ]);
+
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Price) => {
     axios.delete(`${localStorage.server}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -91,33 +108,6 @@ const PageCommandsPrice: NextPageWithLayout = () => {
         refresh();
       });
   }, [ enqueueSnackbar ]);
-
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'command',
-      title: capitalize(translate('command')),
-    },
-    { name: 'enabled', title: capitalize(translate('enabled')) },
-    { name: 'emitRedeemEvent', title: capitalize(translate('systems.price.emitRedeemEvent')) },
-    { name: 'price', title: capitalize(translate('systems.price.price.name') + ' (points)') },
-    { name: 'priceBits', title: capitalize(translate('systems.price.price.name') + ' (bits)') },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/price/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ translate, router, deleteItem ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -276,22 +266,30 @@ const PageCommandsPrice: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable emit">
-            <Button disabled={!bulkCanEnableEmit} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('emitRedeemEvent', true)}><SignalWifi4Bar/></Button>
+            <Button disabled={!bulkCanEnableEmit} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', true)}><SignalWifi4Bar/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable emit">
-            <Button disabled={!bulkCanDisableEmit} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('emitRedeemEvent', false)}><SignalWifiOffTwoTone/></Button>
+            <Button disabled={!bulkCanDisableEmit} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', false)}><SignalWifiOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -319,21 +317,26 @@ const PageCommandsPrice: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'command', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'command', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
 
-              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
-              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

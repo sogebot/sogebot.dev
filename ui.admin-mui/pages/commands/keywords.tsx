@@ -1,5 +1,4 @@
 import {
-  Column,
   Filter,
   FilteringState,
   IntegratedFiltering,
@@ -11,6 +10,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -27,7 +27,6 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -48,12 +47,11 @@ import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { Responses } from '~/src/components/Table/Responses';
 import getAccessToken from '~/src/getAccessToken';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
-import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
 const PageCommandsKeyword: NextPageWithLayout = () => {
-  const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -64,70 +62,19 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const groups = useMemo(() => {
-    return Array.from(new Set(items.map(o => o.group)));
-  }, [items]);
-
-  const deleteItem = useCallback((item: Keyword) => {
-    axios.delete(`${localStorage.server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-      .finally(() => {
-        enqueueSnackbar(`Keyword ${item.keyword} deleted successfully.`, { variant: 'success' });
-        refresh();
-      });
-  }, [ enqueueSnackbar ]);
-
-  const columns = useMemo<Column[]>(() => [
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Keyword>([
     {
-      name:         'keyword',
-      title:        capitalize(translate('keyword')),
-      getCellValue: (row) => [
-        <Stack key="kwdStack">
-          <strong key="keyword">{row.keyword}</strong>
-          <Responses key="responses" responses={row.responses}/>
-        </Stack>,
-      ],
-
-    },
-    { name: 'enabled', title: capitalize(translate('enabled')) },
-    {
-      name: 'group', title: capitalize(translate('group')), getCellValue: (row) => row.group ? row.group : '_ungroup', // ungrouped should be first
-    },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/keywords/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ translate, router, deleteItem ]);
-
-  const { element: filterElement, filters, customPredicate } = useFilter<Keyword>([
-    { columnName: 'keyword', type: 'string' },
-    { columnName: 'enabled', type: 'boolean' },
-    {
-      columnName: 'group', type:       'list', options:    {
-        showDisabled:  true,
-        disabledName:  'Ungrouped',
-        disabledValue: '_ungroup',
-        listValues:    groupsSettings
-          .filter(group => group.name !== 'undefined')
-          .map(group => group.name),
+      columnName: 'keyword',
+      filtering:  { type: 'string' },
+      column:     {
+        getCellValue: (row) => [
+          <Stack key="kwdStack">
+            <strong key="keyword">{row.keyword}</strong>
+            <Responses key="responses" responses={row.responses}/>
+          </Stack>,
+        ],
       },
-    },
-  ]);
-
-  const tableColumnExtensions = [
-    {
-      columnName: 'keyword', predicate:  (value: string, filter: Filter, row: any) => {
+      predicate: (value: string, filter: Filter, row: any) => {
         const fValue = filter.value.toLowerCase();
         if (filter.operation === 'contains') {
           return row.keyword.toLowerCase().includes(fValue) || row.responses.filter((response: any) => response.response.toLowerCase().includes(fValue)).length > 0;
@@ -144,12 +91,59 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
         return IntegratedFiltering.defaultPredicate(value, filter, row);
       },
     },
-    { columnName: 'enabled', align: 'center' },
-    { columnName: 'group', predicate: customPredicate },
     {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
+      columnName: 'enabled', filtering: { type: 'boolean' }, table: { align: 'center' },
     },
-  ];
+    {
+      columnName: 'group',
+      column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' },
+      filtering:  {
+        type:    'list',
+        options: {
+          showDisabled:  true,
+          disabledName:  'Ungrouped',
+          disabledValue: '_ungroup',
+          listValues:    groupsSettings
+            .filter(group => group.name !== 'undefined')
+            .map(group => group.name),
+        },
+      },
+    },
+    {
+      columnName:  'actions',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      translation: ' ',
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}
+              onClick={() => {
+                router.push('/commands/keywords/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
+    },
+  ]);
+
+  const groups = useMemo(() => {
+    return Array.from(new Set(items.map(o => o.group)));
+  }, [items]);
+
+  const deleteItem = useCallback((item: Keyword) => {
+    axios.delete(`${localStorage.server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Keyword ${item.keyword} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
+  }, [ enqueueSnackbar ]);
+
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -267,12 +261,16 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -309,20 +307,28 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'keyword', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'group', direction: 'asc',
+                }, {
+                  columnName: 'keyword', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
-              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
-              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
+
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

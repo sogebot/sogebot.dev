@@ -1,5 +1,4 @@
 import {
-  Column,
   FilteringState,
   IntegratedFiltering,
   IntegratedSelection,
@@ -10,6 +9,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -27,7 +27,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -49,13 +48,12 @@ import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { usePermissions } from '~/src/hooks/usePermissions';
-import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
 const PageCommandsAlias: NextPageWithLayout = () => {
-  const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -67,34 +65,59 @@ const PageCommandsAlias: NextPageWithLayout = () => {
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { element: filterElement, filters, customPredicate } = useFilter<Alias>([
-    { columnName: 'command', type: 'string' },
-    { columnName: 'alias', type: 'string' },
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Alias>([
     {
-      columnName: 'group', type:       'list', options:    {
-        showDisabled:  true,
-        disabledName:  'Ungrouped',
-        disabledValue: '_ungroup',
-        listValues:    groupsSettings
-          .filter(group => group.name !== 'undefined')
-          .map(group => group.name),
+      columnName: 'alias', filtering: { type: 'string' },
+    },
+    {
+      columnName: 'command', filtering: { type: 'string' }, table: { width: '40%' },
+    },
+    {
+      columnName: 'group',
+      filtering:  {
+        type:    'list' ,
+        options: {
+          showDisabled:  true,
+          disabledName:  'Ungrouped',
+          disabledValue: '_ungroup',
+          listValues:    groupsSettings
+            .filter(group => group.name !== 'undefined')
+            .map(group => group.name),
+        },
       },
     },
-    { columnName: 'permission', type: 'permission' },
-    { columnName: 'visible', type: 'boolean' },
-    { columnName: 'enabled', type: 'boolean' },
+    {
+      columnName: 'permission', filtering: { type: 'permission' }, column: { getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []) },
+    },
+    {
+      columnName: 'visible', filtering: { type: 'boolean' }, table: { align: 'center' },
+    },
+    {
+      columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
+    },
+    {
+      columnName:  'actions',
+      translation: ' ',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}
+              onClick={() => {
+                router.push('/commands/alias/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
+    },
   ]);
 
-  const tableColumnExtensions = [
-    { columnName: 'command', width: '40%' },
-    { columnName: 'enabled', align: 'center' },
-    { columnName: 'group', predicate: customPredicate },
-    { columnName: 'permission', predicate: customPredicate },
-    { columnName: 'visible', align: 'center' },
-    {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
-    },
-  ];
+  const { element: filterElement, filters } = useFilter<Alias>(useFilterSetup);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
@@ -106,42 +129,6 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       refresh();
     });
   }, [ enqueueSnackbar ]);
-
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'alias',
-      title: capitalize(translate('alias')),
-    },
-    {
-      name:  'command',
-      title: capitalize(translate('command')),
-    },
-    {
-      name:         'permission', title:        translate('permission'),
-      getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []),
-    },
-    { name: 'enabled', title: capitalize(translate('enabled')) },
-    { name: 'visible', title: capitalize(translate('visible')) },
-    {
-      name: 'group', title: capitalize(translate('group')), getCellValue: (row) => row.group ? row.group : '_ungroup', // ungrouped should be first
-    },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/alias/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ permissions, translate, router, deleteItem ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -287,22 +274,30 @@ const PageCommandsAlias: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
+            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
+            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -342,21 +337,30 @@ const PageCommandsAlias: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'alias', direction: 'asc' }, { columnName: 'enabled', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'group', direction: 'asc',
+                }, {
+                  columnName: 'alias', direction: 'asc',
+                }, {
+                  columnName: 'enabled', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
 
-              <FilteringState filters={filters} columnExtensions={tableColumnExtensions as any}/>
-              <IntegratedFiltering columnExtensions={tableColumnExtensions as any}/>
+              <FilteringState filters={filters}/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>

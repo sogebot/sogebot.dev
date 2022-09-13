@@ -1,5 +1,4 @@
 import {
-  Column,
   FilteringState,
   IntegratedFiltering,
   IntegratedSelection,
@@ -10,6 +9,7 @@ import {
 import {
   Grid as DataGrid,
   Table,
+  TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
@@ -27,7 +27,6 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -44,12 +43,11 @@ import { Layout } from '~/src/components/Layout/main';
 import { TimerEdit } from '~/src/components/RightDrawer/TimerEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import getAccessToken from '~/src/getAccessToken';
+import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
-import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
 const PageManageTimers: NextPageWithLayout = () => {
-  const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -59,21 +57,45 @@ const PageManageTimers: NextPageWithLayout = () => {
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { element: filterElement, filters } = useFilter<Timer>([
-    { columnName: 'name', type: 'string' },
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Timer>([
     {
-      columnName: 'triggerEveryMessage', type: 'number', translationKey: 'messages',
+      columnName: 'name', filtering: { type: 'string' },
     },
     {
-      columnName: 'triggerEverySecond', type: 'number', translationKey: 'seconds',
+      columnName: 'isEnabled', filtering: { type: 'boolean' }, translationKey: 'enabled', table: { align: 'center' },
     },
     {
-      columnName: 'isEnabled', type: 'boolean', translationKey: 'enabled',
+      columnName: 'tickOffline', filtering: { type: 'boolean' }, translationKey: 'timers.dialog.tickOffline', table: { align: 'center' },
     },
     {
-      columnName: 'tickOffline', type: 'boolean', translationKey: 'timers.dialog.tickOffline',
+      columnName: 'triggerEveryMessage', filtering: { type: 'number' }, translationKey: 'messages', table: { align: 'right' },
+    },
+    {
+      columnName: 'triggerEverySecond', filtering: { type: 'number' }, translationKey: 'seconds', table: { align: 'right' },
+    },
+    {
+      columnName:  'actions',
+      table:       { width: 130 },
+      sorting:     { sortingEnabled: false },
+      translation: ' ',
+      column:      {
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<Edit/>}
+              onClick={() => {
+                router.push('/manage/timers/edit/' + row.id);
+              }}>Edit</Button>
+            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
     },
   ]);
+
+  const { element: filterElement, filters } = useFilter<Timer>(useFilterSetup);
 
   const deleteItem = useCallback((item: Timer) => {
     axios.delete(`${localStorage.server}/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -82,43 +104,6 @@ const PageManageTimers: NextPageWithLayout = () => {
         refresh();
       });
   }, [ enqueueSnackbar ]);
-
-  const tableColumnExtensions = [
-    { columnName: 'isEnabled', align: 'center' },
-    { columnName: 'tickOffline', align: 'center' },
-    { columnName: 'triggerEveryMessage', align: 'right' },
-    { columnName: 'triggerEverySecond', align: 'right' },
-    {
-      columnName: 'actions', width: 130, filteringEnabled: false, sortingEnabled: false,
-    },
-  ];
-
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'name',
-      title: capitalize(translate('name')),
-    },
-    { name: 'isEnabled', title: capitalize(translate('enabled')) },
-    { name: 'tickOffline', title: capitalize(translate('timers.dialog.tickOffline')) },
-    { name: 'triggerEveryMessage', title: capitalize(translate('messages')) },
-    { name: 'triggerEverySecond', title: capitalize(translate('seconds')) },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<Edit/>}
-            onClick={() => {
-              router.push('/manage/timers/edit/' + row.id);
-            }}>Edit</Button>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ translate, router, deleteItem ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -237,22 +222,30 @@ const PageManageTimers: NextPageWithLayout = () => {
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
+            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
+            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable countdown on offline stream">
-            <Button disabled={!bulkCanEnableCount} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('tickOffline', true)}><TimerTwoTone/></Button>
+            <Button disabled={!bulkCanEnableCount} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('tickOffline', true)}><TimerTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable countdown on offline stream">
-            <Button disabled={!bulkCanDisableCount} variant="contained" color="secondary" sx={{ minWidth: '36px', width: '36px' }} onClick={() => bulkToggleAttribute('tickOffline', false)}><TimerOffTwoTone/></Button>
+            <Button disabled={!bulkCanDisableCount} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('tickOffline', false)}><TimerOffTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
@@ -280,21 +273,28 @@ const PageManageTimers: NextPageWithLayout = () => {
               />
 
               <SortingState
-                defaultSorting={[{ columnName: 'group', direction: 'asc' }, { columnName: 'keyword', direction: 'asc' }]}
-                columnExtensions={tableColumnExtensions as any}
+                defaultSorting={[{
+                  columnName: 'group', direction: 'asc',
+                }, {
+                  columnName: 'keyword', direction: 'asc',
+                }]}
+                columnExtensions={sortingTableExtensions}
               />
-              <IntegratedSorting />
+              <IntegratedSorting columnExtensions={sortingTableExtensions} />
 
               <FilteringState filters={filters}/>
-              <IntegratedFiltering/>
+              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableColumnVisibility
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
+              />
               <TableSelection showSelectAll/>
             </DataGrid>
           </SimpleBar>
