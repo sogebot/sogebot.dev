@@ -14,7 +14,6 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import { Quotes } from '@entity/quotes';
-import { Timer } from '@entity/timer';
 import { Edit } from '@mui/icons-material';
 import {
   Button,
@@ -137,12 +136,12 @@ const PageManageQuotes: NextPageWithLayout = () => {
       },
     }]);
 
-  const { element: filterElement, filters } = useFilter<Timer>(useFilterSetup);
+  const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 
-  const deleteItem = useCallback((item: Timer) => {
-    axios.delete(`${localStorage.server}/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+  const deleteItem = useCallback((item: Quotes) => {
+    axios.delete(`${localStorage.server}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
-        enqueueSnackbar(`Timer ${item.name} deleted successfully.`, { variant: 'success' });
+        enqueueSnackbar(`Quote ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
       });
   }, [ enqueueSnackbar ]);
