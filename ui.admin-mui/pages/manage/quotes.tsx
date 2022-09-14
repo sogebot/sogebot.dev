@@ -217,9 +217,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
 
               <SortingState
                 defaultSorting={[{
-                  columnName: 'group', direction: 'asc',
-                }, {
-                  columnName: 'keyword', direction: 'asc',
+                  columnName: 'id', direction: 'asc',
                 }]}
                 columnExtensions={sortingTableExtensions}
               />

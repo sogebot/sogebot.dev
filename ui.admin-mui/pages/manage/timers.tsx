@@ -274,9 +274,7 @@ const PageManageTimers: NextPageWithLayout = () => {
 
               <SortingState
                 defaultSorting={[{
-                  columnName: 'group', direction: 'asc',
-                }, {
-                  columnName: 'keyword', direction: 'asc',
+                  columnName: 'name', direction: 'asc',
                 }]}
                 columnExtensions={sortingTableExtensions}
               />

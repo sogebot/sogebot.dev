@@ -74,6 +74,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     },
     {
       columnName: 'group',
+      column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' },
       filtering:  {
         type:    'list' ,
         options: {
