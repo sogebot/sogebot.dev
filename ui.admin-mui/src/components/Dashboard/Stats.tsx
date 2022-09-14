@@ -21,7 +21,6 @@ import { DashboardStatsTwitchWatchedTime } from './TwitchWatchedTime';
 
 export const DashboardStats: React.FC = () => {
   const { configuration } = useSelector((state: any) => state.loader);
-  const isStreamOnline = useSelector<any, boolean>((state: any) => state.page.isStreamOnline);
   const dispatch = useDispatch();
 
   useIntervalWhen(() => {
@@ -34,7 +33,7 @@ export const DashboardStats: React.FC = () => {
       console.groupEnd();
       dispatch(setAverageStats(data));
     });
-  }, 10000, !isStreamOnline, true);
+  }, 10000, true, true);
 
   return (
     <Grid container spacing={0.5}>
