@@ -14,7 +14,7 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 export const useFilter = <T,>(availableFilters: {
   columnName: keyof T;
   translation: string;
-  type: 'string' | 'number' | 'boolean' | 'permission' | 'list' | 'datetime';
+  type: 'string' | 'number' | 'boolean' | 'permission' | 'list';
   valueRender?: (value: string) => string;
   options?: {
     showDisabled?: boolean,
