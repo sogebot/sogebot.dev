@@ -141,7 +141,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
   const deleteItem = useCallback((item: Quotes) => {
     axios.delete(`${localStorage.server}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
-        enqueueSnackbar(`Quote ${item.name} deleted successfully.`, { variant: 'success' });
+        enqueueSnackbar(`Quote ${item.id} deleted successfully.`, { variant: 'success' });
         refresh();
       });
   }, [ enqueueSnackbar ]);
