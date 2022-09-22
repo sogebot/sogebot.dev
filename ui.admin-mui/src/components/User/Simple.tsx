@@ -1,6 +1,7 @@
-import LogoutIcon from '@mui/icons-material/Logout';
+import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
+import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import {
-  Alert, Avatar, Button, Paper, Stack, Typography,
+  Avatar, IconButton, InputAdornment, TextField,
 } from '@mui/material';
 import React from 'react';
 
@@ -21,6 +22,10 @@ export const UserSimple: React.FC = () => {
     window.location.assign(window.location.origin);
   };
 
+  const login = () => {
+    window.location.assign(window.location.origin + '/credentials/login');
+  };
+
   const getUser = () => {
     try {
       return JSON.parse(localStorage['cached-logged-user']);
@@ -30,15 +35,35 @@ export const UserSimple: React.FC = () => {
   };
 
   return (
-    <>{getUser() && <Paper sx={{ pa: 1 }}>
-      <Typography fontWeight={'bold'} sx={{ padding: '10px' }}>Logged in as:</Typography>
-      <Stack direction="row" spacing={2} justifyContent={'center'} alignItems={'center'} component="span">
-        <Avatar src={getUser().profile_image_url}></Avatar>
-        <Typography>{getUser().login}</Typography>
-        <Button onClick={logout} startIcon={<LogoutIcon />} sx={{ paddingleft: '20px' }} color='error'>Logout</Button>
-      </Stack></Paper>
+    <>{getUser() && <TextField
+      label="Logged in as"
+      variant="filled"
+      value={getUser().login}
+      disabled
+      InputProps={{
+        startAdornment: <InputAdornment position="start">
+          <Avatar src={getUser().profile_image_url}></Avatar>
+        </InputAdornment>,
+        endAdornment: <InputAdornment position="end">
+          <IconButton color="error" onClick={logout}>
+            <LogoutTwoToneIcon/>
+          </IconButton>
+        </InputAdornment>,
+      }}
+    />
     }
-    {!getUser() && <Alert severity="error">You need to be logged in to access bot server.</Alert>}
+    {!getUser() && <TextField
+      label="You must be logged in to access server"
+      variant="filled"
+      disabled
+      InputProps={{
+        endAdornment: <InputAdornment position="end">
+          <IconButton color="success" onClick={login}>
+            <LoginTwoToneIcon/>
+          </IconButton>
+        </InputAdornment>,
+      }}
+    />}
     </>
   );
 };

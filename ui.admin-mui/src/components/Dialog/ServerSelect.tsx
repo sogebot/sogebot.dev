@@ -1,6 +1,8 @@
+import ContentPasteTwoToneIcon from '@mui/icons-material/ContentPasteTwoTone';
+import InventoryTwoToneIcon from '@mui/icons-material/InventoryTwoTone';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-  Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, Stack, Switch, TextField,
+  Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, IconButton, InputAdornment, Stack, TextField,
 } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -31,7 +33,6 @@ export const ServerSelect: React.FC = () => {
   const [open, setOpen] = React.useState(true);
   const [isInitial, setIsInitial] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
-  const [autoConnect, setAutoConnect] = React.useState(false);
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
 
@@ -42,15 +43,9 @@ export const ServerSelect: React.FC = () => {
     setIsValidHttps(checkURLValidity(serverInputValue));
   }, [serverInputValue]);
 
-  const handleAutoConnectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAutoConnect(event.target.checked);
-  };
-
   React.useEffect(() => {
-    const autoConnectLS = JSON.parse(localStorage.serverAutoConnect ?? 'false');
     const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
     setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])));
-    setAutoConnect(autoConnectLS);
   }, []);
 
   const handleConnect = useCallback((server: string) => {
@@ -64,11 +59,9 @@ export const ServerSelect: React.FC = () => {
       }
       dispatch(setServer(server));
       isBotStarted(dispatch, server).then(() => {
-        // set autoconnect after successful load
         const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
         localStorage.currentServer = server;
         localStorage.server = server;
-        localStorage.serverAutoConnect = JSON.stringify(autoConnect);
         localStorage.serverHistory = JSON.stringify(Array.from(new Set([server, ...serverHistoryLS, 'http://localhost:20000'])));
         if (router.query.server) {
           delete router.query.server;
@@ -76,7 +69,7 @@ export const ServerSelect: React.FC = () => {
         }
       });
     }
-  }, [dispatch, autoConnect, router]);
+  }, [dispatch, router]);
 
   React.useEffect(() => {
     if (isInitial && router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
@@ -92,10 +85,6 @@ export const ServerSelect: React.FC = () => {
 
       if (localStorage.server) {
         setServerInputValue(localStorage.server);
-        // using localStorage autoconnect to auto login only on start
-        if (JSON.parse(localStorage.serverAutoConnect ?? 'false')) {
-          handleConnect(localStorage.server);
-        }
       }
       setIsInitial(false);
     }
@@ -119,15 +108,17 @@ export const ServerSelect: React.FC = () => {
     if (!message) {
       setConnecting(false);
     } else if (message.includes('Cannot connect') || message.includes('access to this server')) {
-      setAutoConnect(false);
       setConnecting(false);
     } else {
       setConnecting(true);
     }
   }, [message]);
 
-  const handleLogin = () => {
-    window.location.assign(window.location.origin + '/credentials/login');
+  const [ copied, setCopied ] = React.useState(false);
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1000);
   };
 
   return (<Dialog open={open}>
@@ -155,22 +146,36 @@ export const ServerSelect: React.FC = () => {
               helperText={isValidHttps ? '' : 'Incorrect entry. You can connect only on https unless using localhost'}
               type="url"
               label="Server address"
-              variant="standard"
+              variant="filled"
               {...params}/>
           }
         />
-        <FormControlLabel control={<Switch checked={autoConnect} onChange={handleAutoConnectChange} />} label="Automatically connect on next load" />
+        <UserSimple/>
+        {typeof window !== 'undefined' && isValidHttps && !serverInputValue.includes('-- demo') && <TextField
+          label="Autoconnect link"
+          helperText={'Use this link to skip server select'}
+          variant="filled"
+          value={`${window.location.origin}?server=${serverInputValue}`}
+          disabled
+          InputProps={{
+            endAdornment: <InputAdornment position="end">
+              <IconButton onClick={() => copyToClipboard(`${window.location.origin}?server=${serverInputValue}`)}>
+                {copied ? <InventoryTwoToneIcon/> : <ContentPasteTwoToneIcon/>}
+              </IconButton>
+            </InputAdornment>,
+          }}
+        />
+        }
       </FormGroup>
 
       <Stack spacing={1} sx={{ pt: 2 }}>
         <Alert severity="info">This is client-based application and no informations are saved on our server.</Alert>
         <Alert severity="warning">Compatible with bot version at least {compatibleVersion}.</Alert>
-        <UserSimple/>
       </Stack>
     </DialogContent>
     <DialogActions>
       {(connecting || message) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
-        padding: '0 20px', marginRight: '20px', 
+        padding: '0 20px', marginRight: '20px',
       }}>
         {message}
       </Alert>}
@@ -181,13 +186,6 @@ export const ServerSelect: React.FC = () => {
         variant="outlined"
       >
         Connect
-      </LoadingButton>}
-      {!getUser() && <LoadingButton
-        onClick={handleLogin}
-        color="info"
-        variant="outlined"
-      >
-        Login
       </LoadingButton>}
     </DialogActions>
   </Dialog>);
