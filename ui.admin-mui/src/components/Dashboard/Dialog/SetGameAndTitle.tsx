@@ -121,7 +121,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       getSocket('/').emit('getUserTwitchGames', (_titles, games) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
         console.log({
-          _titles, games, 
+          _titles, games,
         });
         console.groupEnd();
         setTitles(_titles);
@@ -180,6 +180,9 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
         />
         <TextField
           label={capitalize(translate('title'))}
+          onKeyPress={(e) => {
+            e.key === 'Enter' && save();
+          }}
           fullWidth
           variant="filled"
           value={titleInputValue}
@@ -187,7 +190,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
 
         {loading
           ? <Grid container sx={{
-            placeContent: 'center', pt: 2, 
+            placeContent: 'center', pt: 2,
           }}><Grid item><CircularProgress/></Grid></Grid>
           : <>
             <Typography component="div" variant="caption" sx={{ p: 2 }}>Last used games</Typography>
@@ -207,7 +210,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
             </Grid>
 
             <Typography component="div" variant="caption" sx={{
-              p: 2, pb: 0, 
+              p: 2, pb: 0,
             }}>Last used titles for {inputValue}</Typography>
             <SimpleBar style={{ height: 'calc(100% - 420px)' }} autoHide={false}>
               <List>
@@ -223,7 +226,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       </Container>
       <Divider/>
       <Box sx={{
-        height: '50px', p: 1, 
+        height: '50px', p: 1,
       }}>
         <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
           <Grid item alignSelf={'end'}><Button sx={{ width: 150 }} onClick={() => props.setOpen(false)}>Close</Button></Grid>
