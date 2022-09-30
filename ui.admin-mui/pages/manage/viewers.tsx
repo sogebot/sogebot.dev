@@ -1,6 +1,7 @@
 import {
   FilteringState,
   IntegratedSelection,
+  RowDetailState,
   SelectionState,
   Sorting,
   SortingState,
@@ -10,6 +11,7 @@ import {
   Table,
   TableColumnVisibility,
   TableHeaderRow,
+  TableRowDetail,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
@@ -38,6 +40,7 @@ import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
+import { RowDetail } from '~/src/components/Table/RowDetail';
 import { dayjs } from '~/src/helpers/dayjsHelper';
 import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -333,6 +336,8 @@ const PageManageViewers: NextPageWithLayout = () => {
               <BoolTypeProvider
                 for={['tickOffline', 'isEnabled']}
               />
+
+              <RowDetailState/>
               <SortingState
                 sorting={sorting}
                 onSortingChange={setSorting}
@@ -340,14 +345,17 @@ const PageManageViewers: NextPageWithLayout = () => {
               />
 
               <FilteringState filters={filters}/>
-
               <SelectionState
                 selection={selection}
                 onSelectionChange={setSelection}
               />
+
               <IntegratedSelection/>
               <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
+              <TableRowDetail
+                contentComponent={RowDetail}
+              />
               <TableColumnVisibility
                 defaultHiddenColumnNames={defaultHiddenColumnNames}
               />
