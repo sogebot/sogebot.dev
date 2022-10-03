@@ -169,6 +169,11 @@ export const ServerSelect: React.FC = () => {
           variant="filled"
           value={`${window.location.origin}?server=${serverInputValue}`}
           disabled
+          sx={{
+            '& .MuiInputBase-root': {
+              borderRadius: 0,
+            }
+          }}
           InputProps={{
             endAdornment: <InputAdornment position="end">
               <IconButton onClick={() => copyToClipboard(`${window.location.origin}?server=${serverInputValue}`)}>

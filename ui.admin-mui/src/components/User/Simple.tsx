@@ -36,16 +36,20 @@ export const UserSimple: React.FC = () => {
 
   return (
     <>{getUser() && <Box sx={{
-      display: 'flex', alignItems: 'flex-end', width: '100%',
+      display: 'flex', alignItems: 'flex-end', width: '100%', borderBottom: '1px dotted rgba(255, 255, 255, 0.7)',
     }}>
       <Avatar
         variant="square"
         src={getUser().profile_image_url}
         sx={{
-          width: 56, height: 56, backgroundColor: '#4f4f4f',  borderBottom: '1px dotted rgba(255, 255, 255, 0.7)',
+          width: 56, height: 56, backgroundColor: '#4f4f4f',
         }}></Avatar>
       <TextField
-        sx={{ flexGrow: 1 }}
+        sx={{
+          flexGrow:                       1,
+          '& .MuiInputBase-root':         { borderRadius: 0 },
+          '& .MuiInputBase-root::before': { borderBottom: 0 },
+        }}
         label="Logged in as"
         variant="filled"
         value={getUser().login}
