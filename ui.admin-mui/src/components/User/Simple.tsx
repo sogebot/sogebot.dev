@@ -1,7 +1,7 @@
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import {
-  Avatar, IconButton, InputAdornment, TextField,
+  Avatar, Box, IconButton, InputAdornment, TextField,
 } from '@mui/material';
 import React from 'react';
 
@@ -35,22 +35,32 @@ export const UserSimple: React.FC = () => {
   };
 
   return (
-    <>{getUser() && <TextField
-      label="Logged in as"
-      variant="filled"
-      value={getUser().login}
-      disabled
-      InputProps={{
-        startAdornment: <InputAdornment position="start">
-          <Avatar src={getUser().profile_image_url}></Avatar>
-        </InputAdornment>,
-        endAdornment: <InputAdornment position="end">
-          <IconButton color="error" onClick={logout}>
-            <LogoutTwoToneIcon/>
-          </IconButton>
-        </InputAdornment>,
-      }}
-    />
+    <>{getUser() && <Box sx={{
+      display: 'flex', alignItems: 'flex-end', width: '100%',
+    }}>
+      <Avatar
+        variant="square"
+        src={getUser().profile_image_url}
+        sx={{
+          width: 56, height: 56, backgroundColor: '#4f4f4f',  borderBottom: '1px dotted rgba(255, 255, 255, 0.7)',
+        }}></Avatar>
+      <TextField
+        sx={{ flexGrow: 1 }}
+        label="Logged in as"
+        variant="filled"
+        value={getUser().login}
+        disabled
+        InputProps={{
+          startAdornment: <InputAdornment position="start">
+          </InputAdornment>,
+          endAdornment: <InputAdornment position="end">
+            <IconButton color="error" onClick={logout}>
+              <LogoutTwoToneIcon/>
+            </IconButton>
+          </InputAdornment>,
+        }}
+      />
+    </Box>
     }
     {!getUser() && <TextField
       label="You must be logged in to access server"
