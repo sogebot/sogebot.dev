@@ -40,12 +40,24 @@ export const ServerSelect: React.FC = () => {
 
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
-    setIsValidHttps(checkURLValidity(serverInputValue));
+    try {
+      const url = new URL(serverInputValue);
+      if (url.origin !== serverInputValue) {
+        setServerInputValue(url.origin);
+      }
+      setIsValidHttps(checkURLValidity(serverInputValue));
+    } catch {
+      setIsValidHttps(false);
+    }
   }, [serverInputValue]);
 
   React.useEffect(() => {
     const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-    setServerHistory(Array.from(new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])));
+    setServerHistory(
+      Array.from(
+        new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])
+      ).map(item => item.startsWith('http') ? new URL(item).origin : item)
+    );
   }, []);
 
   const handleConnect = useCallback((server: string) => {
