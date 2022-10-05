@@ -47,7 +47,7 @@ export const ServerSelect: React.FC = () => {
       }
       setIsValidHttps(checkURLValidity(serverInputValue));
     } catch {
-      setIsValidHttps(false);
+      setIsValidHttps(serverInputValue.includes('-- demo bot for demonstration purpose only --'));
     }
   }, [serverInputValue]);
 
