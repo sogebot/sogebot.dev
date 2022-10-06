@@ -55,7 +55,8 @@ export const ServerSelect: React.FC = () => {
     const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
     setServerHistory(
       Array.from(
-        new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --'])
+        new Set([...serverHistoryLS, 'http://localhost:20000', '-- demo bot for demonstration purpose only --']
+          .filter(o => o !== 'https://demobot.sogebot.xyz'))
       ).map(item => item.startsWith('http') ? new URL(item).origin : item)
     );
   }, []);
@@ -66,19 +67,21 @@ export const ServerSelect: React.FC = () => {
       dispatch(setMessage('Connecting to server.'));
       console.log(`Connecting to ${server}`);
 
+      let serverURL = server;
       if (server === '-- demo bot for demonstration purpose only --') {
-        server = 'https://demobot.sogebot.xyz';
+        serverURL = 'https://demobot.sogebot.xyz';
       }
-      dispatch(setServer(server));
-      isBotStarted(dispatch, server).then(() => {
+
+      dispatch(setServer(serverURL));
+      isBotStarted(dispatch, serverURL).then(() => {
         const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
         localStorage.currentServer = server;
         localStorage.server = server;
         localStorage.serverHistory = JSON.stringify(
           Array
             .from(new Set([server, ...serverHistoryLS, 'http://localhost:20000']))
-            .filter(o => o !== 'https://demobot.sogebot.xyz')
         );
+        // we need to remove query.server until we solve issue with server GET param
         if (router.query.server) {
           delete router.query.server;
           router.replace(router.asPath, { query: router.query }); // get rid of GET params
