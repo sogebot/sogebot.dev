@@ -74,7 +74,11 @@ export const ServerSelect: React.FC = () => {
         const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
         localStorage.currentServer = server;
         localStorage.server = server;
-        localStorage.serverHistory = JSON.stringify(Array.from(new Set([server, ...serverHistoryLS, 'http://localhost:20000'])));
+        localStorage.serverHistory = JSON.stringify(
+          Array
+            .from(new Set([server, ...serverHistoryLS, 'http://localhost:20000']))
+            .filter(o => o !== 'https://demobot.sogebot.xyz')
+        );
         if (router.query.server) {
           delete router.query.server;
           router.replace(router.asPath, { query: router.query }); // get rid of GET params
