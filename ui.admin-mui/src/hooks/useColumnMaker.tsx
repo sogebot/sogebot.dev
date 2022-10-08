@@ -38,7 +38,7 @@ export const useColumnMaker = <T,>(props: {
 
   const sortingTableExtensions = props.map((item: typeof props[number]) => ({
     columnName:     item.columnName,
-    sortingEnabled: item.sorting ?? true,
+    sortingEnabled: item.sorting?.sortingEnabled ?? true,
   })) as SortingState.ColumnExtension[];
 
   const getTranslationOfColumnName = useCallback((columnName: string) => {

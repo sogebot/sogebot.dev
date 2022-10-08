@@ -8,7 +8,15 @@ export const ConfirmButton: React.FC<{
   children: string;
   handleOk: () => void;
   handleCancel?: () => void;
-}> =  ({ children, handleOk, handleCancel }) => {
+  variant?: 'text' | 'outlined' | 'contained';
+  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
+}> =  ({
+  children,
+  handleOk,
+  handleCancel,
+  variant = 'text',
+  color = 'primary',
+}) => {
   const [open, setOpen] = useState(false);
 
   const handleOkBtn = () => {
@@ -23,7 +31,7 @@ export const ConfirmButton: React.FC<{
   };
 
   return (<>
-    <Button onClick={() => setOpen(true)}>{children}</Button>
+    <Button onClick={() => setOpen(true)} variant={variant} color={color}>{children}</Button>
     <Dialog
       open={open}
     >
