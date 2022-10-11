@@ -307,14 +307,14 @@ export const useFilter = <T,>(availableFilters: {
                                 renderValue={(selected: string[]) => {
                                   return selected.map(o => {
                                     if (o !== f.options?.disabledValue) {
-                                      return o;
+                                      return f.valueRender ? f.valueRender(o) : o;
                                     }
                                     return f.options?.disabledName || 'Disabled';
                                   }).join(', ');
                                 }}
                               >
                                 {f.options?.showDisabled && <MenuItem value={f.options?.disabledValue || 'Disabled'}>{f.options?.disabledName || 'Disabled'}</MenuItem>}
-                                {f.options?.listValues?.map(o => (<MenuItem key={o} value={o}>{o}</MenuItem>))}
+                                {f.options?.listValues?.map(o => (<MenuItem key={o} value={o}>{f.valueRender ? f.valueRender(o) : o}</MenuItem>))}
                               </Select>
                             </>}
 

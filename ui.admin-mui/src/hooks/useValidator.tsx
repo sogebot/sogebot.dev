@@ -108,12 +108,19 @@ export const useValidator = () => {
 
   const validate = useCallback((err: typeof errors) => {
     console.error('Errors during validation', { err });
-    setDirty(err.map(o => o.property));
-    setErrors(err);
-    enqueueSnackbar((<Stack>
-      <Typography variant="body2">Unexpected errors during validation</Typography>
-      <ul>{errorsList(err).map((o, i) => <li key={i}>{o}</li>)}</ul>
-    </Stack>), { variant: 'error' });
+
+    if (typeof err === 'string') {
+      enqueueSnackbar((<Stack>
+        <Typography variant="body2">{err}</Typography>
+      </Stack>), { variant: 'error' });
+    } else {
+      setDirty(err.map(o => o.property));
+      setErrors(err);
+      enqueueSnackbar((<Stack>
+        <Typography variant="body2">Unexpected errors during validation</Typography>
+        <ul>{errorsList(err).map((o, i) => <li key={i}>{o}</li>)}</ul>
+      </Stack>), { variant: 'error' });
+    }
   }, [errorsList, setDirty, enqueueSnackbar]);
 
   return {

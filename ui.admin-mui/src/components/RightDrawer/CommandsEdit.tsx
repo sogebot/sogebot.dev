@@ -22,9 +22,7 @@ import React, {
 import { useEffect } from 'react';
 import { v4 } from 'uuid';
 import { CommandResponse } from '~/../backend/d.ts/src/parser';
-import {
-  Commands, CommandsGroup, CommandsResponses,
-} from '~/../backend/dest/database/entity/commands';
+import { Commands, CommandsGroup } from '~/../backend/dest/database/entity/commands';
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 
 import { FormResponse } from '~/src/components/Form/Input/Response';
@@ -78,15 +76,17 @@ export const CommandsEdit: React.FC<{
 
   const addResponse = useCallback(() => {
     setItem((o) => {
-      const response = new CommandsResponses();
-      response.id = v4();
-      response.order = o.responses.length;
-      response.filter = '';
-      response.response = '';
-      response.stopIfExecuted = false;
-      response.permission = defaultPermissions.VIEWERS;
+      const response = {
+        id:             v4(),
+        order:          o.responses.length,
+        filter:         '',
+        response:       '',
+        stopIfExecuted: false,
+        permission:     defaultPermissions.VIEWERS,
+      };
+
       return {
-        ...o, responses: [...o.responses, response], 
+        ...o, responses: [...o.responses, response],
       };
     });
   }, []);
@@ -135,7 +135,7 @@ export const CommandsEdit: React.FC<{
     setSaving(true);
     axios.post(`${localStorage.server}/api/systems/customcommands`,
       {
-        ...item, count, 
+        ...item, count,
       },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
@@ -152,16 +152,16 @@ export const CommandsEdit: React.FC<{
     return orderBy(item.responses, 'order', 'asc');
   }, [ item.responses ]);
 
-  const updateResponse = useCallback((value: CommandsResponses) => {
+  const updateResponse = useCallback((value: Commands['responses'][number]) => {
     setItem((it) => {
       const responses = it.responses;
       for (let i = 0; i < responses.length; i++) {
         if (responses[i].id === value.id) {
-          responses[i] = value as CommandsResponses;
+          responses[i] = value as Commands['responses'][number];
         }
       }
       return {
-        ...it, responses: responses, 
+        ...it, responses: responses,
       };
     });
   }, []);
@@ -169,10 +169,10 @@ export const CommandsEdit: React.FC<{
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
       const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({
-        ...o, order: idx, 
-      })) as CommandsResponses[];
+        ...o, order: idx,
+      })) as Commands['responses'];
       return {
-        ...it, responses: responses, 
+        ...it, responses: responses,
       };
     });
   }, []);
@@ -214,7 +214,7 @@ export const CommandsEdit: React.FC<{
 
       }
       return {
-        ...o, responses, 
+        ...o, responses,
       };
     });
   }, [ ]);
@@ -238,8 +238,8 @@ export const CommandsEdit: React.FC<{
           component="form"
           sx={{
             '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
+              my: 1, width: '100%',
+            },
           }}
           noValidate
           autoComplete="off"
@@ -321,7 +321,7 @@ export const CommandsEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.enabled ? 'Command is enabled': 'Command is disabled'}
                 </FormHelperText>
@@ -331,7 +331,7 @@ export const CommandsEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.visible ? 'Command is visible': 'Command is hidden'}
                 </FormHelperText>

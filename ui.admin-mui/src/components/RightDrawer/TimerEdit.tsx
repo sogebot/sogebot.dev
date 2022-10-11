@@ -47,7 +47,7 @@ export const TimerEdit: React.FC<{
 
   const handleValueChange = useCallback(<T extends keyof Timer>(key: T, value: Timer[T]) => {
     setItem(i => ({
-      ...i, [key]: value, 
+      ...i, [key]: value,
     }));
   }, []);
 
@@ -114,7 +114,7 @@ export const TimerEdit: React.FC<{
       response.response = '';
       response.isEnabled = true;
       return {
-        ...o, messages: [...o.messages, response], 
+        ...o, messages: [...o.messages, response],
       };
     });
   }, []);
@@ -128,7 +128,7 @@ export const TimerEdit: React.FC<{
         }
       }
       return {
-        ...it, messages: responses, 
+        ...it, messages: responses,
       };
     });
   }, []);
@@ -140,7 +140,7 @@ export const TimerEdit: React.FC<{
         updateMessage.isEnabled = !updateMessage.isEnabled;
         const messages = it.messages.filter(o => o.id !== responseId);
         return {
-          ...it, messages: [...messages, updateMessage], 
+          ...it, messages: [...messages, updateMessage],
         };
       }
       return it;
@@ -150,10 +150,10 @@ export const TimerEdit: React.FC<{
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
       const messages = it.messages.filter(o => o.id !== responseId).map((o, idx) => ({
-        ...o, timestamp: new Date(idx).toISOString(), 
+        ...o, timestamp: new Date(idx).toISOString(),
       })) as TimerResponse[];
       return {
-        ...it, messages: messages, 
+        ...it, messages: messages,
       };
     });
   }, []);
@@ -195,7 +195,7 @@ export const TimerEdit: React.FC<{
 
       }
       return {
-        ...o, messages, 
+        ...o, messages,
       };
     });
   }, [ ]);
@@ -219,8 +219,8 @@ export const TimerEdit: React.FC<{
           component="form"
           sx={{
             '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
+              my: 1, width: '100%',
+            },
           }}
           noValidate
           autoComplete="off"
@@ -259,7 +259,7 @@ export const TimerEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isEnabled ? 'Timer is enabled': 'Timer is disabled'}
                 </FormHelperText>
@@ -269,7 +269,7 @@ export const TimerEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.tickOffline || false} onChange={(event) => handleValueChange('tickOffline', event.target.checked)}/>} label={capitalize(translate('timers.dialog.tickOffline'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.tickOffline
                     ? 'Timers will be ticking, when stream is offline.'
