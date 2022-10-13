@@ -126,15 +126,12 @@ export const AliasEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
           <TextField
+            fullWidth
             {...propsError('alias')}
             variant="filled"
             required
@@ -144,6 +141,7 @@ export const AliasEdit: React.FC<{
           />
 
           <TextField
+            fullWidth
             {...propsError('command')}
             variant="filled"
             value={alias?.command || ''}
@@ -156,7 +154,7 @@ export const AliasEdit: React.FC<{
             onChange={(event) => handleValueChange('command', event.target.value)}
           />
 
-          <Grid container sx={{ mt: 1 }} columnSpacing={2}>
+          <Grid container columnSpacing={1}>
             <Grid item xs={6}>
               <FormControl fullWidth variant="filled" >
                 <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
@@ -225,12 +223,12 @@ export const AliasEdit: React.FC<{
             </Grid>
           </Grid>
 
-          <Grid container sx={{ mt: 1 }}columnSpacing={2}>
+          <Grid container columnSpacing={1}>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={alias?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {alias?.enabled ? 'Alias is enabled': 'Alias is disabled'}
                 </FormHelperText>
@@ -240,7 +238,7 @@ export const AliasEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={alias?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {alias?.visible ? 'Alias will be visible in lists': 'Alias won\'t be visible in lists'}
                 </FormHelperText>

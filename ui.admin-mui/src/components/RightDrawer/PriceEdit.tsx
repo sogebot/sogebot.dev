@@ -113,15 +113,12 @@ export const PriceEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
           <TextField
+            fullWidth
             {...propsError('command')}
             variant="filled"
             value={item?.command || ''}
@@ -134,9 +131,10 @@ export const PriceEdit: React.FC<{
             onChange={(event) => handleValueChange('command', event.target.value)}
           />
 
-          <Grid container sx={{ mt: 1 }} >
+          <Grid container>
             <Grid item xs>
               <TextField
+                fullWidth
                 {...propsError('price')}
                 variant="filled"
                 type="number"
@@ -150,6 +148,7 @@ export const PriceEdit: React.FC<{
             </Divider>
             <Grid item xs>
               <TextField
+                fullWidth
                 {...propsError('priceBits')}
                 variant="filled"
                 type="number"
@@ -165,7 +164,7 @@ export const PriceEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.enabled ? 'Price is enabled': 'Price is disabled'}
                 </FormHelperText>
@@ -177,7 +176,7 @@ export const PriceEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.emitRedeemEvent || false} onChange={(event) => handleValueChange('emitRedeemEvent', event.target.checked)}/>} label={capitalize(translate('systems.price.emitRedeemEvent'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.emitRedeemEvent ? 'If price is paid, redeem event / alert will be triggered.': 'No event will be triggered.'}
                 </FormHelperText>

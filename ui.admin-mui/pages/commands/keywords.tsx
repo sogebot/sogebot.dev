@@ -247,8 +247,8 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='keywords'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='keywords'/>
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/keywords/create/');

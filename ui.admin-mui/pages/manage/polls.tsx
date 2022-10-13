@@ -278,8 +278,8 @@ const PageManagePolls: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='polls'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='polls'/>
         <Grid item>
           <Button variant="contained" onClick={() => {
             router.push('/manage/polls/create/');

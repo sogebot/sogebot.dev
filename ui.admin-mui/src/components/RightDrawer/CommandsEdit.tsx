@@ -236,16 +236,12 @@ export const CommandsEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%',
-            },
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
-
           <TextField
+            fullWidth
             {...propsError('command')}
             variant="filled"
             required
@@ -253,7 +249,7 @@ export const CommandsEdit: React.FC<{
             label={translate('command')}
             onChange={(event) => handleValueChange('command', event.target.value)}
           />
-          <FormControl fullWidth variant="filled" sx={{ mt: '8px' }}>
+          <FormControl fullWidth variant="filled">
             <Autocomplete
               sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
               selectOnFocus
@@ -316,7 +312,7 @@ export const CommandsEdit: React.FC<{
             }}
           />}
 
-          <Grid container sx={{ mt: 1 }}columnSpacing={2}>
+          <Grid container columnSpacing={1}>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />

@@ -57,7 +57,7 @@ export const CooldownEdit: React.FC<{
     if (key === 'seconds' && numberVal < 0) {
       if (input.minutes > 0 || input.hours > 0 || input.days > 0) {
         const updatedInput = {
-          ...input, [key]: 59, 
+          ...input, [key]: 59,
         };
         handleTimeChange(updatedInput, 'minutes', String(input.minutes - 1));
         return;
@@ -69,7 +69,7 @@ export const CooldownEdit: React.FC<{
     if (key === 'minutes' && numberVal < 0) {
       if (input.hours > 0 || input.days > 0) {
         const updatedInput = {
-          ...input, [key]: 59, 
+          ...input, [key]: 59,
         };
         handleTimeChange(updatedInput, 'hours', String(input.hours - 1));
         return;
@@ -81,7 +81,7 @@ export const CooldownEdit: React.FC<{
     if (key === 'hours' && numberVal < 0) {
       if (input.days > 0) {
         const updatedInput = {
-          ...input, [key]: 23, 
+          ...input, [key]: 23,
         };
         handleTimeChange(updatedInput, 'days', String(input.days - 1));
         return;
@@ -92,7 +92,7 @@ export const CooldownEdit: React.FC<{
 
     if ((key === 'seconds' || key === 'minutes') && numberVal >= 60) {
       const updatedInput = {
-        ...input, [key]: 0, 
+        ...input, [key]: 0,
       };
       if(key === 'seconds') {
         handleTimeChange(updatedInput, 'minutes', String(input.minutes + 1));
@@ -104,7 +104,7 @@ export const CooldownEdit: React.FC<{
 
     if (key === 'hours' && numberVal >= 24) {
       const updatedInput = {
-        ...input, [key]: 0, 
+        ...input, [key]: 0,
       };
       handleTimeChange(updatedInput, 'days', String(input.days + 1));
       return;
@@ -116,13 +116,13 @@ export const CooldownEdit: React.FC<{
     }
 
     setTime({
-      ...input, [key]: numberVal, 
+      ...input, [key]: numberVal,
     });
   };
 
   const handleValueChange = useCallback(<T extends keyof Cooldown>(key: T, value: Cooldown[T]) => {
     setItem(i => ({
-      ...i, [key]: value, 
+      ...i, [key]: value,
     }));
   }, []);
 
@@ -200,15 +200,12 @@ export const CooldownEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
           <TextField
+            fullWidth
             {...propsError('name')}
             variant="filled"
             value={item?.name || ''}
@@ -223,36 +220,52 @@ export const CooldownEdit: React.FC<{
 
           <Stack direction='row'>
             <TextField
+              fullWidth
               variant="filled"
               type="number"
               value={time.days}
               required
               label={'Days'}
               onChange={(event) => handleTimeChange(time, 'days', event.target.value)}
+              sx={{
+                '& .MuiInputBase-root': {
+                  borderRadius: 0, borderLeftRightRadius: '4px',
+                },
+              }}
             />
             <TextField
+              fullWidth
               variant="filled"
               type="number"
               value={time.hours}
               required
               label={'Hours'}
               onChange={(event) => handleTimeChange(time, 'hours', event.target.value)}
+              sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
             />
             <TextField
+              fullWidth
               variant="filled"
               type="number"
               value={time.minutes}
               required
               label={'Minutes'}
               onChange={(event) => handleTimeChange(time, 'minutes', event.target.value)}
+              sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
             />
             <TextField
+              fullWidth
               variant="filled"
               type="number"
               value={time.seconds}
               required
               label={'Seconds'}
               onChange={(event) => handleTimeChange(time, 'seconds', event.target.value)}
+              sx={{
+                '& .MuiInputBase-root': {
+                  borderRadius: 0, borderTopRightRadius: '4px',
+                },
+              }}
             />
           </Stack>
 
@@ -278,7 +291,7 @@ export const CooldownEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isEnabled ? 'Cooldown is enabled': 'Cooldown is disabled'}
                 </FormHelperText>
@@ -288,7 +301,7 @@ export const CooldownEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isErrorMsgQuiet || false} onChange={(event) => handleValueChange('isErrorMsgQuiet', event.target.checked)}/>} label={capitalize(translate('quiet'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isErrorMsgQuiet
                     ? 'Cooldown won\'t send message if triggered.'
@@ -300,7 +313,7 @@ export const CooldownEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isOwnerAffected || false} onChange={(event) => handleValueChange('isOwnerAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.casters'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isOwnerAffected
                     ? 'Owners will be affected with cooldown.'
@@ -312,7 +325,7 @@ export const CooldownEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isModeratorAffected || false} onChange={(event) => handleValueChange('isModeratorAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.moderators'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isModeratorAffected
                     ? 'Moderators will be affected with cooldown.'
@@ -324,7 +337,7 @@ export const CooldownEdit: React.FC<{
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.isSubscriberAffected || false} onChange={(event) => handleValueChange('isSubscriberAffected', event.target.checked)}/>} label={capitalize(translate('core.permissions.subscribers'))} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.isSubscriberAffected
                     ? 'Subscribers will be affected with cooldown.'

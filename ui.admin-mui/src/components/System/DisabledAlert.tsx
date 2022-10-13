@@ -32,8 +32,10 @@ export const DisabledAlert: React.FC<System | Integration> = (props) => {
   return (
     <><span style={invisible}/>
       {
-        !enabled && <Grid container justifyContent={'center'}>
-          <Alert severity="warning" variant="outlined" >
+        !enabled && <Grid item>
+          <Alert severity="warning" variant='outlined' sx={{
+            padding: 0, px: 2,
+          }}>
             { translate('this-system-is-disabled') }
           </Alert>
         </Grid>

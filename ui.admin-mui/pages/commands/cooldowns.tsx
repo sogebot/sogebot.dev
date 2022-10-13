@@ -249,8 +249,8 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='cooldown'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='cooldown'/>
         <Grid item>
           <Button sx={{ width: 220 }} variant="contained" onClick={() => {
             router.push('/commands/cooldowns/create/');

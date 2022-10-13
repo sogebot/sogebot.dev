@@ -13,7 +13,7 @@ import {
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  useCallback, useMemo, useState, 
+  useCallback, useMemo, useState,
 } from 'react';
 import { useEffect } from 'react';
 
@@ -128,15 +128,12 @@ export const QuotesEdit: React.FC<{
         <DialogContent>
           <Box
             component="form"
-            sx={{
-              '& .MuiTextField-root': {
-                my: 1, width: '100%',
-              },
-            }}
+            sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
             noValidate
             autoComplete="off"
           >
             <TextField
+              fullWidth
               {...propsError('name')}
               variant="filled"
               value={item?.quote || ''}
@@ -150,6 +147,7 @@ export const QuotesEdit: React.FC<{
             />
 
             <TextField
+              fullWidth
               {...propsError('name')}
               variant="filled"
               value={quotedByUserName}
@@ -158,6 +156,7 @@ export const QuotesEdit: React.FC<{
             />
 
             <Autocomplete
+              fullWidth
               value={item.tags.map(o => ({
                 title: o, value: o,
               }))}

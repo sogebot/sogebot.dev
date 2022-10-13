@@ -213,8 +213,8 @@ const PageManageTimers: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='timers'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='timers'/>
         <Grid item>
           <Button variant="contained" onClick={() => {
             router.push('/manage/timers/create/');

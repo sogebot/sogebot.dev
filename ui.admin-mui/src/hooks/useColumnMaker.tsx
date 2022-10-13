@@ -73,7 +73,7 @@ export const useColumnMaker = <T,>(props: {
 
   const defaultHiddenColumnNames = props
     .filter((item: typeof props[number]) => item.hidden)
-    .map((item: typeof props[number]) => item.columnName);
+    .map((item: typeof props[number]) => item.columnName) as string[];
 
   const filteringColumnExtensions = props.map((item: typeof props[number]) => ({
     columnName: item.columnName,

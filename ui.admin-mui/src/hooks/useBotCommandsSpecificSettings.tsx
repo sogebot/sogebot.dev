@@ -42,7 +42,7 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
       Object.keys(settings).map(key => {
         return new Promise<void>(resolve => {
           getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any).emit('set.value', {
-            variable: key, value: settings[key][0], 
+            variable: key, value: settings[key][0],
           }, () => {
             resolve();
           });
@@ -94,6 +94,7 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
     const label = translate(key.replace(`${item.defaultValue}-`, `properties.${item.defaultValue.replace('!', '')}.`));
     if (typeof settings[key][1] === 'string') {
       return <TextField
+        fullWidth
         key={key}
         variant="filled"
         value={settings[key][0]}

@@ -43,7 +43,7 @@ export const FormResponse: React.FC<{
   const onResponseChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {
       return {
-        ...o, response: event.target.value, 
+        ...o, response: event.target.value,
       };
     });
   }, []);
@@ -51,7 +51,7 @@ export const FormResponse: React.FC<{
   const onResponseAddHandler = useCallback((val: string) => {
     setPropsValue((o: { response: string; }) => {
       return {
-        ...o, response: o.response + val, 
+        ...o, response: o.response + val,
       };
     });
   }, []);
@@ -59,7 +59,7 @@ export const FormResponse: React.FC<{
   const onFilterChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {
       return {
-        ...o, filter: event.target.value, 
+        ...o, filter: event.target.value,
       };
     });
   }, []);
@@ -67,7 +67,7 @@ export const FormResponse: React.FC<{
   const onFilterAddHandler = useCallback((val: string) => {
     setPropsValue((o: { filter: string; }) => {
       return {
-        ...o, filter: o.filter + val, 
+        ...o, filter: o.filter + val,
       };
     });
   }, []);
@@ -75,7 +75,7 @@ export const FormResponse: React.FC<{
   const onPermissionChangeHandler = useCallback((val: string | null) => {
     setPropsValue((o: any) => {
       return {
-        ...o, permission: String(val).length === 0 ? null : val, 
+        ...o, permission: String(val).length === 0 ? null : val,
       };
     });
   }, []);
@@ -83,7 +83,7 @@ export const FormResponse: React.FC<{
   const onExecutionToggleHandler = useCallback(() => {
     setPropsValue((o: { stopIfExecuted: any; }) => {
       return {
-        ...o, stopIfExecuted: !o.stopIfExecuted, 
+        ...o, stopIfExecuted: !o.stopIfExecuted,
       };
     });
   }, []);
@@ -91,6 +91,7 @@ export const FormResponse: React.FC<{
   return (
     <>
       <TextField
+        fullWidth
         variant='filled'
         label={`${translate('response')}#${idx + 1}`}
         value={propsValue.response}
@@ -148,7 +149,7 @@ export const FormResponse: React.FC<{
             </Select>
           </FormControl>
         </Grid>}
-        {!disableExecution && <Grid item>
+        {!disableExecution && <Grid item sx={{ my: 0.5 }}>
           <Button sx={{ height: '100%' }} variant="contained" color={propsValue.stopIfExecuted ? 'error' : 'success'} onClick={onExecutionToggleHandler}>{ propsValue.stopIfExecuted ? translate('commons.stop-if-executed') : translate('commons.continue-if-executed') }</Button>
         </Grid>}
       </Grid>}

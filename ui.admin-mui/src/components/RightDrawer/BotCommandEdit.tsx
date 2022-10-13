@@ -54,7 +54,7 @@ export const BotCommandEdit: React.FC<{
   const handleSetDefaultValue = useCallback(() => {
     if (item) {
       setItem({
-        ...item, command: item.defaultValue, 
+        ...item, command: item.defaultValue,
       });
     }
   }, [ item ]);
@@ -130,16 +130,12 @@ export const BotCommandEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
           <TextField
-            sx={{ pb: '8px' }}
+            fullWidth
             {...propsError('command')}
             variant="filled"
             value={item?.command || ''}

@@ -308,8 +308,8 @@ const PageCommandsCommands: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='customcommands'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='customcommands'/>
         <Grid item>
           <Button variant="contained" onClick={() => {
             router.push('/commands/customcommands/create/');

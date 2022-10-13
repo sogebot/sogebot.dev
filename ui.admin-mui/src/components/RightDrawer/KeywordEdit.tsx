@@ -78,7 +78,7 @@ export const KeywordEdit: React.FC<{
       response.stopIfExecuted = false;
       response.permission = defaultPermissions.VIEWERS;
       return {
-        ...o, responses: [...o.responses, response], 
+        ...o, responses: [...o.responses, response],
       };
     });
   }, []);
@@ -149,7 +149,7 @@ export const KeywordEdit: React.FC<{
         }
       }
       return {
-        ...it, responses: responses, 
+        ...it, responses: responses,
       };
     });
   }, []);
@@ -157,10 +157,10 @@ export const KeywordEdit: React.FC<{
   const deleteResponse = useCallback((responseId: string) => {
     setItem((it) => {
       const responses = it.responses.filter(o => o.id !== responseId).map((o, idx) => ({
-        ...o, order: idx, 
+        ...o, order: idx,
       })) as KeywordResponses[];
       return {
-        ...it, responses: responses, 
+        ...it, responses: responses,
       };
     });
   }, []);
@@ -202,7 +202,7 @@ export const KeywordEdit: React.FC<{
 
       }
       return {
-        ...o, responses, 
+        ...o, responses,
       };
     });
   }, [ ]);
@@ -224,16 +224,12 @@ export const KeywordEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%', 
-            }, 
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
-
           <TextField
+            fullWidth
             {...propsError('keyword')}
             variant="filled"
             required
@@ -293,12 +289,12 @@ export const KeywordEdit: React.FC<{
             />
           </FormControl>
 
-          <Grid container sx={{ mt: 1 }}columnSpacing={2}>
+          <Grid container columnSpacing={1}>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
                 <FormHelperText sx={{
-                  position: 'relative', top: '-10px', 
+                  position: 'relative', top: '-10px',
                 }}>
                   {item?.enabled ? 'Keyword is enabled': 'Keyword is disabled'}
                 </FormHelperText>

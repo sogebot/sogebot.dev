@@ -1,15 +1,11 @@
-import { Poll } from '@entity/poll';
+import { Rank } from '@entity/rank';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, Dialog, DialogContent, Divider, Fade, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography,
+  Box, Button, CircularProgress, Dialog, DialogContent, Divider, Fade, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField,
 } from '@mui/material';
-import { red } from '@mui/material/colors';
 import axios from 'axios';
 import { validateOrReject } from 'class-validator';
-import {
-  capitalize,
-  merge,
-} from 'lodash';
+import { capitalize, merge } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
@@ -20,35 +16,23 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 import { StripTypeORMEntity } from '~/src/types/stripTypeORMEntity';
 
-export const PollEdit: React.FC<{
-  items: Poll[]
+const newItem = new Rank();
+newItem.value = 0;
+newItem.type = 'viewer';
+
+export const RankEdit: React.FC<{
+  items: Rank[]
 }> = (props) => {
   const router = useRouter();
   const { translate } = useTranslation();
   const [ editDialog, setEditDialog ] = useState(false);
-  const [ item, setItem ] = useState<StripTypeORMEntity<Poll>>(new Poll());
+  const [ item, setItem ] = useState<StripTypeORMEntity<Rank>>(newItem);
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
-  const [ options, setOptions ] = useState(['', '', '', '', '']);
-
-  const handleOptionsChange = useCallback((idx: number, value: string) => {
-    setOptions(o => {
-      const _o = [...o];
-      _o[idx] = value;
-      return _o;
-    });
-  }, []);
-
-  useEffect(() => {
-    setItem(i => ({
-      ...i, options: options.filter(Boolean),
-    }));
-  }, [options]);
-
-  const handleValueChange = useCallback(<T extends keyof Poll>(key: T, value: Poll[T]) => {
+  const handleValueChange = useCallback(<T extends keyof Rank>(key: T, value: Rank[T]) => {
     setItem(i => ({
       ...i, [key]: value,
     }));
@@ -56,15 +40,19 @@ export const PollEdit: React.FC<{
 
   useEffect(() => {
     setLoading(true);
-    setItem(new Poll());
-    setOptions(['', '', '', '', '']);
+    if (router.query.id) {
+      const it = props.items?.find(o => o.id === router.query.id) ?? newItem;
+      setItem(it);
+    } else {
+      setItem(newItem);
+    }
     setLoading(false);
     reset();
   }, [router.query.id, props.items, editDialog, reset]);
 
   useEffect(() => {
     if (!loading && editDialog && item) {
-      const toCheck = new Poll();
+      const toCheck = new Rank();
       merge(toCheck, item);
       console.log('Validating', toCheck);
       validateOrReject(toCheck)
@@ -74,28 +62,26 @@ export const PollEdit: React.FC<{
   }, [item, loading, editDialog, setErrors]);
 
   useEffect(() => {
-    if (router.asPath.includes('polls/create') ) {
+    if (router.asPath.includes('ranks/edit/') || router.asPath.includes('ranks/create') ) {
       setEditDialog(true);
-    } else {
-      setEditDialog(false);
     }
   }, [router]);
 
   const handleClose = () => {
     setEditDialog(false);
     setTimeout(() => {
-      router.push('/manage/polls');
+      router.push('/manage/ranks');
     }, 200);
   };
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/polls`,
+    axios.post(`${localStorage.server}/api/systems/ranks`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
-      .then(() => {
-        enqueueSnackbar('Poll saved.', { variant: 'success' });
-        router.push(`/manage/polls/`);
+      .then((response) => {
+        enqueueSnackbar('Rank saved.', { variant: 'success' });
+        router.push(`/manage/ranks/edit/${response.data.data.id}`);
       })
       .catch(e => {
         validate(e.response.data.errors);
@@ -125,46 +111,45 @@ export const PollEdit: React.FC<{
           autoComplete="off"
         >
           <TextField
-            {...propsError('title')}
+            {...propsError('value')}
             variant="filled"
-            value={item?.title || ''}
+            value={item?.value ?? 0}
             required
-            label={capitalize(translate('title'))}
-            onChange={(event) => handleValueChange('title', event.target.value)}
-            sx={{ margin: 0 }}
+            type="number"
+            label={capitalize(translate('responses.variable.value'))}
+            fullWidth
+            onChange={(event) => handleValueChange('value', Number(event.target.value))}
+          />
+          <TextField
+            {...propsError('rank')}
+            variant="filled"
+            value={item?.rank ?? ''}
+            required
+            label={capitalize(translate('rank'))}
+            fullWidth
+            onChange={(event) => handleValueChange('rank', event.target.value)}
           />
 
-          <FormControl fullWidth sx={{ marginBottom: 2 }}>
-            <InputLabel variant='filled' id="poll-options-label">{capitalize(translate('systems.polls.votingBy'))}</InputLabel>
+          <FormControl fullWidth>
+            <InputLabel variant='filled' id="poll-options-label">{capitalize(translate('type'))}</InputLabel>
             <Select
               variant='filled'
               labelId="poll-options-label"
-              value={item?.type || 'normal'}
-              label={capitalize(translate('systems.polls.votingBy'))}
+              value={item?.type ?? 'viewer'}
+              label={capitalize(translate('type'))}
               onChange={(event) => handleValueChange('type', event.target.value as any)}
             >
-              {['tips', 'bits', 'normal', 'numbers'].map((o, idx) => <MenuItem key={o + idx} value={o}>{capitalize(translate('systems.polls.' + o))}</MenuItem>)}
+              <MenuItem value='viewer'>Watch Time</MenuItem>
+              <MenuItem value='subscriber'>Subscriber months</MenuItem>
             </Select>
           </FormControl>
-
-          {options.map((o, idx) => <TextField
-            key={idx}
-            variant="filled"
-            value={o}
-            label={`Answer ${idx + 1}`}
-            onInput={propsError('options').onInput}
-            error={propsError('options').error}
-            onChange={(event) => handleOptionsChange(idx, event.target.value)}
-          />)}
-
-          {propsError('options').helperText && <Typography color={red[500]} sx={{ marginLeft: 2 }}>{propsError('options').helperText}</Typography>}
         </Box>
       </DialogContent>
     </Fade>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
-        <Grid item></Grid>
+        <Grid item/>
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>

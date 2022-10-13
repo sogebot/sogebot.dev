@@ -217,15 +217,12 @@ export const TimerEdit: React.FC<{
       <DialogContent>
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': {
-              my: 1, width: '100%',
-            },
-          }}
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
           autoComplete="off"
         >
           <TextField
+            fullWidth
             {...propsError('name')}
             variant="filled"
             value={item?.name || ''}
@@ -235,6 +232,7 @@ export const TimerEdit: React.FC<{
           />
 
           <TextField
+            fullWidth
             {...propsError('triggerEverySecond')}
             variant="filled"
             type='number'
@@ -245,6 +243,7 @@ export const TimerEdit: React.FC<{
           />
 
           <TextField
+            fullWidth
             {...propsError('triggerEveryMessage')}
             variant="filled"
             type='number'

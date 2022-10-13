@@ -186,8 +186,8 @@ const PageManageQuotes: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='quotes'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='quotes'/>
         <Grid item>
           <Button variant="contained" onClick={() => {
             router.push('/manage/quotes/create/');
@@ -240,7 +240,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
-      {items.length > 0 && <QuotesEdit items={items} users={users}/>}
+      <QuotesEdit items={items} users={users}/>
     </>
   );
 };

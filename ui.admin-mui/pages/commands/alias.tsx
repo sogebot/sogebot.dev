@@ -261,8 +261,8 @@ const PageCommandsAlias: NextPageWithLayout = () => {
 
   return (
     <>
-      <DisabledAlert system='alias'/>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <DisabledAlert system='alias'/>
         <Grid item>
           <Button sx={{ width: 200 }} variant="contained" onClick={() => {
             router.push('/commands/alias/create/');
