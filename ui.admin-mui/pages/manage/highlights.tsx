@@ -9,6 +9,7 @@ import {
   TableHeaderRow,
   VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
+import { Highlight } from '@entity/highlight';
 import { Link } from '@mui/icons-material';
 import {
   CircularProgress,
@@ -19,7 +20,6 @@ import {
   Typography,
 } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { HighlightInterface } from '@sogebot/backend/dest/database/entity/highlight';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
@@ -30,7 +30,7 @@ import {
 import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
-import { dayjs } from '~/src/helpers/dayjsHelper';
+import { DateTypeProvider } from '~/src/components/Table/DateTypeProvider';
 import { getSocket } from '~/src/helpers/socket';
 import { timestampToString } from '~/src/helpers/timestampToString';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -39,7 +39,7 @@ const PageManageViewers: NextPageWithLayout = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<HighlightInterface[]>([]);
+  const [ items, setItems ] = useState<Highlight[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   const [sorting, setSorting] = useState<Sorting[]>([{
@@ -55,7 +55,7 @@ const PageManageViewers: NextPageWithLayout = () => {
     return template.replace('%{game}', encodeURI(game));
   };
 
-  const { columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<HighlightInterface & extension>([
+  const { columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<Highlight & extension>([
     {
       columnName:  'thumbnail',
       translation: ' ',
@@ -64,7 +64,7 @@ const PageManageViewers: NextPageWithLayout = () => {
       },
       sorting: { sortingEnabled: false },
       column:  {
-        getCellValue: (row: HighlightInterface) => {
+        getCellValue: (row: Highlight) => {
           return (
             <Image src={generateThumbnail(row.game)} width={46} height={60} alt={row.game}/>
           );
@@ -80,20 +80,12 @@ const PageManageViewers: NextPageWithLayout = () => {
     {
       columnName:  'createdAt',
       translation: 'Created At',
-      column:      {
-        getCellValue: (row: HighlightInterface) => {
-          return (
-            <>
-              <Typography>{ dayjs(row.createdAt).format('LL') } { dayjs(row.createdAt).format('LTS') }</Typography>
-            </>);
-        },
-      },
     },
     {
       columnName:  'timestamp',
       translation: 'Timestamp',
       column:      {
-        getCellValue: (row: HighlightInterface) => {
+        getCellValue: (row: Highlight) => {
           return (
             <>
               <Typography>{ timestampToString(row.timestamp) }</Typography>
@@ -107,7 +99,7 @@ const PageManageViewers: NextPageWithLayout = () => {
       sorting:     { sortingEnabled: false },
       translation: ' ',
       column:      {
-        getCellValue: (row: HighlightInterface) => [
+        getCellValue: (row: Highlight) => [
           row.expired
             ? <Typography color={red[500]}>Expired</Typography>
             : <Stack direction="row" key="row">
@@ -185,6 +177,10 @@ const PageManageViewers: NextPageWithLayout = () => {
             columns={columns}
             getRowId={row => row.id}
           >
+            <DateTypeProvider
+              for={['createdAt']}
+            />
+
             <SortingState
               sorting={sorting}
               onSortingChange={setSorting}

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import duration from 'dayjs/plugin/duration';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { default as tz } from 'dayjs/plugin/timezone';
@@ -16,6 +17,7 @@ dayjs.extend(tz);
 dayjs.extend(relativeTime);
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
+dayjs.extend(duration);
 
 require('dayjs/locale/cs');
 require('dayjs/locale/de');
@@ -34,4 +36,5 @@ if (typeof process !== 'undefined') {
 export const setLocale = (locale: string) => {
   dayjs.locale(locale);
 };
+
 export { dayjs, timezone };

@@ -231,7 +231,7 @@ const PageManagePolls: NextPageWithLayout = () => {
     const clone = cloneDeep(item);
     clone.id = v4();
     clone.votes = [];
-    clone.openedAt = new Date();
+    clone.openedAt = new Date().toISOString();
     axios.post(`${localStorage.server}/api/systems/polls`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
         refresh();

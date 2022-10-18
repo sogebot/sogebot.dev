@@ -8,7 +8,7 @@ import { customPredicate } from '~/src/helpers/customPredicate';
 import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-export const useColumnMaker = <T,>(props: {
+export type ColumnMakerProps<T,> = {
   columnName: keyof T | 'actions';
   translationKey?: string;
   translation?: string;
@@ -27,19 +27,21 @@ export const useColumnMaker = <T,>(props: {
   }
   hidden?: boolean;
   predicate?: (value: string, filter: Filter, row: any) => boolean;
-}[]) => {
+}[];
+
+export const useColumnMaker = <T,>(props: ColumnMakerProps<T>) => {
   const { translate } = useTranslation();
 
-  const tableColumnExtensions = props.map((item: typeof props[number]) => ({
+  const tableColumnExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName: item.columnName,
     align:      item.table?.align,
     width:      item.table?.width,
-  })) as Table.ColumnExtension[];
+  })) as Table.ColumnExtension[], [ props ]);
 
-  const sortingTableExtensions = props.map((item: typeof props[number]) => ({
+  const sortingTableExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName:     item.columnName,
     sortingEnabled: item.sorting?.sortingEnabled ?? true,
-  })) as SortingState.ColumnExtension[];
+  })) as SortingState.ColumnExtension[], [ props ]);
 
   const getTranslationOfColumnName = useCallback((columnName: string) => {
     const current = props.find(o => o.columnName === columnName)!;
@@ -71,14 +73,14 @@ export const useColumnMaker = <T,>(props: {
     }) as Column;
   }), [ props, getTranslationOfColumnName ]);
 
-  const defaultHiddenColumnNames = props
+  const defaultHiddenColumnNames = useMemo(() => props
     .filter((item: typeof props[number]) => item.hidden)
-    .map((item: typeof props[number]) => item.columnName) as string[];
+    .map((item: typeof props[number]) => item.columnName) as string[], [ props ]);
 
-  const filteringColumnExtensions = props.map((item: typeof props[number]) => ({
+  const filteringColumnExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName: item.columnName,
     predicate:  item.predicate ?? customPredicate,
-  }) as IntegratedFiltering.ColumnExtension);
+  }) as IntegratedFiltering.ColumnExtension), [ props ]);
 
   return {
     useFilterSetup, tableColumnExtensions, columns, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions,

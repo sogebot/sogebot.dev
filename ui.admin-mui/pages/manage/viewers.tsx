@@ -40,7 +40,7 @@ import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
-import { RowDetail } from '~/src/components/Table/RowDetail';
+import { RowDetail } from '~/src/components/Table/Viewers/RowDetail';
 import { dayjs } from '~/src/helpers/dayjsHelper';
 import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';

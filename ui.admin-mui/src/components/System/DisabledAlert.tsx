@@ -34,7 +34,10 @@ export const DisabledAlert: React.FC<System | Integration> = (props) => {
       {
         !enabled && <Grid item>
           <Alert severity="warning" variant='outlined' sx={{
-            padding: 0, px: 2,
+            padding:               0,
+            px:                    2,
+            height:                '36.5px',
+            '& .MuiAlert-message': { overflow: 'hidden' },
           }}>
             { translate('this-system-is-disabled') }
           </Alert>
