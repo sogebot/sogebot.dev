@@ -45,6 +45,7 @@ import { Layout } from '~/src/components/Layout/main';
 import { HLTBEdit } from '~/src/components/RightDrawer/HLTBEdit';
 import { DisabledAlert } from '~/src/components/System/DisabledAlert';
 import { DateTypeProvider } from '~/src/components/Table/DateTypeProvider';
+import DenseCell from '~/src/components/Table/DenseCell';
 import { RowDetail } from '~/src/components/Table/HowLongToBeat/RowDetail';
 import getAccessToken from '~/src/getAccessToken';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -304,15 +305,6 @@ const PageManageHLTB: NextPageWithLayout = () => {
     setSelection([]);
   }, [ selection, enqueueSnackbar, items ]);
 
-  const Cell = (props: any) => (
-    <VirtualTable.Cell
-      {...props}
-      style={{
-        padding: '0.5rem', height: '80px', margin: 0, lineHeight: 0,
-      }}
-    />
-  );
-
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
@@ -362,7 +354,7 @@ const PageManageHLTB: NextPageWithLayout = () => {
             />
 
             <IntegratedSelection/>
-            <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={Cell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
+            <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
             <TableHeaderRow showSortingControls/>
             <TableRowDetail
               contentComponent={RowDetail}

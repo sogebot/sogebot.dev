@@ -31,6 +31,7 @@ import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
 import { DateTypeProvider } from '~/src/components/Table/DateTypeProvider';
+import DenseCell from '~/src/components/Table/DenseCell';
 import { getSocket } from '~/src/helpers/socket';
 import { timestampToString } from '~/src/helpers/timestampToString';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -150,15 +151,6 @@ const PageManageViewers: NextPageWithLayout = () => {
     refresh();
   };
 
-  const Cell = (props: any) => (
-    <VirtualTable.Cell
-      {...props}
-      style={{
-        padding: '0.5rem', height: '80px', margin: 0, lineHeight: 0,
-      }}
-    />
-  );
-
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
@@ -188,7 +180,7 @@ const PageManageViewers: NextPageWithLayout = () => {
             />
             <IntegratedSorting />
 
-            <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={Cell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
+            <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
             <TableHeaderRow showSortingControls/>
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
