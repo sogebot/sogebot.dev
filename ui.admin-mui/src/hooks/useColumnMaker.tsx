@@ -13,7 +13,9 @@ export type ColumnMakerProps<T,> = {
   translationKey?: string;
   translation?: string;
   table?: Omit<Table.ColumnExtension, 'columnName'>;
-  column?: Omit<Column, 'name' | 'title'>
+  column?: {
+    getCellValue (row: T, columnName: string): any
+  }
   sorting?: Omit<SortingState.ColumnExtension, 'columnName'>
   filtering?: {
     type: 'string' | 'number' | 'boolean' | 'permission' | 'list',
