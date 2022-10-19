@@ -240,7 +240,7 @@ const PageManageHLTB: NextPageWithLayout = () => {
       sorting:     { sortingEnabled: false },
       column:      {
         getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(getStreamsTimestamp(row, 'all') + +row.offset + getStreamsOffset(row, 'all')))}
+          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'all') + +row.offset + getStreamsOffset(row, 'all'), 0)))}
         </Typography>,
       },
     },

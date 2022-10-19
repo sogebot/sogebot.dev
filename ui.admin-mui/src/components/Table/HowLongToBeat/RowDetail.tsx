@@ -74,7 +74,46 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
     }
   }, [dispatch, row]);
 
-  const { columns, tableColumnExtensions } = useColumnMaker([
+  const marks = [
+    {
+      value: 0,
+      label: 'no offset',
+    },
+    {
+      value: -1 * HOUR,
+      label: '- 1 hour',
+    },
+    {
+      value: HOUR,
+      label: '1 hour',
+    },
+    {
+      value: -2 * HOUR,
+      label: '- 2 hours',
+    },
+    {
+      value: 2 * HOUR,
+      label: '2 hours',
+    },
+    {
+      value: -3 * HOUR,
+      label: '- 3 hours',
+    },
+    {
+      value: 3 * HOUR,
+      label: '3 hours',
+    },
+    {
+      value: -4 * HOUR,
+      label: '- 4 hours',
+    },
+    {
+      value: 4 * HOUR,
+      label: '4 hours',
+    },
+  ];
+
+  const { columns, tableColumnExtensions } = useColumnMaker<HowLongToBeatGame['streams'][number] & { buttons: string }>([
     {
       columnName:  'createdAt',
       translation: 'Created At',
@@ -114,17 +153,22 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
       translation: ' ',
       column:      {
         getCellValue: (_row) => <Stack direction={'row'} spacing={2}>
-          <Slider
-            value={_row.offset}
-            min={-HOUR}
-            step={MINUTE}
-            max={HOUR}
-            scale={calculateValue}
-            valueLabelFormat={valueLabelFormat}
-            onChange={(_ev, newValue) => handleChange(_row.createdAt, newValue)}
-            valueLabelDisplay="off"
-            size='small'
-          />
+          <Box sx={{
+            padding: '0 0 0 30px', width: '100%',
+          }}>
+            <Slider
+              value={_row.offset}
+              min={-2 * HOUR}
+              step={10 * MINUTE}
+              max={2 * HOUR}
+              scale={calculateValue}
+              valueLabelFormat={valueLabelFormat}
+              onChange={(_ev, newValue) => handleChange(_row.createdAt, newValue)}
+              valueLabelDisplay="off"
+              size='small'
+              marks={marks}
+            />
+          </Box>
           <Typography sx={{ minWidth: '50px' }}>{valueLabelFormat(_row.offset)}</Typography>
         </Stack>,
       },
