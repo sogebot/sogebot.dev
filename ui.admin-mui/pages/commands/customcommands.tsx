@@ -91,7 +91,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack key="cmdStack">
             <strong key="command">{row.command}</strong>
-            <Responses key="responses" responses={row.responses}/>
+            <Responses key="responses" responses={row.responses as any}/>
           </Stack>,
         ],
       },

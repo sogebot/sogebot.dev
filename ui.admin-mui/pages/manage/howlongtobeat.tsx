@@ -210,7 +210,7 @@ const PageManageHLTB: NextPageWithLayout = () => {
       sorting:     { sortingEnabled: false },
       column:      {
         getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'extra') + +row.offset + getStreamsOffset(row, 'extra'), 0))) } {row.gameplayExtra > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayExtra * 3600000)) }</span>}
+          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'extra') + +row.offset + getStreamsOffset(row, 'extra'), 0))) } {row.gameplayMainExtra > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayMainExtra * 3600000)) }</span>}
         </Typography>,
       },
     }, {

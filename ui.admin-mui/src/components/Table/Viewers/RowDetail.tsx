@@ -49,9 +49,9 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
           return (
             (_row.event === 'raid' && <span>{ translate('managers.viewers.hostAndRaidViewersCount').replace('$value', JSON.parse(_row.values_json).viewers)}</span>)
             || (_row.event === 'subcommunitygift' && <span>{ _row.event } - { JSON.parse(_row.values_json).count }</span>)
-            || (_row.event === 'subgift' && <span>{_row.userName === row.userName
+            || (_row.event === 'subgift' && <span>{_row.userId === row.userId
               ? translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(_row.values_json).fromId)
-              : translate('managers.viewers.giftedSubscribeTo').replace('$value', _row.userName)}</span>)
+              : translate('managers.viewers.giftedSubscribeTo').replace('$value', _row.userId)}</span>)
             || (_row.event === 'tip' && <span>{ JSON.parse(_row.values_json).amount } { JSON.parse(_row.values_json).currency }{JSON.parse(_row.values_json).message.length > 0 && <div>{ JSON.parse(_row.values_json).message }</div>}</span>)
             || (_row.event === 'cheer' && <span>{ JSON.parse(_row.values_json).bits } {JSON.parse(_row.values_json).message.length > 0 && <div>{ JSON.parse(_row.values_json).message }</div>}</span>)
 
