@@ -29,7 +29,7 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography,
+  Typography,Backdrop,
 } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
@@ -53,6 +53,7 @@ import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
+import { PlaylistEdit } from '~/src/components/RightDrawer/PlaylistEdit';
 
 const PageCommandsSongPlaylist: NextPageWithLayout = () => {
   const dispatch = useDispatch();
@@ -149,6 +150,7 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
+            <PlaylistEdit item={row} tags={tags} open={row.videoId === router.query.id} onSave={() => refresh()} />
             <IconButton
               onClick={() => {
                 router.push('/manage/songs/playlist/edit/' + row.videoId);
@@ -317,46 +319,46 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
-      {loading
-        ? <CircularProgress color="inherit" sx={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-        }} />
-        : <Paper>
-          <DataGrid
-            rows={items}
-            columns={columns}
-            getRowId={row => row.videoId}
-          >
-            <SortingState
-              columnExtensions={sortingTableExtensions}
-            />
-            <IntegratedSorting columnExtensions={sortingTableExtensions} />
+      <Backdrop open={loading} >
+        <CircularProgress color="inherit"/>
+      </Backdrop>
 
-            <FilteringState filters={filters}/>
+      <Paper>
+        <DataGrid
+          rows={items}
+          columns={columns}
+          getRowId={row => row.videoId}
+        >
+          <SortingState
+            columnExtensions={sortingTableExtensions}
+          />
+          <IntegratedSorting columnExtensions={sortingTableExtensions} />
 
-            <SelectionState
-              selection={selection}
-              onSelectionChange={setSelection}
-            />
-            <IntegratedSelection/>
+          <FilteringState filters={filters}/>
 
-            <PagingState
-              currentPage={currentPage}
-              onCurrentPageChange={setCurrentPage}
-              pageSize={pageSize}
-            />
-            <CustomPaging
-              totalCount={totalCount}
-            />
-            <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)' cellComponent={DenseCell}/>
-            <TableHeaderRow showSortingControls/>
-            <TableColumnVisibility
-              defaultHiddenColumnNames={defaultHiddenColumnNames}
-            />
-            <TableSelection showSelectAll/>
-            <PagingPanel/>
-          </DataGrid>
-        </Paper>}
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
+          <IntegratedSelection/>
+
+          <PagingState
+            currentPage={currentPage}
+            onCurrentPageChange={setCurrentPage}
+            pageSize={pageSize}
+          />
+          <CustomPaging
+            totalCount={totalCount}
+          />
+          <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)' cellComponent={DenseCell}/>
+          <TableHeaderRow showSortingControls/>
+          <TableColumnVisibility
+            defaultHiddenColumnNames={defaultHiddenColumnNames}
+          />
+          <TableSelection showSelectAll/>
+          <PagingPanel/>
+        </DataGrid>
+      </Paper>
     </>
   );
 };
