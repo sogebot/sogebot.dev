@@ -1,6 +1,8 @@
 import {
+  CustomPaging,
   FilteringState,
   IntegratedSelection,
+  PagingState,
   RowDetailState,
   SelectionState,
   Sorting,
@@ -8,11 +10,13 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
+  PagingPanel,
   Table,
   TableColumnVisibility,
   TableHeaderRow,
   TableRowDetail,
   TableSelection,
+  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
 import {
@@ -31,7 +35,7 @@ import {
   ReactElement, useCallback, useEffect, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import SimpleBar from 'simplebar-react';
+import { useWindowSize } from 'rooks';
 import { v4 } from 'uuid';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -57,6 +61,15 @@ const PageManageViewers: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
+
+  const { innerHeight } = useWindowSize();
+  const cellSize = 77.91;
+  const [pageSize, setPageSize] = useState(Math.floor((Math.max(innerHeight ?? 0, 400) - cellSize - 50 - 60) / 80));
+  useEffect(() => {
+    setPageSize(Math.floor((Math.max(innerHeight ?? 0, 400) - cellSize - 50 - 60) / 80));
+  }, [ innerHeight ]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   const [sorting, setSorting] = useState<Sorting[]>([{
     columnName: 'userName', direction: 'asc',
@@ -198,21 +211,19 @@ const PageManageViewers: NextPageWithLayout = () => {
   }, [router]);
 
   useEffect(() => {
-    setLoading(true);
-    console.log({
-      sorting, filters,
-    });
-    refresh({
-      order: sorting, filter: filters,
-    }).then(() => setLoading(false));
-    setLoading(false);
+    refresh();
+  }, [sorting, filters, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(0);
   }, [sorting, filters]);
 
-  const refresh = async ({ order, filter }: {order?: Sorting[], filter?: any[]} = {}) => {
+  const refresh = useCallback(async () => {
+    setLoading(true);
     await Promise.all([
       new Promise<void>(resolve => {
-        const sortTable = order ? {
-          orderBy: order[0].columnName, sortOrder: order[0].direction.toUpperCase() as 'ASC' | 'DESC',
+        const sortTable = sorting.length > 0 ? {
+          orderBy: sorting[0].columnName, sortOrder: sorting[0].direction.toUpperCase() as 'ASC' | 'DESC',
         } : undefined;
 
         if (sortTable && sortTable.orderBy === 'userIdAndName') {
@@ -220,12 +231,14 @@ const PageManageViewers: NextPageWithLayout = () => {
         }
 
         getSocket('/core/users').emit('find.viewers', {
-          state: v4(),
-          order: sortTable,
-          filter,
-        }, (err, items_) => {
+          state:   v4(),
+          order:   sortTable,
+          page:    currentPage,
+          perPage: pageSize,
+          filter:  filters as any,
+        }, (err, items_, _count) => {
           console.log({
-            err, items_,
+            err, items_, _count,
           });
           if (err) {
             console.error(err);
@@ -233,12 +246,14 @@ const PageManageViewers: NextPageWithLayout = () => {
             return;
           }
 
+          setTotalCount(_count);
           setItems(items_);
           resolve();
         });
       }),
     ]);
-  };
+    setLoading(false);
+  }, [pageSize, currentPage, sorting, filters]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -303,9 +318,6 @@ const PageManageViewers: NextPageWithLayout = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Alert severity="info" sx={{ padding: 0 }}>Not all users are being shown, use filtering to search for users!</Alert>
-        </Grid>
-        <Grid item>
           <ConfirmButton handleOk={() => resetTips()}>Reset Tips</ConfirmButton>
           <ConfirmButton handleOk={() => resetBits()}>Reset Bits</ConfirmButton>
           <ConfirmButton handleOk={() => resetSubgifts()}>Reset subgifts</ConfirmButton>
@@ -327,41 +339,51 @@ const PageManageViewers: NextPageWithLayout = () => {
           position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
         }} />
         : <Paper>
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-            <DataGrid
-              rows={items}
-              columns={columns}
-              getRowId={row => row.userId}
-            >
-              <BoolTypeProvider
-                for={['tickOffline', 'isEnabled']}
-              />
+          <DataGrid
+            rows={items}
+            columns={columns}
+            getRowId={row => row.userId}
+          >
+            <BoolTypeProvider
+              for={['tickOffline', 'isEnabled']}
+            />
 
-              <RowDetailState/>
-              <SortingState
-                sorting={sorting}
-                onSortingChange={setSorting}
-                columnExtensions={sortingTableExtensions}
-              />
+            <RowDetailState/>
+            <SortingState
+              sorting={sorting}
+              onSortingChange={setSorting}
+              columnExtensions={sortingTableExtensions}
+            />
 
-              <FilteringState filters={filters}/>
-              <SelectionState
-                selection={selection}
-                onSelectionChange={setSelection}
-              />
+            <FilteringState filters={filters}/>
+            <SelectionState
+              selection={selection}
+              onSelectionChange={setSelection}
+            />
 
-              <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions}/>
-              <TableHeaderRow showSortingControls/>
-              <TableRowDetail
-                contentComponent={RowDetail}
-              />
-              <TableColumnVisibility
-                defaultHiddenColumnNames={defaultHiddenColumnNames}
-              />
-              <TableSelection showSelectAll/>
-            </DataGrid>
-          </SimpleBar>
+            <IntegratedSelection/>
+
+            <PagingState
+              currentPage={currentPage}
+              onCurrentPageChange={setCurrentPage}
+              pageSize={pageSize}
+            />
+            <CustomPaging
+              totalCount={totalCount}
+            />
+
+            <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)'/>
+
+            <TableHeaderRow showSortingControls/>
+            <TableRowDetail
+              contentComponent={RowDetail}
+            />
+            <TableColumnVisibility
+              defaultHiddenColumnNames={defaultHiddenColumnNames}
+            />
+            <TableSelection showSelectAll/>
+            <PagingPanel/>
+          </DataGrid>
         </Paper>}
     </>
   );
