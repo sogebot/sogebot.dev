@@ -19,6 +19,7 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
 import {
+  Backdrop,
   CircularProgress,
   Grid,
   Paper,
@@ -332,57 +333,57 @@ const PageManageViewers: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
-      {loading
-        ? <CircularProgress color="inherit" sx={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-        }} />
-        : <Paper>
-          <DataGrid
-            rows={items}
-            columns={columns}
-            getRowId={row => row.userId}
-          >
-            <BoolTypeProvider
-              for={['tickOffline', 'isEnabled']}
-            />
+      <Backdrop open={loading} >
+        <CircularProgress color="inherit"/>
+      </Backdrop>
 
-            <RowDetailState/>
-            <SortingState
-              sorting={sorting}
-              onSortingChange={setSorting}
-              columnExtensions={sortingTableExtensions}
-            />
+      <Paper>
+        <DataGrid
+          rows={items}
+          columns={columns}
+          getRowId={row => row.userId}
+        >
+          <BoolTypeProvider
+            for={['tickOffline', 'isEnabled']}
+          />
 
-            <FilteringState filters={filters}/>
-            <SelectionState
-              selection={selection}
-              onSelectionChange={setSelection}
-            />
+          <RowDetailState/>
+          <SortingState
+            sorting={sorting}
+            onSortingChange={setSorting}
+            columnExtensions={sortingTableExtensions}
+          />
 
-            <IntegratedSelection/>
+          <FilteringState filters={filters}/>
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
 
-            <PagingState
-              currentPage={currentPage}
-              onCurrentPageChange={setCurrentPage}
-              pageSize={pageSize}
-            />
-            <CustomPaging
-              totalCount={totalCount}
-            />
+          <IntegratedSelection/>
 
-            <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)'/>
+          <PagingState
+            currentPage={currentPage}
+            onCurrentPageChange={setCurrentPage}
+            pageSize={pageSize}
+          />
+          <CustomPaging
+            totalCount={totalCount}
+          />
 
-            <TableHeaderRow showSortingControls/>
-            <TableRowDetail
-              contentComponent={RowDetail}
-            />
-            <TableColumnVisibility
-              defaultHiddenColumnNames={defaultHiddenColumnNames}
-            />
-            <TableSelection showSelectAll/>
-            <PagingPanel/>
-          </DataGrid>
-        </Paper>}
+          <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)'/>
+
+          <TableHeaderRow showSortingControls/>
+          <TableRowDetail
+            contentComponent={RowDetail}
+          />
+          <TableColumnVisibility
+            defaultHiddenColumnNames={defaultHiddenColumnNames}
+          />
+          <TableSelection showSelectAll/>
+          <PagingPanel/>
+        </DataGrid>
+      </Paper>
     </>
   );
 };
