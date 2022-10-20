@@ -11,7 +11,6 @@ import {
 import {
   Grid as DataGrid,
   PagingPanel,
-  Table,
   TableColumnVisibility,
   TableHeaderRow,
   TableRowDetail,
@@ -20,7 +19,6 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
 import {
-  Alert,
   CircularProgress,
   Grid,
   Paper,
@@ -199,25 +197,6 @@ const PageManageViewers: NextPageWithLayout = () => {
 
   const { element: filterElement, filters } = useFilter<UserInterface>(useFilterSetup);
 
-  const deleteItem = useCallback((item: UserInterface) => {
-    getSocket('/core/users').emit('viewers::remove', item.userId, () => {
-      enqueueSnackbar(`User ${item.userName}#${item.userId} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
-  }, [ enqueueSnackbar ]);
-
-  useEffect(() => {
-    refresh().then(() => setLoading(false));
-  }, [router]);
-
-  useEffect(() => {
-    refresh();
-  }, [sorting, filters, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [sorting, filters]);
-
   const refresh = useCallback(async () => {
     setLoading(true);
     await Promise.all([
@@ -254,6 +233,25 @@ const PageManageViewers: NextPageWithLayout = () => {
     ]);
     setLoading(false);
   }, [pageSize, currentPage, sorting, filters]);
+
+  const deleteItem = useCallback((item: UserInterface) => {
+    getSocket('/core/users').emit('viewers::remove', item.userId, () => {
+      enqueueSnackbar(`User ${item.userName}#${item.userId} deleted successfully.`, { variant: 'success' });
+      refresh();
+    });
+  }, [ enqueueSnackbar, refresh ]);
+
+  useEffect(() => {
+    refresh().then(() => setLoading(false));
+  }, [router, refresh]);
+
+  useEffect(() => {
+    refresh();
+  }, [sorting, filters, currentPage, refresh]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [sorting, filters]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));

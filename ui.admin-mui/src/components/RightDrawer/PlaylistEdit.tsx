@@ -1,16 +1,14 @@
-import { SkipNextTwoTone, SkipPreviousTwoTone } from '@mui/icons-material';
+import { SongPlaylist } from '@entity/song';
 import { Autocomplete, LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Dialog, DialogContent, Divider, FormLabel, Grid, IconButton, Skeleton, Slider, Stack, Typography, Chip,
+  Box, Button, Chip, Dialog, DialogContent, Divider, FormLabel, Grid, Slider, Stack,
 } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
 import { validateOrReject } from 'class-validator';
-import { cloneDeep, merge } from 'lodash';
+import { merge } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -40,7 +38,7 @@ export const PlaylistEdit: React.FC<{
 
   useEffect(() => {
     setItem(props.item);
-  }, [props.open]);
+  }, [props]);
 
   const tagsItems = props.tags.map(tag => ({
     title: tag, value: tag,
@@ -66,7 +64,7 @@ export const PlaylistEdit: React.FC<{
 
   useEffect(() => {
     reset();
-  }, [router]);
+  }, [router, reset]);
 
   const handleClose = () => {
     router.push('/manage/songs/playlist');
@@ -84,14 +82,14 @@ export const PlaylistEdit: React.FC<{
       enqueueSnackbar('Song saved.', { variant: 'success' });
       router.push(`/manage/songs/playlist`);
     });
-  }, [item, enqueueSnackbar]);
+  }, [item, enqueueSnackbar, router]);
 
   const opts = useMemo<YouTubeProps['opts']>(() => {
     return {
       height: '100%',
       width:  '100%',
     };
-  }, [item]);
+  }, []);
 
   const setRange = (newValue: [min: number, max: number], activeThumb: number) => {
     const minDistance = 10;
@@ -158,7 +156,7 @@ export const PlaylistEdit: React.FC<{
 
         <Autocomplete
           fullWidth
-          value={item.tags.map(o => ({
+          value={item.tags.map((o: string) => ({
             title: o, value: o,
           })) as { title: string, value: string}[]}
           multiple
