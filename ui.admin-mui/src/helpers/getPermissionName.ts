@@ -1,6 +1,6 @@
-import type { PermissionsInterface } from '@entity/permissions';
+import type { Permissions } from '@entity/permissions';
 
-const getPermissionName = (id: string | null, permissions: PermissionsInterface[]) => {
+const getPermissionName = (id: string | null, permissions: Permissions[]) => {
   if (!permissions) {
     throw new Error('Missing permissions list');
   }
