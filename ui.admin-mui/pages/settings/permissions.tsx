@@ -4,8 +4,6 @@ import {
   Alert,
   Backdrop,
   Box,
-  Card,
-  CardContent,
   CircularProgress,
   IconButton,
   List,
@@ -13,7 +11,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Stack,
   Toolbar,
   Typography,
@@ -26,8 +23,8 @@ import {
 } from 'react';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
+
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
 import { getSocket } from '~/src/helpers/socket';
@@ -39,10 +36,6 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
 
   const [ items, setItems ] = useState<Permissions[]>([]);
   const [ loading, setLoading ] = useState(true);
-
-  useEffect(() => {
-    refresh();
-  }, [router]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -68,7 +61,11 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     setLoading(false);
   }, [ router ]);
 
-  const reorder = () => {
+  useEffect(() => {
+    refresh();
+  }, [router, refresh ]);
+
+  const reorder = useCallback(() => {
     setItems((permissions) => {
       const viewers = cloneDeep(permissions.find(o => o.id === defaultPermissions.VIEWERS));
       const sorted = sortBy(permissions.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc');
@@ -76,10 +73,12 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         viewers.order = items.length;
         sorted.push(viewers);
       }
-      getSocket('/core/permissions').emit('permission::save', sorted, () => {});
+      getSocket('/core/permissions').emit('permission::save', sorted, () => {
+        return;
+      });
       return [...sorted];
     });
-  };
+  }, [items]);
 
   const addNewPermissionGroup = useCallback(() => {
     const id = v4();
@@ -100,7 +99,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     });
     reorder(); // include save
     return;
-  }, [ items ]);
+  }, [ items, reorder ]);
 
   return (
     <>
