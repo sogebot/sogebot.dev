@@ -130,24 +130,30 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             <AddTwoTone />
           </IconButton>
         </Toolbar>
-        <List disablePadding>
+        <List disablePadding dense>
           {
             items.map(permission => <ListItem disablePadding key={permission.id}>
               <ListItemButton selected={router.query.permissionId === permission.id} onClick={() => router.push(`/settings/permissions/${permission.id}`)}>
                 <ListItemIcon sx={{ fontSize: '30px' }}>
                   { permission.isWaterfallAllowed ? '≥' : '=' }
                 </ListItemIcon>
-                <ListItemText primary={
-                  <Typography color={permission.isCorePermission ? 'white' : grey[400]} sx={{ fontWeight: permission.isCorePermission ? 'bold' : 'normal' }}>
-                    {permission.name}
-                  </Typography>} secondary={
-                  <>
-                    <ManageAccountsTwoTone sx={{ transform: 'translate(-5px, 7px)' }}/>
-                    <Typography variant="caption">
-                      { translate('core.permissions.' + permission.automation) }
-                    </Typography>
-                  </>
-                } />
+                <ListItemText
+                  primary={
+                    <Stack direction='row' alignItems={'center'}>
+                      <Typography  color={permission.isCorePermission ? 'white' : grey[400]} sx={{
+                        fontWeight: permission.isCorePermission ? 'bold' : 'normal', flexGrow: 1,
+                      }}>
+                        {permission.name}
+                      </Typography>
+                      <Box sx={{ height: '24px' }}>
+                        <Stack direction='row' alignItems={'center'} color={grey[400]} spacing={1}>
+                          <ManageAccountsTwoTone/>
+                          <Typography variant='button' fontSize={12}>
+                            { translate('core.permissions.' + permission.automation) }
+                          </Typography>
+                        </Stack>
+                      </Box>
+                    </Stack>} />
               </ListItemButton>
             </ListItem>)
           }
