@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PermissionsInterface } from '@sogebot/backend/src/database/entity/permissions';
+import { Permissions } from '@sogebot/backend/src/database/entity/permissions';
 
 export const pageSlice = createSlice({
   name:         'page',
@@ -44,7 +44,7 @@ export const pageSlice = createSlice({
     setAverageStats: (state: any, action: { payload: Record<string, any> }) => {
       state.averageStats = action.payload;
     },
-    setPermissions: (state: any, action: { payload: PermissionsInterface[] }) => {
+    setPermissions: (state: any, action: { payload: Permissions[] }) => {
       state.permissions = action.payload;
     },
   },
