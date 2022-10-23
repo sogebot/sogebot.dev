@@ -1,6 +1,6 @@
 import { DragIndicatorTwoTone, ManageAccountsTwoTone } from '@mui/icons-material';
 import {
-  Box, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography,
+  ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
@@ -32,18 +32,20 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
         primary={
           <Stack direction='row' alignItems={'center'}>
             <Typography  color={permission.isCorePermission ? 'white' : grey[400]} sx={{
-              fontWeight: permission.isCorePermission ? 'bold' : 'normal', flexGrow: 1,
+              fontWeight:   permission.isCorePermission ? 'bold' : 'normal',
+              flexGrow:     1,
+              width:        '100%',
+              textOverflow: 'ellipsis',
+              overflow:     'hidden',
             }}>
               {permission.name}
             </Typography>
-            <Box sx={{ height: '24px' }}>
-              <Stack direction='row' alignItems={'center'} color={grey[400]} spacing={1}>
-                <ManageAccountsTwoTone/>
-                <Typography variant='button' fontSize={12}>
-                  { translate('core.permissions.' + permission.automation) }
-                </Typography>
-              </Stack>
-            </Box>
+            <Stack direction='row' width={'100%'} alignItems={'center'} justifyContent={'right'} color={grey[400]} spacing={1}>
+              <ManageAccountsTwoTone/>
+              <Typography variant='button' fontSize={12}>
+                { translate('core.permissions.' + permission.automation) }
+              </Typography>
+            </Stack>
           </Stack>} />
     </ListItemButton>
   </ListItem>;

@@ -8,14 +8,17 @@ import {
   Backdrop,
   Box,
   CircularProgress,
+  Grid,
   IconButton,
   List,
   ListItem,
+  TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import {
+  capitalize,
   cloneDeep, orderBy, sortBy,
 } from 'lodash';
 import { useRouter } from 'next/router';
@@ -85,6 +88,11 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
       return [...sorted];
     });
   }, [items, enqueueSnackbar]);
+
+  const [ selectedItem, setSelectedItem ] = useState<null | StripTypeORMEntity<Permissions>>(null);
+  useEffect(() => {
+    setSelectedItem(router.query.permissionId ? items.find(o => o.id === router.query.permissionId) ?? null : null);
+  }, [items, router.query.permissionId]);
 
   const onDragEndHandler = useCallback((value: any) => {
     if (!value.destination) {
@@ -157,69 +165,128 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     );
   }, [ items ]);
 
+  const handlePermissionChange = useCallback(<T extends keyof StripTypeORMEntity<Permissions>>(key: T, value: StripTypeORMEntity<Permissions>[T]) => {
+    if (!selectedItem) {
+      return;
+    }
+
+    setSelectedItem(i => {
+      if (i) {
+        return {
+          ...i, [key]: value,
+        };
+      } else {
+        return null;
+      }
+    });
+  }, [ selectedItem ]);
+
   return (
     <>
       <Backdrop open={loading} >
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      <Box sx={{
-        width: '100%', maxWidth: 400, bgcolor: grey[900], border: `1px solid ${grey[800]}`,
-      }}>
-        <Toolbar sx={{ backgroundColor: blueGrey[900] }}>
-          <Typography
-            variant="button"
-            component="div"
-            fontSize={'16px'}
-            sx={{ flexGrow: 1 }}
-          >
-            { translate('core.permissions.permissionsGroups') }
-          </Typography>
-
-          <IconButton
-            onClick={() => addNewPermissionGroup()}
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-          >
-            <AddTwoTone />
-          </IconButton>
-        </Toolbar>
-
-        {items.length > 0 && <List disablePadding dense>
-          <PermissionsListItem permission={items.find(o => o.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9')!}/>
-        </List>}
-
-        <DragDropContext onDragEnd={onDragEndHandler}>
-          <Droppable droppableId="droppable">
-            {(droppableProvided) => (<>
-              <List disablePadding dense
-                ref={droppableProvided.innerRef}
+      <Grid container spacing={1}>
+        <Grid item xs={4}>
+          <Box sx={{
+            width: '100%', bgcolor: grey[900], border: `1px solid ${grey[800]}`,
+          }}>
+            <Toolbar sx={{
+              backgroundColor: blueGrey[900], minHeight: '47px !important',
+            }}>
+              <Typography
+                variant="button"
+                component="div"
+                fontSize={'16px'}
+                fontWeight={'bold'}
+                sx={{ flexGrow: 1 }}
               >
-                {orderedPermissions.map((permission) => (
-                  <Draggable key={permission.id} draggableId={permission.id} index={permission.order} isDragDisabled={permission.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9'}>
-                    {(draggableProvided) => (
-                      <PermissionsListItem permission={permission} draggableProvided={draggableProvided}/>
-                    )}
-                  </Draggable>
-                ))}
-              </List>
-              {droppableProvided.placeholder}
-            </>
-            )}
-          </Droppable>
-        </DragDropContext>
+                { translate('core.permissions.permissionsGroups') }
+              </Typography>
 
-        {items.length > 0 && <List disablePadding dense>
-          <PermissionsListItem permission={items.find(o => o.id === '0efd7b1c-e460-4167-8e06-8aaf2c170311')!}/>
-        </List>}
+              <IconButton
+                onClick={() => addNewPermissionGroup()}
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+              >
+                <AddTwoTone />
+              </IconButton>
+            </Toolbar>
 
-        <ListItem disableGutters sx={{ padding: 0 }}>
-          <Alert severity='info' sx={{ width: '100%' }}>
-            { translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }
-          </Alert>
-        </ListItem>
-      </Box>
+            {items.length > 0 && <List disablePadding dense>
+              <PermissionsListItem permission={items.find(o => o.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9')!}/>
+            </List>}
+
+            <DragDropContext onDragEnd={onDragEndHandler}>
+              <Droppable droppableId="droppable">
+                {(droppableProvided) => (<>
+                  <List disablePadding dense
+                    ref={droppableProvided.innerRef}
+                  >
+                    {orderedPermissions.map((permission) => (
+                      <Draggable key={permission.id} draggableId={permission.id} index={permission.order} isDragDisabled={permission.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9'}>
+                        {(draggableProvided) => (
+                          <PermissionsListItem permission={permission} draggableProvided={draggableProvided}/>
+                        )}
+                      </Draggable>
+                    ))}
+                  </List>
+                  {droppableProvided.placeholder}
+                </>
+                )}
+              </Droppable>
+            </DragDropContext>
+
+            {items.length > 0 && <List disablePadding dense>
+              <PermissionsListItem permission={items.find(o => o.id === '0efd7b1c-e460-4167-8e06-8aaf2c170311')!}/>
+            </List>}
+
+            <ListItem disableGutters sx={{ padding: 0 }}>
+              <Alert severity='info' sx={{ width: '100%' }}>
+                { translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }
+              </Alert>
+            </ListItem>
+          </Box>
+        </Grid>
+        <Grid item xs={8}>
+          {selectedItem && <Box sx={{
+            width: '100%', bgcolor: grey[900], border: `1px solid ${grey[800]}`,
+          }} key={selectedItem.id}>
+            <Toolbar sx={{
+              backgroundColor: blueGrey[900], minHeight: '47px !important',
+            }}>
+              <Typography
+                variant="button"
+                component="div"
+                fontSize={'16px'}
+                fontWeight={'bold'}
+                sx={{ flexGrow: 1 }}
+              >
+                { translate('core.permissions.settings') }
+              </Typography>
+            </Toolbar>
+            <Box
+              component="form"
+              sx={{ '& .MuiFormControl-root': { p: 0.5 } }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                fullWidth
+                disabled={selectedItem.isCorePermission}
+                variant="filled"
+                value={selectedItem.name}
+                required
+                onChange={(event) => handlePermissionChange('name', event.target.value)}
+                label={capitalize(translate('core.permissions.name'))}
+              />
+            </Box>
+          </Box>}
+
+        </Grid>
+      </Grid>
     </>
   );
 };
