@@ -98,8 +98,8 @@ const PageManageViewers: NextPageWithLayout = () => {
               <Typography>{row.userName}</Typography>
               <Typography variant="caption" color={grey[500]}>{row.userId}</Typography>
               <div>
-                {row.isSubscriber === true && <Chip label="subscriber" color="success" size="small" variant="outlined"/>}
-                {row.isVIP === true && <Chip label="VIP" color="success" size="small" variant="outlined" />}
+                {!!row.isSubscriber && <Chip label="subscriber" color="success" size="small" variant="outlined"/>}
+                {!!row.isVIP && <Chip label="VIP" color="success" size="small" variant="outlined" />}
               </div>
             </>);
         },
