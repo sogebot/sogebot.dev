@@ -25,8 +25,8 @@ import {
 } from 'react';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
+
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
 import { PermissionsListItem } from '~/src/components/Permissions/ListItem';

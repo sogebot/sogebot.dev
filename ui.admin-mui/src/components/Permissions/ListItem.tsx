@@ -20,9 +20,7 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
     ref={draggableProvided?.innerRef}
     {...draggableProvided?.draggableProps}>
     <ListItemButton selected={router.query.permissionId === permission.id} onClick={() => router.push(`/settings/permissions/${permission.id}`)}>
-      {draggableProvided && <ListItemIcon sx={{
-        minWidth: '40px',
-      }} {...draggableProvided.dragHandleProps}>
+      {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
         <DragIndicatorTwoTone/>
       </ListItemIcon>}
       <ListItemIcon sx={{
