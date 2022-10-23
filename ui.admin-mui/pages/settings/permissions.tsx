@@ -1,5 +1,8 @@
 import { Permissions } from '@entity/permissions';
-import { AddTwoTone, ManageAccountsTwoTone } from '@mui/icons-material';
+import {
+  DragDropContext, Draggable, Droppable,
+} from '@hello-pangea/dnd';
+import { AddTwoTone } from '@mui/icons-material';
 import {
   Alert,
   Backdrop,
@@ -8,33 +11,35 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Stack,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
-import { cloneDeep, sortBy } from 'lodash';
-import { useRouter } from 'next/router';
 import {
-  ReactElement, useCallback, useEffect, useState,
+  cloneDeep, orderBy, sortBy,
+} from 'lodash';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import {
+  ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 
+import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
+import { PermissionsListItem } from '~/src/components/Permissions/ListItem';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
+import { StripTypeORMEntity } from '~/src/types/stripTypeORMEntity';
 
 const PageSettingsPermissions: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Permissions[]>([]);
+  const [ items, setItems ] = useState<StripTypeORMEntity<Permissions>[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -73,12 +78,56 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         viewers.order = items.length;
         sorted.push(viewers);
       }
-      getSocket('/core/permissions').emit('permission::save', sorted, () => {
+      getSocket('/core/permissions').emit('permission::save', sorted as Permissions[], () => {
+        enqueueSnackbar('Permissions updated.', { variant: 'success' });
         return;
       });
       return [...sorted];
     });
-  }, [items]);
+  }, [items, enqueueSnackbar]);
+
+  const onDragEndHandler = useCallback((value: any) => {
+    if (!value.destination) {
+      return;
+    }
+    const destIdx = value.destination.index;
+    const PID = value.draggableId;
+
+    setItems(o => {
+      const output: StripTypeORMEntity<Permissions>[] = [];
+
+      const _permissions = orderBy(o, 'order', 'asc');
+      const fromIdx = _permissions.findIndex(m => m.id === PID);
+
+      if (fromIdx === destIdx) {
+        return o;
+      }
+
+      for (let idx = 0; idx < o.length; idx++) {
+        const permission = _permissions[idx];
+        if (permission.id === PID) {
+          continue;
+        }
+
+        if (idx === destIdx && destIdx === 1) {
+          const dragged = _permissions[fromIdx];
+          dragged.order = output.length;
+          output.push(dragged);
+        }
+
+        permission.order = output.length;
+        output.push(permission);
+
+        if (idx === destIdx && destIdx > 1) {
+          const dragged = _permissions[fromIdx];
+          dragged.order = output.length;
+          output.push(dragged);
+        }
+      }
+      return output;
+    });
+    reorder();
+  }, [reorder]);
 
   const addNewPermissionGroup = useCallback(() => {
     const id = v4();
@@ -100,6 +149,13 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     reorder(); // include save
     return;
   }, [ items, reorder ]);
+
+  const orderedPermissions = useMemo(() => {
+    return orderBy(items, 'order', 'asc').filter(o =>
+      o.id !== '4300ed23-dca0-4ed9-8014-f5f2f7af55a9' // exclude casters
+      && o.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311' // exclude viewers
+    );
+  }, [ items ]);
 
   return (
     <>
@@ -129,39 +185,40 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             <AddTwoTone />
           </IconButton>
         </Toolbar>
-        <List disablePadding dense>
-          {
-            items.map(permission => <ListItem disablePadding key={permission.id}>
-              <ListItemButton selected={router.query.permissionId === permission.id} onClick={() => router.push(`/settings/permissions/${permission.id}`)}>
-                <ListItemIcon sx={{ fontSize: '30px' }}>
-                  { permission.isWaterfallAllowed ? '≥' : '=' }
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Stack direction='row' alignItems={'center'}>
-                      <Typography  color={permission.isCorePermission ? 'white' : grey[400]} sx={{
-                        fontWeight: permission.isCorePermission ? 'bold' : 'normal', flexGrow: 1,
-                      }}>
-                        {permission.name}
-                      </Typography>
-                      <Box sx={{ height: '24px' }}>
-                        <Stack direction='row' alignItems={'center'} color={grey[400]} spacing={1}>
-                          <ManageAccountsTwoTone/>
-                          <Typography variant='button' fontSize={12}>
-                            { translate('core.permissions.' + permission.automation) }
-                          </Typography>
-                        </Stack>
-                      </Box>
-                    </Stack>} />
-              </ListItemButton>
-            </ListItem>)
-          }
-          <ListItem disableGutters sx={{ padding: 0 }}>
-            <Alert severity='info' sx={{ width: '100%' }}>
-              { translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }
-            </Alert>
-          </ListItem>
-        </List>
+
+        {items.length > 0 && <List disablePadding dense>
+          <PermissionsListItem permission={items.find(o => o.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9')!}/>
+        </List>}
+
+        <DragDropContext onDragEnd={onDragEndHandler}>
+          <Droppable droppableId="droppable">
+            {(droppableProvided) => (<>
+              <List disablePadding dense
+                ref={droppableProvided.innerRef}
+              >
+                {orderedPermissions.map((permission) => (
+                  <Draggable key={permission.id} draggableId={permission.id} index={permission.order} isDragDisabled={permission.id === '4300ed23-dca0-4ed9-8014-f5f2f7af55a9'}>
+                    {(draggableProvided) => (
+                      <PermissionsListItem permission={permission} draggableProvided={draggableProvided}/>
+                    )}
+                  </Draggable>
+                ))}
+              </List>
+              {droppableProvided.placeholder}
+            </>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {items.length > 0 && <List disablePadding dense>
+          <PermissionsListItem permission={items.find(o => o.id === '0efd7b1c-e460-4167-8e06-8aaf2c170311')!}/>
+        </List>}
+
+        <ListItem disableGutters sx={{ padding: 0 }}>
+          <Alert severity='info' sx={{ width: '100%' }}>
+            { translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }
+          </Alert>
+        </ListItem>
       </Box>
     </>
   );

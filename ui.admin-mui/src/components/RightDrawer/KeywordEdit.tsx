@@ -166,6 +166,9 @@ export const KeywordEdit: React.FC<{
   }, []);
 
   const onDragEndHandler = useCallback((value: any) => {
+    if (!value.destination) {
+      return;
+    }
     const destIdx = value.destination.index;
     const responseId = value.draggableId;
 
