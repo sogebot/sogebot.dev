@@ -3,20 +3,29 @@ import {
   DragDropContext, Draggable, Droppable,
 } from '@hello-pangea/dnd';
 import { AddTwoTone } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Backdrop,
   Box,
+  Checkbox,
   CircularProgress,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
   Grid,
   IconButton,
+  InputLabel,
   List,
   ListItem,
+  MenuItem,
   TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
+import Select from '@mui/material/Select';
 import {
   capitalize,
   cloneDeep, orderBy, sortBy,
@@ -31,8 +40,10 @@ import { v4 } from 'uuid';
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 
 import { NextPageWithLayout } from '~/pages/_app';
+import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
 import { PermissionsListItem } from '~/src/components/Permissions/ListItem';
+import { TestUserField } from '~/src/components/Permissions/TestUserField';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { StripTypeORMEntity } from '~/src/types/stripTypeORMEntity';
@@ -44,6 +55,8 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
 
   const [ items, setItems ] = useState<StripTypeORMEntity<Permissions>[]>([]);
   const [ loading, setLoading ] = useState(true);
+  const [ removing, setRemoving ] = useState(false);
+  const [ saving, setSaving ] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -73,21 +86,25 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     refresh();
   }, [router, refresh ]);
 
-  const reorder = useCallback(() => {
+  const reorder = useCallback((quiet = false) => {
     setItems((permissions) => {
       const viewers = cloneDeep(permissions.find(o => o.id === defaultPermissions.VIEWERS));
-      const sorted = sortBy(permissions.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc');
+      const sorted = sortBy(permissions.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc').map((o, idx) => ({
+        ...o, order: idx,
+      }));
       if (viewers) {
-        viewers.order = items.length;
+        viewers.order = sorted.length;
         sorted.push(viewers);
       }
       getSocket('/core/permissions').emit('permission::save', sorted as Permissions[], () => {
-        enqueueSnackbar('Permissions updated.', { variant: 'success' });
+        if (!quiet) {
+          enqueueSnackbar('Permissions updated.', { variant: 'success' });
+        }
         return;
       });
       return [...sorted];
     });
-  }, [items, enqueueSnackbar]);
+  }, [enqueueSnackbar]);
 
   const [ selectedItem, setSelectedItem ] = useState<null | StripTypeORMEntity<Permissions>>(null);
   useEffect(() => {
@@ -154,7 +171,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
       permissions.push(data);
       return [...permissions];
     });
-    reorder(); // include save
+    setTimeout(() => reorder(), 10); // include save
     return;
   }, [ items, reorder ]);
 
@@ -180,6 +197,33 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
       }
     });
   }, [ selectedItem ]);
+
+  const removeSelectedPermission = useCallback(() => {
+    if (!selectedItem || selectedItem.isCorePermission) {
+      return;
+    }
+    setRemoving(true);
+    getSocket('/core/permissions').emit('generic::deleteById', selectedItem.id, async () => {
+      enqueueSnackbar(`Permissions ${selectedItem.name} removed.`, { variant: 'success' });
+      router.push('/settings/permissions/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
+      setRemoving(false);
+      await refresh();
+      await reorder(true);
+    });
+  }, [ enqueueSnackbar, selectedItem, refresh, router, reorder ]);
+
+  const saveSelectedPermission = useCallback(() => {
+    setSaving(true);
+    if (!selectedItem || selectedItem.isCorePermission) {
+      return;
+    }
+    getSocket('/core/permissions').emit('permission::save', [...items, selectedItem] as any, async () => {
+      enqueueSnackbar(`Permissions ${selectedItem.name} updated.`, { variant: 'success' });
+      await refresh();
+      await reorder(true);
+    });
+    setSaving(false);
+  }, [ enqueueSnackbar, selectedItem, refresh, items, reorder ]);
 
   return (
     <>
@@ -269,7 +313,10 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             </Toolbar>
             <Box
               component="form"
-              sx={{ '& .MuiFormControl-root': { p: 0.5 } }}
+              sx={{
+                px:                       1,
+                '& .MuiFormControl-root': { my: 1 },
+              }}
               noValidate
               autoComplete="off"
             >
@@ -282,6 +329,38 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                 onChange={(event) => handlePermissionChange('name', event.target.value)}
                 label={capitalize(translate('core.permissions.name'))}
               />
+
+              {!selectedItem.isCorePermission
+                && <FormControl fullWidth variant="filled" >
+                  <InputLabel id="permission-select-label" shrink>{translate('permissions')}</InputLabel>
+                  <Select
+                    value={selectedItem.automation}
+                    onChange={(event) => handlePermissionChange('automation', event.target.value)}
+                    label={capitalize(translate('core.permissions.baseUsersSet'))}
+                  >
+                    {['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers'].map(item => <MenuItem key={item} value={item}>{translate(`core.permissions.${item}`)}</MenuItem>)}
+                  </Select>
+                </FormControl>}
+
+              {!selectedItem.isCorePermission
+                && <FormGroup>
+                  <FormControlLabel control={<Checkbox checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange('isWaterfallAllowed', !selectedItem.isWaterfallAllowed)} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
+                </FormGroup>}
+
+              <TestUserField permissionId={selectedItem.id}/>
+
+              <Divider/>
+
+              {!selectedItem.isCorePermission
+                && <Grid container sx={{ py: 1 }} justifyContent='space-between'>
+                  <Grid item>
+                    <ConfirmButton loading={removing} variant="contained" color='error' sx={{ minWidth: '250px' }} handleOk={() => removeSelectedPermission()}>{ translate('delete') }</ConfirmButton>
+                  </Grid>
+                  <Grid item>
+                    <LoadingButton loading={saving} variant="contained" sx= {{ minWidth: '250px' }} onClick={() => saveSelectedPermission()}>{ translate('dialog.buttons.saveChanges.idle') }</LoadingButton>
+                  </Grid>
+                </Grid>
+              }
             </Box>
           </Box>}
 

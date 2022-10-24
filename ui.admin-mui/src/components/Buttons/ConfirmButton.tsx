@@ -1,3 +1,5 @@
+import { LoadingButton } from '@mui/lab';
+import { SxProps, Theme } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,12 +12,16 @@ export const ConfirmButton: React.FC<{
   handleCancel?: () => void;
   variant?: 'text' | 'outlined' | 'contained';
   color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
+  loading?: boolean;
+  sx?: SxProps<Theme> | undefined
 }> =  ({
   children,
   handleOk,
   handleCancel,
   variant = 'text',
   color = 'primary',
+  loading,
+  sx,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -31,7 +37,7 @@ export const ConfirmButton: React.FC<{
   };
 
   return (<>
-    <Button onClick={() => setOpen(true)} variant={variant} color={color}>{children}</Button>
+    <LoadingButton sx={sx} loading={loading || false} onClick={() => setOpen(true)} variant={variant} color={color}>{children}</LoadingButton>
     <Dialog
       open={open}
     >
