@@ -44,6 +44,7 @@ import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
 import { PermissionsListItem } from '~/src/components/Permissions/ListItem';
 import { TestUserField } from '~/src/components/Permissions/TestUserField';
+import { UserSearchlist } from '~/src/components/Permissions/UserSearchList';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { StripTypeORMEntity } from '~/src/types/stripTypeORMEntity';
@@ -346,6 +347,16 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                 && <FormGroup>
                   <FormControlLabel control={<Checkbox checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange('isWaterfallAllowed', !selectedItem.isWaterfallAllowed)} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
                 </FormGroup>}
+
+              {!selectedItem.isCorePermission
+                && <UserSearchlist label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
+                  handlePermissionChange('userIds', value);
+                }}/>}
+
+              {!selectedItem.isCorePermission
+                && <UserSearchlist label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
+                  handlePermissionChange('excludeUserIds', value);
+                }}/>}
 
               <TestUserField permissionId={selectedItem.id}/>
 
