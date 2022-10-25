@@ -142,7 +142,7 @@ export const ServerSelect: React.FC = () => {
 
   return (<Dialog open={open}>
     <DialogTitle>
-      <Image src={sogebotLarge} width={190} height={25} layout="fixed" unoptimized alt="sogeBot Logo"/>
+      <Image src={sogebotLarge} width={190} height={25} unoptimized alt="sogeBot Logo"/>
       <br/>
       Connect to server
     </DialogTitle>
