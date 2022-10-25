@@ -200,7 +200,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
                   <Grid sx={{
                     padding: '0px !important', height: '114px', ...classes.parent,
                   }} item key={game} xs={2} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
-                    <Image title={game} alt={game} width="200" height="280" src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
+                    <Image title={game} alt={game} fill src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
                     <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
                       <CheckSharp/>
                     </Backdrop>
