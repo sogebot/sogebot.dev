@@ -11,7 +11,6 @@ import {
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
