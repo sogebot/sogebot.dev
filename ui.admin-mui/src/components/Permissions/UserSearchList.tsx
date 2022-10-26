@@ -85,7 +85,7 @@ export const UserSearchlist: React.FC<{
     fullWidth
     handleHomeEndKeys
     getOptionLabel={(option) =>
-      typeof option === 'string' ? option : option.userName
+      typeof option === 'string' ? option : `${option.userName} (${option.userId})`
     }
     filterOptions={(x) => {
       return x.filter(opt => !users.includes(opt.userId));
@@ -102,7 +102,7 @@ export const UserSearchlist: React.FC<{
       setInputValue(newInputValue);
     }}
     renderInput={(params) => (
-      <TextField variant="filled" {...params} label={label} />
+      <TextField {...params} label={label} variant='filled' />
     )}
   />;
 };

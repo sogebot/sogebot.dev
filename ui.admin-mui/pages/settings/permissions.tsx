@@ -14,6 +14,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   Grid,
   IconButton,
   InputLabel,
@@ -42,6 +43,7 @@ import { defaultPermissions } from '~/../backend/src/helpers/permissions/default
 import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
+import { FilterMaker } from '~/src/components/Permissions/FilterMaker';
 import { PermissionsListItem } from '~/src/components/Permissions/ListItem';
 import { TestUserField } from '~/src/components/Permissions/TestUserField';
 import { UserSearchlist } from '~/src/components/Permissions/UserSearchList';
@@ -343,24 +345,31 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                   </Select>
                 </FormControl>}
 
+              <TestUserField permissionId={selectedItem.id}/>
+
               {!selectedItem.isCorePermission
                 && <FormGroup>
                   <FormControlLabel control={<Checkbox checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange('isWaterfallAllowed', !selectedItem.isWaterfallAllowed)} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
                 </FormGroup>}
 
               {!selectedItem.isCorePermission
-                && <UserSearchlist label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
-                  handlePermissionChange('userIds', value);
-                }}/>}
+                && <>
+                  <Divider sx={{ m: 1.5 }}>
+                    <FormLabel>{ translate('responses.variable.users') }</FormLabel>
+                  </Divider>
+                  <UserSearchlist label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
+                    handlePermissionChange('userIds', value);
+                  }}/>
+                  <UserSearchlist label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
+                    handlePermissionChange('excludeUserIds', value);
+                  }}/>
+                </>}
 
               {!selectedItem.isCorePermission
-                && <UserSearchlist label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
-                  handlePermissionChange('excludeUserIds', value);
-                }}/>}
+                && <FilterMaker model={selectedItem.filters} onChange={filters => handlePermissionChange('filters', filters)}/>
+              }
 
-              <TestUserField permissionId={selectedItem.id}/>
-
-              <Divider/>
+              <Divider sx={{ mt: 1.5 }}/>
 
               {!selectedItem.isCorePermission
                 && <Grid container sx={{ py: 1 }} justifyContent='space-between'>
