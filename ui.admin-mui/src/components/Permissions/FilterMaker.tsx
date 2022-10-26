@@ -11,6 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Stack } from '@mui/system';
+import { isEqual } from 'lodash';
 import {
   useEffect, useMemo, useState,
 } from 'react';
@@ -25,7 +26,6 @@ export const FilterMaker: React.FC<{
   onChange, model,
 }) => {
   const { translate } = useTranslation();
-
   const [ items, setItems ] = useState(model);
 
   const addNewFilter = () => {
@@ -37,8 +37,10 @@ export const FilterMaker: React.FC<{
   };
 
   useEffect(() => {
-    onChange(items);
-  }, [ items, onChange ]);
+    if (!isEqual(items, model)) {
+      onChange(items);
+    }
+  }, [ items, onChange, model ]);
 
   const comparatorOptions = useMemo(() => [{
     value: '<', text: translate('core.permissions.isLowerThan'),
