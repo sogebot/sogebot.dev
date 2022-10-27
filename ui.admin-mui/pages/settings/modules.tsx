@@ -20,8 +20,9 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useWindowSize } from 'rooks';
-import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
+import SimpleBar from 'simplebar-react';
 
+import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
 import { getSocket } from '~/src/helpers/socket';
@@ -133,25 +134,27 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             }}>
               <Divider sx={{ mb: 2 }}>{translate('menu.' + type)}</Divider>
 
-              <Grid container spacing={1}>
-                {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
-                  return <Grid item xs={12} key={`${type}-${item.name}`}>
-                    <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
-                      <CardContent sx={{
-                        p: 1, '&:last-child': { p: 1 },
-                      }}>
-                        <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
-                          <Typography variant='button'>{item.name}</Typography>
-                          <Box sx={{ width: `${(canBeDisabled(item) ? 58 : 0) + (haveAnySettings(item) ? 40 : 0)}px` }}>
-                            {canBeDisabled(item) && <Switch defaultChecked />}
-                            {haveAnySettings(item) && <IconButton onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>}
-                          </Box>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Grid>;
-                })}
-              </Grid>
+              <SimpleBar style={{ maxHeight: 'calc(100vh - 138px)' }} autoHide={false}>
+                <Grid container spacing={1}>
+                  {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
+                    return <Grid item xs={12} key={`${type}-${item.name}`}>
+                      <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
+                        <CardContent sx={{
+                          p: 1, '&:last-child': { p: 1 },
+                        }}>
+                          <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
+                            <Typography variant='button'>{item.name}</Typography>
+                            <Box sx={{ width: `${(canBeDisabled(item) ? 58 : 0) + (haveAnySettings(item) ? 40 : 0)}px` }}>
+                              {canBeDisabled(item) && <Switch defaultChecked />}
+                              {haveAnySettings(item) && <IconButton onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>}
+                            </Box>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Grid>;
+                  })}
+                </Grid>
+              </SimpleBar>
             </CardContent>
           </Card>;
         }
