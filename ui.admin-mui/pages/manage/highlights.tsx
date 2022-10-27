@@ -61,7 +61,7 @@ const PageManageViewers: NextPageWithLayout = () => {
       columnName:  'thumbnail',
       translation: ' ',
       table:       {
-        align: 'center', width: '60',
+        align: 'center', width: '62',
       },
       sorting: { sortingEnabled: false },
       column:  {
