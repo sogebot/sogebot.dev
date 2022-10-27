@@ -1,5 +1,4 @@
 import { SettingsTwoTone } from '@mui/icons-material';
-import Masonry from '@mui/lab/Masonry';
 import {
   Backdrop,
   Box,
@@ -19,8 +18,6 @@ import { useSnackbar } from 'notistack';
 import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useWindowSize } from 'rooks';
-import SimpleBar from 'simplebar-react';
 import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -102,64 +99,42 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const { innerWidth } = useWindowSize();
-  const columns = useMemo(() => {
-    const width = innerWidth || 0;
-    if (width < 600) {
-      return 1;
-    }
-    if (width < 1000) {
-      return 2;
-    }
-    if (width < 1400) {
-      return 3;
-    }
-    if (width < 1800) {
-      return 4;
-    }
-    return 5;
-  }, [innerWidth]);
-
   return (
     <>
       <Backdrop open={loading} >
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      {columns > 0 && <Masonry columns={columns} spacing={1}>
-        {types.map(type => {
-          return <Card variant='elevation' key={type}>
-            <CardContent sx={{
-              p: 1, '&:last-child': { p: 1 },
-            }}>
-              <Divider sx={{ mb: 2 }}>{translate('menu.' + type)}</Divider>
+      {types.map(type => {
+        return <Card variant='elevation' key={type}>
+          <CardContent sx={{
+            p: 1, '&:last-child': { p: 1 },
+          }}>
+            <Divider sx={{ mb: 2 }}><Typography variant='caption' sx={{ fontSize: '20px' }}>{translate('menu.' + type)}</Typography></Divider>
 
-              <SimpleBar style={{ maxHeight: 'calc(100vh - 138px)' }} autoHide={false}>
-                <Grid container spacing={1}>
-                  {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
-                    return <Grid item xs={12} key={`${type}-${item.name}`}>
-                      <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
-                        <CardContent sx={{
-                          p: 1, '&:last-child': { p: 1 },
-                        }}>
-                          <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
-                            <Typography variant='button'>{item.name}</Typography>
-                            <Box sx={{ width: `${(canBeDisabled(item) ? 58 : 0) + (haveAnySettings(item) ? 40 : 0)}px` }}>
-                              {canBeDisabled(item) && <Switch defaultChecked />}
-                              {haveAnySettings(item) && <IconButton onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>}
-                            </Box>
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                    </Grid>;
-                  })}
-                </Grid>
-              </SimpleBar>
-            </CardContent>
-          </Card>;
-        }
-        )}
-      </Masonry>}
+            <Grid container spacing={1}>
+              {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
+                return <Grid item xs={12} sm={6} md={4} lg={4} xl={2} key={`${type}-${item.name}`}>
+                  <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
+                    <CardContent sx={{
+                      p: 1, '&:last-child': { p: 1 },
+                    }}>
+                      <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
+                        <Typography variant='button'>{item.name}</Typography>
+                        <Box sx={{ width: `${(canBeDisabled(item) ? 58 : 0) + (haveAnySettings(item) ? 40 : 0)}px` }}>
+                          {canBeDisabled(item) && <Switch defaultChecked />}
+                          {haveAnySettings(item) && <IconButton onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>}
+                        </Box>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>;
+              })}
+            </Grid>
+          </CardContent>
+        </Card>;
+      }
+      )}
     </>
   );
 };
