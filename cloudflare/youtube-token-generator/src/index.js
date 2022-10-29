@@ -25,14 +25,6 @@ router.get("/", async ({query}) => {
 			params.append('redirect_uri', REDIRECT_URI);
 			params.append('grant_type', 'authorization_code');
 
-			console.log(JSON.stringify({
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: params.toString(),
-        method: 'POST',
-      }, null, 2))
-
       const response = await fetch(`https://oauth2.googleapis.com/token`, {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
@@ -83,6 +75,39 @@ router.get("/login", async (opts) => {
 
   return Response.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
 });
+
+
+router.post("/token", async (request) => {
+	const newResObj = new Response(request.body)
+	const body = await newResObj.text()
+	let refreshToken = ''
+	body.split('&').forEach(val => val.startsWith('refresh_token')
+		? refreshToken = decodeURIComponent(val.replace('refresh_token=', ''))
+		: null)
+
+
+	const params = new URLSearchParams();
+	params.append('client_id', GOOGLE_CLIENT_ID);
+	params.append('client_secret', GOOGLE_CLIENT_SECRET);
+	params.append('refresh_token', refreshToken);
+	params.append('grant_type', 'refresh_token');
+
+	const response = await fetch(`https://oauth2.googleapis.com/token`, {
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: params.toString(),
+		method: 'POST',
+	})
+	if (response.ok) {
+		const data = await response.json()
+		return new Response(JSON.stringify(data), {
+			headers: { 'content-type': 'application/json;charset=UTF-8' },
+		})
+	} else {
+		return new Response("400, something went wrong!", { status: 500 })
+	}
+})
 
 
 router.all("*", () => new Response("404, not found!", {
