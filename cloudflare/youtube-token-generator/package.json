@@ -1,0 +1,16 @@
+{
+  "name": "youtube-token-generator",
+  "version": "0.0.0",
+  "devDependencies": {
+    "wrangler": "2.1.13"
+  },
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "itty-router": "^2.6.6",
+    "query-string": "^7.1.1"
+  }
+}
