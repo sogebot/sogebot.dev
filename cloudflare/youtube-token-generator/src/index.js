@@ -34,7 +34,7 @@ router.get("/", async ({query}) => {
       })
       if (response.ok) {
         const data = await response.json()
-        return new Response(`Access token: ${data.access_token}\nRefresh token: ${data.refresh_token}\nClient ID: ${GOOGLE_CLIENT_ID}`, {
+        return new Response(`Refresh token: ${data.refresh_token}\nClient ID: ${GOOGLE_CLIENT_ID}`, {
           headers: { 'content-type': 'text/plain' },
         })
       } else {
