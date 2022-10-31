@@ -1,10 +1,10 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
-  Adjust, Cast, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, VolumeOff, VolumeUp,
+  Adjust, Cast, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
-  Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, SxProps, Tooltip, Typography,
+  Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, SxProps, Tooltip, Typography, Button, Stack,
 } from '@mui/material';
 import {
   blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
@@ -62,7 +62,7 @@ function RenderRow(props: any) {
       t = translate(`eventlist-events.tipToCharity`);
     }
     const formattedAmount = Intl.NumberFormat(configuration.lang, {
-      style: 'currency', currency: get(values, 'currency', 'USD'), 
+      style: 'currency', currency: get(values, 'currency', 'USD'),
     }).format(get(values, 'amount', '0'));
     t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
     t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
@@ -116,12 +116,15 @@ function RenderRow(props: any) {
       } secondary={blockquote(props.item).length > 0 && <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ parse(blockquote(props.item)) }</Typography>}/>
 
       {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, {
-        style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'), 
+        style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'),
       }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'amount', '0') }</Typography>}
 
-      <Backdrop open={hover} sx={classes.backdrop} onClick={() => resendAlert(props.item.id)}>
-        <Typography variant="button">Resend Alert</Typography>
+      <Backdrop open={hover} sx={classes.backdrop}>
+        <Stack direction='row' sx={{ justifyContent: 'flex-end', width: '100%', px: 2 }} spacing={3}>
+          <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>
+          <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
+        </Stack>
       </Backdrop>
     </ListItem>
   );
@@ -137,6 +140,13 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     isTTSMuted:     false,
   });
   const [ statusLoaded, setStatusLoaded ] = React.useState(false);
+
+  function removeEvent (id: string) {
+    console.log(`removeEvent => ${id}`);
+    getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
+      setEvents(evs => [...evs.filter(o => o.id !== id)]);
+    });
+  }
 
   const handleStatusChange = (type: keyof typeof status, value: boolean) => {
     setStatus({
@@ -213,7 +223,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   }, 60000, true, true);
 
   return (<Box sx={{
-    height: '100%', ...props.sx, 
+    height: '100%', ...props.sx,
   }}>
     <Box sx={{
       borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
@@ -243,7 +253,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     </Box>
     <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
       <List disablePadding>
-        {filteredEvents.map(event => <RenderRow item={event} key={event.id}/>)}
+        {filteredEvents.map(event => <RenderRow onRemove={(id: string) => removeEvent(id)} item={event} key={event.id}/>)}
       </List>
     </SimpleBar>
   </Box>
