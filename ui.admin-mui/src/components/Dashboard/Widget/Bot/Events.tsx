@@ -4,7 +4,7 @@ import {
   Adjust, Cast, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
-  Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, SxProps, Tooltip, Typography, Button, Stack,
+  Backdrop, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography,
 } from '@mui/material';
 import {
   blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
@@ -121,7 +121,9 @@ function RenderRow(props: any) {
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'amount', '0') }</Typography>}
 
       <Backdrop open={hover} sx={classes.backdrop}>
-        <Stack direction='row' sx={{ justifyContent: 'flex-end', width: '100%', px: 2 }} spacing={3}>
+        <Stack direction='row' sx={{
+          justifyContent: 'flex-end', width: '100%', px: 2, 
+        }} spacing={3}>
           <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>
           <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
         </Stack>

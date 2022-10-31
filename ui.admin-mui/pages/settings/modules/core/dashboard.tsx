@@ -7,18 +7,14 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { ExpandMoreTwoTone, SwapVertTwoTone } from '@mui/icons-material';
+import { SwapVertTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Backdrop,
   Box,
   Button,
   CircularProgress,
   Divider,
-  FormLabel,
   Grid,
   Paper,
   Stack,
@@ -78,16 +74,9 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const [ expanded, setExpanded ] = useState('panel1');
-
   const isSettingsChanged = useMemo(() => {
     return isEqual(settings, settingsInit);
   }, [ settings, settingsInit]);
-
-  const handleChange
-    = (panel: string, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : 'no panel');
-    };
 
   const [ saving, setSaving ] = useState(false);
   const save = useCallback(() => {
@@ -195,54 +184,39 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
 
   return (
     <>
-      {settings && <Accordion expanded={expanded === 'panel1'} onChange={(_, isExpanded) => handleChange('panel1', isExpanded)}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreTwoTone />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>{ translate('categories.general') }</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Divider>
-            <FormLabel>µWidgets</FormLabel>
-          </Divider>
+      {settings && <Paper elevation={1} sx={{ p: 1 }}>
+        <Typography variant='h3'>{ translate('categories.general') }</Typography>
 
-          <Paper sx={{
-            p: 2, m: 2, backgroundColor: blueGrey[900],
-          }} variant='outlined'>
-            <Divider>
-              <FormLabel>Current µWidgets</FormLabel>
-            </Divider>
-            <Grid container spacing={1} sx={{ pt: 2 }}>
-              <DndContext
-                sensors={sensors}
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
+        <Divider><Typography variant='h5'>µWidgets</Typography></Divider>
+        <Paper sx={{
+          p: 2, m: 2, backgroundColor: blueGrey[900],
+        }} variant='outlined'>
+          <Divider><Typography variant='h6'>Used</Typography></Divider>
+          <Grid container spacing={1} sx={{ pt: 2 }}>
+            <DndContext
+              sensors={sensors}
+              onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+            >
+              <SortableContext
+                items={settings.µWidgets[0]}
+                strategy={rectSortingStrategy}
               >
-                <SortableContext
-                  items={settings.µWidgets[0]}
-                  strategy={rectSortingStrategy}
-                >
-                  {settings.µWidgets[0].map((item: string) => <DashboardSortableItem draggable onClick={() => setClickedId(clickedId === item ? null : item)} key={item} id={item} isClicked={item === clickedId} isDragging={item === activeId} />)}
-                </SortableContext>
-              </DndContext>
-            </Grid>
+                {settings.µWidgets[0].map((item: string) => <DashboardSortableItem draggable onClick={() => setClickedId(clickedId === item ? null : item)} key={item} id={item} isClicked={item === clickedId} isDragging={item === activeId} />)}
+              </SortableContext>
+            </DndContext>
+          </Grid>
 
-            <Box textAlign={'center'} sx={{ p: 2 }}>
-              <Button disabled={!clickedId} variant='contained' sx={{ minWidth: 300 }} onClick={swapItems}><SwapVertTwoTone/></Button>
-            </Box>
+          <Box textAlign={'center'} sx={{ p: 2 }}>
+            <Button disabled={!clickedId} variant='contained' sx={{ minWidth: 300 }} onClick={swapItems}><SwapVertTwoTone/></Button>
+          </Box>
 
-            <Divider>
-              <FormLabel>Available µWidgets</FormLabel>
-            </Divider>
-            <Grid container spacing={1} sx={{ pt: 2 }}>
-              {availableµWidgetsFiltered.map((item: string) => <DashboardSortableItem onClick={() => setClickedId(clickedId === item ? null : item)} key={item} id={item} isClicked={item === clickedId} isDragging={item === activeId} />)}
-            </Grid>
-          </Paper>
-        </AccordionDetails>
-      </Accordion>
-
+          <Divider><Typography variant='h6'>Available</Typography></Divider>
+          <Grid container spacing={1} sx={{ pt: 2 }}>
+            {availableµWidgetsFiltered.map((item: string) => <DashboardSortableItem onClick={() => setClickedId(clickedId === item ? null : item)} key={item} id={item} isClicked={item === clickedId} isDragging={item === activeId} />)}
+          </Grid>
+        </Paper>
+      </Paper>
       }
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>

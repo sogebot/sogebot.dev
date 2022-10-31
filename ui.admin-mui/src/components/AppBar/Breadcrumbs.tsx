@@ -19,7 +19,7 @@ export const AppBarBreadcrumbs: React.FC = () => {
   return (
     <Fade in={breadcrumbsItems && breadcrumbsItems.length > 0}>
       <Breadcrumbs sx={{ width: 'max-content' }}>
-        {breadcrumbsItems.map(o => <Typography key={o}>{o}</Typography>)}
+        {breadcrumbsItems.map(o => <Typography sx={{ fontWeight: 'bold' }} key={o}>{o}</Typography>)}
       </Breadcrumbs>
     </Fade>
   );

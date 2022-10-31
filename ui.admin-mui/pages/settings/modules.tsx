@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Divider,
   Grid,
   IconButton,
   Switch,
@@ -106,11 +105,11 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
       </Backdrop>
 
       {types.map(type => {
-        return <Card variant='elevation' key={type}>
+        return <Card variant='elevation' key={type} sx={{ mb: 2 }}>
           <CardContent sx={{
             p: 1, '&:last-child': { p: 1 },
           }}>
-            <Divider sx={{ mb: 2 }}><Typography variant='caption' sx={{ fontSize: '20px' }}>{translate('menu.' + type)}</Typography></Divider>
+            <Typography variant='h3'>{translate('menu.' + type)}</Typography>
 
             <Grid container spacing={1}>
               {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
