@@ -51,7 +51,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     axios.get(`${sessionStorage.serverUrl}/socket/validate`, { headers }).then(async (validation) => {
       console.group('isUserLoggedIn::bot::validation');
       console.debug(JSON.stringify({
-        validation, headers, 
+        validation, headers,
       }));
       console.groupEnd();
       localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
@@ -73,16 +73,16 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   await populateListOf('integrations');
 
   dispatch(setSystem({
-    type: 'core', value: cloneDeep(getListOf('core')), 
+    type: 'core', value: cloneDeep(getListOf('core')),
   }));
   dispatch(setSystem({
-    type: 'services', value: cloneDeep(getListOf('services')), 
+    type: 'services', value: cloneDeep(getListOf('services')),
   }));
   dispatch(setSystem({
-    type: 'systems', value: cloneDeep(getListOf('systems')), 
+    type: 'systems', value: cloneDeep(getListOf('systems')),
   }));
   dispatch(setSystem({
-    type: 'integrations', value: cloneDeep(getListOf('integrations')), 
+    type: 'integrations', value: cloneDeep(getListOf('integrations')),
   }));
 
   const configuration = await getConfiguration();
@@ -172,7 +172,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
             <Fade in={!isIndexPage}>
               <Box sx={{
-                maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
+                minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
               }}>
                 {props.children}
               </Box>
