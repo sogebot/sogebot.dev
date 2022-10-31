@@ -7,7 +7,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { SwapVertTwoTone } from '@mui/icons-material';
+import { ArrowBackIosNewTwoTone, SwapVertTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -37,6 +37,8 @@ import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
+  const socketEndpoint = '/core/dashboard';
+
   const router = useRouter();
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -49,7 +51,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     await new Promise<void>((resolve, reject) => {
-      getSocket(`/core/dashboard`)
+      getSocket(socketEndpoint)
         .emit('settings', (err, _settings: {
           [x: string]: any
         }, /* _ui: {
@@ -82,7 +84,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
-      saveSettings('/core/dashboard', settings)
+      saveSettings(socketEndpoint, settings)
         .then(() => {
           setSettingsInit(settings);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
@@ -183,10 +185,14 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
   }, [clickedId, availableµWidgetsFiltered]);
 
   return (
-    <>
-      {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <Typography variant='h3'>{ translate('categories.general') }</Typography>
+    <Box sx={{
+      maxWidth: 960, m: 'auto', 
+    }}>
+      <Button sx={{ mb: 1 }} onClick={() => router.push('/settings/modules')}><ArrowBackIosNewTwoTone sx={{ pr: 1 }}/>{translate('menu.modules')}</Button>
 
+      <Typography variant='h1' sx={{ pb: 2 }}>Dashboard</Typography>
+      <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+      {settings && <Paper elevation={1} sx={{ p: 1 }}>
         <Divider><Typography variant='h5'>µWidgets</Typography></Divider>
         <Paper sx={{
           p: 2, m: 2, backgroundColor: blueGrey[900],
@@ -226,7 +232,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       <Backdrop open={loading} >
         <CircularProgress color="inherit"/>
       </Backdrop>
-    </>
+    </Box>
   );
 };
 

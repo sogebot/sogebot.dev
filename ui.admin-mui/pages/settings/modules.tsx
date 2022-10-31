@@ -104,36 +104,42 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      {types.map(type => {
-        return <Card variant='elevation' key={type} sx={{ mb: 2 }}>
-          <CardContent sx={{
-            p: 1, '&:last-child': { p: 1 },
-          }}>
-            <Typography variant='h3'>{translate('menu.' + type)}</Typography>
+      <Box sx={{
+        maxWidth: 960, m: 'auto',
+      }}>
+        {types.map(type => {
+          return <>
+            <Typography variant='h3' sx={{ pb: 2 }}>{translate('menu.' + type)}</Typography>
+            <Card variant='elevation' key={type} sx={{ mb: 2 }}>
+              <CardContent sx={{
+                p: 1, '&:last-child': { p: 1 },
+              }}>
 
-            <Grid container spacing={1}>
-              {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
-                return <Grid item xs={12} sm={6} md={4} lg={4} xl={2} key={`${type}-${item.name}`}>
-                  <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
-                    <CardContent sx={{
-                      p: 1, '&:last-child': { p: 1 },
-                    }}>
-                      <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
-                        <Typography variant='button'>{item.name}</Typography>
-                        <Box sx={{ width: `${(canBeDisabled(item) ? 58 : 0) + (haveAnySettings(item) ? 40 : 0)}px` }}>
-                          {canBeDisabled(item) && <Switch defaultChecked />}
-                          {haveAnySettings(item) && <IconButton onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>}
-                        </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>;
-              })}
-            </Grid>
-          </CardContent>
-        </Card>;
-      }
-      )}
+                <Grid container spacing={1}>
+                  {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
+                    return <Grid item xs={12} sm={6} md={4} lg={4} key={`${type}-${item.name}`}>
+                      <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
+                        <CardContent sx={{
+                          p: 1, '&:last-child': { p: 1 },
+                        }}>
+                          <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
+                            <Typography variant='button'>{item.name}</Typography>
+                            <Box sx={{ width: `98px` }}>
+                              <Switch defaultChecked sx={{ visibility: canBeDisabled(item) ? undefined : 'hidden' }}/>
+                              <IconButton sx={{ visibility: haveAnySettings(item) ? undefined : 'hidden' }} onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>
+                            </Box>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Grid>;
+                  })}
+                </Grid>
+              </CardContent>
+            </Card>
+          </>;
+        }
+        )}
+      </Box>
     </>
   );
 };

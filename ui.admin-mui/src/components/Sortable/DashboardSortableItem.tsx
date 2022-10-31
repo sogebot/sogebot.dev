@@ -32,7 +32,7 @@ export function DashboardSortableItem(props: { draggable?: boolean, id: string, 
       ref={setNodeRef} style={style} {...attributes}
       onPointerDown={() => props.onClick()}
       xs={6}
-      lg={2}
+      lg={3}
       md={4}
       sm={4}>
       <Paper variant='outlined' sx={{

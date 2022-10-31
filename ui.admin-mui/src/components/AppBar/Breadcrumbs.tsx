@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { validate } from 'uuid';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -12,7 +13,11 @@ export const AppBarBreadcrumbs: React.FC = () => {
   const { translate } = useTranslation();
 
   const breadcrumbsItems = useMemo(() => {
-    const path = router.asPath.split('/').filter(Boolean).map(o => translate(`menu.${o}`)).filter(o => !o.startsWith('{menu.'));
+    const path = router.asPath
+      .split('/')
+      .filter(Boolean)
+      .map(o => validate(o) ? o : translate(`menu.${o}`))
+      .filter(o => !o.startsWith('{menu.'));
     return path;
   }, [router, translate]);
 
