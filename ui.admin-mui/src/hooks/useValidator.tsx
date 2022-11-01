@@ -9,7 +9,11 @@ import {
 
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-export const useValidator = () => {
+type Props = {
+  translations?: Record<string, string>
+};
+
+export const useValidator = (props: Props = {}) => {
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -21,6 +25,7 @@ export const useValidator = () => {
       }
       return [];
     } else {
+      console.log(err);
       return err;
     }
   }, []);
@@ -48,16 +53,24 @@ export const useValidator = () => {
           _errors[error.property] = [];
         }
 
-        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.' + error.property));
+        const property = props.translations && props.translations[error.property] ? props.translations[error.property] : translate('properties.' + error.property);
+        const constraints = constraint.split('|');
+        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`);
         if (translation.startsWith('{')) {
-          _errors[error.property].push(capitalize(`${constraint}`));
+          _errors[error.property].push(capitalize(`${constraint}`)
+            .replace('$property', property)
+            .replace('$constraint1', constraints[0])
+          );
         } else {
-          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.thisvalue'))));
+          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`)
+            .replace('$property', translate('properties.thisvalue'))
+            .replace('$constraint1', constraints[0])
+          ));
         }
       }
     }
     return _errors;
-  }, [ errors, translate ]);
+  }, [ errors, translate, props.translations ]);
 
   const errorsList = useCallback((errorsArg: ValidationError[]) => {
     const _errors: string[] = [];

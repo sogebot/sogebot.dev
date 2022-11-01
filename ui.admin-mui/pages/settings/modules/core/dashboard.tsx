@@ -21,7 +21,6 @@ import {
   Typography,
 } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
-import { isEqual } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -44,8 +43,8 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
+  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  const [ settingsInit, setSettingsInit ] = useState<null | Record<string, any>>(null);
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const refresh = useCallback(async () => {
@@ -65,7 +64,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
           }
           // setUI(_ui);
           setSettings(_settings);
-          setSettingsInit(_settings);
           resolve();
         });
     });
@@ -76,17 +74,13 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const isSettingsChanged = useMemo(() => {
-    return isEqual(settings, settingsInit);
-  }, [ settings, settingsInit]);
-
   const [ saving, setSaving ] = useState(false);
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setSettingsInit(settings);
+          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -104,6 +98,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
     if (!active || !over) {
       return;
     }
+    setDirty(true);
     if (active.id !== over.id) {
       setSettings((s) => {
         if (s) {
@@ -167,7 +162,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
         const newClickedId = availableµWidgetsFiltered.includes(clickedId)
           ? clickedId + `|${v4()}`
           : clickedId.split('|').filter((_, idx) => idx < 2).join('|');
-        console.log({ newClickedId });
         setClickedId(newClickedId);
         return {
           ...s,
@@ -186,7 +180,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
 
   return (
     <Box sx={{
-      maxWidth: 960, m: 'auto', 
+      maxWidth: 960, m: 'auto',
     }}>
       <Button sx={{ mb: 1 }} onClick={() => router.push('/settings/modules')}><ArrowBackIosNewTwoTone sx={{ pr: 1 }}/>{translate('menu.modules')}</Button>
 
@@ -226,7 +220,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       }
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={isSettingsChanged}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >

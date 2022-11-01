@@ -6,7 +6,6 @@ import {
   Button,
   CircularProgress,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -18,12 +17,12 @@ import FormLabel from '@mui/material/FormLabel';
 import Slider from '@mui/material/Slider';
 import { format } from '@sogebot/ui-helpers/number';
 import {
-  cloneDeep, get, isEqual, set,
+  cloneDeep, get, set,
 } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -40,8 +39,8 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
+  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  const [ settingsInit, setSettingsInit ] = useState<null | Record<string, any>>(null);
   const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const refresh = useCallback(async () => {
@@ -62,7 +61,6 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
           console.log({ _settings });
           setUI(_ui);
           setSettings(_settings);
-          setSettingsInit(_settings);
           resolve();
         });
     });
@@ -73,17 +71,13 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const isSettingsChanged = useMemo(() => {
-    return isEqual(settings, settingsInit);
-  }, [ settings, settingsInit]);
-
   const [ saving, setSaving ] = useState(false);
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setSettingsInit(settings);
+          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -91,9 +85,6 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   }, [ settings, enqueueSnackbar ]);
 
   const handleChange = (key: string, value: any): void => {
-    console.log({
-      key, value, 
-    });
     setSettings((settingsObj) => {
       if (!settingsObj) {
         return null;
@@ -120,63 +111,50 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
       <Typography variant='h1' sx={{ pb: 2 }}>General</Typography>
       <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
       {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <Grid container sx={{ pb: 1 }}>
-          <Grid item xs>
-            <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-              <InputLabel id="currency-default-value">{translate('core.general.settings.lang')}</InputLabel>
-              <Select
-                MenuProps={{ PaperProps: { sx: { maxHeight: 500 } } }}
-                labelId="currency-default-value"
-                id="demo-simple-select"
-                value={settings.general.lang[0]}
-                label={translate('core.general.settings.lang')}
-                onChange={(event) => handleChange('general.lang', event.target.value)}
-              >
-                {ui && ui.general.lang.values.map((item: string) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-
-        <Grid container sx={{ pb: 1 }}>
-          <Grid item xs>
-            <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-              <InputLabel id="currency-default-value" shrink>{translate('core.general.settings.numberFormat')}</InputLabel>
-              <Select
-                displayEmpty
-                MenuProps={{ PaperProps: { sx: { maxHeight: 500 } } }}
-                labelId="currency-default-value"
-                id="demo-simple-select"
-                value={settings.general.numberFormat[0]}
-                label={translate('core.general.settings.numberFormat')}
-                onChange={(event) => handleChange('general.numberFormat', event.target.value)}
-              >
-                {pointsOptions.map(item => <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem>)}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-
-        <Grid container sx={{ pb: 1 }}>
-          <Grid item xs>
-            <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 60px 0 0' }}>
-              <FormLabel sx={{ width: '400px' }}>{translate('core.general.settings.gracefulExitEachXHours.title')}</FormLabel>
-              <Slider
-                value={settings.graceful_exit.gracefulExitEachXHours[0]}
-                max={24}
-                valueLabelDisplay="on"
-                valueLabelFormat={(value) => value > 0 ? `every ${value} hour(s)` : 'Never'}
-                onChange={(event, newValue) => handleChange('graceful_exit.gracefulExitEachXHours', newValue)}
-              />
-            </Stack>
-          </Grid>
-        </Grid>
-
+        <Stack spacing={1}>
+          <FormControl  variant="filled" sx={{ minWidth: 300 }}>
+            <InputLabel id="currency-default-value">{translate('core.general.settings.lang')}</InputLabel>
+            <Select
+              MenuProps={{ PaperProps: { sx: { maxHeight: 500 } } }}
+              labelId="currency-default-value"
+              id="demo-simple-select"
+              value={settings.general.lang[0]}
+              label={translate('core.general.settings.lang')}
+              onChange={(event) => handleChange('general.lang', event.target.value)}
+            >
+              {ui && ui.general.lang.values.map((item: string) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <FormControl  variant="filled" sx={{ minWidth: 300 }}>
+            <InputLabel id="currency-default-value" shrink>{translate('core.general.settings.numberFormat')}</InputLabel>
+            <Select
+              displayEmpty
+              MenuProps={{ PaperProps: { sx: { maxHeight: 500 } } }}
+              labelId="currency-default-value"
+              id="demo-simple-select"
+              value={settings.general.numberFormat[0]}
+              label={translate('core.general.settings.numberFormat')}
+              onChange={(event) => handleChange('general.numberFormat', event.target.value)}
+            >
+              {pointsOptions.map(item => <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 60px 0 0' }}>
+            <FormLabel sx={{ width: '400px' }}>{translate('core.general.settings.gracefulExitEachXHours.title')}</FormLabel>
+            <Slider
+              value={settings.graceful_exit.gracefulExitEachXHours[0]}
+              max={24}
+              valueLabelDisplay="on"
+              valueLabelFormat={(value) => value > 0 ? `every ${value} hour(s)` : 'Never'}
+              onChange={(event, newValue) => handleChange('graceful_exit.gracefulExitEachXHours', newValue)}
+            />
+          </Stack>
+        </Stack>
       </Paper>
       }
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={isSettingsChanged}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >

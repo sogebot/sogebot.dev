@@ -6,7 +6,6 @@ import {
   Button,
   CircularProgress,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -44,18 +43,6 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
-  useEffect(() => {
-    if (settings?.service[0] === 1) {
-      setLoading(true);
-      axios.get(`${localStorage.server}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-        .then(({ data }) => {
-          setPrivateKeys(data.data);
-        })
-        .finally(() => setLoading(false));
-
-    }
-  }, [ settings?.service ]);
-
   const refresh = useCallback(async () => {
     setLoading(true);
     await new Promise<void>((resolve, reject) => {
@@ -77,6 +64,10 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
           resolve();
         });
     });
+
+    const response = await axios.get(`${localStorage.server}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+    setPrivateKeys(response.data.data);
+
     setLoading(false);
   }, [ ]);
 
@@ -123,26 +114,23 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
       <Typography variant='h1' sx={{ pb: 2 }}>TTS</Typography>
       <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
       {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <Grid container sx={{ pb: 1 }}>
-          <Grid item xs>
-            <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-              <InputLabel id="demo-simple-select-label">{translate('core.tts.settings.service')}</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={settings.service[0]}
-                label={translate('core.tts.settings.service')}
-                onChange={(event) => handleChange('service', event.target.value)}
-              >
-                <MenuItem value={-1}>None</MenuItem>
-                <MenuItem value={0}>ResponsiveVoice</MenuItem>
-                <MenuItem value={1}>Google TTS</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+        <Stack spacing={1}>
+          <FormControl  variant="filled" sx={{ minWidth: 300 }}>
+            <InputLabel id="demo-simple-select-label">{translate('core.tts.settings.service')}</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={settings.service[0]}
+              label={translate('core.tts.settings.service')}
+              onChange={(event) => handleChange('service', event.target.value)}
+            >
+              <MenuItem value={-1}>None</MenuItem>
+              <MenuItem value={0}>ResponsiveVoice</MenuItem>
+              <MenuItem value={1}>Google TTS</MenuItem>
+            </Select>
+          </FormControl>
 
-        {settings.service[0] === 0
+          {settings.service[0] === 0
           && <TextField
             sx={{ minWidth: 300 }}
             label={translate('integrations.responsivevoice.settings.key.title')}
@@ -152,31 +140,28 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
             value={settings.responsiveVoiceKey[0]}
             onChange={(event) => handleChange('responsiveVoiceKey', event.target.value)}
           />
-        }
+          }
 
-        {settings.service[0] === 1
-          && <Grid container>
-            <Grid item xs>
-              <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-                <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
-                <Select
-                  labelId="private-key-label"
-                  id="private-key-select"
-                  value={settings.googlePrivateKey[0]}
-                  label='Google Private Key'
-                  displayEmpty
-                  onChange={(event) => handleChange('googlePrivateKey', event.target.value)}
-                >
-                  <MenuItem value={''}><em>None</em></MenuItem>
-                  {privateKeys.map(key => <MenuItem key={key.id} value={key.id}>
-                    <Typography component={'span'} fontWeight={'bold'}>{ key.clientEmail }</Typography>
-                    <Typography component={'span'} fontSize={12} pl={1}>{ key.id }</Typography>
-                  </MenuItem>)}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        }
+          {settings.service[0] === 1
+          && <FormControl  variant="filled" sx={{ minWidth: 300 }}>
+            <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
+            <Select
+              labelId="private-key-label"
+              id="private-key-select"
+              value={settings.googlePrivateKey[0]}
+              label='Google Private Key'
+              displayEmpty
+              onChange={(event) => handleChange('googlePrivateKey', event.target.value)}
+            >
+              <MenuItem value={''}><em>None</em></MenuItem>
+              {privateKeys.map(key => <MenuItem key={key.id} value={key.id}>
+                <Typography component={'span'} fontWeight={'bold'}>{ key.clientEmail }</Typography>
+                <Typography component={'span'} fontSize={12} pl={1}>{ key.id }</Typography>
+              </MenuItem>)}
+            </Select>
+          </FormControl>
+          }
+        </Stack>
       </Paper>
       }
 

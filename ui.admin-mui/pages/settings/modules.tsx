@@ -27,7 +27,7 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean, type: string };
 
 const canBeDisabled = (item: systemFromIO) => {
-  return item.type !== 'core' && item.type !== 'services';
+  return item.type !== 'core' && item.type !== 'services' && item.enabled !== undefined && item.enabled !== null;
 };
 const haveAnySettings = (item: systemFromIO) => {
   const configurableList = [
@@ -98,6 +98,19 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
+  const toggle = useCallback((item: systemFromIO) => {
+    const enabled = !item.enabled;
+    getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
+      if (err) {
+        console.error(err);
+        enqueueSnackbar(String(err), { variant: 'error' });
+        return;
+      } else {
+        enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
+      }
+    });
+  }, [ enqueueSnackbar ]);
+
   return (
     <>
       <Backdrop open={loading} >
@@ -125,7 +138,9 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                           <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
                             <Typography variant='button'>{item.name}</Typography>
                             <Box sx={{ width: `98px` }}>
-                              <Switch defaultChecked sx={{ visibility: canBeDisabled(item) ? undefined : 'hidden' }}/>
+                              <Switch
+                                disabled={item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)}
+                                defaultChecked={item.enabled} sx={{ visibility: canBeDisabled(item) ? undefined : 'hidden' }} onChange={() => toggle(item)}/>
                               <IconButton sx={{ visibility: haveAnySettings(item) ? undefined : 'hidden' }} onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>
                             </Box>
                           </Stack>

@@ -13,11 +13,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { isEqual } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -34,8 +33,8 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
+  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  const [ settingsInit, setSettingsInit ] = useState<null | Record<string, any>>(null);
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const refresh = useCallback(async () => {
@@ -55,7 +54,6 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
           }
           // setUI(_ui);
           setSettings(_settings);
-          setSettingsInit(_settings);
           resolve();
         });
     });
@@ -66,17 +64,13 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const isSettingsChanged = useMemo(() => {
-    return isEqual(settings, settingsInit);
-  }, [ settings, settingsInit]);
-
   const [ saving, setSaving ] = useState(false);
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setSettingsInit(settings);
+          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -84,6 +78,7 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
   }, [ settings, enqueueSnackbar ]);
 
   const handleChange = (key: string, value: any): void => {
+    setDirty(true);
     setSettings((settingsObj) => {
       return settingsObj ? {
         ...settingsObj,
@@ -113,7 +108,7 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
         </FormGroup>
 
         <TextField
-          sx={{ minWidth: 300 }}
+          fullWidth
           label='7TV emote set'
           helperText='7TV is enabled when input is populated. Login into https://7tv.app/ and paste your emote-sets url like https://7tv.app/emote-sets/<id>'
           variant="filled"
@@ -124,7 +119,7 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
       </Paper>}
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={isSettingsChanged}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >
