@@ -82,6 +82,7 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   }, [ settings, enqueueSnackbar ]);
 
   const handleChange = (key: string, value: any): void => {
+    setDirty(true);
     setSettings((settingsObj) => {
       if (!settingsObj) {
         return null;

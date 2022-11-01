@@ -38,8 +38,8 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
+  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  const [ settingsInit, setSettingsInit ] = useState<null | Record<string, any>>(null);
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
@@ -75,17 +75,13 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
     refresh();
   }, [ router, refresh ]);
 
-  const isSettingsChanged = useMemo(() => {
-    return isEqual(settings, settingsInit);
-  }, [ settings, settingsInit]);
-
   const [ saving, setSaving ] = useState(false);
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setSettingsInit(settings);
+          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -93,6 +89,7 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
   }, [ settings, enqueueSnackbar ]);
 
   const handleChange = (key: string, value: any): void => {
+    setDirty(true);
     setSettings((settingsObj) => {
       return settingsObj ? {
         ...settingsObj,
@@ -166,7 +163,7 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
       }
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={isSettingsChanged}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >
