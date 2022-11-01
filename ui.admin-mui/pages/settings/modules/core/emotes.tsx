@@ -33,7 +33,6 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
-  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
@@ -70,7 +69,6 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -78,7 +76,6 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
   }, [ settings, enqueueSnackbar ]);
 
   const handleChange = (key: string, value: any): void => {
-    setDirty(true);
     setSettings((settingsObj) => {
       return settingsObj ? {
         ...settingsObj,
@@ -119,7 +116,7 @@ const PageSettingsModulesCoreEmotes: NextPageWithLayout = () => {
       </Paper>}
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >

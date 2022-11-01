@@ -43,7 +43,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
-  const [ dirty, setDirty ] = useState(false);
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
   // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
@@ -80,7 +79,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       setSaving(true);
       saveSettings(socketEndpoint, settings)
         .then(() => {
-          setDirty(false);
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
@@ -98,7 +96,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
     if (!active || !over) {
       return;
     }
-    setDirty(true);
     if (active.id !== over.id) {
       setSettings((s) => {
         if (s) {
@@ -157,7 +154,6 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       return;
     }
 
-    setDirty(true);
     setSettings((s) => {
       if (s) {
         const newClickedId = availableµWidgetsFiltered.includes(clickedId)
@@ -221,7 +217,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       }
 
       <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!dirty}>Save changes</LoadingButton>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
       </Stack>
 
       <Backdrop open={loading} >
