@@ -157,6 +157,7 @@ const PageSettingsModulesCoreDashboard: NextPageWithLayout = () => {
       return;
     }
 
+    setDirty(true);
     setSettings((s) => {
       if (s) {
         const newClickedId = availableµWidgetsFiltered.includes(clickedId)
