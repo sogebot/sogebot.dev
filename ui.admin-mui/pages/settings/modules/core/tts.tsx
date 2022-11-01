@@ -16,11 +16,10 @@ import {
 } from '@mui/material';
 import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
-import { isEqual } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
 
 import { NextPageWithLayout } from '~/pages/_app';
