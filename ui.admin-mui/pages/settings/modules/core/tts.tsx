@@ -59,7 +59,6 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
           }
           // setUI(_ui);
           setSettings(_settings);
-          setSettingsInit(_settings);
           resolve();
         });
     });
