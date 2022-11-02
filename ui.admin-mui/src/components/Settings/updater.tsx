@@ -1,4 +1,4 @@
-import { ArrowBackIosNewTwoTone } from '@mui/icons-material';
+import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -21,16 +21,22 @@ import {
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useState,
+  useCallback, useEffect, useState,
 } from 'react';
+import { useSelector } from 'react-redux';
+import { useRefElement } from 'rooks';
 
-import { NextPageWithLayout } from '~/pages/_app';
-import { Layout } from '~/src/components/Layout/main';
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-const PageSettingsModulesCoreSocket: NextPageWithLayout = () => {
+const PageSettingsModulesCoreUpdater: React.FC<{
+  onTop: () => void,
+  onVisible: () => void,
+}> = ({
+  onTop,
+  onVisible,
+}) => {
   const socketEndpoint = '/core/updater';
 
   const router = useRouter();
@@ -126,68 +132,67 @@ const PageSettingsModulesCoreSocket: NextPageWithLayout = () => {
     }
   }, [refresh, settings, enqueueSnackbar]);
 
-  return (
-    <Box sx={{
-      maxWidth: 960, m: 'auto',
-    }}>
-      <Button sx={{ mb: 1 }} onClick={() => router.push('/settings/modules')}><ArrowBackIosNewTwoTone sx={{ pr: 1 }}/>{translate('menu.modules')}</Button>
-      <Typography variant='h1' sx={{ pb: 2 }}>Updater</Typography>
-      <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
-      {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <Stack direction='row' justifyContent={'space-between'}>
-          <FormGroup>
-            <FormControlLabel control={<Checkbox checked={settings.isAutomaticUpdateEnabled[0]} onChange={(_, checked) => handleChange('isAutomaticUpdateEnabled', checked)} />} label={translate('core.updater.settings.isAutomaticUpdateEnabled')} />
-          </FormGroup>
-          <LoadingButton variant='contained' color='light' loading={isChecking} onClick={manualCheck}>Check for new versions</LoadingButton>
-        </Stack>
-
-        <List>
-          {Object.keys(settings.versions[0]).map(key => <ListItem
-            key={key}
-            disablePadding
-            secondaryAction={<>
-              {settings.versions[0][key] !== settings.versionsAvailable[0][key] && <Button sx={{
-                width: 150, mr: 2,
-              }} color='light' target="_blank" href={`https://github.com/${key.replace('@', '')}/compare/v${settings.versions[0][key]}...v${settings.versionsAvailable[0][key]}`}>
-                Changelog
-              </Button>}
-              {settings.versions[0][key] !== settings.versionsAvailable[0][key] && <LoadingButton sx={{ width: 150 }} variant='contained' color='secondary' loading={updating.includes(key)} onClick={() => update(key)}>
-                Update
-              </LoadingButton>}
-            </>
-            }>
-            <ListItemText
-              primary={<Typography>{ key }</Typography>}
-              secondary={<>
-                <Typography component={'span'} fontWeight={'bold'}>Installed: </Typography>
-                <Typography component={'span'}>{ settings.versions[0][key] }</Typography>
-                <br/>
-                <Typography component={'span'} fontWeight={'bold'}>Latest compatible version: </Typography>
-                <Typography component={'span'}>{ settings.versionsAvailable[0][key] }</Typography>
-              </>}
-            />
-          </ListItem>)}
-        </List>
-      </Paper>
+  const [ref, element]  = useRefElement<HTMLElement>();
+  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  useEffect(() => {
+    if (element) {
+      if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {
+        onVisible();
       }
+    }
+  }, [element, scrollY, onVisible]);
 
-      <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save}>Save changes</LoadingButton>
+  return (<Box ref={ref}>
+    <Button id="updater" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+    <Typography variant='h1' sx={{ pb: 2 }}>Updater</Typography>
+    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    {settings && <Paper elevation={1} sx={{ p: 1 }}>
+      <Stack direction='row' justifyContent={'space-between'}>
+        <FormGroup>
+          <FormControlLabel control={<Checkbox checked={settings.isAutomaticUpdateEnabled[0]} onChange={(_, checked) => handleChange('isAutomaticUpdateEnabled', checked)} />} label={translate('core.updater.settings.isAutomaticUpdateEnabled')} />
+        </FormGroup>
+        <LoadingButton variant='contained' color='light' loading={isChecking} onClick={manualCheck}>Check for new versions</LoadingButton>
       </Stack>
 
-      <Backdrop open={loading} >
-        <CircularProgress color="inherit"/>
-      </Backdrop>
-    </Box>
+      <List>
+        {Object.keys(settings.versions[0]).map(key => <ListItem
+          key={key}
+          disablePadding
+          secondaryAction={<>
+            {settings.versions[0][key] !== settings.versionsAvailable[0][key] && <Button sx={{
+              width: 150, mr: 2,
+            }} color='light' target="_blank" href={`https://github.com/${key.replace('@', '')}/compare/v${settings.versions[0][key]}...v${settings.versionsAvailable[0][key]}`}>
+                Changelog
+            </Button>}
+            {settings.versions[0][key] !== settings.versionsAvailable[0][key] && <LoadingButton sx={{ width: 150 }} variant='contained' color='secondary' loading={updating.includes(key)} onClick={() => update(key)}>
+                Update
+            </LoadingButton>}
+          </>
+          }>
+          <ListItemText
+            primary={<Typography>{ key }</Typography>}
+            secondary={<>
+              <Typography component={'span'} fontWeight={'bold'}>Installed: </Typography>
+              <Typography component={'span'}>{ settings.versions[0][key] }</Typography>
+              <br/>
+              <Typography component={'span'} fontWeight={'bold'}>Latest compatible version: </Typography>
+              <Typography component={'span'}>{ settings.versionsAvailable[0][key] }</Typography>
+            </>}
+          />
+        </ListItem>)}
+      </List>
+    </Paper>
+    }
+
+    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save}>Save changes</LoadingButton>
+    </Stack>
+
+    <Backdrop open={loading} >
+      <CircularProgress color="inherit"/>
+    </Backdrop>
+  </Box>
   );
 };
 
-PageSettingsModulesCoreSocket.getLayout = function getLayout(page: ReactElement) {
-  return (
-    <Layout>
-      {page}
-    </Layout>
-  );
-};
-
-export default PageSettingsModulesCoreSocket;
+export default PageSettingsModulesCoreUpdater;

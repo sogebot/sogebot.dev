@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce, useRefElement } from 'rooks';
 
 import { Logo } from '@/components/AppBar/Logo';
 import { ServerSelect } from '@/components/Dialog/ServerSelect';
@@ -19,6 +20,7 @@ import { setLocale } from '~/src/helpers/dayjsHelper';
 import { getListOf, populateListOf } from '~/src/helpers/getListOf';
 import { isUserLoggedIn } from '~/src/helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '~/src/helpers/socket';
+import { setScrollY } from '~/src/store/pageSlice';
 
 import checkTokenValidity from '../../helpers/check-token-validity';
 import {
@@ -122,6 +124,20 @@ export const Layout: React.FC<{ children: any }> = (props) => {
     botInit(dispatch, server, connectedToServer);
   }, [server, dispatch, connectedToServer]);
 
+  const [pageRef, element]  = useRefElement<HTMLElement>();
+  const throttledFunction = useDebounce((el: HTMLElement) => {
+    console.log('a');
+    dispatch(setScrollY(el.scrollTop));
+  }, 200, { trailing: true });
+
+  useEffect(() => {
+    if (element) {
+      element.addEventListener('scroll', () => {
+        throttledFunction(element);
+      }, { passive: true });
+    }
+  }, [ element, dispatch, throttledFunction ]);
+
   return (
     <>
       <Script
@@ -171,7 +187,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
             </Fade>
 
             <Fade in={!isIndexPage}>
-              <Box sx={{
+              <Box ref={pageRef} sx={{
                 minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
               }}>
                 {props.children}

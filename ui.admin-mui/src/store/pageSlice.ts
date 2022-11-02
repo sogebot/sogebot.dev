@@ -8,6 +8,8 @@ export const pageSlice = createSlice({
     isStreamOnline: false,
     permissions:    [],
 
+    scrollY: 0,
+
     widgets: {
       events: {
         showFollows:             true,
@@ -47,9 +49,12 @@ export const pageSlice = createSlice({
     setPermissions: (state: any, action: { payload: Permissions[] }) => {
       state.permissions = action.payload;
     },
+    setScrollY: (state: any, action: { payload: number }) => {
+      state.scrollY = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setPermissions, setAverageStats, setStreamOnline, setWidgetsEvents } = pageSlice.actions;
+export const { setPermissions, setAverageStats, setStreamOnline, setWidgetsEvents, setScrollY } = pageSlice.actions;
 export default pageSlice.reducer;

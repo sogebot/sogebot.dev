@@ -1,4 +1,4 @@
-import { ArrowBackIosNewTwoTone } from '@mui/icons-material';
+import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 import { IsNotEmpty, validateOrReject } from 'class-validator';
 import {
   cloneDeep, get, set,
@@ -20,11 +21,11 @@ import {
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useState,
+  useCallback, useEffect, useState,
 } from 'react';
+import { useSelector } from 'react-redux';
+import { useRefElement } from 'rooks';
 
-import { NextPageWithLayout } from '~/pages/_app';
-import { Layout } from '~/src/components/Layout/main';
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -35,7 +36,15 @@ class Settings {
     domain: string;
 }
 
-const PageSettingsModulesCoreSocket: NextPageWithLayout = () => {
+const PageSettingsModulesCoreUI: React.FC<{
+  onTop: () => void,
+  onVisible: () => void,
+  sx?: SxProps<Theme> | undefined
+}> = ({
+  onTop,
+  onVisible,
+  sx,
+}) => {
   const socketEndpoint = '/core/ui';
 
   const router = useRouter();
@@ -108,59 +117,57 @@ const PageSettingsModulesCoreSocket: NextPageWithLayout = () => {
     });
   };
 
-  return (
-    <Box sx={{
-      maxWidth: 960, m: 'auto',
-    }}>
-      <Button sx={{ mb: 1 }} onClick={() => router.push('/settings/modules')}><ArrowBackIosNewTwoTone sx={{ pr: 1 }}/>{translate('menu.modules')}</Button>
-      <Typography variant='h1' sx={{ pb: 2 }}>UI</Typography>
-      <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
-      {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <TextField
-          {...propsError('domain')}
-          fullWidth
-          variant="filled"
-          required
-          value={settings.domain[0]}
-          label={translate('core.ui.settings.domain.title')}
-          onChange={(event) => handleChange('domain', event.target.value)}
-        />
-
-        <FormGroup>
-          <FormControlLabel control={<Checkbox checked={settings.enablePublicPage[0]} onChange={(_, checked) => handleChange('enablePublicPage', checked)} />} label={translate('core.ui.settings.enablePublicPage')} />
-        </FormGroup>
-
-        <FormGroup>
-          <FormControlLabel control={<Checkbox checked={settings.percentage[0]} onChange={(_, checked) => handleChange('percentage', checked)} />} label={translate('core.ui.settings.percentage')} />
-        </FormGroup>
-
-        <FormGroup>
-          <FormControlLabel control={<Checkbox checked={settings.shortennumbers[0]} onChange={(_, checked) => handleChange('shortennumbers', checked)} />} label={translate('core.ui.settings.shortennumbers')} />
-        </FormGroup>
-
-        <FormGroup>
-          <FormControlLabel control={<Checkbox checked={settings.showdiff[0]} onChange={(_, checked) => handleChange('showdiff', checked)} />} label={translate('core.ui.settings.showdiff')} />
-        </FormGroup>
-      </Paper>
+  const [ref, element]  = useRefElement<HTMLElement>();
+  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  useEffect(() => {
+    if (element) {
+      if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {
+        onVisible();
       }
+    }
+  }, [element, scrollY, onVisible]);
 
-      <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save} disabled={haveErrors}>Save changes</LoadingButton>
-      </Stack>
+  return (<Box ref={ref} sx={sx}>
+    <Button id="ui" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+    <Typography variant='h1' sx={{ pb: 2 }}>UI</Typography>
+    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    {settings && <Paper elevation={1} sx={{ p: 1 }}>
+      <TextField
+        {...propsError('domain')}
+        fullWidth
+        variant="filled"
+        required
+        value={settings.domain[0]}
+        label={translate('core.ui.settings.domain.title')}
+        onChange={(event) => handleChange('domain', event.target.value)}
+      />
 
-      <Backdrop open={loading} >
-        <CircularProgress color="inherit"/>
-      </Backdrop>
-    </Box>
+      <FormGroup>
+        <FormControlLabel control={<Checkbox checked={settings.enablePublicPage[0]} onChange={(_, checked) => handleChange('enablePublicPage', checked)} />} label={translate('core.ui.settings.enablePublicPage')} />
+      </FormGroup>
+
+      <FormGroup>
+        <FormControlLabel control={<Checkbox checked={settings.percentage[0]} onChange={(_, checked) => handleChange('percentage', checked)} />} label={translate('core.ui.settings.percentage')} />
+      </FormGroup>
+
+      <FormGroup>
+        <FormControlLabel control={<Checkbox checked={settings.shortennumbers[0]} onChange={(_, checked) => handleChange('shortennumbers', checked)} />} label={translate('core.ui.settings.shortennumbers')} />
+      </FormGroup>
+
+      <FormGroup>
+        <FormControlLabel control={<Checkbox checked={settings.showdiff[0]} onChange={(_, checked) => handleChange('showdiff', checked)} />} label={translate('core.ui.settings.showdiff')} />
+      </FormGroup>
+    </Paper>
+    }
+
+    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save} disabled={haveErrors}>Save changes</LoadingButton>
+    </Stack>
+
+    <Backdrop open={loading} >
+      <CircularProgress color="inherit"/>
+    </Backdrop>
+  </Box>
   );
 };
-
-PageSettingsModulesCoreSocket.getLayout = function getLayout(page: ReactElement) {
-  return (
-    <Layout>
-      {page}
-    </Layout>
-  );
-};
-
-export default PageSettingsModulesCoreSocket;
+export default PageSettingsModulesCoreUI;

@@ -1,17 +1,13 @@
-import { SettingsTwoTone } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
-  Card,
-  CardContent,
   CircularProgress,
   Grid,
-  IconButton,
-  Switch,
+  List,
+  ListItemButton,
+  ListItemText,
   Typography,
 } from '@mui/material';
-import { blueGrey } from '@mui/material/colors';
-import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -21,6 +17,14 @@ import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
+import PageSettingsModulesCoreCurrency from '~/src/components/Settings/currency';
+import PageSettingsModulesCoreDashboard from '~/src/components/Settings/dashboard';
+import PageSettingsModulesCoreEmotes from '~/src/components/Settings/emotes';
+import PageSettingsModulesCoreGeneral from '~/src/components/Settings/general';
+import PageSettingsModulesCoreSocket from '~/src/components/Settings/socket';
+import PageSettingsModulesCoreTTS from '~/src/components/Settings/tts';
+import PageSettingsModulesCoreUI from '~/src/components/Settings/ui';
+import PageSettingsModulesCoreUpdater from '~/src/components/Settings/updater';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -96,9 +100,9 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
-  const toggle = useCallback((item: systemFromIO) => {
+  /* const toggle = useCallback((item: systemFromIO) => {
     const enabled = !item.enabled;
     getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
       if (err) {
@@ -109,7 +113,17 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
       }
     });
-  }, [ enqueueSnackbar ]);
+  }, [ enqueueSnackbar ]); */
+
+  const scrollTo = useCallback((type: string, id: string) => {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth',
+      block:    'start',
+    });
+    history.pushState({}, '', `/settings/modules/${type}#${id}`);
+  }, [ ]);
+
+  const [ activeTab, setActiveTab ] = useState('');
 
   return (
     <>
@@ -117,44 +131,53 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      <Box sx={{
-        maxWidth: 960, m: 'auto',
-      }}>
-        {types.map(type => {
-          return <>
-            <Typography variant='h3' sx={{ pb: 2 }}>{translate('menu.' + type)}</Typography>
-            <Card variant='elevation' key={type} sx={{ mb: 2 }}>
-              <CardContent sx={{
-                p: 1, '&:last-child': { p: 1 },
-              }}>
-
-                <Grid container spacing={1}>
-                  {items.filter(o => o.type === type && canBeDisabledOrHaveSettings(o)).map(item => {
-                    return <Grid item xs={12} sm={6} md={4} lg={4} key={`${type}-${item.name}`}>
-                      <Card variant='elevation' sx={{ backgroundColor: blueGrey[900] }}>
-                        <CardContent sx={{
-                          p: 1, '&:last-child': { p: 1 },
-                        }}>
-                          <Stack direction={'row'} alignItems='center' justifyContent='space-between'>
-                            <Typography variant='button'>{item.name}</Typography>
-                            <Box sx={{ width: `98px` }}>
-                              <Switch
-                                disabled={item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)}
-                                defaultChecked={item.enabled} sx={{ visibility: canBeDisabled(item) ? undefined : 'hidden' }} onChange={() => toggle(item)}/>
-                              <IconButton sx={{ visibility: haveAnySettings(item) ? undefined : 'hidden' }} onClick={() => router.push(`/settings/modules/${item.type}/${item.name}`)}><SettingsTwoTone /></IconButton>
-                            </Box>
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                    </Grid>;
-                  })}
-                </Grid>
-              </CardContent>
-            </Card>
-          </>;
-        }
-        )}
-      </Box>
+      <Grid container spacing={1} id="top">
+        <Grid item xs={2}>
+          <List
+            sx={{
+              width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px',
+            }}
+            dense
+          >
+            {types.map(type => <ListItemButton
+              sx={{ height: '40px' }}
+              selected={router.asPath.includes(`/settings/modules/${type}`)}
+              onClick={() => router.push(`/settings/modules/${type}`)}
+              key={type}>
+              <ListItemText primary={<Typography variant='h5'>{translate('menu.' + type)}</Typography>} />
+            </ListItemButton>)}
+          </List>
+        </Grid>
+        <Grid item xs={2}>
+          <List
+            sx={{
+              width: '100%', maxWidth: 360, bgcolor: 'background.paper', position: 'sticky', top: '0px',
+            }}
+            dense
+          >
+            {items.filter(o => o.type === 'core' && canBeDisabledOrHaveSettings(o)).map(item =><ListItemButton
+              sx={{ height: '40px' }}
+              key={`core-${item.name}`}
+              selected={activeTab === `${item.type}-${item.name}`}
+              onClick={() => scrollTo(item.type, item.name)}
+            >
+              <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>{translate('menu.' + item.name)}</Typography>} />
+            </ListItemButton>)}
+          </List>
+        </Grid>
+        <Grid item xs>
+          <Box sx={{ maxWidth: 960 }}>
+            <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreUI sx={{ minHeight: '92.3vh' }} onVisible={() => setActiveTab('core-ui')} onTop={() => scrollTo('core', 'top')}/>
+          </Box>
+        </Grid>
+      </Grid>
     </>
   );
 };

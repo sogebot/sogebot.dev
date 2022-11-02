@@ -1,4 +1,4 @@
-import { ArrowBackIosNewTwoTone } from '@mui/icons-material';
+import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -19,17 +19,23 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useState,
+  useCallback, useEffect, useState,
 } from 'react';
+import { useSelector } from 'react-redux';
+import { useRefElement } from 'rooks';
 
-import { NextPageWithLayout } from '~/pages/_app';
-import { Layout } from '~/src/components/Layout/main';
 import getAccessToken from '~/src/getAccessToken';
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
+const PageSettingsModulesCoreTTS: React.FC<{
+  onTop: () => void,
+  onVisible: () => void,
+}> = ({
+  onTop,
+  onVisible,
+}) => {
   const socketEndpoint = '/core/tts';
 
   const router = useRouter();
@@ -96,33 +102,39 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
     });
   };
 
-  return (
-    <Box sx={{
-      maxWidth: 960, m: 'auto',
-    }}>
+  const [ref, element]  = useRefElement<HTMLElement>();
+  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  useEffect(() => {
+    if (element) {
+      if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {
+        onVisible();
+      }
+    }
+  }, [element, scrollY, onVisible]);
 
-      <Button sx={{ mb: 1 }} onClick={() => router.push('/settings/modules')}><ArrowBackIosNewTwoTone sx={{ pr: 1 }}/>{translate('menu.modules')}</Button>
+  return (<Box ref={ref}>
+    <Button id="tts" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
 
-      <Typography variant='h1' sx={{ pb: 2 }}>TTS</Typography>
-      <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
-      {settings && <Paper elevation={1} sx={{ p: 1 }}>
-        <Stack spacing={1}>
-          <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-            <InputLabel id="demo-simple-select-label">{translate('core.tts.settings.service')}</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={settings.service[0]}
-              label={translate('core.tts.settings.service')}
-              onChange={(event) => handleChange('service', event.target.value)}
-            >
-              <MenuItem value={-1}>None</MenuItem>
-              <MenuItem value={0}>ResponsiveVoice</MenuItem>
-              <MenuItem value={1}>Google TTS</MenuItem>
-            </Select>
-          </FormControl>
+    <Typography variant='h1' sx={{ pb: 2 }}>TTS</Typography>
+    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    {settings && <Paper elevation={1} sx={{ p: 1 }}>
+      <Stack spacing={1}>
+        <FormControl  variant="filled" sx={{ minWidth: 300 }}>
+          <InputLabel id="demo-simple-select-label">{translate('core.tts.settings.service')}</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={settings.service[0]}
+            label={translate('core.tts.settings.service')}
+            onChange={(event) => handleChange('service', event.target.value)}
+          >
+            <MenuItem value={-1}>None</MenuItem>
+            <MenuItem value={0}>ResponsiveVoice</MenuItem>
+            <MenuItem value={1}>Google TTS</MenuItem>
+          </Select>
+        </FormControl>
 
-          {settings.service[0] === 0
+        {settings.service[0] === 0
           && <TextField
             sx={{ minWidth: 300 }}
             label={translate('integrations.responsivevoice.settings.key.title')}
@@ -132,9 +144,9 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
             value={settings.responsiveVoiceKey[0]}
             onChange={(event) => handleChange('responsiveVoiceKey', event.target.value)}
           />
-          }
+        }
 
-          {settings.service[0] === 1
+        {settings.service[0] === 1
           && <FormControl  variant="filled" sx={{ minWidth: 300 }}>
             <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
             <Select
@@ -152,27 +164,19 @@ const PageSettingsModulesCoreTTS: NextPageWithLayout = () => {
               </MenuItem>)}
             </Select>
           </FormControl>
-          }
-        </Stack>
-      </Paper>
-      }
-
-      <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
+        }
       </Stack>
+    </Paper>
+    }
 
-      <Backdrop open={loading} >
-        <CircularProgress color="inherit"/>
-      </Backdrop>
-    </Box>
-  );
-};
+    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
+    </Stack>
 
-PageSettingsModulesCoreTTS.getLayout = function getLayout(page: ReactElement) {
-  return (
-    <Layout>
-      {page}
-    </Layout>
+    <Backdrop open={loading} >
+      <CircularProgress color="inherit"/>
+    </Backdrop>
+  </Box>
   );
 };
 
