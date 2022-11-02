@@ -102,6 +102,12 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     refresh();
   }, [ refresh ]);
 
+  useEffect(() => {
+    if (router.asPath === '/settings/modules') {
+      router.push('/settings/modules/core');
+    }
+  }, [ router ]);
+
   /* const toggle = useCallback((item: systemFromIO) => {
     const enabled = !item.enabled;
     getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
