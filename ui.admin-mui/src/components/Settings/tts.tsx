@@ -115,8 +115,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
   return (<Box ref={ref}>
     <Button id="tts" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
 
-    <Typography variant='h1' sx={{ pb: 2 }}>TTS</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         <FormControl  variant="filled" sx={{ minWidth: 300 }}>

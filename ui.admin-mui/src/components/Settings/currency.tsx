@@ -110,7 +110,6 @@ const PageSettingsModulesCoreCurrency: React.FC<{
     <Button id="currency" sx={{ mb: 1 }} onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
 
     <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.currency')}</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Grid container sx={{ pb: 1 }}>
         <Grid item xs>

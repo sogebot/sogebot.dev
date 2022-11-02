@@ -150,8 +150,8 @@ const PageSettingsModulesCoreSocket: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref}>
-    <Button id="socket" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>    <Typography variant='h1' sx={{ pb: 2 }}>Socket</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    <Button id="socket" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+    <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.socket') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         <TextField

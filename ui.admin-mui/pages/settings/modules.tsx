@@ -8,6 +8,8 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -130,6 +132,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
   }, [ ]);
 
   const [ activeTab, setActiveTab ] = useState('');
+  const matches = useMediaQuery('(min-width:1536px)');
 
   return (
     <>
@@ -138,7 +141,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
       </Backdrop>
 
       <Grid container spacing={1} id="top">
-        <Grid item xs={2}>
+        <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
           <List
             sx={{
               width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px',
@@ -150,14 +153,16 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
               selected={router.asPath.includes(`/settings/modules/${type}`)}
               onClick={() => router.push(`/settings/modules/${type}`)}
               key={type}>
-              <ListItemText primary={<Typography variant='h5'>{translate('menu.' + type)}</Typography>} />
+              <ListItemText primary={<Typography variant='h5'>
+                {translate('menu.' + type).startsWith('{') ? type : translate('menu.' + type)}
+              </Typography>} />
             </ListItemButton>)}
           </List>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
           <List
             sx={{
-              width: '100%', maxWidth: 360, bgcolor: 'background.paper', position: 'sticky', top: '0px',
+              width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px',
             }}
             dense
           >
@@ -167,12 +172,16 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
               selected={activeTab === `${item.type}-${item.name}`}
               onClick={() => scrollTo(item.type, item.name)}
             >
-              <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>{translate('menu.' + item.name)}</Typography>} />
+              <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                {translate('menu.' + item.name).startsWith('{') ? capitalize(item.name) : translate('menu.' + item.name)}
+              </Typography>} />
             </ListItemButton>)}
           </List>
         </Grid>
         <Grid item xs>
-          <Box sx={{ maxWidth: 960 }}>
+          <Box sx={{
+            maxWidth: 960, m: matches ? undefined : 'auto', 
+          }}>
             <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')} onTop={() => scrollTo('core', 'top')}/>
             <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')} onTop={() => scrollTo('core', 'top')}/>
             <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')} onTop={() => scrollTo('core', 'top')}/>
@@ -180,7 +189,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')} onTop={() => scrollTo('core', 'top')}/>
             <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')} onTop={() => scrollTo('core', 'top')}/>
             <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreUI sx={{ minHeight: '92.3vh' }} onVisible={() => setActiveTab('core-ui')} onTop={() => scrollTo('core', 'top')}/>
+            <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')} onTop={() => scrollTo('core', 'top')}/>
           </Box>
         </Grid>
       </Grid>

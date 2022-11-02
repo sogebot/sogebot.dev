@@ -106,7 +106,6 @@ const PageSettingsModulesCoreEmotes: React.FC<{
   return (<Box ref={ref}>
     <Button id="emotes" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
     <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.emotes')}</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <FormGroup>
         <FormControlLabel control={<Checkbox checked={settings.bttv[0]} onChange={(_, checked) => handleChange('bttv', checked)} />} label="BetterTTV" />

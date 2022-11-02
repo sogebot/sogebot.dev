@@ -129,8 +129,7 @@ const PageSettingsModulesCoreUI: React.FC<{
 
   return (<Box ref={ref} sx={sx}>
     <Button id="ui" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
-    <Typography variant='h1' sx={{ pb: 2 }}>UI</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
+    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.ui')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <TextField
         {...propsError('domain')}

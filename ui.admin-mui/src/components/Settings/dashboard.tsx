@@ -33,7 +33,6 @@ import { v4 } from 'uuid';
 import { DashboardSortableItem } from '~/src/components/Sortable/DashboardSortableItem';
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreDashboard: React.FC<{
   onTop: () => void,
@@ -44,7 +43,6 @@ const PageSettingsModulesCoreDashboard: React.FC<{
   const socketEndpoint = '/core/dashboard';
 
   const router = useRouter();
-  const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ loading, setLoading ] = useState(true);
@@ -193,7 +191,6 @@ const PageSettingsModulesCoreDashboard: React.FC<{
   return (<Box id="dashboard" ref={ref}>
     <Button sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
     <Typography variant='h1' sx={{ pb: 2 }}>Dashboard</Typography>
-    <Typography variant='h3' sx={{ pb: 2 }}>{ translate('categories.general') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Divider><Typography variant='h5'>µWidgets</Typography></Divider>
       <Paper sx={{
