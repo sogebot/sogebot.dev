@@ -126,9 +126,8 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
   const [pageRef, element]  = useRefElement<HTMLElement>();
   const throttledFunction = useDebounce((el: HTMLElement) => {
-    console.log('a');
     dispatch(setScrollY(el.scrollTop));
-  }, 200, { trailing: true });
+  }, 100, { trailing: true });
 
   useEffect(() => {
     if (element) {

@@ -1,9 +1,7 @@
-import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
-  Button,
   Checkbox,
   CircularProgress,
   FormControlLabel,
@@ -37,11 +35,9 @@ class Settings {
 }
 
 const PageSettingsModulesCoreUI: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
   sx?: SxProps<Theme> | undefined
 }> = ({
-  onTop,
   onVisible,
   sx,
 }) => {
@@ -127,8 +123,7 @@ const PageSettingsModulesCoreUI: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} sx={sx}>
-    <Button id="ui" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+  return (<Box ref={ref} sx={sx} id="ui">
     <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.ui')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <TextField

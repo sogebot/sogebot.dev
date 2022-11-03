@@ -7,7 +7,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { ArrowUpwardTwoTone, SwapVertTwoTone } from '@mui/icons-material';
+import { SwapVertTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -35,10 +35,9 @@ import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 
 const PageSettingsModulesCoreDashboard: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
 }> = ({
-  onTop, onVisible,
+  onVisible,
 }) => {
   const socketEndpoint = '/core/dashboard';
 
@@ -189,7 +188,6 @@ const PageSettingsModulesCoreDashboard: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box id="dashboard" ref={ref}>
-    <Button sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
     <Typography variant='h1' sx={{ pb: 2 }}>Dashboard</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Divider><Typography variant='h5'>µWidgets</Typography></Divider>

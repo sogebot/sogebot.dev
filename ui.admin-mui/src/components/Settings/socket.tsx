@@ -1,4 +1,3 @@
-import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -45,10 +44,8 @@ class Settings {
 }
 
 const PageSettingsModulesCoreSocket: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
 }> = ({
-  onTop,
   onVisible,
 }) => {
   const socketEndpoint = '/core/socket';
@@ -149,8 +146,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref}>
-    <Button id="socket" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+  return (<Box ref={ref} id="socket">
     <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.socket') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>

@@ -1,4 +1,3 @@
-import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -31,10 +30,8 @@ import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreUpdater: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
 }> = ({
-  onTop,
   onVisible,
 }) => {
   const socketEndpoint = '/core/updater';
@@ -142,8 +139,7 @@ const PageSettingsModulesCoreUpdater: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref}>
-    <Button id="updater" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
+  return (<Box ref={ref} id="updater">
     <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.updater')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack direction='row' justifyContent={'space-between'}>

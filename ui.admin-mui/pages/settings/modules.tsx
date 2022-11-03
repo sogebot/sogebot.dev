@@ -1,20 +1,25 @@
+import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
   CircularProgress,
+  Fab,
   Grid,
   List,
   ListItemButton,
   ListItemText,
-  Typography,
+  Slide,
+  Typography ,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
+import { useSelector } from 'react-redux';
 import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -67,6 +72,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
 
   const types: possibleLists[] = useMemo(() => ['core', 'services', 'systems', 'integrations', 'games'], []);
   const [items, setItems] = useState([] as systemFromIO[]);
@@ -180,19 +186,31 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
         </Grid>
         <Grid item xs>
           <Box sx={{
-            maxWidth: 960, m: matches ? undefined : 'auto', 
+            maxWidth: 960, m: matches ? undefined : 'auto',
           }}>
-            <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')} onTop={() => scrollTo('core', 'top')}/>
-            <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')} onTop={() => scrollTo('core', 'top')}/>
+            <Stack spacing={4}>
+              <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')}/>
+              <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')}/>
+              <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')}/>
+              <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')}/>
+              <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')}/>
+              <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
+              <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
+              <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')}/>
+            </Stack>
           </Box>
         </Grid>
       </Grid>
+      <Slide  direction="up" in={scrollY > 0}><Fab
+        color="primary"
+        aria-label="top"
+        sx={{
+          position: 'absolute', bottom: '20px', right: '40px', 
+        }}
+        onClick={() => scrollTo('core', 'top')}>
+        <ArrowUpwardTwoTone/>
+      </Fab>
+      </Slide >
     </>
   );
 };

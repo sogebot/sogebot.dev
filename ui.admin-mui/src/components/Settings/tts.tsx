@@ -1,9 +1,7 @@
-import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
-  Button,
   CircularProgress,
   FormControl,
   InputLabel,
@@ -30,10 +28,8 @@ import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreTTS: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
 }> = ({
-  onTop,
   onVisible,
 }) => {
   const socketEndpoint = '/core/tts';
@@ -112,9 +108,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref}>
-    <Button id="tts" sx={{ mb: 1 }}onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
-
+  return (<Box ref={ref} id="tts">
     <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>

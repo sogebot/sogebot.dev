@@ -1,9 +1,7 @@
-import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
-  Button,
   CircularProgress,
   FormControl,
   Grid,
@@ -30,10 +28,8 @@ import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreCurrency: React.FC<{
-  onTop: () => void,
   onVisible: () => void,
 }> = ({
-  onTop,
   onVisible,
 }) => {
   const socketEndpoint = '/core/currency';
@@ -106,9 +102,7 @@ const PageSettingsModulesCoreCurrency: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref}>
-    <Button id="currency" sx={{ mb: 1 }} onClick={onTop}><ArrowUpwardTwoTone sx={{ pr: 1 }}/>TOP</Button>
-
+  return (<Box ref={ref} id="currency">
     <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.currency')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Grid container sx={{ pb: 1 }}>
