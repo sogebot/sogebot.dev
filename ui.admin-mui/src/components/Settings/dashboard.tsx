@@ -22,7 +22,6 @@ import {
 } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
 import {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
@@ -31,61 +30,19 @@ import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 
 import { DashboardSortableItem } from '~/src/components/Sortable/DashboardSortableItem';
-import { saveSettings } from '~/src/helpers/settings';
-import { getSocket } from '~/src/helpers/socket';
+import { useSettings } from '~/src/hooks/useSettings';
 
 const PageSettingsModulesCoreDashboard: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const socketEndpoint = '/core/dashboard';
-
   const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [ loading, setLoading ] = useState(true);
-  const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    await new Promise<void>((resolve, reject) => {
-      getSocket(socketEndpoint)
-        .emit('settings', (err, _settings: {
-          [x: string]: any
-        }, /* _ui: {
-          [x: string]: {
-            [attr: string]: any
-          }
-        }*/ ) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          // setUI(_ui);
-          setSettings(_settings);
-          resolve();
-        });
-    });
-    setLoading(false);
-  }, [ ]);
+  const { settings, setSettings, loading, refresh, save, saving } = useSettings('/core/dashboard');
 
   useEffect(() => {
     refresh();
   }, [ router, refresh ]);
-
-  const [ saving, setSaving ] = useState(false);
-  const save = useCallback(() => {
-    if (settings) {
-      setSaving(true);
-      saveSettings(socketEndpoint, settings)
-        .then(() => {
-          enqueueSnackbar('Settings saved.', { variant: 'success' });
-        })
-        .finally(() => setSaving(false));
-    }
-  }, [ settings, enqueueSnackbar ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -175,7 +132,7 @@ const PageSettingsModulesCoreDashboard: React.FC<{
         return s;
       }
     });
-  }, [clickedId, availableµWidgetsFiltered]);
+  }, [clickedId, availableµWidgetsFiltered, setSettings]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

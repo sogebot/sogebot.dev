@@ -13,19 +13,12 @@ import {
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { IsNotEmpty, validateOrReject } from 'class-validator';
-import {
-  cloneDeep, get, set,
-} from 'lodash';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
-import {
-  useCallback, useEffect, useState,
-} from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { saveSettings } from '~/src/helpers/settings';
-import { getSocket } from '~/src/helpers/socket';
+import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
@@ -41,15 +34,9 @@ const PageSettingsModulesCoreUI: React.FC<{
   onVisible,
   sx,
 }) => {
-  const socketEndpoint = '/core/ui';
-
   const router = useRouter();
+  const { settings, loading, refresh, save, saving, handleChange } = useSettings('/core/ui');
   const { translate } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [ loading, setLoading ] = useState(true);
-  const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const { propsError, setErrors, haveErrors } = useValidator({ translations: { domain: translate('core.ui.settings.domain.title') } });
 
@@ -63,55 +50,9 @@ const PageSettingsModulesCoreUI: React.FC<{
     }
   }, [loading, settings, setErrors]);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    await new Promise<void>((resolve, reject) => {
-      getSocket(socketEndpoint)
-        .emit('settings', (err, _settings: {
-          [x: string]: any
-        }, /* _ui: {
-          [x: string]: {
-            [attr: string]: any
-          }
-        }*/ ) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          // setUI(_ui);
-          setSettings(_settings);
-          resolve();
-        });
-    });
-    setLoading(false);
-  }, [ ]);
-
   useEffect(() => {
     refresh();
   }, [ router, refresh ]);
-
-  const [ saving, setSaving ] = useState(false);
-  const save = useCallback(() => {
-    if (settings) {
-      setSaving(true);
-      saveSettings(socketEndpoint, settings)
-        .then(() => {
-          enqueueSnackbar('Settings saved.', { variant: 'success' });
-        })
-        .finally(() => setSaving(false));
-    }
-  }, [ settings, enqueueSnackbar ]);
-
-  const handleChange = (key: string, value: any): void => {
-    setSettings((settingsObj) => {
-      if (!settingsObj) {
-        return null;
-      }
-      const newSettingsObj = cloneDeep(settingsObj);
-      set(newSettingsObj, key, [value, get(settingsObj, `${key}[1]`)]);
-      return newSettingsObj;
-    });
-  };
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

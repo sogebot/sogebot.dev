@@ -12,15 +12,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
-import {
-  useCallback, useEffect, useState,
-} from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { saveSettings } from '~/src/helpers/settings';
-import { getSocket } from '~/src/helpers/socket';
+import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreEmotes: React.FC<{
@@ -28,66 +24,13 @@ const PageSettingsModulesCoreEmotes: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const socketEndpoint = '/core/emotes';
-
   const router = useRouter();
+  const { settings, loading, refresh, save, saving, handleChange } = useSettings('/core/emotes');
   const { translate } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [ loading, setLoading ] = useState(true);
-  const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    await new Promise<void>((resolve, reject) => {
-      getSocket(socketEndpoint)
-        .emit('settings', (err, _settings: {
-          [x: string]: any
-        }, /* _ui: {
-          [x: string]: {
-            [attr: string]: any
-          }
-        }*/ ) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          // setUI(_ui);
-          setSettings(_settings);
-          resolve();
-        });
-    });
-    setLoading(false);
-  }, [ ]);
 
   useEffect(() => {
     refresh();
   }, [ router, refresh ]);
-
-  const [ saving, setSaving ] = useState(false);
-  const save = useCallback(() => {
-    if (settings) {
-      setSaving(true);
-      saveSettings(socketEndpoint, settings)
-        .then(() => {
-          enqueueSnackbar('Settings saved.', { variant: 'success' });
-        })
-        .finally(() => setSaving(false));
-    }
-  }, [ settings, enqueueSnackbar ]);
-
-  const handleChange = (key: string, value: any): void => {
-    setSettings((settingsObj) => {
-      return settingsObj ? {
-        ...settingsObj,
-        [key]: [
-          value,
-          settingsObj[key][1],
-        ],
-      } : null;
-    });
-  };
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

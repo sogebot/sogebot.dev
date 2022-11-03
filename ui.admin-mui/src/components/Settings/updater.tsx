@@ -14,9 +14,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  cloneDeep, get, set,
-} from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -25,8 +22,8 @@ import {
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
+import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModulesCoreUpdater: React.FC<{
@@ -34,72 +31,21 @@ const PageSettingsModulesCoreUpdater: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const socketEndpoint = '/core/updater';
-
   const router = useRouter();
+  const { settings, loading, refresh, save, saving, handleChange } = useSettings('/core/updater');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ updating, setUpdating ] = useState<string[]>([]);
-  const [ loading, setLoading ] = useState(true);
-  const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
-  // const [ ui, setUI ] = useState<null | Record<string, any>>(null);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    await new Promise<void>((resolve, reject) => {
-      getSocket(socketEndpoint)
-        .emit('settings', (err, _settings: {
-          [x: string]: any
-        }, /* _ui: {
-          [x: string]: {
-            [attr: string]: any
-          }
-        }*/ ) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          // setUI(_ui);
-          setSettings(_settings);
-          resolve();
-        });
-    });
-    setLoading(false);
-  }, [ ]);
 
   useEffect(() => {
     refresh();
   }, [ router, refresh ]);
 
-  const [ saving, setSaving ] = useState(false);
-  const save = useCallback(() => {
-    if (settings) {
-      setSaving(true);
-      saveSettings(socketEndpoint, settings)
-        .then(() => {
-          enqueueSnackbar('Settings saved.', { variant: 'success' });
-        })
-        .finally(() => setSaving(false));
-    }
-  }, [ settings, enqueueSnackbar ]);
-
-  const handleChange = (key: string, value: any): void => {
-    setSettings((settingsObj) => {
-      if (!settingsObj) {
-        return null;
-      }
-      const newSettingsObj = cloneDeep(settingsObj);
-      set(newSettingsObj, key, [value, get(settingsObj, `${key}[1]`)]);
-      return newSettingsObj;
-    });
-  };
-
   const [isChecking, setIsChecking] = useState(false);
 
   const manualCheck = useCallback(() => {
     setIsChecking(true);
-    setLoading(true);
     getSocket(`/core/updater`)
       .emit('updater::check', () => {
         setIsChecking(false);
