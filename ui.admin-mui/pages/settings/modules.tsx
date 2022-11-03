@@ -201,11 +201,11 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
           </Box>
         </Grid>
       </Grid>
-      <Slide  direction="up" in={scrollY > 0}><Fab
+      <Slide unmountOnExit direction="up" in={scrollY > 300}><Fab
         color="primary"
         aria-label="top"
         sx={{
-          position: 'absolute', bottom: '20px', right: '40px', 
+          position: 'absolute', bottom: '20px', right: '40px',
         }}
         onClick={() => scrollTo('core', 'top')}>
         <ArrowUpwardTwoTone/>
