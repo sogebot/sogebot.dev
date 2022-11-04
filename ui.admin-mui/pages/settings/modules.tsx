@@ -1,8 +1,6 @@
 import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   Fab,
   Grid,
   List,
@@ -15,12 +13,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { possibleLists } from '~/../backend/d.ts/src/helpers/socket';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
@@ -32,83 +28,12 @@ import PageSettingsModulesCoreSocket from '~/src/components/Settings/socket';
 import PageSettingsModulesCoreTTS from '~/src/components/Settings/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/updater';
-import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
-
-type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean, type: string };
-
-const canBeDisabled = (item: systemFromIO) => {
-  return item.type !== 'core' && item.type !== 'services' && item.enabled !== undefined && item.enabled !== null;
-};
-const haveAnySettings = (item: systemFromIO) => {
-  const configurableList = [
-    'core|dashboard', 'core|tts', 'core|emotes', 'core|currency',
-    'core|general', 'core|socket', 'core|updater', 'core|ui',
-
-    'services|google', 'services|twitch',
-
-    'systems|antihateraid', 'systems|points', 'systems|checklist',
-    'systems|cooldown', 'systems|highlights', 'systems|polls',
-    'systems|emotescombo', 'systems|songs', 'systems|moderation',
-    'systems|bets', 'systems|scrim', 'systems|raffles',
-    'systems|levels', 'systems|userinfo', 'systems|raffles',
-
-    'integrations|donatello', 'integrations|kofi', 'integrations|tiltify',
-    'integrations|discord', 'integrations|donationalerts', 'integrations|lastfm',
-    'integrations|obswebsocket', 'integrations|pubg', 'integrations|qiwi',
-    'integrations|spotify', 'integrations|streamelements', 'integrations|stramlabs',
-    'integrations|tipeeestream', 'integrations|twitter',
-
-    'games|fightme', 'games|duel', 'games|gamble',
-    'games|heist', 'games|roulette', 'games|seppuku',
-  ];
-  return configurableList.includes(`${item.type}|${item.name}`);
-};
-const canBeDisabledOrHaveSettings = (item: systemFromIO) => {
-  return canBeDisabled(item) || haveAnySettings(item);
-};
 
 const PageSettingsPermissions: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
-
-  const types: possibleLists[] = useMemo(() => ['core', 'services', 'systems', 'integrations', 'games'], []);
-  const [items, setItems] = useState([] as systemFromIO[]);
-
-  const [ loading, setLoading ] = useState(true);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    setItems([]);
-    await Promise.all(
-      types.map((type) => new Promise<void>((resolve, reject) => {
-        getSocket('/').emit('populateListOf', type, (err, systems) => {
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-            reject();
-            return;
-          }
-
-          setItems(i => ([
-            ...i,
-            ...systems.sort((a, b) => {
-              return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-            }) as any,
-          ]));
-
-          resolve();
-          setLoading(false);
-        });
-
-      }))
-    );
-  }, [ enqueueSnackbar, translate, types ]);
-
-  useEffect(() => {
-    refresh();
-  }, [ refresh ]);
 
   useEffect(() => {
     if (router.asPath === '/settings/modules') {
@@ -142,10 +67,6 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
 
   return (
     <>
-      <Backdrop open={loading} >
-        <CircularProgress color="inherit"/>
-      </Backdrop>
-
       <Grid container spacing={1} id="top">
         <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
           <List
@@ -154,7 +75,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             }}
             dense
           >
-            {types.map(type => <ListItemButton
+            {['core', 'services', 'systems', 'integrations', 'games'].map(type => <ListItemButton
               sx={{ height: '40px' }}
               selected={router.asPath.includes(`/settings/modules/${type}`)}
               onClick={() => router.push(`/settings/modules/${type}`)}
@@ -172,16 +93,79 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             }}
             dense
           >
-            {items.filter(o => o.type === 'core' && canBeDisabledOrHaveSettings(o)).map(item =><ListItemButton
-              sx={{ height: '40px' }}
-              key={`core-${item.name}`}
-              selected={activeTab === `${item.type}-${item.name}`}
-              onClick={() => scrollTo(item.type, item.name)}
-            >
-              <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
-                {translate('menu.' + item.name).startsWith('{') ? capitalize(item.name) : translate('menu.' + item.name)}
-              </Typography>} />
-            </ListItemButton>)}
+            {router.asPath.includes(`/settings/modules/core`) && <>
+              {['dashboard', 'tts', 'emotes', 'currency', 'general', 'socket', 'updater', 'ui'].map(item => <ListItemButton
+                sx={{ height: '40px' }}
+                key={`core-${item}`}
+                selected={activeTab === `core-${item}`}
+                onClick={() => scrollTo('core', item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
+
+            {router.asPath.includes(`/settings/modules/services`) && <>
+              {['google', 'twitch'].map(item => <ListItemButton
+                sx={{ height: '40px' }}
+                key={`services-${item}`}
+                selected={activeTab === `services-${item}`}
+                onClick={() => scrollTo('services', item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
+
+            {router.asPath.includes(`/settings/modules/systems`) && <>
+              {['antihateraid', 'points', 'checklist',
+                'cooldown', 'highlights', 'polls',
+                'emotescombo', 'songs', 'moderation',
+                'bets', 'scrim', 'raffles',
+                'levels', 'userinfo', 'raffles'].map(item => <ListItemButton
+                sx={{ height: '40px' }}
+                key={`systems-${item}`}
+                selected={activeTab === `systems-${item}`}
+                onClick={() => scrollTo('systems', item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
+
+            {router.asPath.includes(`/settings/modules/integrations`) && <>
+              {['donatello', 'kofi', 'tiltify',
+                'discord', 'donationalerts', 'lastfm',
+                'obswebsocket', 'pubg', 'qiwi',
+                'spotify', 'streamelements', 'stramlabs',
+                'tipeeestream', 'twitter'].map(item => <ListItemButton
+                sx={{ height: '40px' }}
+                key={`integrations-${item}`}
+                selected={activeTab === `integrations-${item}`}
+                onClick={() => scrollTo('integrations', item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
+
+            {router.asPath.includes(`/settings/modules/games`) && <>
+              {['duel', 'gamble',
+                'heist', 'roulette', 'seppuku'].map(item => <ListItemButton
+                sx={{ height: '40px' }}
+                key={`games-${item}`}
+                selected={activeTab === `games-${item}`}
+                onClick={() => scrollTo('games', item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
           </List>
         </Grid>
         <Grid item xs>
@@ -189,14 +173,16 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             maxWidth: 960, m: matches ? undefined : 'auto',
           }}>
             <Stack spacing={4}>
-              <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')}/>
-              <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')}/>
-              <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')}/>
-              <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')}/>
-              <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')}/>
-              <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
-              <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
-              <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')}/>
+              {router.asPath.includes(`/settings/modules/core`) && <>
+                <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')}/>
+                <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')}/>
+                <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')}/>
+                <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')}/>
+                <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')}/>
+                <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
+                <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
+                <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')}/>
+              </>}
             </Stack>
           </Box>
         </Grid>
