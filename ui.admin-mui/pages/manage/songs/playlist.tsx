@@ -45,6 +45,7 @@ import { useWindowSize } from 'rooks';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { ButtonsTagBulk } from '~/src/components/Buttons/TagBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { PlaylistEdit } from '~/src/components/RightDrawer/PlaylistEdit';
@@ -163,6 +164,31 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
       },
     },
   ]);
+
+  const bulkToggleAttribute = useCallback(async <T extends keyof SongPlaylist>(attribute: T, value: SongPlaylist[T]) => {
+    for (const selected of selection) {
+      const item = items.find(o => o.videoId === selected);
+      if (item && item[attribute] !== value) {
+        await new Promise<void>((resolve) => {
+          item[attribute] = value;
+          getSocket('/systems/songs').emit('songs::save', item, () => {
+            resolve();
+          });
+        });
+      }
+    }
+
+    setItems(i => i.map((item) => {
+      if (selection.includes(item.videoId)) {
+        item[attribute] = value;
+      }
+      return item;
+    }));
+
+    if (attribute === 'tags') {
+      enqueueSnackbar(`Bulk operation set items tags to ${(value as string[]).join(', ')}.`, { variant: 'success' });
+    }
+  }, [items, selection, enqueueSnackbar]);
 
   const { element: filterElement, filters } = useFilter<SongPlaylist>(useFilterSetup);
 
@@ -309,6 +335,9 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
               </div>
             )}
           </PopupState>
+        </Grid>
+        <Grid item>
+          <ButtonsTagBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('tags', groupId)} tags={tags} forceTags={['general']}/>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
