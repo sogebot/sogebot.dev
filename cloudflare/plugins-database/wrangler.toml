@@ -1,0 +1,7 @@
+name = "plugins-database"
+main = "src/index.ts"
+compatibility_date = "2022-11-05"
+
+kv_namespaces = [
+  { binding = "PLUGINS", id = "726f05d7dc1349e7ac6566d1406921a7", preview_id = "af514be1312747358317f20138a7ae7a" }
+]
