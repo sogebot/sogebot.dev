@@ -29,6 +29,7 @@ import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
+import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsPermissions: NextPageWithLayout = () => {
@@ -182,11 +183,15 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                 <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')}/>
                 <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
                 <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
-                <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')}/>
+                <PageSettingsModulesCoreUI onVisible={() => setActiveTab('core-ui')}/>
               </>}
               {router.asPath.includes(`/settings/modules/services`) && <>
                 <PageSettingsModulesServiceGoogle onVisible={() => setActiveTab('services-google')}/>
+                <PageSettingsModulesServiceTwitch onVisible={() => setActiveTab('services-twitch')}/>
               </>}
+              <Box sx={{
+                minHeight: '50vh', width: '100%',
+              }}/>
             </Stack>
           </Box>
         </Grid>

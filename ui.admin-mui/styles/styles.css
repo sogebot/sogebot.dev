@@ -8,6 +8,10 @@ body, html {
   overflow: hidden;
 }
 
+a {
+  color: #ffa000;
+}
+
 .mobileScrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
