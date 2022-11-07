@@ -315,7 +315,63 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>
-    {settings && <Paper>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('general.createMarkerOnEvent', checked)}
+              checked={settings.general.createMarkerOnEvent[0]} />}
+            label={translate('core.twitch.settings.createMarkerOnEvent')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('general.isTitleForced', checked)}
+              checked={settings.general.isTitleForced[0]} />}
+            label={translate('core.twitch.settings.isTitleForced')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('chat.sendWithMe', checked)}
+              checked={settings.chat.sendWithMe[0]} />}
+            label={translate('core.tmi.settings.sendWithMe')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('chat.mute', checked)}
+              checked={settings.chat.mute[0]} />}
+            label={translate('core.tmi.settings.mute')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('chat.whisperListener', checked)}
+              checked={settings.chat.whisperListener[0]} />}
+            label={translate('core.tmi.settings.whisperListener')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('chat.showWithAt', checked)}
+              checked={settings.chat.showWithAt[0]} />}
+            label={translate('core.tmi.settings.showWithAt')} />
+        </FormGroup>
+        <FormGroup sx={{ width: '100%' }}>
+          <FormControlLabel
+            control={<Checkbox onChange={(_, checked) => handleChange('chat.sendAsReply', checked)}
+              checked={settings.chat.sendAsReply[0]} />}
+            label={translate('core.tmi.settings.sendAsReply')} />
+        </FormGroup>
+
+        <TextField
+          variant='filled'
+          multiline
+          fullWidth
+          value={settings.chat.ignorelist[0].join('\n')}
+          helperText={translate('one-record-per-line')}
+          label={translate('core.tmi.settings.ignorelist')}
+          onChange={(event) => handleChange('chat.ignorelist', event.target.value.split('\n'))}
+        />
+      </Stack>
     </Paper>}
 
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
