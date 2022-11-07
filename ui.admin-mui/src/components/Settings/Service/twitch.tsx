@@ -2,8 +2,12 @@ import { Alert, LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
+  Button,
+  Checkbox,
   CircularProgress,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -12,9 +16,12 @@ import {
   Typography,
 } from '@mui/material';
 import Collapse  from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import Select from '@mui/material/Select/Select';
 import { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import capitalize from 'lodash/capitalize';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
@@ -60,6 +67,40 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     return `${window.location.origin}/credentials/oauth/tokens`;
   }, []);
 
+  const origin = useMemo(() => window.location.origin, []);
+
+  const botUrl = useMemo(() => {
+    if (!settings) {
+      return '';
+    }
+
+    const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast';
+    const clientId = settings.general.tokenServiceCustomClientId[0];
+    const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
+
+    if (settings.general.tokenService[0] === 'SogeBot Token Generator') {
+      return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
+    } else {
+      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
+    }
+  }, [settings, redirectUri ]);
+
+  const broadcasterUrl = useMemo(() => {
+    if (!settings) {
+      return '';
+    }
+
+    const scope = 'scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast user:edit:broadcast moderator:read:chatters';
+    const clientId = settings.general.tokenServiceCustomClientId[0];
+    const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
+
+    if (settings.general.tokenService[0] === 'SogeBot Token Generator') {
+      return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
+    } else {
+      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
+    }
+  }, [settings, redirectUri ]);
+
   return (<Box ref={ref} sx={sx} id="twitch">
     <Typography variant='h1' sx={{ pb: 2 }}>Twitch</Typography>
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.oauth')}</Typography>
@@ -96,12 +137,13 @@ const PageSettingsModulesServiceTwitch: React.FC<{
                 <li>Set <strong>oauth redirect</strong> to your { redirectUri }</li>
                 <li>Pick Application Integration for <strong>category</strong> and create</li>
                 <li>After creation copy clientId and generate clientSecret</li>
-              </ol></Alert>
+              </ol>
+            </Alert>
             <TextField
               variant='filled'
               fullWidth
               value={settings.general.tokenServiceCustomClientId[0]}
-              label='Client ID'
+              label={capitalize(translate('integrations.spotify.settings.clientId'))}
               onChange={(event) => handleChange('general.tokenServiceCustomClientId', event.target.value)}
             />
             <TextField
@@ -129,13 +171,147 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.bot')}</Typography>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.bot.botAccessToken[0]}
+          label={translate('core.oauth.settings.botAccessToken')}
+          onChange={(event) => handleChange('bot.botAccessToken', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.bot.botRefreshToken[0]}
+          label={translate('core.oauth.settings.botRefreshToken')}
+          onChange={(event) => handleChange('bot.botRefreshToken', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          value={settings.bot.botClientId[0]}
+          label={capitalize(translate('integrations.spotify.settings.clientId'))}
+          onChange={(event) => handleChange('bot.botClientId', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          disabled
+          value={settings.bot.botUsername[0]}
+          label={translate('core.oauth.settings.botUsername')}
+          onChange={(event) => handleChange('bot.botUsername', event.target.value)}
+        />
+        <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </Stack>
+    </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.channel')}</Typography>
-    {settings && <Paper>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.broadcaster.broadcasterAccessToken[0]}
+          label={translate('core.oauth.settings.botAccessToken')}
+          onChange={(event) => handleChange('broadcaster.broadcasterAccessToken', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.broadcaster.broadcasterRefreshToken[0]}
+          label={translate('core.oauth.settings.botRefreshToken')}
+          onChange={(event) => handleChange('broadcaster.broadcasterRefreshToken', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          value={settings.broadcaster.broadcasterClientId[0]}
+          label={capitalize(translate('integrations.spotify.settings.clientId'))}
+          onChange={(event) => handleChange('broadcaster.broadcasterClientId', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          disabled
+          value={settings.broadcaster.broadcasterUsername[0]}
+          label={translate('core.oauth.settings.botUsername')}
+          onChange={(event) => handleChange('broadcaster.broadcasterUsername', event.target.value)}
+        />
+        <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </Stack>
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.eventsub')}</Typography>
-    {settings && <Paper>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
+        <Alert severity="info" icon={false}>
+        For use of EventSub you need to have SSL enabled domain and created Twitch App
+          <ol>
+            <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank" rel="noreferrer">https://dev.twitch.tv/console/apps</a>{' '}
+            and register your app</li>
+            <li>You can choose any <strong>name</strong> of app you want</li>
+            <li>Set <strong>oauth redirect</strong> to your { origin }/credentials/oauth/eventsub</li>
+            <li>Pick Application Integration for <strong>category</strong> and create</li>
+            <li>After creation copy clientId and generate clientSecret</li>
+            <li>Authorize your broadcaster account to enable subscription with your account</li>
+          </ol>
+        </Alert>
+
+        <TextField
+          variant='filled'
+          fullWidth
+          value={settings.eventsub.eventSubClientId[0]}
+          label={capitalize(translate('integrations.spotify.settings.clientId'))}
+          onChange={(event) => handleChange('eventsub.eventSubClientId', event.target.value)}
+        />
+
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.eventsub.eventSubClientSecret[0]}
+          label={translate('integrations.spotify.settings.clientSecret')}
+          onChange={(event) => handleChange('eventsub.eventSubClientSecret', event.target.value)}
+        />
+
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <FormGroup sx={{ width: '100%' }}>
+            <FormControlLabel control={<Checkbox onChange={(_, checked) => handleChange('eventsub.useTunneling', checked)}checked={settings.eventsub.useTunneling[0]} />} label="Use unreliable tunneling (works on localhost)" />
+          </FormGroup>
+          <TextField
+            variant='filled'
+            fullWidth
+            helperText={translate('core.ui.settings.domain.help')}
+            value={settings.eventsub.domain[0]}
+            disabled={settings.eventsub.useTunneling[0]}
+            label={translate('core.ui.settings.domain.title')}
+            onChange={(event) => handleChange('eventsub.domain', event.target.value)}
+          />
+        </Stack>
+
+        <Alert severity="info" icon={false}>Authorize by clicking on authorize button. It will then take around ~1
+        minute to subscribe to missing events</Alert>
+
+        <Button sx={{ m: 0.5 }} href={`https://id.twitch.tv/oauth2/authorize?client_id=${settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls channel:manage:predictions`} target='_blank'>{ translate('commons.generate') }</Button>
+
+        <Typography variant='h6' sx={{ pb: 2 }}>Currently subscribed events</Typography>
+        <List dense>
+          {settings.eventsub.eventSubEnabledSubscriptions[0].map((item: string) => <ListItem key={item}>
+            {item}
+          </ListItem>)}
+        </List>
+      </Stack>
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>
