@@ -41,7 +41,6 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace) =
   }, [ endpoint ]);
 
   const save = useCallback(() => {
-
     if (settings) {
       setSaving(true);
       saveSettings(endpoint, settings)

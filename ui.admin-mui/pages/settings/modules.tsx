@@ -20,14 +20,15 @@ import { useSelector } from 'react-redux';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Layout } from '~/src/components/Layout/main';
-import PageSettingsModulesCoreCurrency from '~/src/components/Settings/currency';
-import PageSettingsModulesCoreDashboard from '~/src/components/Settings/dashboard';
-import PageSettingsModulesCoreEmotes from '~/src/components/Settings/emotes';
-import PageSettingsModulesCoreGeneral from '~/src/components/Settings/general';
-import PageSettingsModulesCoreSocket from '~/src/components/Settings/socket';
-import PageSettingsModulesCoreTTS from '~/src/components/Settings/tts';
-import PageSettingsModulesCoreUI from '~/src/components/Settings/ui';
-import PageSettingsModulesCoreUpdater from '~/src/components/Settings/updater';
+import PageSettingsModulesCoreCurrency from '~/src/components/Settings/Core/currency';
+import PageSettingsModulesCoreDashboard from '~/src/components/Settings/Core/dashboard';
+import PageSettingsModulesCoreEmotes from '~/src/components/Settings/Core/emotes';
+import PageSettingsModulesCoreGeneral from '~/src/components/Settings/Core/general';
+import PageSettingsModulesCoreSocket from '~/src/components/Settings/Core/socket';
+import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
+import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
+import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
+import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsPermissions: NextPageWithLayout = () => {
@@ -182,6 +183,9 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
                 <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
                 <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
                 <PageSettingsModulesCoreUI sx={{ minHeight: '93vh' }} onVisible={() => setActiveTab('core-ui')}/>
+              </>}
+              {router.asPath.includes(`/settings/modules/services`) && <>
+                <PageSettingsModulesServiceGoogle onVisible={() => setActiveTab('services-google')}/>
               </>}
             </Stack>
           </Box>
