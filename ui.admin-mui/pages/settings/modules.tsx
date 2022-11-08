@@ -14,7 +14,7 @@ import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import {
-  ReactElement, useCallback, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -35,7 +35,7 @@ import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/be
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-const PageSettingsPermissions: NextPageWithLayout = () => {
+const PageSettingsModules: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -50,6 +50,12 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
 
   const [ activeTab, setActiveTab ] = useState('');
   const matches = useMediaQuery('(min-width:1536px)');
+
+  useEffect(() => {
+    if (router.asPath === '/settings/modules') {
+      router.push('/settings/modules/core');
+    }
+  }, [router]);
 
   return (
     <>
@@ -204,7 +210,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
   );
 };
 
-PageSettingsPermissions.getLayout = function getLayout(page: ReactElement) {
+PageSettingsModules.getLayout = function getLayout(page: ReactElement) {
   return (
     <Layout>
       {page}
@@ -212,4 +218,4 @@ PageSettingsPermissions.getLayout = function getLayout(page: ReactElement) {
   );
 };
 
-export default PageSettingsPermissions;
+export default PageSettingsModules;
