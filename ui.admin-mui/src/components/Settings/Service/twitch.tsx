@@ -206,8 +206,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
           label={translate('core.oauth.settings.botUsername')}
           onChange={(event) => handleChange('bot.botUsername', event.target.value)}
         />
-        <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
       </Stack>
+      <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.channel')}</Typography>
@@ -246,8 +246,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
           label={translate('core.oauth.settings.botUsername')}
           onChange={(event) => handleChange('broadcaster.broadcasterUsername', event.target.value)}
         />
-        <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
       </Stack>
+      <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.eventsub')}</Typography>
@@ -302,9 +302,6 @@ const PageSettingsModulesServiceTwitch: React.FC<{
 
         <Alert severity="info" icon={false}>Authorize by clicking on authorize button. It will then take around ~1
         minute to subscribe to missing events</Alert>
-
-        <Button sx={{ m: 0.5 }} href={`https://id.twitch.tv/oauth2/authorize?client_id=${settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls channel:manage:predictions`} target='_blank'>{ translate('commons.generate') }</Button>
-
         <Typography variant='h6' sx={{ pb: 2 }}>Currently subscribed events</Typography>
         <List dense>
           {settings.eventsub.eventSubEnabledSubscriptions[0].map((item: string) => <ListItem key={item}>
@@ -312,6 +309,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
           </ListItem>)}
         </List>
       </Stack>
+      <Button sx={{ m: 0.5 }} href={`https://id.twitch.tv/oauth2/authorize?client_id=${settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls channel:manage:predictions`} target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>

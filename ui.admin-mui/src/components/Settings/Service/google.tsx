@@ -4,6 +4,7 @@ import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
+  Button,
   CircularProgress,
   IconButton,
   Paper,
@@ -14,10 +15,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import axios from 'axios';
+import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -41,7 +44,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   sx,
 }) => {
   const router = useRouter();
-  const { settings, loading, refresh, save, saving } = useSettings('/services/google');
+  const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/google');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -143,7 +146,38 @@ const PageSettingsModulesServiceGoogle: React.FC<{
 
   return (<Box ref={ref} sx={sx} id="google">
     <Typography variant='h1' sx={{ pb: 2 }}>Google</Typography>
-    <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.keys')}</Typography>
+    <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel Tokens</Typography>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
+        <TextField
+          variant='filled'
+          fullWidth
+          type='password'
+          value={settings.refreshToken[0]}
+          label={translate('core.oauth.settings.botRefreshToken')}
+          onChange={(event) => handleChange('refreshToken', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          value={settings.clientId[0]}
+          label={capitalize(translate('integrations.spotify.settings.clientId'))}
+          onChange={(event) => handleChange('clientId', event.target.value)}
+        />
+        <TextField
+          variant='filled'
+          fullWidth
+          disabled
+          value={settings.channel[0]}
+          label={'Channel'}
+        />
+      </Stack>
+      <Button sx={{ m: 0.5 }} href='https://youtube-token-generator.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
+    </Paper>}
+
+    <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.keys')}</Typography>
     {settings && <Paper>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">

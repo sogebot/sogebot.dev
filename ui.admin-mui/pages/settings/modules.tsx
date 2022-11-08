@@ -14,7 +14,7 @@ import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import {
-  ReactElement, useCallback, useEffect, useState,
+  ReactElement, useCallback, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -30,31 +30,15 @@ import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
+import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Systems/antihateraid';
+import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/bets';
+import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsPermissions: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
-
-  useEffect(() => {
-    if (router.asPath === '/settings/modules') {
-      router.push('/settings/modules/core');
-    }
-  }, [ router ]);
-
-  /* const toggle = useCallback((item: systemFromIO) => {
-    const enabled = !item.enabled;
-    getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
-      if (err) {
-        console.error(err);
-        enqueueSnackbar(String(err), { variant: 'error' });
-        return;
-      } else {
-        enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
-      }
-    });
-  }, [ enqueueSnackbar ]); */
 
   const scrollTo = useCallback((type: string, id: string) => {
     document.getElementById(id)?.scrollIntoView({
@@ -122,11 +106,20 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             </>}
 
             {router.asPath.includes(`/settings/modules/systems`) && <>
-              {['antihateraid', 'points', 'checklist',
-                'cooldown', 'highlights', 'polls',
-                'emotescombo', 'songs', 'moderation',
-                'bets', 'scrim', 'raffles',
-                'levels', 'userinfo', 'raffles'].map(item => <ListItemButton
+              {['antihateraid',
+                'bets',
+                'checklist',
+                'cooldown',
+                'emotescombo',
+                'highlights',
+                'levels',
+                'moderation',
+                'points',
+                'polls',
+                'raffles',
+                'scrim',
+                'songs',
+                'userinfo'].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`systems-${item}`}
                 selected={activeTab === `systems-${item}`}
@@ -139,11 +132,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
             </>}
 
             {router.asPath.includes(`/settings/modules/integrations`) && <>
-              {['donatello', 'kofi', 'tiltify',
-                'discord', 'donationalerts', 'lastfm',
-                'obswebsocket', 'pubg', 'qiwi',
-                'spotify', 'streamelements', 'stramlabs',
-                'tipeeestream', 'twitter'].map(item => <ListItemButton
+              {['google', 'twitch'].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -188,6 +177,11 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
               {router.asPath.includes(`/settings/modules/services`) && <>
                 <PageSettingsModulesServiceGoogle onVisible={() => setActiveTab('services-google')}/>
                 <PageSettingsModulesServiceTwitch onVisible={() => setActiveTab('services-twitch')}/>
+              </>}
+              {router.asPath.includes(`/settings/modules/systems`) && <>
+                <PageSettingsModulesSystemsModules onVisible={() => setActiveTab('systems-modules')}/>
+                <PageSettingsModulesSystemsAntihateRaid onVisible={() => setActiveTab('systems-antihateraid')}/>
+                <PageSettingsModulesSystemsBets onVisible={() => setActiveTab('systems-bets')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',
