@@ -35,9 +35,9 @@ const Login: NextPage = () => {
       const twitchHeaders = { headers: { Authorization: 'Bearer ' + code } };
       const twitchValidation = await axios.get<any>('https://id.twitch.tv/oauth2/validate', twitchHeaders);
       console.group('isUserLoggedIn::twitch::validation');
-      console.debug({
-        twitchValidation, twitchHeaders, 
-      });
+      console.debug(JSON.stringify({
+        twitchValidation, twitchHeaders,
+      }));
       console.groupEnd();
       localStorage.userId = twitchValidation.data.user_id;
       localStorage.clientId = twitchValidation.data.client_id;
