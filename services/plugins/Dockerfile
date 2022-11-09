@@ -23,4 +23,4 @@ RUN npm install
 EXPOSE 3000
 
 # Add startup script
-CMD [ "node", "dest/index.js" ]
+CMD [ "node", "build/index.js" ]

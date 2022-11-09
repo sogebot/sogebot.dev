@@ -21,7 +21,7 @@
     "declaration": true,
     "noResolve": false,
     "baseUrl": "./src",
-    "outDir": "./dest",
+    "outDir": "./build",
     "inlineSourceMap": true,
     "typeRoots": ["./node_modules/@types"]
   },
