@@ -34,4 +34,7 @@ export class Plugin {
     @Column({ type: 'text' })
     @IsNotEmpty()
     plugin: number;
+
+    @Column({ default: 0 })
+    importedCount: number;
 }

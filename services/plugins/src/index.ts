@@ -21,7 +21,11 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use(express.raw());
 app.use(cors());
-app.use(morgan('combined'))
+morgan.token('user', function (req) {
+  const value = `${(req as any).login}#${(req as any).userId}`;
+  return (req as any).login ? value : '<unknown user>';
+})
+app.use(morgan(':remote-addr - :user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'))
 
 // add twitch validation
 /*
@@ -60,6 +64,7 @@ const adminMiddleware = async (req: any, res: Response, next: () => void) => {
       });
 
       req.userId = request.data.user_id
+      req.login = request.data.login
       next();
     } catch (e) {
       return res.sendStatus(401);
@@ -77,13 +82,19 @@ app.get("/plugins", adminMiddleware, async function (req: Request, res: Response
     publishedAt: true,
     publisherId: true,
     version: true,
+    importedCount: true,
   }}))
 })
 
 app.get("/plugins/:id", adminMiddleware, async function (req: Request, res: Response) {
+    await AppDataSource.getRepository(Plugin).increment({
+      id: req.params.id,
+    }, 'importedCount', 1);
+
     const results = await AppDataSource.getRepository(Plugin).findOneBy({
         id: req.params.id,
     })
+
     return res.send(results)
 })
 
