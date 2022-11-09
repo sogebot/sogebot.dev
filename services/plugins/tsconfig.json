@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "target": "es2020",
+    "strict": true,
+    "module": "commonjs",
+    "incremental": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "lib": ["es2020"],
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "noResolve": false,
+    "baseUrl": "./src",
+    "outDir": "./dest",
+    "inlineSourceMap": true,
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "include": [
+    "./"
+  ],
+  "exclude": [
+    "test",
+    "node_modules",
+    "dest",
+  ]
+}

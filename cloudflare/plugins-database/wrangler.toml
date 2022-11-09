@@ -1,8 +1,0 @@
-name = "plugins-database"
-main = "src/index.ts"
-compatibility_date = "2022-11-05"
-
-[[r2_buckets]]
-binding = 'PLUGINS'
-bucket_name = 'plugins'
-preview_bucket_name = 'plugins-preview'
