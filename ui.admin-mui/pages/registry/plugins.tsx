@@ -1,30 +1,23 @@
-import {
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSelection,
-  IntegratedSorting,
-  SelectionState,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
 import { Plugin } from '@entity/plugins';
-import { CheckBoxTwoTone, DisabledByDefaultTwoTone } from '@mui/icons-material';
+import {
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, DownloadTwoTone, ThumbDown, ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
+} from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
+  Backdrop,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
   CircularProgress,
   Grid,
-  Paper,
+  IconButton,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
+import { green, red } from '@mui/material/colors';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
@@ -32,16 +25,18 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import getAccessToken from '~/src/getAccessToken';
+import { dayjs } from '~/src/helpers/dayjsHelper';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
+
+import { Plugin as RemotePlugin } from '../../../services/plugins/src/entity/Plugin';
 
 const PageRegistryPlugins: NextPageWithLayout = () => {
   const dispatch = useDispatch();
@@ -49,11 +44,13 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Plugin[]>([]);
+  const [ remoteItems, setRemoteItems ] = useState<RemotePlugin[]>([]);
+
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Plugin>([
+  const { useFilterSetup  } = useColumnMaker<Plugin>([
     {
       columnName:  'actions',
       table:       { width: 130 },
@@ -76,7 +73,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
     },
   ]);
 
-  const { element: filterElement, filters } = useFilter(useFilterSetup);
+  const { element: filterElement } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Plugin) => {
     axios.delete(`${localStorage.server}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -96,17 +93,18 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
         axios.get(`${localStorage.server}/api/registry/plugins`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
-            resolve();
-          });
+          })
+          .finally(resolve);
       }),
       new Promise<void>(resolve => {
         axios.get(`https://plugins.sogebot.xyz/plugins`, { headers: { authorization: `Bearer ${localStorage.code}` } })
           .then(({ data }) => {
-            console.log({ remotePlugins: data });
+            setRemoteItems(data);
           })
           .finally(resolve);
       }),
     ]);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -178,8 +176,61 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
     setSelection([]);
   }, [ selection, enqueueSnackbar, items ]);
 
+  const calculateVotes = (votes: RemotePlugin['votes']) => {
+    return votes.reduce((prev, cur) => prev + cur.vote, 0);
+  };
+
+  const votedThumbsUp = (votes: RemotePlugin['votes']) => {
+    return !!votes.find(o => o.userId === localStorage.userId && o.vote === 1);
+  };
+
+  const votedThumbsDown = (votes: RemotePlugin['votes']) => {
+    return !!votes.find(o => o.userId === localStorage.userId && o.vote === -1);
+  };
+
+  const handleThumbsUpClick = (plugin: RemotePlugin) => {
+    const shouldAddVote = !votedThumbsUp(plugin.votes);
+    setRemoteItems(plugins => {
+      plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
+      if (shouldAddVote) {
+        plugin.votes.push({
+          userId: localStorage.userId,
+          vote:   1,
+        });
+      }
+      const updatePlugins = [...plugins];
+      const idx = updatePlugins.findIndex(o => o.id === plugin.id);
+      if (idx >= 0) {
+        updatePlugins[idx] = plugin;
+      }
+      return [...updatePlugins];
+    });
+  };
+
+  const handleThumbsDownClick = (plugin: RemotePlugin) => {
+    const shouldAddVote = !votedThumbsDown(plugin.votes);
+    setRemoteItems(plugins => {
+      plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
+      if (shouldAddVote) {
+        plugin.votes.push({
+          userId: localStorage.userId,
+          vote:   -1,
+        });
+      }
+      const updatePlugins = [...plugins];
+      const idx = updatePlugins.findIndex(o => o.id === plugin.id);
+      if (idx >= 0) {
+        updatePlugins[idx] = plugin;
+      }
+      return [...updatePlugins];
+    });
+  };
+
   return (
     <>
+      <Backdrop open={loading} >
+        <CircularProgress color="inherit"/>
+      </Backdrop>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <Button variant="contained" onClick={() => {
@@ -209,43 +260,65 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
         </Grid>
       </Grid>
 
-      {loading
-        ? <CircularProgress color="inherit" sx={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-        }} />
-        : <Paper>
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-            <DataGrid
-              rows={items}
-              columns={columns}
-              getRowId={row => row.id}
-            >
-
-              <SortingState
-                defaultSorting={[{
-                  columnName: 'name', direction: 'asc',
-                }]}
-                columnExtensions={sortingTableExtensions}
-              />
-              <IntegratedSorting columnExtensions={sortingTableExtensions} />
-
-              <FilteringState filters={filters}/>
-              <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
-
-              <SelectionState
-                selection={selection}
-                onSelectionChange={setSelection}
-              />
-              <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions}/>
-              <TableHeaderRow showSortingControls/>
-              <TableColumnVisibility
-                defaultHiddenColumnNames={defaultHiddenColumnNames}
-              />
-              <TableSelection showSelectAll/>
-            </DataGrid>
-          </SimpleBar>
-        </Paper>}
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Typography variant='h2' gutterBottom>Local plugins</Typography>
+          <Grid container spacing={1}>
+            {items.map(o => <Grid item xs={12} key={o.id}>
+              <Card>
+                <CardContent>
+                  <Typography color="text.secondary" variant='h6'>
+                    {o.name}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ justifyContent: 'space-between' }}>
+                </CardActions>
+              </Card>
+            </Grid>)}
+          </Grid>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant='h2' gutterBottom>Remote plugins</Typography>
+          <Grid container spacing={1}>
+            {remoteItems.map(o => <Grid item xs={12} key={o.id}>
+              <Card>
+                <CardContent>
+                  <Typography color="text.secondary" variant='h6'>
+                    {o.name} <Chip variant='outlined' size='small' label={<strong>v{o.version}</strong>} color='primary'></Chip>
+                  </Typography>
+                  <Typography color="text.secondary" variant="body2" gutterBottom>
+                    { dayjs(o.publishedAt).format('LL LTS') }
+                  </Typography>
+                  <Typography variant="body2">
+                    {o.description}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ justifyContent: 'space-between' }}>
+                  <Stack direction={'row'} alignItems='center' textAlign='left' spacing={0.5}>
+                    <IconButton><DownloadTwoTone/></IconButton>
+                    <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{o.importedCount}</Typography>
+                  </Stack>
+                  <Stack direction={'row'} alignItems='center' textAlign='center' spacing={0.5}>
+                    <IconButton sx={{ color: red[400] }} onClick={() => handleThumbsDownClick(o)}>
+                      {votedThumbsDown(o.votes)
+                        ? <ThumbDown/>
+                        : <ThumbDownTwoTone/>
+                      }
+                    </IconButton>
+                    <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{calculateVotes(o.votes)}</Typography>
+                    <IconButton sx={{ color: green[400] }} onClick={() => handleThumbsUpClick(o)}>
+                      {votedThumbsUp(o.votes)
+                        ? <ThumbUp/>
+                        : <ThumbUpTwoTone/>
+                      }
+                    </IconButton>
+                  </Stack>
+                </CardActions>
+              </Card>
+            </Grid>)}
+          </Grid>
+        </Grid>
+      </Grid>
     </>
   );
 };
