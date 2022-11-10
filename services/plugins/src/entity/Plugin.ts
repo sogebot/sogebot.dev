@@ -43,4 +43,8 @@ export class Plugin {
 
     @Column({ default: 0 })
     importedCount: number;
+
+    @IsNotEmpty()
+    @Column()
+    compatibleWith: string;
 }

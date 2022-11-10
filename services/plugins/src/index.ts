@@ -84,6 +84,7 @@ app.get("/plugins", adminMiddleware, async function (req: Request, res: Response
     publisherId: true,
     version: true,
     importedCount: true,
+    compatibleWith: true,
   }}))
 })
 

@@ -358,7 +358,11 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
               <Card>
                 <CardContent>
                   <Typography color="text.secondary" variant='h6'>
-                    {o.name} <Chip variant='outlined' size='small' label={<strong>v{o.version}</strong>} color='primary'></Chip>
+                    {o.name}
+                    {' '}
+                    <Chip variant='outlined' size='small' label={<strong>v{o.version}</strong>} color='primary'/>
+                    {' '}
+                    <Chip size='small' label={<strong>{o.compatibleWith}</strong>} color='warning'/>
                   </Typography>
                   <Typography color="text.secondary" variant="body2" gutterBottom>
                     { dayjs(o.publishedAt).format('LL LTS') }
