@@ -79,19 +79,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
 
   const { element: filterElement } = useFilter(useFilterSetup);
 
-  const deleteItem = useCallback((item: Plugin) => {
-    axios.delete(`${localStorage.server}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-      .finally(() => {
-        enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
-        refresh();
-      });
-  }, [ enqueueSnackbar ]);
-
-  useEffect(() => {
-    refresh().then(() => setLoading(false));
-  }, [router]);
-
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
         getSocket('/core/plugins').emit('generic::getAll', (_, data) => {
@@ -108,7 +96,19 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       }),
     ]);
     setLoading(false);
-  };
+  }, []);
+
+  const deleteItem = useCallback((item: Plugin) => {
+    axios.delete(`${localStorage.server}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
+  }, [ enqueueSnackbar, refresh ]);
+
+  useEffect(() => {
+    refresh();
+  }, [router, refresh]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -160,7 +160,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
     }
 
     refresh();
-  }, [ enqueueSnackbar, items, selection ]);
+  }, [ enqueueSnackbar, items, selection, refresh ]);
 
   const bulkDelete =  useCallback(async () => {
     for (const selected of selection) {
