@@ -1,10 +1,11 @@
-import { Entity, PrimaryColumn, Column, Unique } from "typeorm"
+import { Entity, Column, Unique, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { IsInt, IsNotEmpty, MinLength } from 'class-validator';
+import { PluginVote } from './PluginVote';
 
 @Entity()
 @Unique('NamePublisherVersion', ['name', 'publisherId', 'version'])
 export class Plugin {
-    @PrimaryColumn({ generated: 'uuid' })
+    @PrimaryGeneratedColumn('uuid')
     id: string
 
     @Column()
@@ -23,8 +24,13 @@ export class Plugin {
     @IsNotEmpty()
     publishedAt: string
 
-    @Column({ type: 'json' })
-    votes: { userId: string, vote: 1 | -1 }[]
+    @OneToMany(() => PluginVote, (photo) => photo.plugin, {
+        cascade: true,
+        onDelete: 'CASCADE',
+        orphanedRowAction: "delete",
+        eager: true,
+    })
+    votes: PluginVote[]
 
     @Column()
     @IsNotEmpty()

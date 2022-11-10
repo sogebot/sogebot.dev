@@ -6,6 +6,7 @@ import { AppDataSource } from './data-source';
 import axios from 'axios';
 import cors from 'cors';
 import morgan from 'morgan';
+import { PluginVote } from './entity/PluginVote';
 
 AppDataSource.initialize()
     .then(() => {
@@ -96,6 +97,38 @@ app.get("/plugins/:id", adminMiddleware, async function (req: Request, res: Resp
     })
 
     return res.send(results)
+})
+
+// remove user vote and add new user vote to plugin
+app.post("/plugins/:id/votes", adminMiddleware, async function (req: any, res: Response) {
+  if (req.body.vote !== 1 && req.body.vote !== -1) {
+    return res.status(400).send(`Expected body.vote with value 1 or -1`);
+  }
+
+  const plugin = await AppDataSource.getRepository(Plugin).findOneBy({
+    id: req.params.id,
+  });
+  if (plugin) {
+    // remove old votes
+    await AppDataSource.getRepository(PluginVote).delete({ userId: req.userId, plugin })
+    const vote = await AppDataSource.getRepository(PluginVote).create({ userId: req.userId, vote: Number(req.body.vote), plugin })
+    const result = await AppDataSource.getRepository(PluginVote).save(vote);
+    return res.send(result)
+  } else {
+    return res.status(404).send(`Plugin not found.`)
+  }
+})
+
+app.delete("/plugins/:id/votes", adminMiddleware, async function (req: any, res: Response) {
+  const plugin = await AppDataSource.getRepository(Plugin).findOneBy({
+    id: req.params.id,
+  });
+  if (plugin) {
+    await AppDataSource.getRepository(PluginVote).delete({ userId: req.userId, plugin })
+    return res.status(204).send()
+  } else {
+    return res.status(404).send(`Plugin not found.`)
+  }
 })
 
 app.post("/plugins", adminMiddleware, async function (req: any, res: Response) {

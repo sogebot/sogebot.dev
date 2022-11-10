@@ -25,6 +25,7 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { v4 } from 'uuid';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
@@ -177,6 +178,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const calculateVotes = (votes: RemotePlugin['votes']) => {
+    console.log({ votes });
     return votes.reduce((prev, cur) => prev + cur.vote, 0);
   };
 
@@ -194,9 +196,20 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
+          id:     v4(),
           userId: localStorage.userId,
           vote:   1,
+          plugin,
         });
+        // pushing vote to backend
+        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { vote: 1 }, {
+          headers: {
+            'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
+          },
+        });
+      } else {
+        // delete vote from backend
+        axios.delete(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { headers: { authorization: `Bearer ${localStorage.code}` } });
       }
       const updatePlugins = [...plugins];
       const idx = updatePlugins.findIndex(o => o.id === plugin.id);
@@ -213,9 +226,20 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
+          id:     v4(),
           userId: localStorage.userId,
           vote:   -1,
+          plugin,
         });
+        // pushing vote to backend
+        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { vote: -1 }, {
+          headers: {
+            'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
+          },
+        });
+      } else {
+        // delete vote from backend
+        axios.delete(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { headers: { authorization: `Bearer ${localStorage.code}` } });
       }
       const updatePlugins = [...plugins];
       const idx = updatePlugins.findIndex(o => o.id === plugin.id);
