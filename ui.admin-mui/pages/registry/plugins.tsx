@@ -25,6 +25,7 @@ import {
   ReactElement, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import { NextPageWithLayout } from '~/pages/_app';
@@ -33,6 +34,7 @@ import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import getAccessToken from '~/src/getAccessToken';
 import { dayjs } from '~/src/helpers/dayjsHelper';
+import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
@@ -48,6 +50,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   const [ remoteItems, setRemoteItems ] = useState<RemotePlugin[]>([]);
 
   const [ loading, setLoading ] = useState(true);
+  const [ importing, setImporting ] = useState<string[]>([]);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
@@ -91,11 +94,10 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/registry/plugins`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-          .then(({ data }) => {
-            setItems(data.data);
-          })
-          .finally(resolve);
+        getSocket('/core/plugins').emit('generic::getAll', (_, data) => {
+          setItems(data);
+          resolve();
+        });
       }),
       new Promise<void>(resolve => {
         axios.get(`https://plugins.sogebot.xyz/plugins`, { headers: { authorization: `Bearer ${localStorage.code}` } })
@@ -178,7 +180,6 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const calculateVotes = (votes: RemotePlugin['votes']) => {
-    console.log({ votes });
     return votes.reduce((prev, cur) => prev + cur.vote, 0);
   };
 
@@ -250,6 +251,55 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
     });
   };
 
+  const importPlugin = useCallback((plugin: RemotePlugin) => {
+    setImporting(val => [...val, plugin.id]);
+    setRemoteItems(plugins => {
+      const updatePlugins = [...plugins];
+      const idx = updatePlugins.findIndex(o => o.id === plugin.id);
+      if (idx >= 0) {
+        updatePlugins[idx].importedCount += 1;
+      }
+      return [...updatePlugins];
+    });
+
+    axios.get(`https://plugins.sogebot.xyz/plugins/${plugin.id}`, {
+      headers: {
+        'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
+      },
+    }).then(res => {
+      const [ workflow, settings ] = res.data.plugin.split('%');
+
+      const buf = Buffer.from(workflow, 'base64');
+      let pluginSettings: any[] = [];
+
+      if (settings) {
+        console.log('Settings found, loading');
+        pluginSettings = JSON.parse(Buffer.from(settings, 'base64').toString('utf-8'));
+      } else {
+        pluginSettings = [];
+      }
+
+      const toImport = {
+        ...res.data,
+        id:       shortid(),
+        workflow: buf.toString('utf-8'),
+        settings: pluginSettings,
+        enabled:  false,
+      };
+      console.log({ toImport });
+      getSocket('/core/plugins').emit('generic::save', toImport, (err) => {
+        if (err) {
+          console.error({ err });
+          enqueueSnackbar(`Error during import of "${plugin.name}" version ${plugin.version}.`, { variant: 'error' } );
+        } else {
+          enqueueSnackbar(`Plugin "${plugin.name}" version ${plugin.version} was imported.`, { variant: 'success' } );
+        }
+        setImporting(val => [...val.filter(o => o !== plugin.id)]);
+        refresh();
+      });
+    });
+  }, [ enqueueSnackbar, refresh]);
+
   return (
     <>
       <Backdrop open={loading} >
@@ -319,18 +369,31 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'space-between' }}>
                   <Stack direction={'row'} alignItems='center' textAlign='left' spacing={0.5}>
-                    <IconButton><DownloadTwoTone/></IconButton>
+                    <IconButton disabled={importing.includes(o.id)} onClick={() => importPlugin(o)}>
+                      {importing.includes(o.id)
+                        ? <CircularProgress size={24}/>
+                        : <DownloadTwoTone/>
+                      }
+                    </IconButton>
                     <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{o.importedCount}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems='center' textAlign='center' spacing={0.5}>
-                    <IconButton sx={{ color: red[400] }} onClick={() => handleThumbsDownClick(o)}>
+                    <IconButton sx={{
+                      '&:hover':  { color: red[400] },
+                      transition: 'all 200ms',
+                      color:      votedThumbsDown(o.votes) ? red[400] : 'inherit',
+                    }} onClick={() => handleThumbsDownClick(o)}>
                       {votedThumbsDown(o.votes)
                         ? <ThumbDown/>
                         : <ThumbDownTwoTone/>
                       }
                     </IconButton>
                     <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{calculateVotes(o.votes)}</Typography>
-                    <IconButton sx={{ color: green[400] }} onClick={() => handleThumbsUpClick(o)}>
+                    <IconButton sx={{
+                      '&:hover':  { color: green[400] },
+                      transition: 'all 200ms',
+                      color:      votedThumbsUp(o.votes) ? green[400] : 'inherit',
+                    }} onClick={() => handleThumbsUpClick(o)}>
                       {votedThumbsUp(o.votes)
                         ? <ThumbUp/>
                         : <ThumbUpTwoTone/>
