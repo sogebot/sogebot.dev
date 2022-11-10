@@ -79,6 +79,27 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
 
   const { element: filterElement } = useFilter(useFilterSetup);
 
+  const { useFilterSetup: useFilterSetupRemotePlugin  } = useColumnMaker<RemotePlugin & { mine: boolean, voted: boolean }>([
+    {
+      columnName: 'name',
+      filtering: { type: 'string' }
+    },
+    {
+      columnName: 'description',
+      filtering: { type: 'string' }
+    },
+    {
+      columnName: 'mine',
+      filtering: { type: 'boolean' }
+    },
+    {
+      columnName: 'voted',
+      filtering: { type: 'boolean' }
+    }
+  ]);
+
+  const { element: filterElementRemotePlugin } = useFilter(useFilterSetupRemotePlugin);
+
   const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
@@ -353,6 +374,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
         </Grid>
         <Grid item xs={6}>
           <Typography variant='h2' gutterBottom>Remote plugins</Typography>
+          { filterElementRemotePlugin }
           <Grid container spacing={1}>
             {remoteItems.map(o => <Grid item xs={12} key={o.id}>
               <Card>
