@@ -82,20 +82,20 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
   const { useFilterSetup: useFilterSetupRemotePlugin  } = useColumnMaker<RemotePlugin & { mine: boolean, voted: boolean }>([
     {
       columnName: 'name',
-      filtering: { type: 'string' }
+      filtering:  { type: 'string' },
     },
     {
       columnName: 'description',
-      filtering: { type: 'string' }
+      filtering:  { type: 'string' },
     },
     {
       columnName: 'mine',
-      filtering: { type: 'boolean' }
+      filtering:  { type: 'boolean' },
     },
     {
       columnName: 'voted',
-      filtering: { type: 'boolean' }
-    }
+      filtering:  { type: 'boolean' },
+    },
   ]);
 
   const { element: filterElementRemotePlugin } = useFilter(useFilterSetupRemotePlugin);

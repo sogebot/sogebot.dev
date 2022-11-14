@@ -32,6 +32,8 @@ import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
 import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Systems/antihateraid';
 import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/bets';
+import PageSettingsModulesSystemsChecklist from '~/src/components/Settings/Systems/checklist';
+import PageSettingsModulesSystemsCooldown from '~/src/components/Settings/Systems/cooldown';
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -188,6 +190,8 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsModules onVisible={() => setActiveTab('systems-modules')}/>
                 <PageSettingsModulesSystemsAntihateRaid onVisible={() => setActiveTab('systems-antihateraid')}/>
                 <PageSettingsModulesSystemsBets onVisible={() => setActiveTab('systems-bets')}/>
+                <PageSettingsModulesSystemsChecklist onVisible={() => setActiveTab('systems-checklist')}/>
+                <PageSettingsModulesSystemsCooldown onVisible={() => setActiveTab('systems-cooldown')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',
