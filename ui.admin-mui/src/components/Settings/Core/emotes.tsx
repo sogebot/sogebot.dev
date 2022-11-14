@@ -43,7 +43,7 @@ const PageSettingsModulesCoreEmotes: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="emotes">
-    <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.emotes')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.emotes')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <FormGroup>
         <FormControlLabel control={<Checkbox checked={settings.bttv[0]} onChange={(_, checked) => handleChange('bttv', checked)} />} label="BetterTTV" />

@@ -145,7 +145,7 @@ const PageSettingsModulesCoreDashboard: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box id="dashboard" ref={ref}>
-    <Typography variant='h1' sx={{ pb: 2 }}>Dashboard</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>Dashboard</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Divider><Typography variant='h5'>µWidgets</Typography></Divider>
       <Paper sx={{

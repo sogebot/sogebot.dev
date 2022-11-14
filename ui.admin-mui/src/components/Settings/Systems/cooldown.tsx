@@ -61,7 +61,7 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="cooldown">
-    <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.cooldown') }</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.cooldown') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <FormGroup>
         <FormControlLabel control={<Checkbox checked={settings.cooldownNotifyAsWhisper[0]} onChange={(_, checked) => handleChange('cooldownNotifyAsWhisper', checked)} />} label={translate('systems.cooldown.settings.cooldownNotifyAsWhisper')} />
@@ -75,6 +75,7 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
           <TextField
             {...TextFieldProps('default.defaultCooldownOfCommandsInSeconds')}
             variant='filled'
+            type='number'
             fullWidth
             value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])}
             label={translate('systems.cooldown.settings.defaultCooldownOfCommandsInSeconds')}
@@ -92,6 +93,7 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
           <TextField
             {...TextFieldProps('default.defaultCooldownOfKeywordsInSeconds')}
             variant='filled'
+            type='number'
             fullWidth
             value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])}
             label={translate('systems.cooldown.settings.defaultCooldownOfKeywordsInSeconds')}

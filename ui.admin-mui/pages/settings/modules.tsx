@@ -34,6 +34,7 @@ import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Sy
 import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/bets';
 import PageSettingsModulesSystemsChecklist from '~/src/components/Settings/Systems/checklist';
 import PageSettingsModulesSystemsCooldown from '~/src/components/Settings/Systems/cooldown';
+import PageSettingsModulesSystemsEmotesCombo from '~/src/components/Settings/Systems/emotescombo';
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -192,6 +193,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsBets onVisible={() => setActiveTab('systems-bets')}/>
                 <PageSettingsModulesSystemsChecklist onVisible={() => setActiveTab('systems-checklist')}/>
                 <PageSettingsModulesSystemsCooldown onVisible={() => setActiveTab('systems-cooldown')}/>
+                <PageSettingsModulesSystemsEmotesCombo onVisible={() => setActiveTab('systems-emotescombo')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',

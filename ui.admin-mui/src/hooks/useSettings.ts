@@ -12,7 +12,7 @@ import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: string) => boolean | string)[]}) => {
+export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[]}) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
@@ -56,9 +56,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     setErrors([]);
     if (settings && validator) {
       for (const key of Object.keys(validator)) {
-        const attr = key.includes('__permission_based__')
-          ? get(settings, `${key}[0]`)
-          : get(settings, `${key}`);
+        const attr = get(settings, `${key}[0]`);
 
         if (key.includes('__permission_based__')) {
           for (const permId of Object.keys(attr)) {
@@ -82,9 +80,37 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
                   });
                   return newErrors;
                 });
-                break;
               }
             }
+          }
+        } else {
+          // we need to fake class-validator validation
+          for (const validatorFunction of validator[key]) {
+            const result = validatorFunction(attr);
+            if (result === true) {
+              continue;
+            }
+
+            const results = typeof result === 'string' ? [result] : result;
+            setErrors(errs => {
+              const newErrors = [...errs];
+
+              for (const res of results) {
+                // we hit error
+                const constraints = res.split('|');
+
+                // we need to extract subkeys
+                const [ errorName, ...subkeys ] = constraints[0].split(':');
+
+                newErrors.push({
+                  propertyName: key + (subkeys.length > 0 ? `.${subkeys.join('.')}` : ''),
+                  message:      translate('errors.' + errorName)
+                    .replace('$property', translate('properties.thisvalue'))
+                    .replace('$constraint1', constraints[1]),
+                });
+              }
+              return newErrors;
+            });
           }
         }
       }
@@ -111,6 +137,14 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
         return null;
       }
       const newSettingsObj = cloneDeep(settingsObj);
+
+      // try to keep string/number
+      if (get(settingsObj, `${key}[1]`) === 'number') {
+        if (!isNaN(Number(value))) {
+          value = Number(value);
+        }
+      }
+
       set(newSettingsObj, key, [value, get(settingsObj, `${key}[1]`)]);
       return newSettingsObj;
     });
@@ -171,7 +205,18 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     });
   }, [ getPermissionSettingsValue ]);
 
+  const TextFieldProps = useCallback((key: string) => {
+    if (!settings) {
+      return {};
+    }
+
+    return {
+      error:      !!errors.find(o => o.propertyName === key),
+      helperText: errors.find(o => o.propertyName === key)?.message,
+    };
+  }, [ settings, errors ]);
+
   return {
-    loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors,
+    loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors, TextFieldProps,
   };
 };

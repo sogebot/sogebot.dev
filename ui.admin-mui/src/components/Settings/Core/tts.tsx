@@ -51,7 +51,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="tts">
-    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         <FormControl  variant="filled" sx={{ minWidth: 300 }}>

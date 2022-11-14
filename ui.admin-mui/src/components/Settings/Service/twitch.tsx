@@ -102,7 +102,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [settings, redirectUri ]);
 
   return (<Box ref={ref} sx={sx} id="twitch">
-    <Typography variant='h1' sx={{ pb: 2 }}>Twitch</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>Twitch</Typography>
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.oauth')}</Typography>
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>
     {settings && <Paper elevation={1} sx={{

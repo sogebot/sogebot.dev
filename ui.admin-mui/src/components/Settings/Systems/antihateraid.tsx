@@ -72,7 +72,7 @@ const PageSettingsModulesSystemsAntihateRaid: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="antihateraid">
-    <Typography variant='h1' sx={{ pb: 2 }}>AntiHate Raid</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>AntiHate Raid</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         <FormGroup>

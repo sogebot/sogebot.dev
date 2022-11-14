@@ -102,7 +102,7 @@ const PageSettingsModulesSystemsModules: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} sx={sx} id="modules">
-    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.systems')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.systems')}</Typography>
     <Grid container>
       {items.map(item => <Grid key={item.name} item xs={3}>
         <FormGroup>

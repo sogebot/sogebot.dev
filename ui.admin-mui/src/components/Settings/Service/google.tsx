@@ -145,7 +145,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   };
 
   return (<Box ref={ref} sx={sx} id="google">
-    <Typography variant='h1' sx={{ pb: 2 }}>Google</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>Google</Typography>
     <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel Tokens</Typography>
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,

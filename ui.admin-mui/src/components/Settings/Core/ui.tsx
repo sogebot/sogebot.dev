@@ -65,7 +65,7 @@ const PageSettingsModulesCoreUI: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} sx={sx} id="ui">
-    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.ui')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.ui')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <TextField
         {...propsError('domain')}

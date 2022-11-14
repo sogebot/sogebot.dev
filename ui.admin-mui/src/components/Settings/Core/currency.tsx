@@ -44,7 +44,7 @@ const PageSettingsModulesCoreCurrency: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="currency">
-    <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.currency')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.currency')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Grid container sx={{ pb: 1 }}>
         <Grid item xs>

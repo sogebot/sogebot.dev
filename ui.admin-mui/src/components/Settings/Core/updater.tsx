@@ -86,7 +86,7 @@ const PageSettingsModulesCoreUpdater: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="updater">
-    <Typography variant='h1' sx={{ pb: 2 }}>{translate('menu.updater')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.updater')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack direction='row' justifyContent={'space-between'}>
         <FormGroup>

@@ -60,7 +60,7 @@ const PageSettingsModulesSystemsChecklist: React.FC<{
   }, [ settings, handleChange ]);
 
   return (<Box ref={ref} id="checklist">
-    <Typography variant='h1' sx={{ pb: 2 }}>Checklist</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>Checklist</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         {settings.customization.itemsArray[0].map((item: string, idx: number) => <TextField

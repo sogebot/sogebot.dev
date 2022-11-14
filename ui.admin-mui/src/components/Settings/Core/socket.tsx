@@ -96,7 +96,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} id="socket">
-    <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.socket') }</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.socket') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
         <TextField
