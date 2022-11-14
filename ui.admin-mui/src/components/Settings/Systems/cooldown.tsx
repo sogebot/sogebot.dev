@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
@@ -28,9 +28,23 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
 }> = ({
   onVisible,
 }) => {
+  const validator = useMemo(() => ({
+    '__permission_based__.default.defaultCooldownOfCommandsInSeconds': [
+      (value: string) => String(value).length > 0 || 'isNotEmpty',
+      (value: string) => !isNaN(Number(value)) || 'isInt',
+      (value: string) => Number(value) >= 0 || 'min|0',
+    ],
+    '__permission_based__.default.defaultCooldownOfKeywordsInSeconds': [
+      (value: string) => String(value).length > 0 || 'isNotEmpty',
+      (value: string) => !isNaN(Number(value)) || 'isInt',
+      (value: string) => Number(value) >= 0 || 'min|0',
+    ],
+  }), []);
+
   const router = useRouter();
   const { translate } = useTranslation();
-  const { settings, loading, refresh, save, saving, handleChange, handleChangePermissionBased, getPermissionSettingsValue } = useSettings('/systems/cooldown' as any);
+
+  const { settings, loading, refresh, save, saving, errors, handleChange, handleChangePermissionBased, getPermissionSettingsValue } = useSettings('/systems/cooldown' as any, validator);
 
   useEffect(() => {
     refresh();
@@ -46,8 +60,6 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  const [ isValid, setIsValid ] = useState(true);
-
   return (<Box ref={ref} id="cooldown">
     <Typography variant='h1' sx={{ pb: 2 }}>{ translate('menu.cooldown') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
@@ -58,10 +70,10 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
         <FormControlLabel control={<Checkbox checked={settings.cooldownNotifyAsChat[0]} onChange={(_, checked) => handleChange('cooldownNotifyAsChat', checked)} />} label={translate('systems.cooldown.settings.cooldownNotifyAsChat')} />
       </FormGroup>
 
-      <PermissionTabs settings={settings} onValidityChange={setIsValid}>
-        {({ permission, isEditable, toggle, isToggable }) => <Stack spacing={1}>
+      <PermissionTabs settings={settings} errors={errors}>
+        {({ permission, isEditable, toggle, isToggable, TextFieldProps }) => <Stack spacing={1}>
           <TextField
-            disabled={isEditable('default.defaultCooldownOfCommandsInSeconds')}
+            {...TextFieldProps('default.defaultCooldownOfCommandsInSeconds')}
             variant='filled'
             fullWidth
             value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])}
@@ -78,7 +90,7 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
             }}
           />
           <TextField
-            disabled={isEditable('default.defaultCooldownOfKeywordsInSeconds')}
+            {...TextFieldProps('default.defaultCooldownOfKeywordsInSeconds')}
             variant='filled'
             fullWidth
             value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])}
@@ -99,7 +111,7 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
     </Paper>}
 
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={!isValid}>Save changes</LoadingButton>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
 
     <Backdrop open={loading} >

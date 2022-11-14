@@ -1,23 +1,33 @@
 import {
-  cloneDeep, get, set,
+  cloneDeep, get,  set,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import {
+  useCallback, useEffect, useState,
+} from 'react';
 import { ClientToServerEventsWithNamespace } from '~/../backend/d.ts/src/helpers/socket';
 
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
+import { useTranslation } from '~/src/hooks/useTranslation';
 
-export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace) => {
+export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: string) => boolean | string)[]}) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
+  const { translate } = useTranslation();
 
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
 
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
   const [ ui, setUI ] = useState<null | Record<string, any>>(null);
+
+  const [ errors, setErrors ] = useState<{ propertyName: string, message: string }[]>([]);
+
+  useEffect(() => {
+    console.log({ errors });
+  }, [errors]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -41,6 +51,45 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace) =
     });
     setLoading(false);
   }, [ endpoint ]);
+
+  useEffect(() => {
+    setErrors([]);
+    if (settings && validator) {
+      for (const key of Object.keys(validator)) {
+        const attr = key.includes('__permission_based__')
+          ? get(settings, `${key}[0]`)
+          : get(settings, `${key}`);
+
+        if (key.includes('__permission_based__')) {
+          for (const permId of Object.keys(attr)) {
+            if (attr[permId] === null || attr[permId] === '%%%%___ignored___%%%%') {
+              continue;
+            }
+            console.log('Validating', permId, attr[permId]);
+            // we need to fake class-validator validation
+            for (const validatorFunction of validator[key]) {
+              const result = validatorFunction(attr[permId]);
+              if (typeof result === 'string') {
+                // we hit error
+                const constraints = result.split('|');
+                setErrors(errs => {
+                  const newErrors = [...errs];
+                  newErrors.push({
+                    propertyName: `${key}|${permId}`,
+                    message:      translate('errors.' + constraints[0])
+                      .replace('$property', translate('properties.thisvalue'))
+                      .replace('$constraint1', constraints[1]),
+                  });
+                  return newErrors;
+                });
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }, [ settings, validator, translate ]);
 
   const save = useCallback(() => {
     if (settings) {
@@ -105,7 +154,17 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace) =
           currentValues[0][pid] = null;
         }
       } else {
-        currentValues[0][pid] = value;
+        // we need to keep number/string values
+        if (typeof currentValues[1]['0efd7b1c-e460-4167-8e06-8aaf2c170311'] === 'number') {
+          if (isNaN(Number(value))) {
+            // if it cannot be as number, keep it as is
+            currentValues[0][pid] = value;
+          } else {
+            currentValues[0][pid] = Number(value);
+          }
+        } else {
+          currentValues[0][pid] = value;
+        }
       }
       set(newSettingsObj, key, currentValues);
       return newSettingsObj;
@@ -113,6 +172,6 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace) =
   }, [ getPermissionSettingsValue ]);
 
   return {
-    loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue,
+    loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors,
   };
 };
