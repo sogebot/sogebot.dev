@@ -35,6 +35,7 @@ import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/be
 import PageSettingsModulesSystemsChecklist from '~/src/components/Settings/Systems/checklist';
 import PageSettingsModulesSystemsCooldown from '~/src/components/Settings/Systems/cooldown';
 import PageSettingsModulesSystemsEmotesCombo from '~/src/components/Settings/Systems/emotescombo';
+import PageSettingsModulesSystemsHighlights from '~/src/components/Settings/Systems/highlights';
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -194,6 +195,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsChecklist onVisible={() => setActiveTab('systems-checklist')}/>
                 <PageSettingsModulesSystemsCooldown onVisible={() => setActiveTab('systems-cooldown')}/>
                 <PageSettingsModulesSystemsEmotesCombo onVisible={() => setActiveTab('systems-emotescombo')}/>
+                <PageSettingsModulesSystemsHighlights onVisible={() => setActiveTab('systems-highlights')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',
