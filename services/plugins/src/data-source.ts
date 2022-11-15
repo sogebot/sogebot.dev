@@ -3,6 +3,8 @@ import { DataSource } from "typeorm"
 import { Plugin } from "./entity/Plugin"
 import { PluginVote } from "./entity/PluginVote"
 
+const migrationDir = process.env.ENV === 'production' ? 'build' : 'src'
+
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: process.env.PG_HOST || "localhost",
@@ -12,7 +14,8 @@ export const AppDataSource = new DataSource({
     database: process.env.PG_DB || "sogebot",
     logging: false,
     entities: [Plugin, PluginVote],
-    migrations: [],
+    migrations: [`./${migrationDir}/migration/*`],
     subscribers: [],
-    synchronize: true,
+    synchronize: false,
+    migrationsRun: !process.env.CLUSTER,
 })

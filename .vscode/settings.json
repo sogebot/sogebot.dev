@@ -10,7 +10,17 @@
       "driver": "PostgreSQL",
       "database": "plugins",
       "username": "app_user",
-      "name": "sad"
+      "name": "tunnel"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "local",
+      "database": "sogebot",
+      "username": "postgres",
+      "password": "postgres"
     }
   ],
 }

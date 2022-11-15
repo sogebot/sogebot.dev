@@ -7,7 +7,8 @@
       "test": "echo \"Error: no test specified\" && exit 1",
       "start": "ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
-      "build": "tsc && docker build . -t sogebot/plugins:latest && docker push sogebot/plugins:latest"
+      "build": "tsc && docker build . -t sogebot/plugins:latest && docker push sogebot/plugins:latest",
+      "migration": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts ./src/migration/generatedMigration"
    },
    "author": "",
    "license": "ISC",
