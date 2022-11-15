@@ -1,6 +1,10 @@
-import { PriorityHighTwoTone } from '@mui/icons-material';
+import {
+  LockOpenTwoTone, LockTwoTone, PriorityHighTwoTone,
+} from '@mui/icons-material';
 import {
   Box,
+  IconButton,
+  InputAdornment,
   Tab,
   Tabs,
 } from '@mui/material';
@@ -8,7 +12,7 @@ import { red } from '@mui/material/colors';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { usePermissions } from '~/src/hooks/usePermissions';
 
@@ -27,6 +31,10 @@ export const PermissionTabs: React.FC<{
   settings: Record<string, any>
   errors: { propertyName: string, message: string }[],
   ignoredPermissionsCategory?: string,
+  handleChangePermissionBased: (key: string, pid: string, value?: any) => void,
+  getPermissionSettingsValue: (permId: string, values: {
+    [x: string]: string | null;
+  }) => string | null,
   children: (opts: {
     permission: Permissions,
     isEditable: (key: string) => boolean,
@@ -38,6 +46,8 @@ export const PermissionTabs: React.FC<{
   settings,
   errors,
   ignoredPermissionsCategory,
+  handleChangePermissionBased,
+  getPermissionSettingsValue,
   children,
 }) => {
   const { permissions } = usePermissions();
@@ -81,9 +91,22 @@ export const PermissionTabs: React.FC<{
             toggle:         ((key, handleChange) => toggle(key, permission.id, handleChange)),
             isToggable:     permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311',
             TextFieldProps: (key: string) => ({
+              variant:    'filled',
+              fullWidth:  true,
+              value:      getPermissionSettingsValue(permission.id, get(settings.__permission_based__, `${key}[0]`)),
               disabled:   get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) === null,
               error:      !!errors.find(o => o.propertyName === `__permission_based__.${key}|${permission.id}`),
               helperText: errors.find(o => o.propertyName === `__permission_based__.${key}|${permission.id}`)?.message,
+              onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChangePermissionBased(key, permission.id, event.target.value),
+              InputProps: {
+                endAdornment: permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311' && <InputAdornment position="end">
+                  <IconButton onClick={() => toggle(key, permission.id, handleChangePermissionBased)}>
+                    {get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) !== null
+                      ? <LockOpenTwoTone/>
+                      : <LockTwoTone/>}
+                  </IconButton>
+                </InputAdornment>,
+              },
             }),
           }))
       }

@@ -1,4 +1,3 @@
-import { LockOpenTwoTone, LockTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -7,13 +6,11 @@ import {
   CircularProgress,
   FormControlLabel,
   FormGroup,
-  IconButton,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -70,43 +67,17 @@ const PageSettingsModulesSystemsCooldown: React.FC<{
         <FormControlLabel control={<Checkbox checked={settings.cooldownNotifyAsChat[0]} onChange={(_, checked) => handleChange('cooldownNotifyAsChat', checked)} />} label={translate('systems.cooldown.settings.cooldownNotifyAsChat')} />
       </FormGroup>
 
-      <PermissionTabs settings={settings} errors={errors}>
-        {({ permission, isEditable, toggle, isToggable, TextFieldProps }) => <Stack spacing={1}>
+      <PermissionTabs settings={settings} errors={errors} handleChangePermissionBased={handleChangePermissionBased} getPermissionSettingsValue={getPermissionSettingsValue}>
+        {({ TextFieldProps }) => <Stack spacing={1}>
           <TextField
             {...TextFieldProps('default.defaultCooldownOfCommandsInSeconds')}
-            variant='filled'
             type='number'
-            fullWidth
-            value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])}
             label={translate('systems.cooldown.settings.defaultCooldownOfCommandsInSeconds')}
-            onChange={(event) => handleChangePermissionBased('default.defaultCooldownOfCommandsInSeconds', permission.id, event.target.value)}
-            InputProps={{
-              endAdornment: isToggable && <InputAdornment position="end">
-                <IconButton onClick={() => toggle('default.defaultCooldownOfCommandsInSeconds', handleChangePermissionBased)}>
-                  {!isEditable('default.defaultCooldownOfCommandsInSeconds')
-                    ? <LockOpenTwoTone/>
-                    : <LockTwoTone/>}
-                </IconButton>
-              </InputAdornment>,
-            }}
           />
           <TextField
             {...TextFieldProps('default.defaultCooldownOfKeywordsInSeconds')}
-            variant='filled'
             type='number'
-            fullWidth
-            value={getPermissionSettingsValue(permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])}
             label={translate('systems.cooldown.settings.defaultCooldownOfKeywordsInSeconds')}
-            onChange={(event) => handleChangePermissionBased('default.defaultCooldownOfKeywordsInSeconds', permission.id, event.target.value)}
-            InputProps={{
-              endAdornment: isToggable && <InputAdornment position="end">
-                <IconButton onClick={() => toggle('default.defaultCooldownOfKeywordsInSeconds', handleChangePermissionBased)}>
-                  {!isEditable('default.defaultCooldownOfKeywordsInSeconds')
-                    ? <LockOpenTwoTone/>
-                    : <LockTwoTone/>}
-                </IconButton>
-              </InputAdornment>,
-            }}
           />
         </Stack>}
       </PermissionTabs>
