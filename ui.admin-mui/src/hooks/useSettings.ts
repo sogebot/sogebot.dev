@@ -1,8 +1,9 @@
 import {
-  cloneDeep, get,  set,
+  cloneDeep, get, set,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
 import {
+  ChangeEvent,
   useCallback, useEffect, useState,
 } from 'react';
 import { ClientToServerEventsWithNamespace } from '~/../backend/d.ts/src/helpers/socket';
@@ -205,15 +206,20 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     });
   }, [ getPermissionSettingsValue ]);
 
-  const TextFieldProps = useCallback((key: string) => {
+  const TextFieldProps = useCallback((key: string, defaultValues?: { helperText?: string }) => {
     if (!settings) {
       return {};
     }
 
     return {
       error:      !!errors.find(o => o.propertyName === key),
-      helperText: errors.find(o => o.propertyName === key)?.message,
-    };
+      helperText: errors.find(o => o.propertyName === key)?.message ?? defaultValues?.helperText,
+      variant:    'filled',
+      fullWidth:  true,
+      value:      get(settings, `${key}[0]`, ''),
+      onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange('comboCooldown', event.target.value),
+
+    } as const;
   }, [ settings, errors ]);
 
   return {

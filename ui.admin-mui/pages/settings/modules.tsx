@@ -37,6 +37,7 @@ import PageSettingsModulesSystemsCooldown from '~/src/components/Settings/System
 import PageSettingsModulesSystemsEmotesCombo from '~/src/components/Settings/Systems/emotescombo';
 import PageSettingsModulesSystemsHighlights from '~/src/components/Settings/Systems/highlights';
 import PageSettingsModulesSystemsLevels from '~/src/components/Settings/Systems/levels';
+import PageSettingsModulesSystemsModeration from '~/src/components/Settings/Systems/moderation';
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -198,6 +199,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsEmotesCombo onVisible={() => setActiveTab('systems-emotescombo')}/>
                 <PageSettingsModulesSystemsHighlights onVisible={() => setActiveTab('systems-highlights')}/>
                 <PageSettingsModulesSystemsLevels onVisible={() => setActiveTab('systems-levels')}/>
+                <PageSettingsModulesSystemsModeration onVisible={() => setActiveTab('systems-moderation')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',

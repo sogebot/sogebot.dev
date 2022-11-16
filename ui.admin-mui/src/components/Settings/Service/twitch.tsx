@@ -9,6 +9,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormHelperText,
+  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -30,6 +31,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
+import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
 import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -360,15 +362,14 @@ const PageSettingsModulesServiceTwitch: React.FC<{
             label={translate('core.tmi.settings.sendAsReply')} />
         </FormGroup>
 
-        <TextField
-          variant='filled'
-          multiline
-          fullWidth
-          value={settings.chat.ignorelist[0].join('\n')}
-          helperText={translate('one-record-per-line')}
-          label={translate('core.tmi.settings.ignorelist')}
-          onChange={(event) => handleChange('chat.ignorelist', event.target.value.split('\n'))}
-        />
+        <Grid container alignItems='center'>
+          <Grid item>
+            <Typography>{ translate('core.tmi.settings.ignorelist') }</Typography>
+          </Grid>
+          <Grid item sx={{ pl: 2 }}>
+            <SettingsSystemsDialogStringArray title={translate('core.tmi.settings.ignorelist')} items={settings.chat.ignorelist[0]} onChange={(value) => handleChange('chat.ignorelist', value)} />
+          </Grid>
+        </Grid>
       </Stack>
     </Paper>}
 

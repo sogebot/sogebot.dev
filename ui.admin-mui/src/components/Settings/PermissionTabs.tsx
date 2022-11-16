@@ -3,8 +3,12 @@ import {
 } from '@mui/icons-material';
 import {
   Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   InputAdornment,
+  Stack,
   Tab,
   Tabs,
 } from '@mui/material';
@@ -40,6 +44,7 @@ export const PermissionTabs: React.FC<{
     isEditable: (key: string) => boolean,
     toggle: (key: string, handleChange: (key: string, pid: string) => void) => void,
     isToggable: boolean,
+    CheckBox: (key: string, options: { label: string }) => JSX.Element,
     TextFieldProps: (key: string) => Record<string, any>
   }) => void,
 }> = ({
@@ -61,7 +66,9 @@ export const PermissionTabs: React.FC<{
     handleChange(key, permId);
   };
 
-  return <><Box>
+  return <><Box sx={{
+    position: 'sticky', top: '-5px', backgroundColor: '#1e1e1e', zIndex: '9999',
+  }}>
     <Tabs value={tab} onChange={handleChangeTab} centered>
       {orderBy(permissions, 'order', 'desc')
         .filter(permission => !getIgnoredPermissions(settings, ignoredPermissionsCategory ?? 'default').includes(permission.id))
@@ -87,9 +94,28 @@ export const PermissionTabs: React.FC<{
           .filter(permission => !getIgnoredPermissions(settings, ignoredPermissionsCategory ?? 'default').includes(permission.id))
           .map((permission, idx) => idx === tab && children({
             permission,
-            isEditable:     (key => get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) === null),
-            toggle:         ((key, handleChange) => toggle(key, permission.id, handleChange)),
-            isToggable:     permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311',
+            isEditable: (key => get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) === null),
+            toggle:     ((key, handleChange) => toggle(key, permission.id, handleChange)),
+            isToggable: permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311',
+            CheckBox:   (key: string, options: { label: string }) => <Stack direction='row'>
+              <FormGroup>
+                <FormControlLabel
+                  disabled={get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) === null}
+                  label={options.label}
+                  control={<>
+                    <Checkbox
+                      disabled={get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) === null}
+                      checked={Boolean(getPermissionSettingsValue(permission.id, get(settings.__permission_based__, `${key}[0]`, false)))}
+                      onChange={(_, checked) => handleChangePermissionBased(key, permission.id, checked)} />
+                  </>}
+                />
+              </FormGroup>
+              {permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311' && <IconButton onClick={() => toggle(key, permission.id, handleChangePermissionBased)}>
+                {get(settings.__permission_based__, `${key}[0][${permission.id}]`, null) !== null
+                  ? <LockOpenTwoTone/>
+                  : <LockTwoTone/>}
+              </IconButton>}
+            </Stack>,
             TextFieldProps: (key: string) => ({
               variant:    'filled',
               fullWidth:  true,
