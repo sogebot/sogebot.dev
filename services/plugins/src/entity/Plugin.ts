@@ -39,7 +39,7 @@ export class Plugin {
 
     @Column({ type: 'text' })
     @IsNotEmpty()
-    plugin: number;
+    plugin: string;
 
     @Column({ default: 0 })
     importedCount: number;
