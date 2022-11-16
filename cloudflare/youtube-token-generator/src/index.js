@@ -105,7 +105,12 @@ router.post("/token", async (request) => {
 			headers: { 'content-type': 'application/json;charset=UTF-8' },
 		})
 	} else {
-		return new Response("400, something went wrong!", { status: 500 })
+		console.log(response.status, response.statusText);
+		// 3. get error messages, if any
+		response.json().then((json) => {
+			console.log(json);
+		})
+		return new Response("400, something went wrong!", { status: 400 })
 	}
 })
 
