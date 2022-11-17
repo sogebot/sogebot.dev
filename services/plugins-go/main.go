@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,42 +13,68 @@ import (
 )
 
 type Plugin struct {
-	id          string
-	name        string
-	description string
-	publisherId string
-	publishedAt string
+	Id             string       `json:"id"`
+	Name           string       `json:"name"`
+	Description    string       `json:"description"`
+	PublisherId    string       `json:"publisherId"`
+	PublishedAt    string       `json:"publishedAt"`
+	Version        int          `json:"version"`
+	Plugin         string       `json:"plugin"`
+	ImportedCount  int          `json:"importedCount"`
+	CompatibleWith string       `json:"compatibleWith"`
+	Votes          []PluginVote `json:"votes"`
+}
+
+type PluginVote struct {
+	Id     string `json:"id"`
+	UserId string `json:"userId"`
+	Vote   int    `json:"vote"`
 }
 
 func homeLink(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	rows, err := db.Query("SELECT id, name, description, \"publisherId\", \"publishedAt\" FROM \"plugin\"")
+	rows, err := db.Query(`
+		SELECT   P.*, COALESCE(json_agg(C) FILTER (WHERE C."userId" IS NOT NULL), '[]') AS votes
+			FROM        "plugin" P
+			LEFT JOIN  "plugin_vote"  C
+					ON      C."pluginId" = P."id"
+			GROUP BY P."id"
+	`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
 	var (
-		id          string
-		name        string
-		description string
-		publisherId string
-		publishedAt string
+		id             string
+		name           string
+		description    string
+		publisherId    string
+		publishedAt    string
+		version        int
+		plugin         string
+		importedCount  int
+		compatibleWith string
+		votesJSON      string
+
+		data []Plugin
 	)
-	var data []Plugin
 	for rows.Next() {
-		rows.Scan(&id, &name, &description, &publisherId, &publishedAt)
-		fmt.Printf("%s %s %s %s %s \n", id, name, description, publisherId, publishedAt)
+		rows.Scan(&id, &name, &description, &publisherId, &publishedAt, &version, &plugin, &importedCount, &compatibleWith, &votesJSON)
+
+		// unmarshal votes
+		votes := []PluginVote{}
+		json.Unmarshal([]byte(votesJSON), &votes)
+
 		data = append(data, Plugin{
-			id: id, name: name, description: description, publisherId: publisherId, publishedAt: publishedAt,
+			Id: id, Name: name, Description: description, PublisherId: publisherId, PublishedAt: publishedAt, Version: version, Plugin: plugin, ImportedCount: importedCount, CompatibleWith: compatibleWith, Votes: votes,
 		})
 	}
-	fmt.Printf("%+v\n", data)
 
-	for index := range data {
-		fmt.Fprintf(w, data[index].name)
-		fmt.Fprintf(w, data[index].description)
+	if f, err := json.Marshal(data); err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Fprint(w, string(f))
 	}
-	// fmt.Fprintf(w, "Welcome home!")
 }
 
 func main() {
@@ -86,8 +113,9 @@ func main() {
 	fmt.Println("Connected to database")
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router.Use(HTTPLogger)
+	router.HandleFunc("/plugins", func(w http.ResponseWriter, r *http.Request) {
 		homeLink(w, r, db)
 	})
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":3000", router))
 }
