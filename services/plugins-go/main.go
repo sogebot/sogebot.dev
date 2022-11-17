@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"services/plugins/internal/middleware/auth"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -73,6 +74,8 @@ func homeLink(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if f, err := json.Marshal(data); err != nil {
 		log.Fatal(err)
 	} else {
+		w.Header().Add("content-type", "application/json")
+		w.WriteHeader(200)
 		fmt.Fprint(w, string(f))
 	}
 }
@@ -113,7 +116,7 @@ func main() {
 	fmt.Println("Connected to database")
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.Use(HTTPLogger)
+	router.Use(auth.AuthMiddlewareWithLogger)
 	router.HandleFunc("/plugins", func(w http.ResponseWriter, r *http.Request) {
 		homeLink(w, r, db)
 	})
