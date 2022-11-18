@@ -53,7 +53,10 @@ func GetPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.Unmarshal([]byte(votesJSON), &votes)
 
 		data = Plugin{
-			Id: id, Name: name, Description: description, PublisherId: publisherId, PublishedAt: publishedAt, Plugin: plugin, Version: version, ImportedCount: importedCount, CompatibleWith: compatibleWith, Votes: votes,
+			PluginStripped: &PluginStripped{
+				Id: id, Name: name, Description: description, PublisherId: publisherId, PublishedAt: publishedAt, Version: version, ImportedCount: importedCount, CompatibleWith: compatibleWith, Votes: votes,
+			},
+			Plugin: plugin,
 		}
 
 		if f, err := json.Marshal(data); err != nil {

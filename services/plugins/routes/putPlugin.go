@@ -45,15 +45,17 @@ func PutPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *val
 	}
 
 	plugin := Plugin{
-		Id:             id,
-		Name:           name, // name is not changeable
-		Description:    r.FormValue("description"),
-		PublisherId:    r.Header.Get("userId"),
-		PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-		Plugin:         r.FormValue("plugin"),
-		Version:        version + 1,
-		CompatibleWith: r.FormValue("compatibleWith"),
-		Votes:          []PluginVote{},
+		PluginStripped: &PluginStripped{
+			Id:             id,
+			Name:           name, // name is not changeable
+			Description:    r.FormValue("description"),
+			PublisherId:    r.Header.Get("userId"),
+			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
+			Version:        version + 1,
+			CompatibleWith: r.FormValue("compatibleWith"),
+			Votes:          []PluginVote{},
+		},
+		Plugin: r.FormValue("plugin"),
 	}
 
 	err = validate.Struct(plugin)

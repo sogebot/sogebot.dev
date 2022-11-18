@@ -11,16 +11,8 @@ import (
 )
 
 type Plugin struct {
-	Id             string       `json:"id"`
-	Name           string       `json:"name" validate:"required,min=4"`
-	Description    string       `json:"description" validate:"required,min=4"`
-	PublisherId    string       `json:"publisherId" validate:"required"`
-	PublishedAt    string       `json:"publishedAt" validate:"required"`
-	Plugin         string       `json:"plugin" validate:"required"`
-	Version        int          `json:"version" validate:"required,numeric"`
-	ImportedCount  int          `json:"importedCount"`
-	CompatibleWith string       `json:"compatibleWith" validate:"required"`
-	Votes          []PluginVote `json:"votes"`
+	*PluginStripped
+	Plugin string `json:"plugin" validate:"required"`
 }
 
 type error struct {
@@ -40,14 +32,16 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 	t := time.Now()
 
 	plugin := Plugin{
-		Name:           r.FormValue("name"),
-		Description:    r.FormValue("description"),
-		PublisherId:    r.Header.Get("userId"),
-		PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-		Plugin:         r.FormValue("plugin"),
-		Version:        1,
-		CompatibleWith: r.FormValue("compatibleWith"),
-		Votes:          []PluginVote{},
+		PluginStripped: &PluginStripped{
+			Name:           r.FormValue("name"),
+			Description:    r.FormValue("description"),
+			PublisherId:    r.Header.Get("userId"),
+			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
+			Version:        1,
+			CompatibleWith: r.FormValue("compatibleWith"),
+			Votes:          []PluginVote{},
+		},
+		Plugin: r.FormValue("plugin"),
 	}
 
 	err := validate.Struct(plugin)
