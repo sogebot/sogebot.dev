@@ -8,7 +8,7 @@ import (
 	"os"
 	"reflect"
 	"services/plugins/internal/middleware/auth"
-	"services/plugins/internal/routes"
+	"services/plugins/routes"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
