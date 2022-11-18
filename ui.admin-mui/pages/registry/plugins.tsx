@@ -39,7 +39,7 @@ import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
-import { Plugin as RemotePlugin } from '../../../services/plugins/src/entity/Plugin';
+import type { Plugin as RemotePlugin } from '../../../services/plugins/export';
 
 const PageRegistryPlugins: NextPageWithLayout = () => {
   const dispatch = useDispatch();
@@ -221,12 +221,13 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
           id:     v4(),
           userId: localStorage.userId,
           vote:   1,
-          plugin,
         });
         // pushing vote to backend
-        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { vote: 1 }, {
+        const params = new URLSearchParams();
+        params.append('vote', '1');
+        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, params, {
           headers: {
-            'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
+            'content-type': 'application/x-www-form-urlencoded', authorization: `Bearer ${localStorage.code}`,
           },
         });
       } else {
@@ -251,12 +252,13 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
           id:     v4(),
           userId: localStorage.userId,
           vote:   -1,
-          plugin,
         });
         // pushing vote to backend
-        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, { vote: -1 }, {
+        const params = new URLSearchParams();
+        params.append('vote', '-1');
+        axios.post(`https://plugins.sogebot.xyz/plugins/${plugin.id}/votes`, params, {
           headers: {
-            'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
+            'content-type': 'application/x-www-form-urlencoded', authorization: `Bearer ${localStorage.code}`,
           },
         });
       } else {

@@ -1,20 +1,15 @@
-FROM node:18-alpine
+FROM golang:1.19-alpine
 
-ENV LAST_UPDATED 2022-11-09-1237
-
-ENV NODE_ENV production
-ENV ENV production
-
-COPY . /app
-
-# Change working directory
 WORKDIR /app
 
-# Install dependencies
-RUN npm install
+COPY ./go.mod ./
+COPY ./go.sum ./
 
-# Expose API port to the outside
+RUN go mod download
+
+COPY . ./
+RUN go build -o /plugins
+
 EXPOSE 3000
 
-# Add startup script
-CMD [ "node", "build/index.js" ]
+CMD [ "/plugins" ]
