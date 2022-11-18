@@ -1,4 +1,8 @@
-*.db*
+# Go
+services/**/*.exe
+services/**/tmp
+
+*.db
 
 # Monorepo
 backend/dest

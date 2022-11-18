@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,25 +11,25 @@ import (
 
 type responseWriter struct {
 	http.ResponseWriter
-  status      int
-  wroteHeader bool
+	status      int
+	wroteHeader bool
 }
 
 func wrapResponseWriter(w http.ResponseWriter) *responseWriter {
-  return &responseWriter{ResponseWriter: w}
+	return &responseWriter{ResponseWriter: w}
 }
 
 func (rw *responseWriter) Status() int {
-  return rw.status
+	return rw.status
 }
 
 func (rw *responseWriter) WriteHeader(code int) {
-  if rw.wroteHeader {
-    return
-  }
-  rw.status = code
-  rw.ResponseWriter.WriteHeader(code)
-  rw.wroteHeader = true
+	if rw.wroteHeader {
+		return
+	}
+	rw.status = code
+	rw.ResponseWriter.WriteHeader(code)
+	rw.wroteHeader = true
 }
 
 type TwitchAuthResponse struct {
@@ -54,9 +53,8 @@ func AuthMiddlewareWithLogger(handler http.Handler) http.Handler {
 
 		authHeader := strings.Split(r.Header.Get("Authorization"), "Bearer ")
 		if len(authHeader) != 2 {
-			fmt.Println("Unauthorized access")
 			interceptWriter.WriteHeader(http.StatusUnauthorized)
-			interceptWriter.Write([]byte("Unauthorized access"))
+			interceptWriter.Write([]byte("401 - Unauthorized"))
 		} else {
 			authToken := authHeader[1]
 
@@ -84,26 +82,17 @@ func AuthMiddlewareWithLogger(handler http.Handler) http.Handler {
 
 			if errorObj.Message == "" {
 				user = userObj.Login + "#" + userObj.UserID
+				r.Header.Add("userId", userObj.UserID)
 				handler.ServeHTTP(interceptWriter, r)
 			} else {
-				fmt.Println("Unauthorized access")
 				interceptWriter.WriteHeader(http.StatusUnauthorized)
-				interceptWriter.Write([]byte("Unauthorized access"))
+				interceptWriter.Write([]byte("401 - Unauthorized"))
 			}
 		}
-		fmt.Printf("[%s - %s - %s] \"%s %s %s\" %d %s %dus\n",
+
+		log.Printf("[%s - %s - %s] \"%s %s %s\" %d %s %dus\n",
 			r.RemoteAddr,
 			user,
-			t.Format("02/Jan/2006:15:04:05 -0700"),
-			r.Method,
-			r.URL.Path,
-			r.Proto,
-			interceptWriter.status,
-			r.UserAgent(),
-			time.Since(t),
-		)
-		log.Printf("HTTP - %s - - %s \"%s %s %s\" %d %s %dus\n",
-			r.RemoteAddr,
 			t.Format("02/Jan/2006:15:04:05 -0700"),
 			r.Method,
 			r.URL.Path,
