@@ -94,8 +94,6 @@ func main() {
 		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "content-type"},
-		// Enable Debugging for testing, consider disabling in production
-		Debug: true,
 	})
 	handler := c.Handler(router)
 	log.Fatal(http.ListenAndServe(":3000", handler))
