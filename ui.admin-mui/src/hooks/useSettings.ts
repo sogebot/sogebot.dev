@@ -129,7 +129,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [ settings, enqueueSnackbar, endpoint ]);
 
-  const handleChange = (key: string, value: any): void => {
+  const handleChange = useCallback((key: string, value: any): void => {
     console.log({
       key, value,
     });
@@ -149,7 +149,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
       set(newSettingsObj, key, [value, get(settingsObj, `${key}[1]`)]);
       return newSettingsObj;
     });
-  };
+  }, []);
 
   const getPermissionSettingsValue = useCallback((permId: string, values: { [x: string]: string | null }) => {
     const startingOrder = get(permissions.find(permission => permission.id === permId), 'order', permissions.length);

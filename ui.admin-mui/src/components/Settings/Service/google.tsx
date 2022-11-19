@@ -9,13 +9,17 @@ import {
   IconButton,
   Paper,
   Stack,
+  FormControl,
+  InputLabel,
   Table,
+  MenuItem,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
   TextField,
+  Select,
   Typography,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
@@ -36,6 +40,51 @@ import { getBase64FromUrl } from '~/src/helpers/getBase64FromURL';
 import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
+declare module stream {
+
+  export interface Snippet {
+      publishedAt: Date;
+      channelId: string;
+      title: string;
+      description: string;
+      isDefaultStream: boolean;
+  }
+
+  export interface IngestionInfo {
+      streamName: string;
+      ingestionAddress: string;
+      backupIngestionAddress: string;
+      rtmpsIngestionAddress: string;
+      rtmpsBackupIngestionAddress: string;
+  }
+
+  export interface Cdn {
+      ingestionType: string;
+      ingestionInfo: IngestionInfo;
+      resolution: string;
+      frameRate: string;
+  }
+
+  export interface HealthStatus {
+      status: string;
+  }
+
+  export interface Status {
+      streamStatus: string;
+      healthStatus: HealthStatus;
+  }
+
+  export interface RootObject {
+      kind: string;
+      etag: string;
+      id: string;
+      snippet: Snippet;
+      cdn: Cdn;
+      status: Status;
+  }
+
+}
+
 const PageSettingsModulesServiceGoogle: React.FC<{
   onVisible: () => void,
   sx?: SxProps<Theme> | undefined
@@ -51,6 +100,8 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
   const [ privateKeysCache, setPrivateKeysCache ] = useState<GooglePrivateKeysInterface[]>([]);
 
+  const [ streams, setStreams ] = useState<stream.RootObject[]>([]);
+
   const refreshKeys = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
@@ -64,10 +115,25 @@ const PageSettingsModulesServiceGoogle: React.FC<{
       }),
     ]);
   }, []);
+
+  const refreshStreams = useCallback(async () => {
+    await Promise.all([
+      new Promise<void>(resolve => {
+        axios.get(`${localStorage.server}/api/services/google/streams`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            console.log({ data });
+            setStreams([...data.data]);
+            resolve();
+          });
+      }),
+    ]);
+  }, []);
+
   useEffect(() => {
     refresh();
     refreshKeys();
-  }, [ router, refresh, refreshKeys ]);
+    refreshStreams();
+  }, [ router, refresh, refreshKeys, refreshStreams ]);
 
   const [ saving2, setSaving2 ] = useState(false);
   const handleSave = useCallback(async () => {
@@ -174,8 +240,31 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           label={'Channel'}
         />
       </Stack>
-      <Button sx={{ m: 0.5 }} href='https://youtube-token-generator.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
+      <Button sx={{ m: 0.5 }} href='https://youtube-rmtp-stream.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
+
+    <Typography variant='h5' sx={{ pb: 2 }}>Stream</Typography>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <FormControl fullWidth variant='filled'>
+        <InputLabel id="rmtp-stream-label">RTMP key</InputLabel>
+        <Select
+          labelId="rmtp-stream-label"
+          id="rmtp-stream-select"
+          displayEmpty
+          variant='filled'
+          value={settings.streamId[0]}
+          label="RTMP key"
+          onChange={(event) => handleChange('streamId', event.target.value)}
+        >
+          <MenuItem value="">No key selected</MenuItem>
+          {streams.map(item => <MenuItem value={item.id} key={item.id}>{item.snippet.title}</MenuItem>)}
+        </Select>
+      </FormControl>
+
+    </Paper>
+    }
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.keys')}</Typography>
     {settings && <Paper>

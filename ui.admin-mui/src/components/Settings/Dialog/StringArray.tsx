@@ -2,6 +2,7 @@ import { DeleteTwoTone } from '@mui/icons-material';
 import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, Stack, TextField,
 } from '@mui/material';
+import { isEqual } from 'lodash';
 import React from 'react';
 
 export const SettingsSystemsDialogStringArray: React.FC<{
@@ -46,9 +47,11 @@ export const SettingsSystemsDialogStringArray: React.FC<{
   };
 
   React.useEffect(() => {
-    // update on model change
-    onChange(model);
-  }, [model, onChange]);
+    if (open && !isEqual(items, model)) {
+      // update on model change
+      onChange(model);
+    }
+  }, [model, onChange, open, items]);
 
   return <>
     <Button variant='outlined' onClick={handleClickOpen}>Edit</Button>
