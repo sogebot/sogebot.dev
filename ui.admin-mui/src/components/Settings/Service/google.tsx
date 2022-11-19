@@ -248,7 +248,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
       p: 1, mb: 2,
     }}>
       <FormControl fullWidth variant='filled'>
-        <InputLabel id="rmtp-stream-label">RTMP key</InputLabel>
+        <InputLabel id="rmtp-stream-label" shrink>RTMP key</InputLabel>
         <Select
           labelId="rmtp-stream-label"
           id="rmtp-stream-select"
