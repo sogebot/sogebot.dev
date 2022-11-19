@@ -6,20 +6,20 @@ import {
   Box,
   Button,
   CircularProgress,
-  IconButton,
-  Paper,
-  Stack,
   FormControl,
+  IconButton,
   InputLabel,
-  Table,
   MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
   TextField,
-  Select,
   Typography,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
@@ -40,47 +40,47 @@ import { getBase64FromUrl } from '~/src/helpers/getBase64FromURL';
 import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-declare module stream {
+declare namespace stream {
 
   export interface Snippet {
-      publishedAt: Date;
-      channelId: string;
-      title: string;
-      description: string;
-      isDefaultStream: boolean;
+    publishedAt: Date;
+    channelId: string;
+    title: string;
+    description: string;
+    isDefaultStream: boolean;
   }
 
   export interface IngestionInfo {
-      streamName: string;
-      ingestionAddress: string;
-      backupIngestionAddress: string;
-      rtmpsIngestionAddress: string;
-      rtmpsBackupIngestionAddress: string;
+    streamName: string;
+    ingestionAddress: string;
+    backupIngestionAddress: string;
+    rtmpsIngestionAddress: string;
+    rtmpsBackupIngestionAddress: string;
   }
 
   export interface Cdn {
-      ingestionType: string;
-      ingestionInfo: IngestionInfo;
-      resolution: string;
-      frameRate: string;
+    ingestionType: string;
+    ingestionInfo: IngestionInfo;
+    resolution: string;
+    frameRate: string;
   }
 
   export interface HealthStatus {
-      status: string;
+    status: string;
   }
 
   export interface Status {
-      streamStatus: string;
-      healthStatus: HealthStatus;
+    streamStatus: string;
+    healthStatus: HealthStatus;
   }
 
   export interface RootObject {
-      kind: string;
-      etag: string;
-      id: string;
-      snippet: Snippet;
-      cdn: Cdn;
-      status: Status;
+    kind: string;
+    etag: string;
+    id: string;
+    snippet: Snippet;
+    cdn: Cdn;
+    status: Status;
   }
 
 }

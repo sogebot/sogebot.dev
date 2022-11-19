@@ -220,7 +220,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
       onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange('comboCooldown', event.target.value),
 
     } as const;
-  }, [ settings, errors ]);
+  }, [ settings, errors, handleChange ]);
 
   return {
     loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors, TextFieldProps,
