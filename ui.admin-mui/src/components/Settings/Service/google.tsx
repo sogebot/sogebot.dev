@@ -5,6 +5,7 @@ import {
   Backdrop,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   FormControl,
   IconButton,
@@ -247,22 +248,70 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
-      <FormControl fullWidth variant='filled'>
-        <InputLabel id="rmtp-stream-label" shrink>RTMP key</InputLabel>
-        <Select
-          labelId="rmtp-stream-label"
-          id="rmtp-stream-select"
-          displayEmpty
-          variant='filled'
-          value={settings.streamId[0]}
-          label="RTMP key"
-          onChange={(event) => handleChange('streamId', event.target.value)}
-        >
-          <MenuItem value="">No key selected</MenuItem>
-          {streams.map(item => <MenuItem value={item.id} key={item.id}>{item.snippet.title}</MenuItem>)}
-        </Select>
-      </FormControl>
+      <Stack spacing={1}>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id="rmtp-stream-label" shrink>RTMP key</InputLabel>
+          <Select
+            labelId="rmtp-stream-label"
+            id="rmtp-stream-select"
+            displayEmpty
+            variant='filled'
+            value={settings.streamId[0]}
+            label="RTMP key"
+            onChange={(event) => handleChange('streamId', event.target.value)}
+          >
+            <MenuItem value="">No key selected</MenuItem>
+            {streams.map(item => <MenuItem value={item.id} key={item.id}>{item.snippet.title}</MenuItem>)}
+          </Select>
+        </FormControl>
 
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <Checkbox onChange={(_, checked) => handleChange('onStreamEndTitleEnabled', checked)} checked={settings.onStreamEndTitleEnabled[0]} />
+          <TextField
+            variant='filled'
+            fullWidth
+            helperText="Title can be only 100 chars. Available variables: $gamesList, $title, $date"
+            value={settings.onStreamEndTitle[0]}
+            disabled={!settings.onStreamEndTitleEnabled[0]}
+            label="On Stream End Title"
+            onChange={(event) => handleChange('onStreamEndTitle', event.target.value)}
+          />
+        </Stack>
+
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <Checkbox onChange={(_, checked) => handleChange('onStreamEndDescriptionEnabled', checked)} checked={settings.onStreamEndDescriptionEnabled[0]} />
+          <TextField
+            variant='filled'
+            fullWidth
+            multiline
+            helperText="Description can be only 5000 chars. Available variables: $gamesList, $Title, $date"
+            value={settings.onStreamEndDescription[0]}
+            disabled={!settings.onStreamEndDescriptionEnabled[0]}
+            label="On Stream End Description"
+            onChange={(event) => handleChange('onStreamEndDescription', event.target.value)}
+          />
+        </Stack>
+
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <Checkbox onChange={(_, checked) => handleChange('onStreamEndPrivacyStatusEnabled', checked)} checked={settings.onStreamEndPrivacyStatusEnabled[0]} />
+
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id="rmtp-stream-label" shrink>On Stream End Privacy Status</InputLabel>
+            <Select
+              variant='filled'
+              fullWidth
+              value={settings.onStreamEndPrivacyStatus[0]}
+              disabled={!settings.onStreamEndPrivacyStatusEnabled[0]}
+              label="On Stream End Privacy Status"
+              onChange={(event) => handleChange('onStreamEndPrivacyStatus', event.target.value)}
+            >
+              <MenuItem value='private'>Private</MenuItem>
+              <MenuItem value='public'>Public</MenuItem>
+              <MenuItem value='unlisted'>Unlisted</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
+      </Stack>
     </Paper>
     }
 
