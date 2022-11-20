@@ -284,7 +284,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
             variant='filled'
             fullWidth
             multiline
-            helperText="Description can be only 5000 chars. Available variables: $gamesList, $Title, $date"
+            helperText="Description can be only 5000 chars. Available variables: $chapters, $title, $date"
             value={settings.onStreamEndDescription[0]}
             disabled={!settings.onStreamEndDescriptionEnabled[0]}
             label="On Stream End Description"
