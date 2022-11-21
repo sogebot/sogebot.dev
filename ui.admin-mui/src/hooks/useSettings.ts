@@ -1,3 +1,4 @@
+import parse from 'html-react-parser';
 import {
   cloneDeep, get, set,
 } from 'lodash';
@@ -59,6 +60,11 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
       for (const key of Object.keys(validator)) {
         const attr = get(settings, `${key}[0]`);
 
+        if (attr === undefined) {
+          console.error(`Attribute ${key} doesn't exist on settings object of ${endpoint}`);
+          continue;
+        }
+
         if (key.includes('__permission_based__')) {
           for (const permId of Object.keys(attr)) {
             if (attr[permId] === null || attr[permId] === '%%%%___ignored___%%%%') {
@@ -116,7 +122,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
         }
       }
     }
-  }, [ settings, validator, translate ]);
+  }, [ settings, validator, translate, endpoint ]);
 
   const save = useCallback(() => {
     if (settings) {
@@ -213,11 +219,11 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
 
     return {
       error:      !!errors.find(o => o.propertyName === key),
-      helperText: errors.find(o => o.propertyName === key)?.message ?? defaultValues?.helperText,
+      helperText: errors.find(o => o.propertyName === key)?.message ?? (defaultValues?.helperText ? parse(defaultValues!.helperText!) : undefined),
       variant:    'filled',
       fullWidth:  true,
       value:      get(settings, `${key}[0]`, ''),
-      onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange('comboCooldown', event.target.value),
+      onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(key, event.target.value),
 
     } as const;
   }, [ settings, errors, handleChange ]);

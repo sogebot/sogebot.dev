@@ -39,6 +39,11 @@ import PageSettingsModulesSystemsHighlights from '~/src/components/Settings/Syst
 import PageSettingsModulesSystemsLevels from '~/src/components/Settings/Systems/levels';
 import PageSettingsModulesSystemsModeration from '~/src/components/Settings/Systems/moderation';
 import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
+import PageSettingsModulesSystemsPoints from '~/src/components/Settings/Systems/points';
+import PageSettingsModulesSystemsPolls from '~/src/components/Settings/Systems/polls';
+import PageSettingsModulesSystemsRaffles from '~/src/components/Settings/Systems/raffles';
+import PageSettingsModulesSystemsScrim from '~/src/components/Settings/Systems/scrim';
+import PageSettingsModulesSystemsSongs from '~/src/components/Settings/Systems/songs';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModules: NextPageWithLayout = () => {
@@ -200,6 +205,11 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsHighlights onVisible={() => setActiveTab('systems-highlights')}/>
                 <PageSettingsModulesSystemsLevels onVisible={() => setActiveTab('systems-levels')}/>
                 <PageSettingsModulesSystemsModeration onVisible={() => setActiveTab('systems-moderation')}/>
+                <PageSettingsModulesSystemsPoints onVisible={() => setActiveTab('systems-points')}/>
+                <PageSettingsModulesSystemsPolls onVisible={() => setActiveTab('systems-polls')}/>
+                <PageSettingsModulesSystemsRaffles onVisible={() => setActiveTab('systems-raffles')}/>
+                <PageSettingsModulesSystemsScrim onVisible={() => setActiveTab('systems-scrim')}/>
+                <PageSettingsModulesSystemsSongs onVisible={() => setActiveTab('systems-songs')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',
