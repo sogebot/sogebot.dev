@@ -67,7 +67,7 @@ export const PermissionTabs: React.FC<{
   };
 
   return <><Box sx={{
-    position: 'sticky', top: '-5px', backgroundColor: '#1e1e1e', zIndex: '1',
+    position: 'sticky', top: '-5px', backgroundColor: '#1e1e1e', zIndex: '2',
   }}>
     <Tabs value={tab} onChange={handleChangeTab} centered>
       {orderBy(permissions, 'order', 'desc')
