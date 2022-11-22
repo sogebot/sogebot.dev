@@ -44,6 +44,7 @@ import PageSettingsModulesSystemsPolls from '~/src/components/Settings/Systems/p
 import PageSettingsModulesSystemsRaffles from '~/src/components/Settings/Systems/raffles';
 import PageSettingsModulesSystemsScrim from '~/src/components/Settings/Systems/scrim';
 import PageSettingsModulesSystemsSongs from '~/src/components/Settings/Systems/songs';
+import PageSettingsModulesSystemsUserinfo from '~/src/components/Settings/Systems/userinfo';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
 const PageSettingsModules: NextPageWithLayout = () => {
@@ -210,6 +211,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsRaffles onVisible={() => setActiveTab('systems-raffles')}/>
                 <PageSettingsModulesSystemsScrim onVisible={() => setActiveTab('systems-scrim')}/>
                 <PageSettingsModulesSystemsSongs onVisible={() => setActiveTab('systems-songs')}/>
+                <PageSettingsModulesSystemsUserinfo onVisible={() => setActiveTab('systems-userinfo')}/>
               </>}
               <Box sx={{
                 minHeight: '50vh', width: '100%',

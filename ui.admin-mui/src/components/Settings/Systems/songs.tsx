@@ -68,7 +68,7 @@ const PageSettingsModulesSystemsSongs: React.FC<{
 
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
-        {['songrequest', 'playlist', 'notify', 'shuffle', 'onlyMusicCategory', 'allowRequestsOnlyFromPlaylist', 'calculateVolumeByLoudness'].map(item => <FormGroup key="item">
+        {['songrequest', 'playlist', 'notify', 'shuffle', 'onlyMusicCategory', 'allowRequestsOnlyFromPlaylist', 'calculateVolumeByLoudness'].map(item => <FormGroup key={item}>
           <FormControlLabel
             control={<Checkbox checked={settings[item][0]} onChange={(_, checked) => handleChange(item, checked)} />}
             label={translate('systems.songs.settings.' + item)}
