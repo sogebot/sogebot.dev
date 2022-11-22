@@ -28,6 +28,10 @@ import PageSettingsModulesCoreSocket from '~/src/components/Settings/Core/socket
 import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
+import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
+import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integrations/kofi';
+import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
+import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
 import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Systems/antihateraid';
@@ -150,7 +154,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             </>}
 
             {router.asPath.includes(`/settings/modules/integrations`) && <>
-              {['google', 'twitch'].map(item => <ListItemButton
+              {['donatello', 'kofi', 'tiltify'].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -164,7 +168,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
 
             {router.asPath.includes(`/settings/modules/games`) && <>
               {['duel', 'gamble',
-                'heist', 'roulette', 'seppuku'].map(item => <ListItemButton
+                'heist', 'roulette'].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`games-${item}`}
                 selected={activeTab === `games-${item}`}
@@ -213,6 +217,13 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsSongs onVisible={() => setActiveTab('systems-songs')}/>
                 <PageSettingsModulesSystemsUserinfo onVisible={() => setActiveTab('systems-userinfo')}/>
               </>}
+              {router.asPath.includes(`/settings/modules/integrations`) && <>
+                <PageSettingsModulesIntegrationsModules onVisible={() => setActiveTab('integrations-modules')}/>
+                <PageSettingsModulesIntegrationsDonatello onVisible={() => setActiveTab('integrations-donatello')}/>
+                <PageSettingsModulesIntegrationsKofi onVisible={() => setActiveTab('integrations-kofi')}/>
+                <PageSettingsModulesIntegrationsTiltify onVisible={() => setActiveTab('integrations-tiltify')}/>
+              </>
+              }
               <Box sx={{
                 minHeight: '50vh', width: '100%',
               }}/>
