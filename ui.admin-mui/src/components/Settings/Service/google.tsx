@@ -241,7 +241,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           label={'Channel'}
         />
       </Stack>
-      <Button sx={{ m: 0.5 }} href='https://youtube-rmtp-stream.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
+      <Button sx={{ m: 0.5 }} href='https://youtube-token-generator.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>Stream</Typography>
