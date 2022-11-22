@@ -1,8 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -43,7 +41,7 @@ const PageSettingsModulesCoreCurrency: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="currency">
+  return (loading ? null : <Box ref={ref} id="currency">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.currency')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Grid container sx={{ pb: 1 }}>
@@ -76,10 +74,6 @@ const PageSettingsModulesCoreCurrency: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

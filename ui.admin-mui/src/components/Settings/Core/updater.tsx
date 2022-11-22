@@ -1,10 +1,8 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   List,
@@ -85,7 +83,7 @@ const PageSettingsModulesCoreUpdater: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="updater">
+  return (loading ? null : <Box ref={ref} id="updater">
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.updater')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack direction='row' justifyContent={'space-between'}>
@@ -128,10 +126,6 @@ const PageSettingsModulesCoreUpdater: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

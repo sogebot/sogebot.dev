@@ -1,9 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   FormHelperText,
@@ -68,7 +66,7 @@ const PageSettingsModulesSystemsRaffles: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="raffles">
+  return (loading ? null : <Box ref={ref} id="raffles">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.raffles') }</Typography>
 
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
@@ -138,10 +136,6 @@ const PageSettingsModulesSystemsRaffles: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

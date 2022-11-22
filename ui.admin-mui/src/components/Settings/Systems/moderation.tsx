@@ -1,9 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Checkbox,
-  CircularProgress,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -136,7 +134,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="moderation">
+  return (loading ? null : <Box ref={ref} id="moderation">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.moderation') }</Typography>
 
     <Typography variant='h5' sx={{ py: 2 }}>{ translate('categories.warnings') }</Typography>
@@ -299,10 +297,6 @@ const PageSettingsModulesSystemsModeration: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

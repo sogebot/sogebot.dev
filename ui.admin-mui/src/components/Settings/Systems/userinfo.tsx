@@ -9,9 +9,7 @@ import {
 } from '@dnd-kit/sortable';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   List,
   Paper,
   Stack,
@@ -94,7 +92,7 @@ const PageSettingsModulesSystemsUserinfo: React.FC<{
     }
   }, [settings, handleChange]);
 
-  return (<Box ref={ref} id="userinfo">
+  return (loading ? null : <Box ref={ref} id="userinfo">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.userinfo') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -133,10 +131,6 @@ const PageSettingsModulesSystemsUserinfo: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

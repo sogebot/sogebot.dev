@@ -10,10 +10,8 @@ import {
 import { SwapVertTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   Divider,
   Grid,
   Paper,
@@ -38,7 +36,7 @@ const PageSettingsModulesCoreDashboard: React.FC<{
   onVisible,
 }) => {
   const router = useRouter();
-  const { settings, setSettings, loading, refresh, save, saving } = useSettings('/core/dashboard');
+  const { settings, setSettings, refresh, save, saving } = useSettings('/core/dashboard');
 
   useEffect(() => {
     refresh();
@@ -182,10 +180,6 @@ const PageSettingsModulesCoreDashboard: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

@@ -1,10 +1,8 @@
 import { Alert, LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -103,7 +101,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     }
   }, [settings, redirectUri ]);
 
-  return (<Box ref={ref} sx={sx} id="twitch">
+  return (loading ? null : <Box ref={ref} sx={sx} id="twitch">
     <Typography variant='h2' sx={{ pb: 2 }}>Twitch</Typography>
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.oauth')}</Typography>
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>
@@ -376,10 +374,6 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={handleSave}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

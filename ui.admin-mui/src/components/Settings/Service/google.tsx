@@ -2,11 +2,9 @@ import { GooglePrivateKeysInterface } from '@entity/google';
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   FormControl,
   IconButton,
   InputLabel,
@@ -211,7 +209,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     }
   };
 
-  return (<Box ref={ref} sx={sx} id="google">
+  return (loading ? null : <Box ref={ref} sx={sx} id="google">
     <Typography variant='h2' sx={{ pb: 2 }}>Google</Typography>
     <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel Tokens</Typography>
     {settings && <Paper elevation={1} sx={{
@@ -363,10 +361,6 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving || saving2} type="submit" onClick={handleSave}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

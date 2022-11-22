@@ -7,17 +7,20 @@ import {
   ChangeEvent,
   useCallback, useEffect, useState,
 } from 'react';
+import { useDispatch } from 'react-redux';
 import { ClientToServerEventsWithNamespace } from '~/../backend/d.ts/src/helpers/socket';
 
 import { saveSettings } from '~/src/helpers/settings';
 import { getSocket } from '~/src/helpers/socket';
 import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
+import { addSettingsLoading, rmSettingsLoading } from '~/src/store/loaderSlice';
 
 export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[]}) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
+  const dispatch = useDispatch();
 
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
@@ -26,6 +29,14 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const [ errors, setErrors ] = useState<{ propertyName: string, message: string }[]>([]);
+
+  useEffect(() => {
+    if (loading) {
+      dispatch(addSettingsLoading(endpoint));
+    } else {
+      dispatch(rmSettingsLoading(endpoint));
+    }
+  }, [loading, dispatch, endpoint]);
 
   useEffect(() => {
     console.log({ errors });

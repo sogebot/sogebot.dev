@@ -1,10 +1,8 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   IconButton,
   Paper,
   Stack,
@@ -59,7 +57,7 @@ const PageSettingsModulesSystemsChecklist: React.FC<{
     handleChange('customization.itemsArray', update.customization.itemsArray[0]);
   }, [ settings, handleChange ]);
 
-  return (<Box ref={ref} id="checklist">
+  return (loading ? null : <Box ref={ref} id="checklist">
     <Typography variant='h2' sx={{ pb: 2 }}>Checklist</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -83,10 +81,6 @@ const PageSettingsModulesSystemsChecklist: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

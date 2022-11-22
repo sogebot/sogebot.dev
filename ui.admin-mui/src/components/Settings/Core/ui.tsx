@@ -1,9 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   Paper,
@@ -98,10 +96,6 @@ const PageSettingsModulesCoreUI: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={save} disabled={haveErrors}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

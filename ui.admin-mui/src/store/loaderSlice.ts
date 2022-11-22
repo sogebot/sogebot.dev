@@ -21,8 +21,18 @@ export const loaderSlice = createSlice({
     services:     null,
     systems:      null,
     integrations: null,
+
+    settingsLoadingInProgress: [],
   },
   reducers: {
+    addSettingsLoading: (state: any, action: { payload: any }) => {
+      console.debug(`addSettingsLoading`, action.payload);
+      state.settingsLoadingInProgress = [...state.settingsLoadingInProgress, action.payload];
+    },
+    rmSettingsLoading: (state: any, action: { payload: any }) => {
+      console.debug(`rmSettingsLoading`, action.payload);
+      state.settingsLoadingInProgress = state.settingsLoadingInProgress.filter((o: string) => o !== action.payload);
+    },
     setSystem: (state: any, action: { payload: any }) => {
       console.debug(`setSystem::${action.payload.type}`, action.payload.value);
       state[action.payload.type] = action.payload.value;
@@ -70,5 +80,5 @@ export const loaderSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+export const { addSettingsLoading, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 export default loaderSlice.reducer;

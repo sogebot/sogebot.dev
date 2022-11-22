@@ -1,11 +1,9 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   IconButton,
@@ -122,7 +120,7 @@ const PageSettingsModulesSystemsEmotesCombo: React.FC<{
   const handleItemAdd = useCallback((attr: 'comboMessages' | 'hypeMessages') => {
     const update = { ...settings };
     update[attr][0].push({
-      message: '', messagesCount: -1, 
+      message: '', messagesCount: -1,
     });
     handleChange(attr, update[attr][0]);
   }, [ settings, handleChange ]);
@@ -133,7 +131,7 @@ const PageSettingsModulesSystemsEmotesCombo: React.FC<{
     handleChange(attr, update[attr][0]);
   }, [ settings, handleChange ]);
 
-  return (<Box ref={ref} id="emotescombo">
+  return (loading ? null : <Box ref={ref} id="emotescombo">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.emotescombo') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -226,10 +224,6 @@ const PageSettingsModulesSystemsEmotesCombo: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

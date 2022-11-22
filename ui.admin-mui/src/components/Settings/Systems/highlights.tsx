@@ -1,11 +1,9 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   IconButton,
@@ -70,7 +68,7 @@ const PageSettingsModulesSystemsHighlights: React.FC<{
     handleChange('urls.urls', update.urls.urls[0]);
   }, [ settings, handleChange ]);
 
-  return (<Box ref={ref} id="highlights">
+  return (loading ? null : <Box ref={ref} id="highlights">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.highlights') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -97,10 +95,6 @@ const PageSettingsModulesSystemsHighlights: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

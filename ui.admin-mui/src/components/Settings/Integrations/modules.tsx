@@ -1,7 +1,5 @@
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -16,10 +14,12 @@ import {
   useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
+import { addSettingsLoading, rmSettingsLoading } from '~/src/store/loaderSlice';
 
 const PageSettingsModulesIntegrationsModules: React.FC<{
   onVisible: () => void,
@@ -31,9 +31,18 @@ const PageSettingsModulesIntegrationsModules: React.FC<{
   const router = useRouter();
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
   const [ loading, setLoading ] = useState(true);
   const [ items, setItems ] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (loading) {
+      dispatch(addSettingsLoading('/integrations/modules'));
+    } else {
+      dispatch(rmSettingsLoading('/integrations/modules'));
+    }
+  }, [loading, dispatch]);
 
   const toggle = useCallback((item: any) => {
     const enabled = !item.enabled;
@@ -110,10 +119,6 @@ const PageSettingsModulesIntegrationsModules: React.FC<{
         </FormGroup>
       </Grid>)}
     </Grid>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

@@ -1,6 +1,8 @@
 import { ArrowUpwardTwoTone } from '@mui/icons-material';
 import {
+  Backdrop,
   Box,
+  CircularProgress,
   Fab,
   Grid,
   List,
@@ -54,7 +56,9 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 const PageSettingsModules: NextPageWithLayout = () => {
   const router = useRouter();
   const { translate } = useTranslation();
+
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const settingsLoadingInProgress = useSelector<string[], string[]>((state: any) => state.loader.settingsLoadingInProgress);
 
   const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({
@@ -63,6 +67,18 @@ const PageSettingsModules: NextPageWithLayout = () => {
     });
     history.pushState({}, '', `${router.asPath}#${id}`);
   }, [ router ]);
+
+  useEffect(() => {
+    if (settingsLoadingInProgress.length === 0) {
+      const id = router.asPath.split('#')[router.asPath.split('#').length - 1];
+      if (id) {
+        document.getElementById(id)?.scrollIntoView({
+          behavior: 'smooth',
+          block:    'start',
+        });
+      }
+    }
+  }, [settingsLoadingInProgress, scrollTo, router]);
 
   const [ activeTab, setActiveTab ] = useState('');
   const matches = useMediaQuery('(min-width:1536px)');
@@ -185,6 +201,9 @@ const PageSettingsModules: NextPageWithLayout = () => {
           <Box sx={{
             maxWidth: 960, m: matches ? undefined : 'auto',
           }}>
+            <Backdrop open={settingsLoadingInProgress.length > 0} >
+              <CircularProgress color="inherit"/>
+            </Backdrop>
             <Stack spacing={4}>
               {router.asPath.includes(`/settings/modules/core`) && <>
                 <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')}/>

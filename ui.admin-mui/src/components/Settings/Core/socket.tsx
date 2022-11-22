@@ -1,9 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   Paper,
   Stack,
   TextField,
@@ -95,7 +93,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="socket">
+  return (loading ? null : <Box ref={ref} id="socket">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.socket') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -137,10 +135,6 @@ const PageSettingsModulesCoreSocket: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" disabled={haveErrors} onClick={save}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

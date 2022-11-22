@@ -1,8 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   InputAdornment,
   Paper,
   Stack,
@@ -49,7 +47,7 @@ const PageSettingsModulesSystemsScrim: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="scrim">
+  return (loading ? null : <Box ref={ref} id="scrim">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.scrim') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
@@ -65,10 +63,6 @@ const PageSettingsModulesSystemsScrim: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

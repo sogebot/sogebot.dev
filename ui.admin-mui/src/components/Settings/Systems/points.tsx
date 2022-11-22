@@ -1,10 +1,8 @@
 import { LoadingButton } from '@mui/lab';
 import {
   Alert,
-  Backdrop,
   Box,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   FormGroup,
   Paper,
@@ -119,7 +117,7 @@ const PageSettingsModulesSystemsPoints: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="points">
+  return (loading ? null : <Box ref={ref} id="points">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.points') }</Typography>
 
     <Typography variant='h5' sx={{ py: 2 }}>{ translate('categories.customization') }</Typography>
@@ -169,10 +167,6 @@ const PageSettingsModulesSystemsPoints: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };

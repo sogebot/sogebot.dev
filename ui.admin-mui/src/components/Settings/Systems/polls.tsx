@@ -1,8 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Backdrop,
   Box,
-  CircularProgress,
   Paper,
   Stack,
   TextField,
@@ -53,7 +51,7 @@ const PageSettingsModulesSystemsPolls: React.FC<{
     }
   }, [element, scrollY, onVisible]);
 
-  return (<Box ref={ref} id="polls">
+  return (loading ? null : <Box ref={ref} id="polls">
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.polls') }</Typography>
 
     <Typography variant='h5' sx={{ py: 2 }}>{ translate('categories.reminder') }</Typography>
@@ -71,10 +69,6 @@ const PageSettingsModulesSystemsPolls: React.FC<{
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
     </Stack>
-
-    <Backdrop open={loading} >
-      <CircularProgress color="inherit"/>
-    </Backdrop>
   </Box>
   );
 };
