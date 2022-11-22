@@ -7,13 +7,16 @@ import type { NextPage } from 'next';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
-import type { ReactElement, ReactNode } from 'react';
+import {
+  ReactElement, ReactNode,
+} from 'react';
 import { Provider } from 'react-redux';
 
 import store from '../src/app/store';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import '../styles/styles.css';
+import { ServerRouterQueryParam } from '~/src/components/ServerRouterQueryParam';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -49,6 +52,7 @@ export default function MyApp(props: MyAppProps) {
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
+            <ServerRouterQueryParam/>
             {getLayout(<Component {...pageProps} />)}
           </ThemeProvider>
         </SnackbarProvider>

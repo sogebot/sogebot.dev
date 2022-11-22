@@ -81,11 +81,6 @@ export const ServerSelect: React.FC = () => {
           Array
             .from(new Set([server, ...serverHistoryLS, 'http://localhost:20000']))
         );
-        // we need to remove query.server until we solve issue with server GET param
-        if (router.query.server) {
-          delete router.query.server;
-          router.replace(router.asPath, { query: router.query }); // get rid of GET params
-        }
       });
     }
   }, [dispatch, router]);

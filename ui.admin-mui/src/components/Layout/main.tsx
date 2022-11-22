@@ -117,7 +117,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
   const [ isIndexPage, setIndexPage ] = useState(false);
 
   useEffect(() => {
-    setIndexPage(router.asPath === '/');
+    setIndexPage(router.route === '/');
   }, [router, dispatch]);
 
   useEffect(() => {

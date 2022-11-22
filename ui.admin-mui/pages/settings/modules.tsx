@@ -56,13 +56,13 @@ const PageSettingsModules: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
 
-  const scrollTo = useCallback((type: string, id: string) => {
+  const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth',
       block:    'start',
     });
-    history.pushState({}, '', `/settings/modules/${type}#${id}`);
-  }, [ ]);
+    history.pushState({}, '', `${router.asPath}#${id}`);
+  }, [ router ]);
 
   const [ activeTab, setActiveTab ] = useState('');
   const matches = useMediaQuery('(min-width:1536px)');
@@ -106,7 +106,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 sx={{ height: '40px' }}
                 key={`core-${item}`}
                 selected={activeTab === `core-${item}`}
-                onClick={() => scrollTo('core', item)}
+                onClick={() => scrollTo(item)}
               >
                 <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
                   {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
@@ -119,7 +119,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 sx={{ height: '40px' }}
                 key={`services-${item}`}
                 selected={activeTab === `services-${item}`}
-                onClick={() => scrollTo('services', item)}
+                onClick={() => scrollTo(item)}
               >
                 <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
                   {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
@@ -145,7 +145,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 sx={{ height: '40px' }}
                 key={`systems-${item}`}
                 selected={activeTab === `systems-${item}`}
-                onClick={() => scrollTo('systems', item)}
+                onClick={() => scrollTo(item)}
               >
                 <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
                   {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
@@ -158,7 +158,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
-                onClick={() => scrollTo('integrations', item)}
+                onClick={() => scrollTo(item)}
               >
                 <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
                   {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
@@ -172,7 +172,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 sx={{ height: '40px' }}
                 key={`games-${item}`}
                 selected={activeTab === `games-${item}`}
-                onClick={() => scrollTo('games', item)}
+                onClick={() => scrollTo(item)}
               >
                 <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
                   {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
@@ -237,7 +237,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
         sx={{
           position: 'absolute', bottom: '20px', right: '40px',
         }}
-        onClick={() => scrollTo('core', 'top')}>
+        onClick={() => scrollTo('top')}>
         <ArrowUpwardTwoTone/>
       </Fab>
       </Slide >
