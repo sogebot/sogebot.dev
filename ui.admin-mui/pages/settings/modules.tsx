@@ -68,8 +68,8 @@ const PageSettingsModules: NextPageWithLayout = () => {
   const matches = useMediaQuery('(min-width:1536px)');
 
   useEffect(() => {
-    if (router.asPath === '/settings/modules') {
-      router.push('/settings/modules/core');
+    if (router.route === '/settings/modules' || router.route === '/settings/modules/') {
+      router.push(`/settings/modules/core/?server=${localStorage.server}`);
     }
   }, [router]);
 
