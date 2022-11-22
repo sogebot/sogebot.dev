@@ -13,7 +13,7 @@ export const ServerRouterQueryParam: React.FC = () => {
         router.replace(`${router.asPath}?server=${localStorage.server}`);
       }
     }
-  }, [router]);
+  }, [router, connectedToServer]);
 
   return null;
 };

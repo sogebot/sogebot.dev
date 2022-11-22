@@ -7,16 +7,16 @@ import type { NextPage } from 'next';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
-import {
-  ReactElement, ReactNode,
-} from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { Provider } from 'react-redux';
+
+import { ServerRouterQueryParam } from '~/src/components/ServerRouterQueryParam';
 
 import store from '../src/app/store';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
+
 import '../styles/styles.css';
-import { ServerRouterQueryParam } from '~/src/components/ServerRouterQueryParam';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

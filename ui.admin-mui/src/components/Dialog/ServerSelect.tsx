@@ -83,7 +83,7 @@ export const ServerSelect: React.FC = () => {
         );
       });
     }
-  }, [dispatch, router]);
+  }, [dispatch]);
 
   React.useEffect(() => {
     if (isInitial && router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
