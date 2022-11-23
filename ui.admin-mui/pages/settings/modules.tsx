@@ -3,6 +3,7 @@ import {
   Backdrop,
   Box,
   CircularProgress,
+  Container,
   Fab,
   Grid,
   List,
@@ -95,30 +96,12 @@ const PageSettingsModules: NextPageWithLayout = () => {
   }, [router]);
 
   return (
-    <>
+    <Container>
       <Grid container spacing={1} id="top">
         <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
           <List
             sx={{
-              width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px',
-            }}
-            dense
-          >
-            {['core', 'services', 'systems', 'integrations', 'games'].map(type => <ListItemButton
-              sx={{ height: '40px' }}
-              selected={router.asPath.includes(`/settings/modules/${type}`)}
-              onClick={() => router.push(`/settings/modules/${type}`)}
-              key={type}>
-              <ListItemText primary={<Typography variant='h5'>
-                {translate('menu.' + type).startsWith('{') ? type : translate('menu.' + type)}
-              </Typography>} />
-            </ListItemButton>)}
-          </List>
-        </Grid>
-        <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
-          <List
-            sx={{
-              width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px',
+              width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px', padding: 0,
             }}
             dense
           >
@@ -271,7 +254,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
         <ArrowUpwardTwoTone/>
       </Fab>
       </Slide >
-    </>
+    </Container>
   );
 };
 

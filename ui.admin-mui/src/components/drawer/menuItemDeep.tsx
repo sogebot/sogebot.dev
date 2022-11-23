@@ -37,11 +37,12 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   }, [state, connectedToServer, props, translate]);
 
   useEffect(() => {
-    setIsActive(!!menuItems.find((item: any) => '/' + item.id === router.asPath));
+    setIsActive(!!menuItems.find((item: any) => router.asPath.includes(item.id)));
   }, [menuItems, router]);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -49,8 +50,18 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
     setAnchorEl(null);
   };
 
+  const [anchorElModules, setAnchorElModules] = useState<null | HTMLElement>(null);
+  const openModules = Boolean(anchorElModules);
+
+  const handleClickModules = (event: React.MouseEvent<any>) => {
+    setAnchorElModules(event.currentTarget);
+  };
+  const handleCloseModules = () => {
+    setAnchorElModules(null);
+  };
+
   const isItemActive = (item: { id: string; enabled: boolean; }) => {
-    return '/' + item.id === router.asPath;
+    return router.asPath.includes(item.id);
   };
 
   const getColorOfItem = (item: { id: string; enabled: boolean; }) => {
@@ -65,13 +76,13 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
       <MuiListItemButton
         selected={isActive || !!anchorEl}
         sx={{
-          justifyContent: 'center', height: reducer.drawerWidth, 
+          justifyContent: 'center', height: reducer.drawerWidth,
         }}
         key={props.title}
         onClick={handleClick}>
         <Stack alignContent={'center'}  sx={{ color: isActive || !!anchorEl ? theme.palette.primary.main : 'inherit' }}>
           <ListItemIcon sx={{
-            placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit', 
+            placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit',
           }}>
             {props.icon}
             <ChevronRight sx={{
@@ -82,7 +93,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
             }}/>
           </ListItemIcon>
           <Typography variant="caption" sx={{
-            textAlign: 'center', fontSize: '0.7rem', 
+            textAlign: 'center', fontSize: '0.7rem',
           }}>
             {props.title}
           </Typography>
@@ -102,14 +113,53 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         }}
       >
         {menuItems.map(item => {
+          if (item.name === 'modules') {
+            return (
+              <MenuItem selected={isItemActive(item) || !!anchorElModules} sx={{
+                fontSize: '14px', color: getColorOfItem(item),
+              }} key={item.id} onClick={handleClickModules}>
+                {translate(`menu.${item.name}`)}
+                <ChevronRight sx={{
+                  position: 'absolute',
+                  right:    '7px',
+                  top:      '6px',
+                  fontSize: '20px',
+                }}/>
+              </MenuItem>
+            );
+          }
           return (
             <MenuItem selected={isItemActive(item)} sx={{
-              fontSize: '14px', color: getColorOfItem(item), 
+              fontSize: '14px', color: getColorOfItem(item),
             }} onClick={() => {
               handleClose(); router.push(`/${item.id}`);
             }} key={item.id}>{translate(`menu.${item.name}`)}</MenuItem>
           );
         })}
-      </Menu></>
+      </Menu>
+      <Menu
+        anchorEl={anchorElModules}
+        open={openModules}
+        onClose={handleCloseModules}
+        sx={{ transform: 'translateY(-8px)' }}
+        anchorOrigin={{
+          vertical:   'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical:   'top',
+          horizontal: 'left',
+        }}
+      >
+        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <MenuItem key={item} sx={{ fontSize: '14px' }}
+          onClick={() => {
+            handleClose(); handleCloseModules(); router.push(`/settings/modules/${item}`);
+          }}
+          selected={isItemActive({
+            id: item, enabled: true, 
+          })}>{translate('menu.' + item).startsWith('{') ? item : translate('menu.' + item)}</MenuItem>
+        )}
+      </Menu>
+    </>
   );
 };
