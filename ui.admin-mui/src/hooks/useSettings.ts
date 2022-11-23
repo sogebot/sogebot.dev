@@ -32,12 +32,12 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   const [ errors, setErrors ] = useState<{ propertyName: string, message: string }[]>([]);
 
   useEffect(() => {
-    if (loading) {
+    if (loading && !settingsInitial) {
       dispatch(addSettingsLoading(endpoint));
     } else {
       dispatch(rmSettingsLoading(endpoint));
     }
-  }, [loading, dispatch, endpoint]);
+  }, [loading, dispatch, endpoint, settingsInitial]);
 
   useEffect(() => {
     console.log({ errors });

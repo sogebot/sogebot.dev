@@ -34,6 +34,7 @@ import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/In
 import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
 import PageSettingsModulesIntegrationsDonationAlerts from '~/src/components/Settings/Integrations/donationalerts';
 import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integrations/kofi';
+import PageSettingsModulesIntegrationsLastFM from '~/src/components/Settings/Integrations/lastfm';
 import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
 import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
@@ -174,7 +175,10 @@ const PageSettingsModules: NextPageWithLayout = () => {
             </>}
 
             {router.asPath.includes(`/settings/modules/integrations`) && <>
-              {['donatello', 'kofi', 'tiltify', 'discord', 'donationalerts'].map(item => <ListItemButton
+              {[
+                'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
+                'lastfm',
+              ].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -247,6 +251,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsTiltify onVisible={() => setActiveTab('integrations-tiltify')}/>
                 <PageSettingsModulesIntegrationsDiscord onVisible={() => setActiveTab('integrations-discord')}/>
                 <PageSettingsModulesIntegrationsDonationAlerts onVisible={() => setActiveTab('integrations-donationalerts')}/>
+                <PageSettingsModulesIntegrationsLastFM onVisible={() => setActiveTab('integrations-lastfm')}/>
               </>
               }
               <Box sx={{

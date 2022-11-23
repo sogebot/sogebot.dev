@@ -12,6 +12,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   Grid,
   InputLabel,
   List,
@@ -250,7 +251,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
           label={translate('integrations.discord.settings.onlineAnnounceMessage')}
         />
 
-        <Typography sx={{ pt: 2 }}>{ translate('systems.userinfo.settings.order') }</Typography>
+        <FormLabel sx={{ pt: 2 }}>{translate('systems.userinfo.settings.order')}</FormLabel>
         <List>
           <DndContext
             sensors={sensors}
