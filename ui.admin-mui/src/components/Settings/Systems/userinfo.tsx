@@ -3,9 +3,9 @@ import {
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  horizontalListSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -113,7 +113,7 @@ const PageSettingsModulesSystemsUserinfo: React.FC<{
           >
             <SortableContext
               items={settings.me.order[0]}
-              strategy={horizontalListSortingStrategy}
+              strategy={verticalListSortingStrategy}
             >
               {settings.me.order[0].map((item: string) => <SortableListItem
                 draggable

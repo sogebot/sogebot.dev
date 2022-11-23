@@ -29,9 +29,11 @@ export function SortableListItem(props: { draggable?: boolean, id: string, isDra
   return (
     <ListItem key={props.id}
       ref={setNodeRef} style={style} {...attributes}
+      sx={{
+        p: 0, m: 0,
+      }}
     >
       <Paper variant='outlined' sx={{
-        p:          1,
         cursor:     'pointer',
         transition: 'all 300ms',
         width:      '100%',

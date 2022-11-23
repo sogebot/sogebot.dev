@@ -30,6 +30,7 @@ import PageSettingsModulesCoreSocket from '~/src/components/Settings/Core/socket
 import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
+import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/Integrations/discord';
 import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
 import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integrations/kofi';
 import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
@@ -70,13 +71,15 @@ const PageSettingsModules: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (settingsLoadingInProgress.length === 0) {
-      const id = router.asPath.split('#')[router.asPath.split('#').length - 1];
-      if (id) {
-        document.getElementById(id)?.scrollIntoView({
-          behavior: 'smooth',
-          block:    'start',
-        });
-      }
+      setTimeout(() => {
+        const id = router.asPath.split('#')[router.asPath.split('#').length - 1];
+        if (id) {
+          document.getElementById(id)?.scrollIntoView({
+            behavior: 'smooth',
+            block:    'start',
+          });
+        }
+      }, 500);
     }
   }, [settingsLoadingInProgress, scrollTo, router]);
 
@@ -170,7 +173,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             </>}
 
             {router.asPath.includes(`/settings/modules/integrations`) && <>
-              {['donatello', 'kofi', 'tiltify'].map(item => <ListItemButton
+              {['donatello', 'kofi', 'tiltify', 'discord'].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -241,6 +244,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsDonatello onVisible={() => setActiveTab('integrations-donatello')}/>
                 <PageSettingsModulesIntegrationsKofi onVisible={() => setActiveTab('integrations-kofi')}/>
                 <PageSettingsModulesIntegrationsTiltify onVisible={() => setActiveTab('integrations-tiltify')}/>
+                <PageSettingsModulesIntegrationsDiscord onVisible={() => setActiveTab('integrations-discord')}/>
               </>
               }
               <Box sx={{

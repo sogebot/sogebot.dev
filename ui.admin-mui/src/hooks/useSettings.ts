@@ -26,6 +26,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   const [ saving, setSaving ] = useState(false);
 
   const [ settings, setSettings ] = useState<null | Record<string, any>>(null);
+  const [ settingsInitial, setSettingsInitial ] = useState<null | Record<string, any>>(null);
   const [ ui, setUI ] = useState<null | Record<string, any>>(null);
 
   const [ errors, setErrors ] = useState<{ propertyName: string, message: string }[]>([]);
@@ -44,7 +45,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    await new Promise<void>((resolve, reject) => {
+    return new Promise<Record<string,any>>((resolve, reject) => {
       getSocket(endpoint)
         .emit('settings', (err, _settings: {
           [x: string]: any
@@ -59,10 +60,11 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
           }
           setUI(_ui);
           setSettings(_settings);
-          resolve();
+          setSettingsInitial(_settings);
+          resolve(_settings);
+          setLoading(false);
         });
     });
-    setLoading(false);
   }, [ endpoint ]);
 
   useEffect(() => {
@@ -240,6 +242,6 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   }, [ settings, errors, handleChange ]);
 
   return {
-    loading, saving, settings, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors, TextFieldProps,
+    loading, saving, settings, settingsInitial, ui, refresh, save, setSettings, handleChange, handleChangePermissionBased, setLoading, getPermissionSettingsValue, errors, TextFieldProps,
   };
 };
