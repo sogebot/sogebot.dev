@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Button,
@@ -28,7 +27,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
   const router = useRouter();
   const { translate } = useTranslation();
 
-  const { settings, loading, refresh, save, saving, errors } = useSettings('/integrations/tiltify' as any);
+  const { settings, loading, refresh } = useSettings('/integrations/tiltify' as any);
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -98,10 +97,6 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
         />
       </Stack>
     </Paper>}
-
-    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
-    </Stack>
   </Box>
   );
 };
