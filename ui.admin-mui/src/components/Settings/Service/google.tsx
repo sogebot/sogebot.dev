@@ -7,6 +7,7 @@ import {
   Checkbox,
   FormControl,
   IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Paper,
@@ -23,11 +24,10 @@ import {
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import axios from 'axios';
-import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  useCallback, useEffect, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
@@ -36,6 +36,7 @@ import { v4 } from 'uuid';
 import getAccessToken from '~/src/getAccessToken';
 import { dayjs } from '~/src/helpers/dayjsHelper';
 import { getBase64FromUrl } from '~/src/helpers/getBase64FromURL';
+import { getSocket } from '~/src/helpers/socket';
 import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -209,6 +210,39 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     }
   };
 
+  const revoke = useCallback(() => {
+    getSocket('/integrations/google').emit('google::revoke', () => {
+      enqueueSnackbar('User access revoked.', { variant: 'success' });
+      refresh();
+    });
+  }, [ enqueueSnackbar, refresh ]);
+
+  const authorize = useCallback(() => {
+    const popup = window.open('/credentials/google', 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const checkPopup = setInterval(() => {
+      try {
+        if (popup?.window.location.href.includes('status=done')) {
+          popup.close();
+        }
+      } catch {
+        // ignore cross origin error which may happen when google is authorizing
+      }
+      if (!popup || popup.closed) {
+        enqueueSnackbar('User logged in.', { variant: 'success' });
+        refresh();
+        clearInterval(checkPopup);
+        return;
+      }
+    }, 1000);
+  }, [ enqueueSnackbar, refresh ]);
+
+  const channel = useMemo(() => {
+    if (settings && settings.channel[0].length > 0) {
+      return settings.channel[0];
+    }
+    return 'Not Authorized';
+  }, [settings]);
+
   return (loading ? null : <Box ref={ref} sx={sx} id="google">
     <Typography variant='h2' sx={{ pb: 2 }}>Google</Typography>
     <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel Tokens</Typography>
@@ -219,24 +253,17 @@ const PageSettingsModulesServiceGoogle: React.FC<{
         <TextField
           variant='filled'
           fullWidth
-          type='password'
-          value={settings.refreshToken[0]}
-          label={translate('core.oauth.settings.botRefreshToken')}
-          onChange={(event) => handleChange('refreshToken', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
-          value={settings.clientId[0]}
-          label={capitalize(translate('integrations.spotify.settings.clientId'))}
-          onChange={(event) => handleChange('clientId', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
           disabled
-          value={settings.channel[0]}
+          value={channel}
           label={'Channel'}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">
+              { channel !== 'Not Authorized'
+                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+              }
+            </InputAdornment>,
+          }}
         />
       </Stack>
       <Button sx={{ m: 0.5 }} href='https://youtube-token-generator.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>

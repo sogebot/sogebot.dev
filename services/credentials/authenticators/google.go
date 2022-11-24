@@ -38,7 +38,7 @@ func Google(w http.ResponseWriter, r *http.Request) {
 
 		q := url.Values{}
 		q.Add("client_id", GOOGLE_CLIENTID)
-		q.Add("redirect_uri", REDIRECTURI+"/google")
+		q.Add("redirect_uri", REDIRECTURI+"/credentials/google")
 		q.Add("response_type", "code")
 		q.Add("scope", strings.Join(scopes, " "))
 		q.Add("include_granted_scopes", "true")
@@ -51,7 +51,7 @@ func Google(w http.ResponseWriter, r *http.Request) {
 		params := url.Values{}
 		params.Add("client_id", GOOGLE_CLIENTID)
 		params.Add("client_secret", GOOGLE_CLIENTSECRET)
-		params.Add("redirect_uri", REDIRECTURI+"/google")
+		params.Add("redirect_uri", REDIRECTURI+"/credentials/google")
 		params.Add("grant_type", "authorization_code")
 		params.Add("code", code)
 
