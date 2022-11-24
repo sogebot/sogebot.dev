@@ -211,7 +211,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   };
 
   const revoke = useCallback(() => {
-    getSocket('/integrations/google').emit('google::revoke', () => {
+    getSocket('/services/google').emit('google::revoke', () => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
@@ -266,7 +266,6 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           }}
         />
       </Stack>
-      <Button sx={{ m: 0.5 }} href='https://youtube-token-generator.soge.workers.dev/login' target='_blank'>{ translate('commons.generate') }</Button>
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>Stream</Typography>

@@ -36,7 +36,7 @@ const DonationAlerts: NextPage = () => {
         axios.get('https://credentials.sogebot.xyz/google/?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            getSocket('/integrations/google').emit('google::token', { refreshToken }, () => {
+            getSocket('/services/google').emit('google::token', { refreshToken }, () => {
               location.href = location.href + '&status=done';
               return;
             });
