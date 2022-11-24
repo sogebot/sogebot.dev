@@ -229,7 +229,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
       }
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
-        refresh();
+        setTimeout(() => refresh(), 2000);
         clearInterval(checkPopup);
         return;
       }
@@ -245,7 +245,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
 
   return (loading ? null : <Box ref={ref} sx={sx} id="google">
     <Typography variant='h2' sx={{ pb: 2 }}>Google</Typography>
-    <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel Tokens</Typography>
+    <Typography variant='h5' sx={{ pb: 2 }}>YouTube Channel</Typography>
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
