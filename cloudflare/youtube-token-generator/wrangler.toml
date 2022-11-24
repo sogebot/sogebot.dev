@@ -1,8 +1,0 @@
-name = "youtube-token-generator"
-main = "src/index.js"
-compatibility_date = "2022-10-29"
-type = "webpack"
-
-[vars]
-REDIRECT_URI = "https://youtube-token-generator.soge.workers.dev"
-GOOGLE_CLIENT_ID = "225380804535-gjd77dplfkbe4d3ct173d8qm0j83f8tr.apps.googleusercontent.com"
