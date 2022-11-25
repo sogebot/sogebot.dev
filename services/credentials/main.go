@@ -21,9 +21,15 @@ func main() {
 	router.HandleFunc("/google", func(w http.ResponseWriter, r *http.Request) {
 		authenticators.GoogleRefresh(w, r)
 	}).Methods(http.MethodPost)
+	router.HandleFunc("/twitch", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.Twitch(w, r)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/twitch/refresh/{token}", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.TwitchRefresh(w, r)
+	}).Methods(http.MethodPost)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000"},
+		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000", "http://localhost:3001"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "content-type"},
 	})

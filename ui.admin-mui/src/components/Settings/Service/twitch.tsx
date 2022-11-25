@@ -8,6 +8,7 @@ import {
   FormGroup,
   FormHelperText,
   Grid,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Paper,
@@ -23,6 +24,7 @@ import TextField from '@mui/material/TextField';
 import capitalize from 'lodash/capitalize';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import {
   useCallback, useEffect, useMemo,
 } from 'react';
@@ -30,6 +32,7 @@ import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
+import { getSocket } from '~/src/helpers/socket';
 import { useSettings } from '~/src/hooks/useSettings';
 import { useTranslation } from '~/src/hooks/useTranslation';
 
@@ -43,6 +46,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   const router = useRouter();
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/twitch');
   const { translate } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     refresh();
@@ -78,8 +82,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     const clientId = settings.general.tokenServiceCustomClientId[0];
     const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
 
-    if (settings.general.tokenService[0] === 'SogeBot Token Generator') {
-      return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
+    if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
+      return null;
     } else {
       return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
     }
@@ -94,12 +98,38 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     const clientId = settings.general.tokenServiceCustomClientId[0];
     const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
 
-    if (settings.general.tokenService[0] === 'SogeBot Token Generator') {
-      return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
+    if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
+      return null;
     } else {
       return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
     }
   }, [settings, redirectUri ]);
+
+  const revoke = useCallback((accountType: 'bot' | 'broadcaster') => {
+    getSocket('/services/twitch').emit('twitch::revoke', { accountType }, () => {
+      enqueueSnackbar('User access revoked.', { variant: 'success' });
+      refresh();
+    });
+  }, [ enqueueSnackbar, refresh ]);
+
+  const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
+    const popup = window.open('/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const checkPopup = setInterval(() => {
+      try {
+        if (popup?.window.location.href.includes('status=done')) {
+          popup.close();
+        }
+      } catch {
+        // ignore cross origin error which may happen when google is authorizing
+      }
+      if (!popup || popup.closed) {
+        enqueueSnackbar('User logged in.', { variant: 'success' });
+        setTimeout(() => refresh(), 2000);
+        clearInterval(checkPopup);
+        return;
+      }
+    }, 1000);
+  }, [ enqueueSnackbar, refresh ]);
 
   return (loading ? null : <Box ref={ref} sx={sx} id="twitch">
     <Typography variant='h2' sx={{ pb: 2 }}>Twitch</Typography>
@@ -119,7 +149,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
             label="Token Generator"
             onChange={(event) => handleChange('general.tokenService', event.target.value)}
           >
-            <MenuItem value='SogeBot Token Generator'>SogeBot Token Generator</MenuItem>
+            <MenuItem value='SogeBot Token Generator v2'>SogeBot Token Generator v2</MenuItem>
             <MenuItem value='Own Twitch App'>Own Twitch App</MenuItem>
           </Select>
           <FormHelperText>If you change token generator, you need to re-do all tokens!</FormHelperText>
@@ -174,80 +204,104 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
-      <Stack spacing={1}>
-        <TextField
-          variant='filled'
-          fullWidth
-          type='password'
-          value={settings.bot.botAccessToken[0]}
-          label={translate('core.oauth.settings.botAccessToken')}
-          onChange={(event) => handleChange('bot.botAccessToken', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
-          type='password'
-          value={settings.bot.botRefreshToken[0]}
-          label={translate('core.oauth.settings.botRefreshToken')}
-          onChange={(event) => handleChange('bot.botRefreshToken', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
-          value={settings.bot.botClientId[0]}
-          label={capitalize(translate('integrations.spotify.settings.clientId'))}
-          onChange={(event) => handleChange('bot.botClientId', event.target.value)}
-        />
+      {!botUrl && <Stack spacing={1}>
         <TextField
           variant='filled'
           fullWidth
           disabled
           value={settings.bot.botUsername[0]}
           label={translate('core.oauth.settings.botUsername')}
-          onChange={(event) => handleChange('bot.botUsername', event.target.value)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">
+              { settings.bot.botUsername[0] !== ''
+                ? <Button color="error" variant="contained" onClick={() => revoke('bot')}>Revoke</Button>
+                : <Button color="success" variant="contained" onClick={() => authorize('bot')}>Authorize</Button>
+              }
+            </InputAdornment>,
+          }}
         />
-      </Stack>
-      <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </Stack>}
+      {botUrl && <>
+        <Stack spacing={1}>
+          <TextField
+            variant='filled'
+            fullWidth
+            type='password'
+            value={settings.bot.botAccessToken[0]}
+            label={translate('core.oauth.settings.botAccessToken')}
+            onChange={(event) => handleChange('bot.botAccessToken', event.target.value)}
+          />
+          <TextField
+            variant='filled'
+            fullWidth
+            type='password'
+            value={settings.bot.botRefreshToken[0]}
+            label={translate('core.oauth.settings.botRefreshToken')}
+            onChange={(event) => handleChange('bot.botRefreshToken', event.target.value)}
+          />
+          <TextField
+            variant='filled'
+            fullWidth
+            disabled
+            value={settings.bot.botUsername[0]}
+            label={translate('core.oauth.settings.botUsername')}
+            onChange={(event) => handleChange('bot.botUsername', event.target.value)}
+          />
+        </Stack>
+        <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </>}
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.channel')}</Typography>
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
-      <Stack spacing={1}>
-        <TextField
-          variant='filled'
-          fullWidth
-          type='password'
-          value={settings.broadcaster.broadcasterAccessToken[0]}
-          label={translate('core.oauth.settings.botAccessToken')}
-          onChange={(event) => handleChange('broadcaster.broadcasterAccessToken', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
-          type='password'
-          value={settings.broadcaster.broadcasterRefreshToken[0]}
-          label={translate('core.oauth.settings.botRefreshToken')}
-          onChange={(event) => handleChange('broadcaster.broadcasterRefreshToken', event.target.value)}
-        />
-        <TextField
-          variant='filled'
-          fullWidth
-          value={settings.broadcaster.broadcasterClientId[0]}
-          label={capitalize(translate('integrations.spotify.settings.clientId'))}
-          onChange={(event) => handleChange('broadcaster.broadcasterClientId', event.target.value)}
-        />
+      {!broadcasterUrl && <Stack spacing={1}>
         <TextField
           variant='filled'
           fullWidth
           disabled
           value={settings.broadcaster.broadcasterUsername[0]}
           label={translate('core.oauth.settings.botUsername')}
-          onChange={(event) => handleChange('broadcaster.broadcasterUsername', event.target.value)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">
+              { settings.broadcaster.broadcasterUsername[0] !== ''
+                ? <Button color="error" variant="contained" onClick={() => revoke('broadcaster')}>Revoke</Button>
+                : <Button color="success" variant="contained" onClick={() => authorize('broadcaster')}>Authorize</Button>
+              }
+            </InputAdornment>,
+          }}
         />
-      </Stack>
-      <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </Stack>}
+      {broadcasterUrl && <>
+        <Stack spacing={1}>
+          <TextField
+            variant='filled'
+            fullWidth
+            type='password'
+            value={settings.broadcaster.broadcasterAccessToken[0]}
+            label={translate('core.oauth.settings.botAccessToken')}
+            onChange={(event) => handleChange('broadcaster.broadcasterAccessToken', event.target.value)}
+          />
+          <TextField
+            variant='filled'
+            fullWidth
+            type='password'
+            value={settings.broadcaster.broadcasterRefreshToken[0]}
+            label={translate('core.oauth.settings.botRefreshToken')}
+            onChange={(event) => handleChange('broadcaster.broadcasterRefreshToken', event.target.value)}
+          />
+          <TextField
+            variant='filled'
+            fullWidth
+            disabled
+            value={settings.broadcaster.broadcasterUsername[0]}
+            label={translate('core.oauth.settings.botUsername')}
+            onChange={(event) => handleChange('broadcaster.broadcasterUsername', event.target.value)}
+          />
+        </Stack>
+        <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
+      </>}
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.eventsub')}</Typography>

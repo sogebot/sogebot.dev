@@ -8,15 +8,21 @@ import shortid from 'shortid';
 
 import { getSocket } from '~/src/helpers/socket';
 
-const Google: NextPage = () => {
+const serviceUrl = 'https://credentials.sogebot.xyz/twitch/';
+
+const Twitch: NextPage = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (window.location.hash || window.location.search) {
+      let type = null;
       let code = null;
       let status = null;
       let state = null;
       for (const url of window.location.search.split('&')) {
+        if (url.startsWith('?type=') || url.startsWith('type=')) {
+          type = url.replace(/\??type=/, '');
+        }
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
         }
@@ -26,6 +32,13 @@ const Google: NextPage = () => {
         if (url.startsWith('?state=') || url.startsWith('state=')) {
           state = url.replace(/\??state=/, '');
         }
+      }
+
+      if (type) {
+        // redirect if we set type
+        localStorage.twitchOauthState = type + shortid();
+        location.href = `${serviceUrl}?state=${localStorage.twitchOauthState}`;
+        return;
       }
 
       if (code || status) {
@@ -38,27 +51,34 @@ const Google: NextPage = () => {
       }
 
       if (code) {
-        if (!state || state !== localStorage.googleOauthState) {
+        if (!state || state !== localStorage.twitchOauthState) {
+          console.error('Incorrect state');
           setProgress(false);
           return;
         }
-        delete localStorage.googleOauthState;
+        const accountType = state.startsWith('bot') ? 'bot' : 'broadcaster';
+        delete localStorage.twitchOauthState;
 
-        axios.get('https://credentials.sogebot.xyz/google/?code=' + code)
+        axios.get(serviceUrl + '?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            getSocket('/services/google').emit('google::token', { refreshToken }, () => {
+            const accessToken = data.access_token;
+            getSocket('/services/twitch').emit('twitch::token', {
+              accessToken,
+              refreshToken,
+              accountType,
+            }, () => {
               location.href = location.href + '&status=done';
               return;
             });
           })
-          .catch(() => setProgress(false));
+          .catch((e) => {
+            console.error(e);
+            setProgress(false);
+          });
       } else {
         setProgress(false);
       }
-    } else {
-      localStorage.googleOauthState = shortid();
-      location.href = `https://credentials.sogebot.xyz/google/?state=${localStorage.googleOauthState}`;
     }
   }, []);
 
@@ -73,4 +93,4 @@ const Google: NextPage = () => {
   </Backdrop>);
 };
 
-export default Google;
+export default Twitch;
