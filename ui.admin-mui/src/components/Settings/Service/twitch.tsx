@@ -124,7 +124,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       }
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
-        setTimeout(() => refresh(), 2000);
+        setTimeout(() => refresh(), 5000);
         clearInterval(checkPopup);
         return;
       }
