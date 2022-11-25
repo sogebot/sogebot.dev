@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce, useRefElement } from 'rooks';
 
 import { Logo } from '@/components/AppBar/Logo';
+import { OnboardingTokens } from '@/components/Dialog/OnboardingTokens';
 import { ServerSelect } from '@/components/Dialog/ServerSelect';
 import { AppBarBreadcrumbs } from '~/src/components/AppBar/Breadcrumbs';
 import { Search } from '~/src/components/AppBar/Search';
@@ -113,7 +114,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 export const Layout: React.FC<{ children: any }> = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { server, connectedToServer, state } = useSelector((s: any) => s.loader);
+  const { server, connectedToServer, state, tokensOnboardingState } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
 
   useEffect(() => {
@@ -149,8 +150,9 @@ export const Layout: React.FC<{ children: any }> = (props) => {
           })(window, document, "clarity", "script", "cnni7q4jrp");`,
         }}/>
       <ServerSelect/>
+      <OnboardingTokens/>
       <LoginWarning/>
-      <Fade in={state}>
+      <Fade in={state && tokensOnboardingState}>
         <Box sx={{ flexGrow: 1 }}>
           <Slide in={!isIndexPage}>
             <AppBar position="sticky" sx={{ px: '70px' }}>
@@ -165,7 +167,7 @@ export const Layout: React.FC<{ children: any }> = (props) => {
           </Slide>
           <NavDrawer />
 
-          {state && <Box sx={{ paddingLeft: '65px' }}>
+          {state && tokensOnboardingState && <Box sx={{ paddingLeft: '65px' }}>
             <Fade in={isIndexPage}>
               <Box sx={{
                 position: 'absolute', top: '0px', width: 'calc(100% - 75px)', left: '70px',

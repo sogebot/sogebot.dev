@@ -8,11 +8,12 @@ export const loaderSlice = createSlice({
     connectedToServer: false,
     showLoginWarning:  false,
 
-    drawerWidth:   65,
-    message:       null,
-    state:         false,
-    configuration: {},
-    translation:   {},
+    drawerWidth:           65,
+    message:               null,
+    state:                 false,
+    tokensOnboardingState: false,
+    configuration:         {},
+    translation:           {},
 
     nextVersion:    null,
     currentVersion: null,
@@ -44,6 +45,10 @@ export const loaderSlice = createSlice({
     setState: (state: { state: any }, action: { payload: any }) => {
       console.debug(`setState`, action.payload);
       state.state = action.payload;
+    },
+    setTokensOnboardingState: (state: { tokensOnboardingState: any }, action: { payload: any }) => {
+      console.debug(`setTokensOnboardingState`, action.payload);
+      state.tokensOnboardingState = action.payload;
     },
     setConfiguration: (state: { configuration: any }, action: { payload: any }) => {
       console.debug(`setConfiguration`, action.payload);
@@ -80,5 +85,5 @@ export const loaderSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addSettingsLoading, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+export const { addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 export default loaderSlice.reducer;
