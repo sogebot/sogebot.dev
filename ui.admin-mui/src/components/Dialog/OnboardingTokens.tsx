@@ -23,6 +23,7 @@ export const OnboardingTokens: React.FC = () => {
     if (settings) {
       if (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0) {
         dispatch(setTokensOnboardingState(true));
+        setOpen(false);
       } else {
         setOpen(true);
       }
