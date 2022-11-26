@@ -33,12 +33,12 @@ const DonationAlerts: NextPage = () => {
       }
 
       if (code) {
-        axios.get('https://donationalerts.soge.workers.dev/?code=' + code)
+        axios.get('https://credentials.sogebot.xyz/donationalerts/?code=' + code)
           .then(({ data }) => {
             const accessToken = data.access_token;
             const refreshToken = data.refresh_token;
             getSocket('/integrations/donationalerts').emit('donationalerts::token', {
-              accessToken, refreshToken, 
+              accessToken, refreshToken,
             }, () => {
               location.href = location.href + '&status=done';
               return;
@@ -49,7 +49,7 @@ const DonationAlerts: NextPage = () => {
         setState(false);
       }
     } else {
-      location.href = `https://donationalerts.soge.workers.dev/`;
+      location.href = `https://credentials.sogebot.xyz/donationalerts/`;
     }
   }, []);
 

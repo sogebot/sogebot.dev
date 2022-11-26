@@ -21,6 +21,14 @@ func main() {
 	router.HandleFunc("/google", func(w http.ResponseWriter, r *http.Request) {
 		authenticators.GoogleRefresh(w, r)
 	}).Methods(http.MethodPost)
+
+	router.HandleFunc("/donationalerts", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.DonationAlerts(w, r)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/donationalerts", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.DonationAlertsRefresh(w, r)
+	}).Methods(http.MethodPost)
+
 	router.HandleFunc("/twitch", func(w http.ResponseWriter, r *http.Request) {
 		authenticators.Twitch(w, r)
 	}).Methods(http.MethodGet)
