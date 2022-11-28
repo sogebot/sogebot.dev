@@ -37,6 +37,7 @@ import PageSettingsModulesIntegrationsDonationAlerts from '~/src/components/Sett
 import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integrations/kofi';
 import PageSettingsModulesIntegrationsLastFM from '~/src/components/Settings/Integrations/lastfm';
 import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
+import PageSettingsModulesIntegrationsPUBG from '~/src/components/Settings/Integrations/pubg';
 import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
@@ -160,7 +161,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             {router.asPath.includes(`/settings/modules/integrations`) && <>
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
-                'lastfm',
+                'lastfm', 'pubg',
               ].map(item => <ListItemButton
                 sx={{ height: '40px' }}
                 key={`integrations-${item}`}
@@ -235,6 +236,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsDiscord onVisible={() => setActiveTab('integrations-discord')}/>
                 <PageSettingsModulesIntegrationsDonationAlerts onVisible={() => setActiveTab('integrations-donationalerts')}/>
                 <PageSettingsModulesIntegrationsLastFM onVisible={() => setActiveTab('integrations-lastfm')}/>
+                <PageSettingsModulesIntegrationsPUBG onVisible={() => setActiveTab('integrations-pubg')}/>
               </>
               }
               <Box sx={{

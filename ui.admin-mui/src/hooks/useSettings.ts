@@ -225,7 +225,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     });
   }, [ getPermissionSettingsValue ]);
 
-  const TextFieldProps = useCallback((key: string, defaultValues?: { helperText?: string }) => {
+  const TextFieldProps = useCallback((key: string, defaultValues?: { helperText?: string, onChange?: (value: string) => void, multiline? : boolean }) => {
     if (!settings) {
       return {};
     }
@@ -235,8 +235,15 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
       helperText: errors.find(o => o.propertyName === key)?.message ?? (defaultValues?.helperText ? parse(defaultValues!.helperText!) : undefined),
       variant:    'filled',
       fullWidth:  true,
-      value:      get(settings, `${key}[0]`, ''),
-      onChange:   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(key, event.target.value),
+      multiline:  defaultValues?.multiline,
+      onKeyPress: (e: React.KeyboardEvent<HTMLDivElement>) => {
+        e.key === 'Enter' && e.preventDefault();
+      },
+      value:    get(settings, `${key}[0]`, ''),
+      onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        handleChange(key, event.target.value);
+        defaultValues?.onChange ? defaultValues?.onChange(event.target.value) : null;
+      },
 
     } as const;
   }, [ settings, errors, handleChange ]);
