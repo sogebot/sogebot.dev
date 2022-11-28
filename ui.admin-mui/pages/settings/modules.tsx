@@ -38,6 +38,7 @@ import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integ
 import PageSettingsModulesIntegrationsLastFM from '~/src/components/Settings/Integrations/lastfm';
 import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
 import PageSettingsModulesIntegrationsPUBG from '~/src/components/Settings/Integrations/pubg';
+import PageSettingsModulesIntegrationsQiwi from '~/src/components/Settings/Integrations/qiwi';
 import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
@@ -159,7 +160,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             {router.asPath.includes(`/settings/modules/integrations`) && <>
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
-                'lastfm', 'pubg',
+                'lastfm', 'pubg', 'qiwi',
               ].map(item => <ListItemButton
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -186,9 +187,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
           </List>
         </Grid>
         <Grid item xs>
-          <Box sx={{
-            m: matches ? undefined : 'auto',
-          }}>
+          <Box sx={{ m: matches ? undefined : 'auto' }}>
             <Backdrop open={settingsLoadingInProgress.length > 0} >
               <CircularProgress color="inherit"/>
             </Backdrop>
@@ -233,6 +232,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsDonationAlerts onVisible={() => setActiveTab('integrations-donationalerts')}/>
                 <PageSettingsModulesIntegrationsLastFM onVisible={() => setActiveTab('integrations-lastfm')}/>
                 <PageSettingsModulesIntegrationsPUBG onVisible={() => setActiveTab('integrations-pubg')}/>
+                <PageSettingsModulesIntegrationsQiwi onVisible={() => setActiveTab('integrations-qiwi')}/>
               </>
               }
               <Box sx={{
