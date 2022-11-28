@@ -64,7 +64,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
   const [selectedRankedStats, setSelectedRankedStats] = React.useState('');
   const [selectedNormalStats, setSelectedNormalStats ] = React.useState('');
 
-  const updateExample = React.useCallback((value: string, statsType: string) => {
+  const updateExample = React.useCallback((value: string, statsType: string, stats: Record<string, any>) => {
     const noValues = `Stats not fetched or your user doesn't played any ranked yet`;
     const selected = statsType === 'rankedGameModeStats' ? selectedRankedStats : selectedNormalStats;
     console.log({ selected });
@@ -78,7 +78,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
       return;
     }
 
-    if (!settings || Object.keys(settings.stats[statsType][0]).length === 0) {
+    if (Object.keys(stats).length === 0) {
       if (statsType === 'rankedGameModeStats') {
         setExample1(noValues);
       } else {
@@ -87,7 +87,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
       return;
     }
 
-    const dataset = settings.stats[statsType][0][selected];
+    const dataset = stats[selected];
     let text = value || '';
     for (const key of Object.keys(flatten(dataset))) {
       text = text.replace(new RegExp(escapeRegExp(`$${key}`), 'gi'), flatten(dataset)[key]);
@@ -101,12 +101,12 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
         setExample2(data);
       }
     });
-  }, [selectedRankedStats, selectedNormalStats, settings]);
+  }, [selectedRankedStats, selectedNormalStats]);
 
   React.useEffect(() => {
     refresh().then((values) => {
-      updateExample(values.customization.rankedGameModeStatsCustomization[0], 'rankedGameModeStats');
-      updateExample(values.customization.gameModeStatsCustomization[0], 'gameModeStats');
+      updateExample(values.customization.rankedGameModeStatsCustomization[0], 'rankedGameModeStats', values.stats.rankedGameModeStats[0]);
+      updateExample(values.customization.gameModeStatsCustomization[0], 'gameModeStats', values.stats.gameModeStats[0]);
     });
   }, [ router, refresh, updateExample ]);
 
@@ -192,7 +192,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
           <Grid item xs>
             <TextField
               {...TextFieldProps('customization.rankedGameModeStatsCustomization', {
-                helperText: example1, onChange: (value) => updateExample(value, 'rankedGameModeStats'),
+                helperText: example1, onChange: (value) => updateExample(value, 'rankedGameModeStats', settings.stats.rankedGameModeStats[0]),
               })}
               label={translate('integrations.pubg.settings.rankedGameModeStatsCustomization')}
             />
@@ -218,7 +218,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
           <Grid item xs>
             <TextField
               {...TextFieldProps('customization.gameModeStatsCustomization', {
-                helperText: example2, onChange: (value) => updateExample(value, 'rankedGameModeStats'),
+                helperText: example2, onChange: (value) => updateExample(value, 'gameModeStats', settings.stats.gameModeStats[0]),
               })}
               label={translate('integrations.pubg.settings.gameModeStatsCustomization')}
             />

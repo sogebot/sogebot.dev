@@ -113,7 +113,7 @@ const PageSettingsModulesIntegrationsModules: React.FC<{
   return (<Box ref={ref} sx={sx} id="modules">
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.integrations')}</Typography>
     <Grid container>
-      {items.map(item => <Grid key={item.name} item xs={3}>
+      {items.map(item => <Grid key={item.name} item xs={12} sm={6} md={6} lg={3}>
         <FormGroup>
           <FormControlLabel control={<Switch checked={item.enabled} onClick={() => toggle(item)} />} label={capitalize(translate('menu.' + item.name).startsWith('{') ? item.name : translate('menu.' + item.name))} />
         </FormGroup>

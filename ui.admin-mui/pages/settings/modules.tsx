@@ -99,7 +99,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
   return (
     <Container>
       <Grid container spacing={1} id="top">
-        <Grid item xs={6} sm={6} md={6} lg={3} xl={2}>
+        <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
           <List
             sx={{
               width: '100%', bgcolor: 'background.paper', position: 'sticky', top: '0px', padding: 0,
@@ -108,7 +108,6 @@ const PageSettingsModules: NextPageWithLayout = () => {
           >
             {router.asPath.includes(`/settings/modules/core`) && <>
               {['dashboard', 'tts', 'emotes', 'currency', 'general', 'socket', 'updater', 'ui'].map(item => <ListItemButton
-                sx={{ height: '40px' }}
                 key={`core-${item}`}
                 selected={activeTab === `core-${item}`}
                 onClick={() => scrollTo(item)}
@@ -121,7 +120,6 @@ const PageSettingsModules: NextPageWithLayout = () => {
 
             {router.asPath.includes(`/settings/modules/services`) && <>
               {['google', 'twitch'].map(item => <ListItemButton
-                sx={{ height: '40px' }}
                 key={`services-${item}`}
                 selected={activeTab === `services-${item}`}
                 onClick={() => scrollTo(item)}
@@ -163,7 +161,6 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
                 'lastfm', 'pubg',
               ].map(item => <ListItemButton
-                sx={{ height: '40px' }}
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
                 onClick={() => scrollTo(item)}
@@ -177,7 +174,6 @@ const PageSettingsModules: NextPageWithLayout = () => {
             {router.asPath.includes(`/settings/modules/games`) && <>
               {['duel', 'gamble',
                 'heist', 'roulette'].map(item => <ListItemButton
-                sx={{ height: '40px' }}
                 key={`games-${item}`}
                 selected={activeTab === `games-${item}`}
                 onClick={() => scrollTo(item)}
@@ -191,7 +187,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
         </Grid>
         <Grid item xs>
           <Box sx={{
-            maxWidth: 960, m: matches ? undefined : 'auto',
+            m: matches ? undefined : 'auto',
           }}>
             <Backdrop open={settingsLoadingInProgress.length > 0} >
               <CircularProgress color="inherit"/>
