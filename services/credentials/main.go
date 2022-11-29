@@ -36,6 +36,10 @@ func main() {
 		authenticators.TwitchRefresh(w, r)
 	}).Methods(http.MethodPost)
 
+	router.HandleFunc("/streamlabs", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.Streamlabs(w, r)
+	}).Methods(http.MethodGet)
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000", "http://localhost:3001"},
 		AllowCredentials: true,

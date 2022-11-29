@@ -41,7 +41,10 @@ import PageSettingsModulesIntegrationsPUBG from '~/src/components/Settings/Integ
 import PageSettingsModulesIntegrationsQiwi from '~/src/components/Settings/Integrations/qiwi';
 import PageSettingsModulesIntegrationsSpotify from '~/src/components/Settings/Integrations/spotify';
 import PageSettingsModulesIntegrationsStreamelements from '~/src/components/Settings/Integrations/streamelements';
+import PageSettingsModulesIntegrationsStreamlabs from '~/src/components/Settings/Integrations/streamlabs';
 import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
+import PageSettingsModulesIntegrationsTipeeestream from '~/src/components/Settings/Integrations/tipeeestream';
+import PageSettingsModulesIntegrationsTwitter from '~/src/components/Settings/Integrations/twitter';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
 import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Systems/antihateraid';
@@ -162,7 +165,8 @@ const PageSettingsModules: NextPageWithLayout = () => {
             {router.asPath.includes(`/settings/modules/integrations`) && <>
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
-                'lastfm', 'pubg', 'qiwi', 'spotify', 'streamelements',
+                'lastfm', 'pubg', 'qiwi', 'spotify', 'streamelements', 'streamlabs',
+                'tipeeestream', 'twitter',
               ].map(item => <ListItemButton
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -237,6 +241,9 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsQiwi onVisible={() => setActiveTab('integrations-qiwi')}/>
                 <PageSettingsModulesIntegrationsSpotify onVisible={() => setActiveTab('integrations-spotify')}/>
                 <PageSettingsModulesIntegrationsStreamelements onVisible={() => setActiveTab('integrations-streamelements')}/>
+                <PageSettingsModulesIntegrationsStreamlabs onVisible={() => setActiveTab('integrations-streamlabs')}/>
+                <PageSettingsModulesIntegrationsTipeeestream onVisible={() => setActiveTab('integrations-tipeeestream')}/>
+                <PageSettingsModulesIntegrationsTwitter onVisible={() => setActiveTab('integrations-twitter')}/>
               </>
               }
               <Box sx={{
