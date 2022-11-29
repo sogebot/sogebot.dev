@@ -74,9 +74,7 @@ export const loaderSlice = createSlice({
     setConnectedToServer: (state: { connectedToServer: any, server: any }) => {
       sessionStorage.connectedToServer = true;
       state.connectedToServer = true;
-      const wsUrl = state.server.replace('https', '').replace('http', '');
       console.debug('setConnectedToServer', );
-      sessionStorage.wsUrl = `${(state.server.startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
     },
     showLoginWarning: (state: any) => {
       state.showLoginWarning = true;

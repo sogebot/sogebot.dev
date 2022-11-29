@@ -34,7 +34,11 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     });
   }
 
-  const socket = io(sessionStorage.wsUrl + (namespace as string), {
+
+  let wsUrl = localStorage.server.replace('https', '').replace('http', '');
+  wsUrl = `${(localStorage.server.startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
+
+  const socket = io(wsUrl + (namespace as string), {
     transports: [ 'websocket' ],
     auth:       (cb: (data: { token: string | null}) => void) => {
       cb({ token: localStorage.getItem(`${localStorage.currentServer}::accessToken`) });
@@ -68,7 +72,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
         axios.get(`${process.env.isNuxtDev ? 'http://localhost:20000' : window.location.origin}/socket/refresh`, { headers: { 'x-twitch-token': refreshToken } }).then(validation => {
           console.group('socket::validation');
           console.debug({
-            validation, refreshToken, 
+            validation, refreshToken,
           });
           console.groupEnd();
           localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
