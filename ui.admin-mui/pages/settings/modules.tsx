@@ -39,6 +39,8 @@ import PageSettingsModulesIntegrationsLastFM from '~/src/components/Settings/Int
 import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
 import PageSettingsModulesIntegrationsPUBG from '~/src/components/Settings/Integrations/pubg';
 import PageSettingsModulesIntegrationsQiwi from '~/src/components/Settings/Integrations/qiwi';
+import PageSettingsModulesIntegrationsSpotify from '~/src/components/Settings/Integrations/spotify';
+import PageSettingsModulesIntegrationsStreamelements from '~/src/components/Settings/Integrations/streamelements';
 import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
 import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
@@ -160,7 +162,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             {router.asPath.includes(`/settings/modules/integrations`) && <>
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
-                'lastfm', 'pubg', 'qiwi',
+                'lastfm', 'pubg', 'qiwi', 'spotify', 'streamelements',
               ].map(item => <ListItemButton
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}
@@ -233,6 +235,8 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsLastFM onVisible={() => setActiveTab('integrations-lastfm')}/>
                 <PageSettingsModulesIntegrationsPUBG onVisible={() => setActiveTab('integrations-pubg')}/>
                 <PageSettingsModulesIntegrationsQiwi onVisible={() => setActiveTab('integrations-qiwi')}/>
+                <PageSettingsModulesIntegrationsSpotify onVisible={() => setActiveTab('integrations-spotify')}/>
+                <PageSettingsModulesIntegrationsStreamelements onVisible={() => setActiveTab('integrations-streamelements')}/>
               </>
               }
               <Box sx={{

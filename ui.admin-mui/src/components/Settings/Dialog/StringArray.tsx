@@ -1,6 +1,6 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, Stack, TextField,
+  Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, Stack, TextField, Typography,
 } from '@mui/material';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -9,10 +9,12 @@ export const SettingsSystemsDialogStringArray: React.FC<{
   items: string[],
   onChange: (value: string[]) => void,
   title: string,
+  helperText?: string,
 }> = ({
   items,
   onChange,
   title,
+  helperText,
 }) => {
   const [ model, setModel ] = React.useState<string[]>(items);
   const [open, setOpen] = React.useState(false);
@@ -56,7 +58,7 @@ export const SettingsSystemsDialogStringArray: React.FC<{
   return <>
     <Button variant='outlined' onClick={handleClickOpen}>Edit</Button>
     <Dialog onClose={handleClose} open={open} scroll='paper' fullWidth maxWidth='xl'>
-      <DialogTitle>{ title }</DialogTitle>
+      <DialogTitle>{ title } <Typography variant='caption'>{ helperText }</Typography></DialogTitle>
       <DialogContent dividers>
         <List dense>
           {model.map((item: string, idx: number) => <ListItem key={idx}>

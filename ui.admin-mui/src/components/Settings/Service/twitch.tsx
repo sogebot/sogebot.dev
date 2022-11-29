@@ -113,7 +113,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
-    const popup = window.open('/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open('/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       try {
         if (popup?.window.location.href.includes('status=done')) {

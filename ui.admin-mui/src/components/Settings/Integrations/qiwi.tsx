@@ -25,10 +25,6 @@ const PageSettingsModulesIntegrationsQiwi: React.FC<{
   const { settings, loading, refresh, save, saving, errors, TextFieldProps } = useSettings('/integrations/qiwi' as any);
 
   useEffect(() => {
-    console.log({ settings });
-  }, [ settings ]);
-
-  useEffect(() => {
     refresh();
   }, [ router, refresh ]);
 

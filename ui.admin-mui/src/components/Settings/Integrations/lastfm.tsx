@@ -30,10 +30,6 @@ const PageSettingsModulesIntegrationsLastFM: React.FC<{
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, handleChange } = useSettings('/integrations/lastfm' as any);
 
   useEffect(() => {
-    console.log({ settings });
-  }, [ settings ]);
-  
-  useEffect(() => {
     refresh();
   }, [ router, refresh ]);
 
