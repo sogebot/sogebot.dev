@@ -27,11 +27,13 @@ const Spotify: NextPage = () => {
           }
         }
 
-        if (urlCode || status) {
+        if (status) {
           setState(true);
+          return;
         }
 
         if (urlState === spotifyState) {
+          console.log({urlState, spotifyState, urlCode})
           getSocket(`/integrations/spotify`).emit('spotify::code', urlCode, () => {
             location.href = location.href + '&status=done';
             setState(true);
