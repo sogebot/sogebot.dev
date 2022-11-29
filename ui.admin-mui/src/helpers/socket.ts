@@ -34,7 +34,6 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     });
   }
 
-
   let wsUrl = localStorage.server.replace('https', '').replace('http', '');
   wsUrl = `${(localStorage.server.startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
 
