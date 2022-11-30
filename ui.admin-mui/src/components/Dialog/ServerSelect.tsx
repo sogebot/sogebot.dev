@@ -116,7 +116,7 @@ export const ServerSelect: React.FC = () => {
         })
         .catch(() => {
           // request is not valid anymore
-          if (serverInputValue !== url.origin) {
+          if (serverURL !== url.origin) {
             return;
           }
           setValidVersionError(`Something went wrong connecting to server ${url.origin}`);
