@@ -41,7 +41,6 @@ export const UserMenu: React.FC = () => {
       accessToken:  localStorage.getItem(`${localStorage.currentServer}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.currentServer}::refreshToken`),
     });
-    localStorage.code = '';
     localStorage[`${localStorage.currentServer}::accessToken`] = '';
     localStorage[`${localStorage.currentServer}::refreshToken`] = '';
     localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';
@@ -84,7 +83,7 @@ export const UserMenu: React.FC = () => {
     <>
       {user && Object.keys(configuration).length > 0
       && <><IconButton onClick={handleClick} sx={{
-        width: 'fit-content', alignSelf: 'center', 
+        width: 'fit-content', alignSelf: 'center',
       }}>
         <Avatar src={user.profile_image_url}></Avatar>
       </IconButton>
@@ -122,13 +121,13 @@ export const UserMenu: React.FC = () => {
               </Grid>
               <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang, {
-                  minimumFractionDigits: 2, maximumFractionDigits: 2, 
+                  minimumFractionDigits: 2, maximumFractionDigits: 2,
                 }).format((viewer.watchedTime ?? 0) / 1000 / 60 / 60) } h
                 <Typography fontWeight={100}>{ translate('watched-time') }</Typography>
               </Grid>
               <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang, {
-                  style: 'currency', currency: configuration.currency, 
+                  style: 'currency', currency: configuration.currency,
                 }).format(viewer.aggregatedTips) }
                 <Typography fontWeight={100}>{ translate('tips') }</Typography>
               </Grid>

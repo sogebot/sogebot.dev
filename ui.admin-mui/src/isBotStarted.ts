@@ -15,8 +15,11 @@ function isBotStarted(dispatch: Dispatch<AnyAction>, server: string) {
           return response.blob();
         }).then(() => {
           console.log('Bot is started, continue');
-          dispatch(setConnectedToServer());
           localStorage.server = server;
+          localStorage.currentServer = server;
+          setTimeout(() => {
+            dispatch(setConnectedToServer());
+          }, 100);
           resolve(true);
         }).catch(() => {
           dispatch(setMessage('Cannot connect to bot.'));

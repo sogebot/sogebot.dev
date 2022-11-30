@@ -4,6 +4,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, IconButton, InputAdornment, Stack, TextField,
 } from '@mui/material';
+import Button from '@mui/material/Button/Button';
+import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect } from 'react';
@@ -11,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { UserSimple } from '@/components/User/Simple';
 import sogebotLarge from '~/public/sogebot_large.png';
+import { versions } from '~/src/compatibilityList';
 import { isBotStarted } from '~/src/isBotStarted';
 import { setMessage, setServer } from '~/src/store/loaderSlice';
 
@@ -33,10 +36,14 @@ export const ServerSelect: React.FC = () => {
   const [open, setOpen] = React.useState(true);
   const [isInitial, setIsInitial] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
+
+  const [oldDashLink, setOldDashLink] = React.useState<string | null>(null);
+  const [validVersionError, setValidVersionError] = React.useState<string | null>(null);
+
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
 
-  const { compatibleVersion, state, message, connectedToServer } = useSelector((s: any) => s.loader);
+  const { state, message, connectedToServer } = useSelector((s: any) => s.loader);
 
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
@@ -49,6 +56,10 @@ export const ServerSelect: React.FC = () => {
     } catch {
       setIsValidHttps(serverInputValue.includes('-- demo bot for demonstration purpose only --'));
     }
+
+    setValidVersionError(null);
+    setOldDashLink(null);
+    setConnecting(false);
   }, [serverInputValue]);
 
   React.useEffect(() => {
@@ -72,16 +83,44 @@ export const ServerSelect: React.FC = () => {
         serverURL = 'https://demobot.sogebot.xyz';
       }
 
-      dispatch(setServer(serverURL));
-      isBotStarted(dispatch, serverURL).then(() => {
-        const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-        localStorage.currentServer = server;
-        localStorage.server = server;
-        localStorage.serverHistory = JSON.stringify(
-          Array
-            .from(new Set([server, ...serverHistoryLS, 'http://localhost:20000']))
-        );
-      });
+      const url = new URL(serverURL);
+      // run health check
+      axios.get(`${url.origin}/health`)
+        .then(res => {
+          // request is not valid anymore
+          if (serverURL !== url.origin) {
+            return;
+          }
+          // 'OK' response was last in 16.8.0
+          const version = res.data === 'OK' ? '16.8.0' : res.data;
+          for (const versionKey of Object.keys(versions).sort()) {
+            if (version.includes('-') || version > versionKey) {
+              // we have snapshot, we are good
+              setValidVersionError(null);
+              dispatch(setServer(serverURL));
+              isBotStarted(dispatch, serverURL).then(() => {
+                const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+                localStorage.serverHistory = JSON.stringify(
+                  Array
+                    .from(new Set([serverURL, ...serverHistoryLS, 'http://localhost:20000']))
+                );
+              });
+              return;
+            }
+            if (version <= versionKey) {
+              setValidVersionError(`We are sorry, but dashboard is not compatible with ${version}. Please use link below to use older version of dashboard.`);
+              setOldDashLink(`https://${versions[versionKey]}.ui-admin.pages.dev`);
+              return; // return oldest version
+            }
+          }
+        })
+        .catch(() => {
+          // request is not valid anymore
+          if (serverInputValue !== url.origin) {
+            return;
+          }
+          setValidVersionError(`Something went wrong connecting to server ${url.origin}`);
+        });
     }
   }, [dispatch]);
 
@@ -183,18 +222,18 @@ export const ServerSelect: React.FC = () => {
         }
       </FormGroup>
 
-      <Stack spacing={1} sx={{ pt: 2 }}>
-        <Alert severity="info">This is client-based application and no informations are saved on our server.</Alert>
-        <Alert severity="warning">Compatible with bot version at least {compatibleVersion}.</Alert>
+      <Stack spacing={1} sx={{ pt: 2 }} alignItems='center'>
+        <Alert severity="info" sx={{ width: '100%' }}>This is client-based application and no informations are saved on our server.</Alert>
+        {validVersionError && <Alert severity="error" sx={{ width: '100%' }}>{validVersionError}</Alert>}
       </Stack>
     </DialogContent>
     <DialogActions>
-      {(connecting || message) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
+      {((connecting || message) && !oldDashLink) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
         padding: '0 20px', marginRight: '20px',
       }}>
         {message}
       </Alert>}
-      {getUser() && <LoadingButton
+      {oldDashLink === null && getUser() && <LoadingButton
         onClick={() => handleConnect(serverInputValue)}
         loading={connecting}
         disabled={!isValidHttps}
@@ -202,6 +241,12 @@ export const ServerSelect: React.FC = () => {
       >
         Connect
       </LoadingButton>}
+      {oldDashLink && <Button
+        href={oldDashLink}
+        variant="outlined"
+      >
+        {oldDashLink}
+      </Button>}
     </DialogActions>
   </Dialog>);
 };

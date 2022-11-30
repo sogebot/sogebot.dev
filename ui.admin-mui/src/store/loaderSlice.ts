@@ -4,7 +4,6 @@ export const loaderSlice = createSlice({
   name:         'loader',
   initialState: {
     server:            null,
-    compatibleVersion: '15.5.0',
     connectedToServer: false,
     showLoginWarning:  false,
 
@@ -74,7 +73,7 @@ export const loaderSlice = createSlice({
     setConnectedToServer: (state: { connectedToServer: any, server: any }) => {
       sessionStorage.connectedToServer = true;
       state.connectedToServer = true;
-      console.debug('setConnectedToServer', );
+      console.debug('setConnectedToServer');
     },
     showLoginWarning: (state: any) => {
       state.showLoginWarning = true;

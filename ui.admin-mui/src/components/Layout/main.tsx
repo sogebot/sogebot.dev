@@ -150,53 +150,55 @@ export const Layout: React.FC<{ children: any }> = (props) => {
           })(window, document, "clarity", "script", "cnni7q4jrp");`,
         }}/>
       <ServerSelect/>
-      <OnboardingTokens/>
-      <LoginWarning/>
-      <Fade in={state && tokensOnboardingState}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Slide in={!isIndexPage}>
-            <AppBar position="sticky" sx={{ px: '70px' }}>
-              <Toolbar>
-                <Box sx={{ flexGrow: 1 }}>
-                  <AppBarBreadcrumbs/>
+      {state && <>
+        <OnboardingTokens/>
+        <LoginWarning/>
+        <Fade in={state && tokensOnboardingState}>
+          <Box sx={{ flexGrow: 1 }}>
+            <Slide in={!isIndexPage}>
+              <AppBar position="sticky" sx={{ px: '70px' }}>
+                <Toolbar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <AppBarBreadcrumbs/>
+                  </Box>
+                  <Search/>
+                  <Logo/>
+                </Toolbar>
+              </AppBar>
+            </Slide>
+            <NavDrawer />
+
+            {state && tokensOnboardingState && <Box sx={{ paddingLeft: '65px' }}>
+              <Fade in={isIndexPage}>
+                <Box sx={{
+                  position: 'absolute', top: '0px', width: 'calc(100% - 75px)', left: '70px',
+                }} mr={0.2}>
+                  <DashboardStats/>
+                  <Grid container pt={0.5} pr={0.2} spacing={0.5}>
+                    <Grid item sm={6} md={6} xs={12}>
+                      <DashboardWidgetBot/>
+                    </Grid>
+                    <Grid item sm={4} md={4} xs={12}>
+                      <DashboardWidgetTwitch/>
+                    </Grid>
+                    <Grid item sm={2} md={2} xs={12}>
+                      <DashboardWidgetAction/>
+                    </Grid>
+                  </Grid>
                 </Box>
-                <Search/>
-                <Logo/>
-              </Toolbar>
-            </AppBar>
-          </Slide>
-          <NavDrawer />
+              </Fade>
 
-          {state && tokensOnboardingState && <Box sx={{ paddingLeft: '65px' }}>
-            <Fade in={isIndexPage}>
-              <Box sx={{
-                position: 'absolute', top: '0px', width: 'calc(100% - 75px)', left: '70px',
-              }} mr={0.2}>
-                <DashboardStats/>
-                <Grid container pt={0.5} pr={0.2} spacing={0.5}>
-                  <Grid item sm={6} md={6} xs={12}>
-                    <DashboardWidgetBot/>
-                  </Grid>
-                  <Grid item sm={4} md={4} xs={12}>
-                    <DashboardWidgetTwitch/>
-                  </Grid>
-                  <Grid item sm={2} md={2} xs={12}>
-                    <DashboardWidgetAction/>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Fade>
-
-            <Fade in={!isIndexPage}>
-              <Box ref={pageRef} sx={{
-                minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
-              }}>
-                {props.children}
-              </Box>
-            </Fade>
-          </Box>}
-        </Box>
-      </Fade>
+              <Fade in={!isIndexPage}>
+                <Box ref={pageRef} sx={{
+                  minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
+                }}>
+                  {props.children}
+                </Box>
+              </Fade>
+            </Box>}
+          </Box>
+        </Fade>
+        </>}
     </>
   );
 };

@@ -15,7 +15,6 @@ export const UserSimple: React.FC = () => {
       accessToken:  localStorage.getItem(`${localStorage.currentServer}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.currentServer}::refreshToken`),
     });
-    localStorage.code = '';
     localStorage[`${localStorage.currentServer}::accessToken`] = '';
     localStorage[`${localStorage.currentServer}::refreshToken`] = '';
     localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';

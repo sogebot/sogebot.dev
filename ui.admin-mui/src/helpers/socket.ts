@@ -25,12 +25,13 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
 
   if (localStorage.debug) {
     console.log('debug', {
-      stack:        new Error().stack,
-      type:         'getSocket',
+      stack:         new Error().stack,
+      type:          'getSocket',
       namespace,
       continueOnUnauthorized,
-      accessToken:  localStorage[`${localStorage.currentServer}::accessToken`],
-      refreshToken: localStorage[`${localStorage.currentServer}::refreshToken`],
+      currentServer: localStorage.currentServer,
+      accessToken:   localStorage[`${localStorage.currentServer}::accessToken`],
+      refreshToken:  localStorage[`${localStorage.currentServer}::refreshToken`],
     });
   }
 
@@ -111,7 +112,6 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     }
   });
   socket.on('forceDisconnect', () => {
-    debugger;
     if (localStorage.getItem('userType') === 'viewer' || localStorage.getItem('userType') === 'admin') {
       console.debug('Forced disconnection from bot socket.');
       localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
