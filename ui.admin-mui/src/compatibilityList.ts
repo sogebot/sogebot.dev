@@ -1,1 +1,1 @@
-export const versions = { '16.8.0': 'b7227bc0' };
+export const versions = { '16.8.0': 'b7227bc0' } as const;

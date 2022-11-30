@@ -109,7 +109,7 @@ export const ServerSelect: React.FC = () => {
             }
             if (version <= versionKey) {
               setValidVersionError(`We are sorry, but dashboard is not compatible with ${version}. Please use link below to use older version of dashboard.`);
-              setOldDashLink(`https://${versions[versionKey]}.ui-admin.pages.dev`);
+              setOldDashLink(`https://${versions[versionKey as keyof typeof versions]}.ui-admin.pages.dev`);
               return; // return oldest version
             }
           }
