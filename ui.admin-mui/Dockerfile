@@ -14,7 +14,6 @@ RUN chmod +x generate-nginx-location.sh
 RUN sh /generate-nginx-location.sh > /etc/nginx/conf.d/locations.paths
 
 # cleanup
-RUN rm *.zip
 RUN rm generate-nginx-location.sh
 
 
