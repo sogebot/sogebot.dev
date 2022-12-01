@@ -9,15 +9,13 @@ RUN apt-get install -y build-essential unzip nasm libtool make bash git autoconf
 WORKDIR /src
 
 COPY / ./
-RUN npm install
+RUN npm install --include=dev
 
 WORKDIR /src/backend
-RUN npm install --include=dev
 RUN npx tsc --removeComments true
 
 WORKDIR /src/ui.admin-mui
-RUN npm install
-RUN npm run build
+RUN npx next build && npx next export
 
 FROM nginx:alpine
 COPY --from=builder  /src/ui.admin-mui/out /app/static
