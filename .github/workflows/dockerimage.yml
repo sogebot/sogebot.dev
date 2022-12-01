@@ -68,7 +68,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
-          path: ${{ github.workspace }}/*.zip
+          path: ${{ github.workspace }}/ui.admin-mui/*.zip
 
       -
         name: Build and push
