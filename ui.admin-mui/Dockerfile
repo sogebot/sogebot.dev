@@ -9,10 +9,9 @@ ADD *.zip /app/static
 ADD ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./generate-nginx-location.sh /generate-nginx-location.sh
 
-RUN ls **/*
-
 # creating locations in .paths file because it dont get pick up by default nginx.conf
-RUN /generate-nginx-location.sh > /etc/nginx/conf.d/locations.paths
+RUN chmod +x generate-nginx-location.sh
+RUN sh /generate-nginx-location.sh > /etc/nginx/conf.d/locations.paths
 
 # cleanup
 RUN rm *.zip
