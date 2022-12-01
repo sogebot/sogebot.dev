@@ -75,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./Dockerfile.ui
+          file: ./ui.admin-mui/Dockerfile.ui
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: false
           tags: |
