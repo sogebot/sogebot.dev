@@ -34,7 +34,7 @@ jobs:
         run: cd ./backend/ && make
 
       - name: Build a UI
-        run: cd ../ui.admin-mui/ && npm run build
+        run: cd ./ui.admin-mui/ && npm run build
 
       - uses: actions/upload-artifact@v3
         with:
