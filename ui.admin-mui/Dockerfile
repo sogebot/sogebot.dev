@@ -8,6 +8,7 @@ ADD ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./generate-nginx-location.sh /generate-nginx-location.sh
 
 RUN mkdir -p /app/static
+RUN ls **/*
 RUN unzip *.zip -d /app/static
 
 # creating locations in .paths file because it dont get pick up by default nginx.conf
