@@ -1,13 +1,13 @@
-name: Nightlies
+name: sogeBot Dashboard UI
 
 concurrency:
-  group: nightlies-${{ github.head_ref || github.ref }}
+  group: sogebot-dashboard-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 on:
   push:
     branches:
-      - docker
+      - main
 
 jobs:
   artifact:
@@ -16,7 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: docker
           fetch-depth: 0 # load full history
           submodules: true
       - name: Get short SHA
