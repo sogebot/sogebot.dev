@@ -17,4 +17,4 @@ RUN sh /generate-nginx-location.sh > /etc/nginx/conf.d/locations.paths
 RUN rm generate-nginx-location.sh
 
 
-EXPOSE 8080
+EXPOSE 80
