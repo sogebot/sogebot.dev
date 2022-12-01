@@ -39,7 +39,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
-          path: ./out
+          path: ./ui.admin-mui/out
 
   # build:
   #   needs: artifact
