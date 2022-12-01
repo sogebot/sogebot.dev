@@ -14,8 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses:
         with:
+          ref: docker
           fetch-depth: 0 # load full history
           submodules: true
       - name: Get short SHA
