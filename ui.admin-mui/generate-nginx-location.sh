@@ -1,7 +1,9 @@
-#/bin/sh
-DIR="/app/static"
-
+#/bin/bash
+DIR="/app/static/"
 PATHS=$(find $DIR | grep \\\[ | grep -wv _next | grep -wv index.html)
+
+echo $PATHS
+
 for item in $PATHS
 do
   PATH="${item/$DIR/}"
