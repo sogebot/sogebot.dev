@@ -41,6 +41,14 @@ jobs:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
           path: ./ui.admin-mui/out
 
+      - name: Build a UI (with old_commit basePath)
+        run: cd ./ui.admin-mui/ && npm install && COMMIT="${{ steps.slug.outputs.SHA }}" npm run build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
+          path: ./ui.admin-mui/out
+
   build:
     needs: artifact
     runs-on: ubuntu-latest
@@ -70,10 +78,30 @@ jobs:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
           path: ${{ github.workspace }}/ui.admin-mui/*.zip
 
+      - uses: actions/download-artifact@master
+        with:
+          name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
+          path: ${{ github.workspace }}/ui.admin-mui/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ github.workspace }}
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ github.workspace }}/ui.admin-mui
+
+      -
+        name: Include older out build (test)
+        run: |
+          cd ${{ github.workspace }}/ui.admin-mui/ && sh download-old-commits.sh
+
       -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          build-args: |
+            COMMIT=${{ steps.slug.outputs.SHA }}
           context: ./ui.admin-mui/
           file: ./ui.admin-mui/Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64
