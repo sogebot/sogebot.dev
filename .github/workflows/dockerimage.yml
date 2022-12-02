@@ -76,12 +76,12 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
-          path: ${{ github.workspace }}/ui.admin-mui/*.zip
+          path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
 
       - uses: actions/download-artifact@master
         with:
           name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
-          path: ${{ github.workspace }}/ui.admin-mui/
+          path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
 
       - name: Display structure of downloaded files
         run: ls -R
