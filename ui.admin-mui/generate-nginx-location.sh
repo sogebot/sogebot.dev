@@ -9,7 +9,7 @@ do
   echo "location ~ ^/$URL {"
   echo "  root $DIR;"
   echo "  try_files"
-  echo "    \"$PATH/index.html\""
+  echo "    \"/$PATH/index.html\""
   echo "    proxy_pass;"
   echo "}"
 done
