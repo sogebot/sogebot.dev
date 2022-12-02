@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"services/credentials/authenticators"
 	"services/credentials/commons"
 
+	"github.com/go-chi/httprate"
 	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/rs/cors"
@@ -15,6 +18,16 @@ import (
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(commons.Logger)
+	router.Use(httprate.Limit(
+		10,          // requests
+		time.Minute, // per duration
+		httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+	))
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "This is not an endpoint you are looking for.")
+	}).Methods(http.MethodGet)
+
 	router.HandleFunc("/google", func(w http.ResponseWriter, r *http.Request) {
 		authenticators.Google(w, r)
 	}).Methods(http.MethodGet)
