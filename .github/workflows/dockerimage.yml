@@ -80,6 +80,6 @@ jobs:
           push: true
           tags: |
             sogebot/dashboard:latest
-            sogebot/dashboard:${{ github.sha }}
+            sogebot/dashboard:${{ steps.slug.outputs.SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
