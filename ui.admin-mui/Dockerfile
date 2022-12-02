@@ -6,10 +6,10 @@ RUN apk add --no-cache --upgrade bash
 RUN apk upgrade
 
 RUN mkdir -p /app/static/${COMMIT}
-ADD sogeBot-dashboard-${COMMIT}.zip /app/static
-ADD sogeBot-dashboard-basePath-${COMMIT}.zip /app/static/${COMMIT}
+ADD sogeBot-dashboard-${COMMIT} /app/static
+ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
 
-RUN ls /app/static
+RUN ls -R /app/static
 
 # extract commit files
 # RUN cd /app/static/ && unzip *.zip && rm *.zip && cd /

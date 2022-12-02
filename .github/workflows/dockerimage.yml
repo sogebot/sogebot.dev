@@ -86,11 +86,7 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ github.workspace }}
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: ${{ github.workspace }}/ui.admin-mui
-
+        
       -
         name: Include older out build (test)
         run: |
