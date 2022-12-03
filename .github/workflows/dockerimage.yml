@@ -93,7 +93,7 @@ jobs:
           node-version: 18
           check-latest: true
 
-        name: Include older out build (test)
+      - name: Include older out build (test)
         run: |
           cd ${{ github.workspace }}/ui.admin-mui/ && sh download-old-commits.sh
 
