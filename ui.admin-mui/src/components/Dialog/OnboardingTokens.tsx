@@ -21,7 +21,7 @@ export const OnboardingTokens: React.FC = () => {
 
   useEffect(() => {
     if (settings) {
-      if (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0) {
+      if (localStorage.server === 'https://demobot.sogebot.xyz' || (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0)) {
         dispatch(setTokensOnboardingState(true));
         setOpen(false);
       } else {
