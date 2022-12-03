@@ -155,7 +155,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
         }
       </div>
     </>);
-  }, [item, settings, parsed, user]);
+  }, [item, settings, parsed, user, server]);
 
   const examples = <>
     { item && exampleData.length > 0 && <Divider sx={{ pt: 3 }}>Usage examples</Divider> }

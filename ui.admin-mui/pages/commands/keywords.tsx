@@ -50,14 +50,12 @@ import getAccessToken from '~/src/getAccessToken';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
-import { useLocalstorageState } from 'rooks';
 
 const PageCommandsKeyword: NextPageWithLayout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
-  
+
   const [ items, setItems ] = useState<Keyword[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<KeywordGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
@@ -138,12 +136,12 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   }, [items]);
 
   const deleteItem = useCallback((item: Keyword) => {
-    axios.delete(`${server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Keyword ${item.keyword} deleted successfully.`, { variant: 'success' });
         refresh();
       });
-  }, [ enqueueSnackbar, server ]);
+  }, [ enqueueSnackbar ]);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
@@ -151,24 +149,24 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     refresh().then(() => setLoading(false));
   }, [router]);
 
-  const refresh = useCallback(async () => {
+  const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${server}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();
           });
       }),
     ]);
-  }, [server]);
+  };
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -200,7 +198,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${server}/api/systems/keywords`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/keywords`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -235,7 +233,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${server}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
