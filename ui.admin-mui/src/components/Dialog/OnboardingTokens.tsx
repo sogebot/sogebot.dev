@@ -30,6 +30,11 @@ export const OnboardingTokens: React.FC = () => {
     }
   }, [ dispatch, settings, connectedToServer ]);
 
+  const handleContinue = useCallback(() => {
+    dispatch(setTokensOnboardingState(true));
+    setOpen(false);
+  }, [dispatch]);
+
   useEffect(() => {
     if (connectedToServer) {
       refresh();
@@ -109,7 +114,8 @@ export const OnboardingTokens: React.FC = () => {
     <DialogActions sx={{ justifyContent: 'space-between' }}>
     </DialogActions>
     <DialogActions>
-      <Button color="error" variant='contained'onClick={handleServerLogout}>Leave server</Button>
+      <Button variant='contained' onClick={handleContinue}>Continue</Button>
+      <Button color="error" variant='contained' onClick={handleServerLogout}>Leave server</Button>
     </DialogActions>
   </Dialog>);
 };
