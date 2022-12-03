@@ -1,15 +1,21 @@
 import {
+  Alert,
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
+import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 
 const Spotify: NextPage = () => {
   const [state, setState] = useState<boolean | null>(null);
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
+    if (server === 'https://demobot.sogebot.xyz') {
+      return;
+    }
     if (window.location.hash || window.location.search) {
       getSocket(`/integrations/spotify`).emit('spotify::state', (_err, spotifyState: any) => {
         let urlState = '';
@@ -56,16 +62,18 @@ const Spotify: NextPage = () => {
           }
         });
     }
-  }, []);
+  }, [server]);
 
   return (<Backdrop open={true}>
-    <Stack alignItems='center' spacing={1}>
-      { state === null && <CircularProgress/>}
-      { state === null && <Typography>Please wait, redirecting to oauth service.</Typography>}
+    {server === 'https://demobot.sogebot.xyz'
+      ? <Alert severity="error">OAuth service is disabled on DEMO.</Alert>
+      : <Stack alignItems='center' spacing={1}>
+        { state === null && <CircularProgress/>}
+        { state === null && <Typography>Please wait, redirecting to oauth service.</Typography>}
 
-      { state === true && <Typography>Logged in, please wait.</Typography>}
-      { state === false && <Typography>Something went wrong, please close window and try again</Typography>}
-    </Stack>
+        { state === true && <Typography>Logged in, please wait.</Typography>}
+        { state === false && <Typography>Something went wrong, please close window and try again</Typography>}
+      </Stack>}
   </Backdrop>);
 };
 

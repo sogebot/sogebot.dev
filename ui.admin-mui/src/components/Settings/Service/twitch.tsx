@@ -29,7 +29,7 @@ import {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useRefElement } from 'rooks';
+import { useLocalstorageState, useRefElement } from 'rooks';
 
 import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
 import { getSocket } from '~/src/helpers/socket';
@@ -47,6 +47,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/twitch');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     refresh();
@@ -425,9 +426,9 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       </Stack>
     </Paper>}
 
-    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+    {server !== 'https://demobot.sogebot.xyz' && <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={handleSave}>Save changes</LoadingButton>
-    </Stack>
+    </Stack>}
   </Box>
   );
 };
