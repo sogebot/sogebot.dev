@@ -4,7 +4,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, IconButton, InputAdornment, Stack, TextField,
 } from '@mui/material';
-import Button from '@mui/material/Button/Button';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -37,7 +36,6 @@ export const ServerSelect: React.FC = () => {
   const [isInitial, setIsInitial] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
 
-  const [oldDashLink, setOldDashLink] = React.useState<string | null>(null);
   const [validVersionError, setValidVersionError] = React.useState<string | null>(null);
 
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
@@ -58,7 +56,6 @@ export const ServerSelect: React.FC = () => {
     }
 
     setValidVersionError(null);
-    setOldDashLink(null);
     setConnecting(false);
   }, [serverInputValue]);
 
@@ -108,8 +105,8 @@ export const ServerSelect: React.FC = () => {
               return;
             }
             if (version <= versionKey) {
+              location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
               setValidVersionError(`We are sorry, but dashboard is not compatible with ${version}. Please use link below to use older version of dashboard.`);
-              setOldDashLink(`https://${versions[versionKey as keyof typeof versions]}.ui-admin.pages.dev`);
               return; // return oldest version
             }
           }
@@ -228,12 +225,12 @@ export const ServerSelect: React.FC = () => {
       </Stack>
     </DialogContent>
     <DialogActions>
-      {((connecting || message) && !oldDashLink) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
+      {((connecting || message)) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
         padding: '0 20px', marginRight: '20px',
       }}>
         {message}
       </Alert>}
-      {oldDashLink === null && getUser() && <LoadingButton
+      {getUser() && <LoadingButton
         onClick={() => handleConnect(serverInputValue)}
         loading={connecting}
         disabled={!isValidHttps}
@@ -241,12 +238,6 @@ export const ServerSelect: React.FC = () => {
       >
         Connect
       </LoadingButton>}
-      {oldDashLink && <Button
-        href={oldDashLink}
-        variant="outlined"
-      >
-        {oldDashLink}
-      </Button>}
     </DialogActions>
   </Dialog>);
 };
