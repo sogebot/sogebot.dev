@@ -86,8 +86,13 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ github.workspace }}
-        
-      -
+
+      - name: install node v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: true
+
         name: Include older out build (test)
         run: |
           cd ${{ github.workspace }}/ui.admin-mui/ && sh download-old-commits.sh
