@@ -12,7 +12,7 @@ ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
 RUN ls -R /app/static
 
 # extract commit files
-# RUN cd /app/static/ && unzip *.zip && rm *.zip && cd /
+RUN cd /app/static/ && unzip *.zip && rm *.zip && cd /
 
 ADD ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./generate-nginx-location.sh /generate-nginx-location.sh
