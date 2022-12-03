@@ -86,7 +86,7 @@ export const KeywordEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${localStorage.server}/api/systems/keywords/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`${JSON.parse(JSON.parse(localStorage.server))}/api/systems/keywords/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           setItem(data.data);
           setLoading(false);
@@ -123,7 +123,7 @@ export const KeywordEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/keywords`,
+    axios.post(`${JSON.parse(JSON.parse(localStorage.server))}/api/systems/keywords`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

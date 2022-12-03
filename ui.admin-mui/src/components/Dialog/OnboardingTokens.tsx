@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useIntervalWhen } from 'rooks';
+import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
 import { getSocket } from '~/src/helpers/socket';
 import { useSettings } from '~/src/hooks/useSettings';
@@ -16,19 +16,20 @@ export const OnboardingTokens: React.FC = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { connectedToServer } = useSelector((s: any) => s.loader);
   const { settings, refresh } = useSettings('/services/twitch');
 
   useEffect(() => {
     if (settings) {
-      if (localStorage.server === 'https://demobot.sogebot.xyz' || (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0)) {
+      if (server === 'https://demobot.sogebot.xyz' || (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0)) {
         dispatch(setTokensOnboardingState(true));
         setOpen(false);
       } else {
         setOpen(true);
       }
     }
-  }, [ dispatch, settings, connectedToServer ]);
+  }, [ dispatch, settings, connectedToServer, server ]);
 
   const handleContinue = useCallback(() => {
     dispatch(setTokensOnboardingState(true));

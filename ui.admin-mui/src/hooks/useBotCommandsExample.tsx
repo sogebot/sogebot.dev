@@ -10,6 +10,7 @@ import {
   useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocalstorageState } from 'rooks';
 
 import { Commands } from '~/src/classes/Commands';
 import getAccessToken from '~/src/getAccessToken';
@@ -18,6 +19,7 @@ import { getSocket } from '~/src/helpers/socket';
 export const useBotCommandsExample = (item: Commands | null) => {
   const router = useRouter();
   const { user } = useSelector((state: any) => state.user);
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ loading, setLoading ] = useState(true);
   const [ exampleData, setExampleData ] = useState<(string|{if?: string, message: string, replace: { [x:string]: string }})[][]>([]);
@@ -65,7 +67,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
     return (<>
       {idx > 0 && <Divider sx={{
-        mx: 5, my: 1, 
+        mx: 5, my: 1,
       }}/>}
       <div>
         {
@@ -79,7 +81,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
               if (value.startsWith('?')) {
                 value = value.replace('?', '');
                 return <Alert key={value} variant="filled" color="info" icon={false} sx={{
-                  mb: 1, width: 'fit-content', 
+                  mb: 1, width: 'fit-content',
                 }}>{value}</Alert>;
               } else if (value.startsWith('+')) {
                 value = value.replace('+', '');
@@ -114,17 +116,17 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
               if (!parsed[message]) {
                 // parse messages
-                axios.post(`${localStorage.server}/api/core/parse`,
+                axios.post(`${server}/api/core/parse`,
                   {
                     message,
                     user: {
-                      id: user.id, username: user.login, 
-                    }, 
+                      id: user.id, username: user.login,
+                    },
                   },
                   { headers: { authorization: `Bearer ${getAccessToken()}` } })
                   .then((response) => {
                     setParsed(d => ({
-                      ...d, [message]: response.data.data, 
+                      ...d, [message]: response.data.data,
                     }));
                   });
               }
@@ -161,6 +163,6 @@ export const useBotCommandsExample = (item: Commands | null) => {
   </>;
 
   return {
-    loading, examples, 
+    loading, examples,
   };
 };

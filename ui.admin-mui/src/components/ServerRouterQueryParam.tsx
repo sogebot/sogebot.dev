@@ -10,7 +10,7 @@ export const ServerRouterQueryParam: React.FC = () => {
     if (connectedToServer && localStorage.server) {
       // we need to remove query.server until we solve issue with server GET param
       if (!router.query.server) {
-        router.replace(`${router.asPath}?server=${localStorage.server}`);
+        router.replace(`${router.asPath}?server=${JSON.parse(localStorage.server)}`);
       }
     }
   }, [router, connectedToServer]);

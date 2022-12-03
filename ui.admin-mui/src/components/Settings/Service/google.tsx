@@ -105,7 +105,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const refreshKeys = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             console.log({ data });
             setPrivateKeys([...data.data]);
@@ -119,7 +119,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const refreshStreams = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/services/google/streams`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/services/google/streams`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             console.log({ data });
             setStreams([...data.data]);
@@ -145,7 +145,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     for (const key of privateKeys) {
       if (key.privateKey) {
         // if contain private key, we must save it do db
-        await axios.post(`${localStorage.server}/api/services/google/privatekeys`, {
+        await axios.post(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, {
           id:          key.id,
           clientEmail: key.clientEmail,
           privateKey:  key.privateKey,
@@ -156,7 +156,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     // go through private keys vs cache to delete keys
     for (const key of privateKeysCache) {
       if (!privateKeys.find(o => o.id === key.id)) {
-        axios.delete(`${localStorage.server}/api/services/google/privatekeys/${key.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+        axios.delete(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys/${key.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       }
     }
     setSaving2(false);

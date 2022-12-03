@@ -52,6 +52,7 @@ import getAccessToken from '~/src/getAccessToken';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
 import { setBulkCount } from '~/src/store/appbarSlice';
+import { useLocalstorageState } from 'rooks';
 
 type CommandWithCount = Commands & { count:number };
 
@@ -59,6 +60,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ items, setItems ] = useState<CommandWithCount[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<CommandsGroup[]>([]);
@@ -149,21 +151,21 @@ const PageCommandsCommands: NextPageWithLayout = () => {
   }, [items]);
 
   const deleteItem = useCallback((item: Commands) => {
-    axios.delete(`${localStorage.server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Commands ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
       });
-  }, [ enqueueSnackbar ]);
+  }, [ enqueueSnackbar, server ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
   }, [router]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${server}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             const commands = data.data;
             for (const command of commands) {
@@ -174,14 +176,14 @@ const PageCommandsCommands: NextPageWithLayout = () => {
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${server}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();
           });
       }),
     ]);
-  };
+  }, [server]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -233,7 +235,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${localStorage.server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -269,7 +271,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       if (item) {
         item.count = 0;
         await new Promise<void>((resolve) => {
-          axios.post(`${localStorage.server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${server}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -294,7 +296,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${server}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

@@ -42,7 +42,7 @@ const Tiltify: NextPage = () => {
       }
     } else {
       location.href = `https://tiltify.soge.workers.dev/authorize?state=${Buffer.from(JSON.stringify({
-        server:   localStorage.server,
+        server:   JSON.parse(localStorage.server),
         referrer: window.location.origin,
         version:  2,
       })).toString('base64')}`;

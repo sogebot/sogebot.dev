@@ -98,7 +98,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (router.route === '/settings/modules' || router.route === '/settings/modules/') {
-      router.push(`/settings/modules/core/?server=${localStorage.server}`);
+      router.push(`/settings/modules/core/?server=${JSON.parse(localStorage.server)}`);
     }
   }, [router]);
 

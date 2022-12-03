@@ -426,9 +426,11 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       </Stack>
     </Paper>}
 
-    {server !== 'https://demobot.sogebot.xyz' && <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={handleSave}>Save changes</LoadingButton>
-    </Stack>}
+    {server === 'https://demobot.sogebot.xyz'
+      ? <Alert sx={{ width: '100%' }} severity="info">Save button removed in DEMO.</Alert>
+      : <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} type="submit" onClick={handleSave}>Save changes</LoadingButton>
+      </Stack>}
   </Box>
   );
 };

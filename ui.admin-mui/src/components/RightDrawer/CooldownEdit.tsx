@@ -170,7 +170,7 @@ export const CooldownEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/cooldown`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/cooldown`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

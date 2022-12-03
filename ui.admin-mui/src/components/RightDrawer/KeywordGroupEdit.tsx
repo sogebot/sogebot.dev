@@ -40,7 +40,7 @@ export const KeywordGroupEdit: React.FC<{
       return;
     }
 
-    axios.get(`${localStorage.server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         const _group = data.data.find((o: { name: string }) => o.name === query) ?? {
           name:    query,
@@ -69,7 +69,7 @@ export const KeywordGroupEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/keywords/group`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/keywords/group`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
         setSaving(false);
         enqueueSnackbar('Keyword group data saved.', { variant: 'success' });
@@ -141,7 +141,7 @@ export const KeywordGroupEdit: React.FC<{
             InputProps={{
               endAdornment: <>
                 <InputAdornment position="end" sx={{
-                  alignSelf: 'baseline', paddingTop: '2px', 
+                  alignSelf: 'baseline', paddingTop: '2px',
                 }}>
                   {group?.options.filter && <IconButton onClick={() => handleValueChange('filter', '')}><Clear fontSize="small" /></IconButton>}
                   <FormInputAdornmentCustomVariable onSelect={(value) => handleValueChange('filter', value, true)}/>

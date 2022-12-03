@@ -139,7 +139,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
   const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 
   const deleteItem = useCallback((item: Quotes) => {
-    axios.delete(`${localStorage.server}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Quote ${item.id} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -153,7 +153,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setUsers(data.users);
             setItems(data.data);
@@ -172,7 +172,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

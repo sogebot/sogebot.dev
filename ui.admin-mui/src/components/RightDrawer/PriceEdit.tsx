@@ -83,7 +83,7 @@ export const PriceEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/price`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
       { ...item },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

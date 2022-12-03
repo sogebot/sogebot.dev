@@ -76,7 +76,7 @@ export const RankEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/ranks`,
+    axios.post(`${JSON.parse(JSON.parse(localStorage.server))}/api/systems/ranks`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

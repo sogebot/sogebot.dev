@@ -98,7 +98,7 @@ export const QuotesEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${localStorage.server}/api/systems/Quotes`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/Quotes`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

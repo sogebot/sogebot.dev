@@ -88,7 +88,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   ]);
 
   const deleteItem = useCallback((item: Rank) => {
-    axios.delete(`${localStorage.server}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Rank ${item.value} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -104,7 +104,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -122,7 +122,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

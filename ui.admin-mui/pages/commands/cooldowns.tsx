@@ -50,12 +50,14 @@ import { useFilter } from '~/src/hooks/useFilter';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 import toReadableMiliseconds from '~/src/toReadableMiliseconds';
+import { useLocalstorageState } from 'rooks';
 
 const PageCommandsCooldown: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ items, setItems ] = useState<Required<Cooldown>[]>([]);
   const [ loading, setLoading ] = useState(true);
@@ -133,12 +135,12 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
   ]);
 
   const deleteItem = useCallback((item: Cooldown) => {
-    axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Cooldown ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
       });
-  }, [ enqueueSnackbar ]);
+  }, [ enqueueSnackbar, server ]);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
@@ -146,17 +148,17 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
     refresh().then(() => setLoading(false));
   }, [router]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
     ]);
-  };
+  }, [server]);
 
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
@@ -208,7 +210,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${localStorage.server}/api/systems/cooldown`,
+          axios.post(`${server}/api/systems/cooldown`,
             { ...item },
             { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
@@ -237,7 +239,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }

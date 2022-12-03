@@ -60,8 +60,8 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
           groupSet.push({
             name:    group,
             options: {
-              filter: null, permission: null, 
-            }, 
+              filter: null, permission: null,
+            },
           } as KeywordGroup);
         }
       }
@@ -70,7 +70,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: KeywordGroup) => {
-    axios.delete(`${localStorage.server}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Keyword group ${item.name} deleted successfully. You can still see this group if it is being activelly used by keywords.`, { variant: 'success' });
         refresh();
@@ -122,14 +122,14 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${localStorage.server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();
