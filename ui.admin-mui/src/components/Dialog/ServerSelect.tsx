@@ -91,8 +91,8 @@ export const ServerSelect: React.FC = () => {
           // 'OK' response was last in 16.8.0
           const version = res.data === 'OK' ? '16.8.0' : res.data;
           for (const versionKey of Object.keys(versions).sort()) {
-            if (version.includes('-') || version > versionKey) {
-              // we have snapshot, we are good
+            if (version.includes('-') || version > versionKey || router.basePath.length > 0) {
+              // we have snapshot or we are on basePath, we are good
               dispatch(setServer(serverURL));
               isBotStarted(dispatch, serverURL).then(() => {
                 const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
@@ -117,7 +117,7 @@ export const ServerSelect: React.FC = () => {
           setValidVersionError(`Something went wrong connecting to server ${url.origin}`);
         });
     }
-  }, [dispatch]);
+  }, [dispatch, router]);
 
   React.useEffect(() => {
     if (isInitial && router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
