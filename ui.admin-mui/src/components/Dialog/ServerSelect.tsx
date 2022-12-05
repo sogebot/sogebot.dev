@@ -93,7 +93,6 @@ export const ServerSelect: React.FC = () => {
           for (const versionKey of Object.keys(versions).sort()) {
             if (version.includes('-') || version > versionKey) {
               // we have snapshot, we are good
-              setValidVersionError(null);
               dispatch(setServer(serverURL));
               isBotStarted(dispatch, serverURL).then(() => {
                 const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
@@ -105,9 +104,8 @@ export const ServerSelect: React.FC = () => {
               return;
             }
             if (version <= versionKey) {
-              location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
-              setValidVersionError(`We are sorry, but dashboard is not compatible with ${version}. Please use link below to use older version of dashboard.`);
-              return; // return oldest version
+              window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
+              return;
             }
           }
         })
