@@ -21,7 +21,7 @@ import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { addSettingsLoading, rmSettingsLoading } from '~/src/store/loaderSlice';
 
-const PageSettingsIntegrationsModules: React.FC<{
+const PageSettingsModulesGamesModules: React.FC<{
   onVisible: () => void,
   sx?: SxProps<Theme> | undefined
 }> = ({
@@ -38,9 +38,9 @@ const PageSettingsIntegrationsModules: React.FC<{
 
   useEffect(() => {
     if (loading) {
-      dispatch(addSettingsLoading('/integrations/modules'));
+      dispatch(addSettingsLoading('/games/modules'));
     } else {
-      dispatch(rmSettingsLoading('/integrations/modules'));
+      dispatch(rmSettingsLoading('/games/modules'));
     }
   }, [loading, dispatch]);
 
@@ -72,7 +72,7 @@ const PageSettingsIntegrationsModules: React.FC<{
   }, [ enqueueSnackbar ]);
 
   const refresh = useCallback(() => {
-    getSocket('/').emit('populateListOf', 'integrations', (err, systems: any) => {
+    getSocket('/').emit('populateListOf', 'games', (err, systems: any) => {
       if (err) {
         console.error(err);
         return;
@@ -111,7 +111,7 @@ const PageSettingsIntegrationsModules: React.FC<{
   }, [element, scrollY, onVisible]);
 
   return (<Box ref={ref} sx={sx} id="modules">
-    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.integrations')}</Typography>
+    <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.games')}</Typography>
     <Grid container>
       {items.map(item => <Grid key={item.name} item xs={12} sm={6} md={6} lg={3}>
         <FormGroup>
@@ -122,4 +122,4 @@ const PageSettingsIntegrationsModules: React.FC<{
   </Box>
   );
 };
-export default PageSettingsIntegrationsModules;
+export default PageSettingsModulesGamesModules;

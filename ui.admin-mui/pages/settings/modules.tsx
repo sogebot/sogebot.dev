@@ -31,6 +31,8 @@ import PageSettingsModulesCoreSocket from '~/src/components/Settings/Core/socket
 import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
+import PageSettingsModulesGamesDuel from '~/src/components/Settings/Games/duel';
+import PageSettingsModulesGamesModules from '~/src/components/Settings/Games/modules';
 import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/Integrations/discord';
 import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
 import PageSettingsModulesIntegrationsDonationAlerts from '~/src/components/Settings/Integrations/donationalerts';
@@ -244,6 +246,11 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsStreamlabs onVisible={() => setActiveTab('integrations-streamlabs')}/>
                 <PageSettingsModulesIntegrationsTipeeestream onVisible={() => setActiveTab('integrations-tipeeestream')}/>
                 <PageSettingsModulesIntegrationsTwitter onVisible={() => setActiveTab('integrations-twitter')}/>
+              </>
+              }
+              {router.asPath.includes(`/settings/modules/games`) && <>
+                <PageSettingsModulesGamesModules onVisible={() => setActiveTab('games-modules')}/>
+                <PageSettingsModulesGamesDuel onVisible={() => setActiveTab('games-duel')}/>
               </>
               }
               <Box sx={{
