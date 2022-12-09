@@ -32,6 +32,7 @@ import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
 import PageSettingsModulesGamesDuel from '~/src/components/Settings/Games/duel';
+import PageSettingsModulesGamesGamble from '~/src/components/Settings/Games/gamble';
 import PageSettingsModulesGamesModules from '~/src/components/Settings/Games/modules';
 import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/Integrations/discord';
 import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
@@ -251,6 +252,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               {router.asPath.includes(`/settings/modules/games`) && <>
                 <PageSettingsModulesGamesModules onVisible={() => setActiveTab('games-modules')}/>
                 <PageSettingsModulesGamesDuel onVisible={() => setActiveTab('games-duel')}/>
+                <PageSettingsModulesGamesGamble onVisible={() => setActiveTab('games-gamble')}/>
               </>
               }
               <Box sx={{
