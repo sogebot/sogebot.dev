@@ -99,7 +99,10 @@ const PageSettingsModulesGamesGamble: React.FC<{
                 {...TextFieldPropsTabs('settings.chanceToWin')}
                 type='number'
                 label={translate('games.gamble.settings.chanceToWin.title')}
-                InputProps={{ startAdornment: <InputAdornment position="start">%</InputAdornment> }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">%</InputAdornment>,
+                  endAdornment:   TextFieldPropsTabs('settings.chanceToWin').InputProps.endAdornment,
+                }}
               />
             </Stack>}
           </PermissionTabs>
