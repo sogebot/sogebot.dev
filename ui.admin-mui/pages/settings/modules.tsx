@@ -33,7 +33,9 @@ import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
 import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
 import PageSettingsModulesGamesDuel from '~/src/components/Settings/Games/duel';
 import PageSettingsModulesGamesGamble from '~/src/components/Settings/Games/gamble';
+import PageSettingsModulesGamesHeist from '~/src/components/Settings/Games/heist';
 import PageSettingsModulesGamesModules from '~/src/components/Settings/Games/modules';
+import PageSettingsModulesGamesRoulette from '~/src/components/Settings/Games/roulette';
 import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/Integrations/discord';
 import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
 import PageSettingsModulesIntegrationsDonationAlerts from '~/src/components/Settings/Integrations/donationalerts';
@@ -253,6 +255,8 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesGamesModules onVisible={() => setActiveTab('games-modules')}/>
                 <PageSettingsModulesGamesDuel onVisible={() => setActiveTab('games-duel')}/>
                 <PageSettingsModulesGamesGamble onVisible={() => setActiveTab('games-gamble')}/>
+                <PageSettingsModulesGamesHeist onVisible={() => setActiveTab('games-heist')}/>
+                <PageSettingsModulesGamesRoulette onVisible={() => setActiveTab('games-roulette')}/>
               </>
               }
               <Box sx={{

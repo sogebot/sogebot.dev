@@ -11,9 +11,10 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 
 type Props = {
   translations?: Record<string, string>
+  mustBeDirty?: boolean,
 };
 
-export const useValidator = (props: Props = {}) => {
+export const useValidator = (props: Props = { mustBeDirty: true }) => {
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -31,16 +32,22 @@ export const useValidator = (props: Props = {}) => {
   }, []);
 
   const haveErrors = useMemo(() => {
-    const filteredErrors = errors.filter(o => dirty.includes(o.property));
-    return filteredErrors.length > 0;
-  }, [ errors, dirty ]);
+    if (props.mustBeDirty) {
+      const filteredErrors = errors.filter(o => dirty.includes(o.property));
+      return filteredErrors.length > 0;
+    } else {
+      return errors.length > 0;
+    }
+  }, [ errors, dirty, props.mustBeDirty ]);
 
   useEffect(() => {
-    const filteredErrors = errors.filter(o => dirty.includes(o.property));
-    if (!isEqual(filteredErrors, errors)) {
-      setErrors(filteredErrors);
+    if (props.mustBeDirty) {
+      const filteredErrors = errors.filter(o => dirty.includes(o.property));
+      if (!isEqual(filteredErrors, errors)) {
+        setErrors(filteredErrors);
+      }
     }
-  }, [ errors, dirty ]);
+  }, [ errors, dirty, props.mustBeDirty ]);
 
   const errorsPerAttribute = useMemo(() => {
     const _errors: { [field:string]: string[] } = {};
@@ -95,7 +102,7 @@ export const useValidator = (props: Props = {}) => {
     setDirty([]);
   }, [ ]);
 
-  const propsError = useCallback((attribute: string) => {
+  const propsError = useCallback((attribute: string, opts: { helperText?: string } = {}) => {
     const onInput = () => {
       if (!dirty.includes(attribute)) {
         console.log('Dirtying', attribute);
@@ -103,7 +110,7 @@ export const useValidator = (props: Props = {}) => {
       }
     };
 
-    if (errorsPerAttribute[attribute] && errorsPerAttribute[attribute].length > 0 && dirty.includes(attribute)) {
+    if (errorsPerAttribute[attribute] && errorsPerAttribute[attribute].length > 0 && (!props.mustBeDirty || dirty.includes(attribute))) {
       const helperText = <Typography component='span'>{errorsPerAttribute[attribute][0]}</Typography>;
       return {
         className: 'prop-' + attribute,
@@ -113,11 +120,12 @@ export const useValidator = (props: Props = {}) => {
       };
     } else {
       return {
-        className: 'prop-' + attribute,
+        className:  'prop-' + attribute,
+        helperText: opts.helperText,
         onInput,
       };
     }
-  }, [ dirty, errorsPerAttribute ]);
+  }, [ dirty, errorsPerAttribute, props.mustBeDirty ]);
 
   const validate = useCallback((err: typeof errors) => {
     console.error('Errors during validation', { err });
