@@ -66,7 +66,7 @@ export const UserMenu: React.FC = () => {
           console.log('Logged in as', recvViewer);
           setLogged(true);
         }
-        console.log({recvViewer})
+        console.log({ recvViewer });
         setViewer(recvViewer);
       } else {
         console.error('Cannot find user data, try to write something in chat to load data');

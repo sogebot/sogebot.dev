@@ -3,11 +3,11 @@ import {
 } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
+import parse from 'html-react-parser';
 import { capitalize, isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
-import parse from 'html-react-parser';
 
 import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
 import { classes } from '~/src/components/styles';
