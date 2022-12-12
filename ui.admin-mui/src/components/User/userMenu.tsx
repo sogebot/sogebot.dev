@@ -57,7 +57,7 @@ export const UserMenu: React.FC = () => {
     if (typeof user === 'undefined' || user === null) {
       return;
     }
-    getSocket('/core/users', true).emit('viewers::findOne', user.id, (err, recvViewer) => {
+    getSocket('/core/users', true).emit('viewers::findOneBy', user.id, (err, recvViewer) => {
       if (err) {
         return console.error(err);
       }
@@ -66,6 +66,7 @@ export const UserMenu: React.FC = () => {
           console.log('Logged in as', recvViewer);
           setLogged(true);
         }
+        console.log({recvViewer})
         setViewer(recvViewer);
       } else {
         console.error('Cannot find user data, try to write something in chat to load data');
