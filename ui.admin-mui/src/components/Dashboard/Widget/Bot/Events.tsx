@@ -66,7 +66,6 @@ function RenderRow(props: any) {
     }).format(get(values, 'amount', '0'));
     t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
     t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
-
     t = t.replace('$subType', get(values, 'tier', 'Prime') !== 'Prime' ? `Tier ${get(values, 'tier', 'Prime')}` : 'Prime' );
     t = t.replace('$viewers', get(values, 'viewers', '0'));
     t = t.replace('$username', get(values, 'fromId', 'n/a'));
@@ -105,7 +104,7 @@ function RenderRow(props: any) {
           <DotDivider/>
           <Typography component="span" px={0.5}>{ props.item.username }</Typography>
         </>}
-        {['follow', 'resub', 'tip', 'sub', 'raid', 'subgift', 'subcommunitygift'].includes(props.item.event) && <Typography component="span" fontWeight={'bold'} pr={0.5}>{ props.item.username }</Typography>}
+        {['follow', 'resub', 'tip', 'sub', 'raid', 'subgift', 'subcommunitygift', 'cheer'].includes(props.item.event) && <Typography component="span" fontWeight={'bold'} pr={0.5}>{ props.item.username }</Typography>}
         <DotDivider/>
         {props.item.event !== 'rewardredeem' && <>
           <Typography component="span" fontSize={'0.8rem'} pr={0.5}>&nbsp;{parse(prepareMessage(props.item))}</Typography>
@@ -118,11 +117,11 @@ function RenderRow(props: any) {
       {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, {
         style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'),
       }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
-      {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'amount', '0') }</Typography>}
+      {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
 
       <Backdrop open={hover} sx={classes.backdrop}>
         <Stack direction='row' sx={{
-          justifyContent: 'flex-end', width: '100%', px: 2, 
+          justifyContent: 'flex-end', width: '100%', px: 2,
         }} spacing={3}>
           <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>
           <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
