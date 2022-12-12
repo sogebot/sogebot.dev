@@ -7,6 +7,7 @@ import { capitalize, isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
+import parse from 'html-react-parser';
 
 import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
 import { classes } from '~/src/components/styles';
@@ -78,7 +79,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
     return tags.filter(o => !!o.is_auto === is_auto).map((o) => {
       const key = Object.keys(o.localization_names).find(key2 => key2.includes(configuration.lang));
       return {
-        name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto, 
+        name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto,
       };
     }).sort((a, b) => {
       if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
@@ -105,23 +106,23 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
         <Grid container justifyContent={'left'}>
           <Grid item sm={4} xs={12}>
             <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate, 
+              transform: 'translateY(5px)', ...classes.truncate,
             }}>{ game ?? capitalize(translate('not-available')) }</Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1, 
+              pt: 2, pa: 1,
             }}>{ capitalize(translate('game')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
             <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate, 
-            }}>{ title ?? capitalize(translate('not-available')) }</Typography>
+              transform: 'translateY(5px)', ...classes.truncate,
+            }}>{ parse(title ?? capitalize(translate('not-available'))) }</Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1, 
+              pt: 2, pa: 1,
             }}>{ capitalize(translate('title')) }</Typography>
           </Grid>
           <Grid item sm={4} xs={12}>
             <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate, 
+              transform: 'translateY(5px)', ...classes.truncate,
             }}>
               { tags.length === 0 && <Typography component="span">{capitalize(translate('not-available'))}</Typography> }
               {filterTags(true).map((tag, idx) => {
@@ -138,7 +139,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
               })}
             </Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1, 
+              pt: 2, pa: 1,
             }}>{ capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
