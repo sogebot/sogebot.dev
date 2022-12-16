@@ -106,7 +106,11 @@ func GoogleRefresh(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(resp.StatusCode)
 	w.Header().Set("Content-Type", "application/json")
+
+	// debug
+	fmt.Println(refreshToken)
 	fmt.Println(string(body))
+
 	fmt.Fprint(w, string(body))
 
 }
