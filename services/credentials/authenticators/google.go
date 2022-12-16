@@ -87,7 +87,6 @@ func GoogleRefresh(w http.ResponseWriter, r *http.Request) {
 
 	query, _ := ioutil.ReadAll(r.Body)
 	refreshToken, _ := url.PathUnescape(strings.Split(strings.Split(string(query), "&")[0], "=")[1])
-
 	params := url.Values{}
 	params.Add("client_id", GOOGLE_CLIENTID)
 	params.Add("client_secret", GOOGLE_CLIENTSECRET)
@@ -107,6 +106,7 @@ func GoogleRefresh(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(resp.StatusCode)
 	w.Header().Set("Content-Type", "application/json")
+	fmt.Println(string(body))
 	fmt.Fprint(w, string(body))
 
 }
