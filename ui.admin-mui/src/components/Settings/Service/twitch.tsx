@@ -15,12 +15,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import Collapse  from '@mui/material/Collapse';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import Collapse from '@mui/material/Collapse';
 import Select from '@mui/material/Select/Select';
-import { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import { SxProps, Theme } from '@mui/material/styles';
 import capitalize from 'lodash/capitalize';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -71,8 +69,6 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   const redirectUri = useMemo(() => {
     return `${window.location.origin}/credentials/oauth/tokens`;
   }, []);
-
-  const origin = useMemo(() => window.location.origin, []);
 
   const botUrl = useMemo(() => {
     if (!settings) {
@@ -251,6 +247,12 @@ const PageSettingsModulesServiceTwitch: React.FC<{
         </Stack>
         <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
       </>}
+
+      <Typography variant='body2' sx={{ p: 1 }}>Scopes:{' '}
+        { settings.bot.botCurrentScopes[0].length === 0
+          ? 'Unknown'
+          : settings.bot.botCurrentScopes[0].sort().join(', ')}
+      </Typography>
     </Paper>}
 
     <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.channel')}</Typography>
@@ -303,68 +305,12 @@ const PageSettingsModulesServiceTwitch: React.FC<{
         </Stack>
         <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
       </>}
-    </Paper>}
 
-    <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.eventsub')}</Typography>
-    {settings && <Paper elevation={1} sx={{
-      p: 1, mb: 2,
-    }}>
-      <Stack spacing={1}>
-        <Alert severity="info" icon={false}>
-        For use of EventSub you need to have SSL enabled domain and created Twitch App
-          <ol>
-            <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank" rel="noreferrer">https://dev.twitch.tv/console/apps</a>{' '}
-            and register your app</li>
-            <li>You can choose any <strong>name</strong> of app you want</li>
-            <li>Set <strong>oauth redirect</strong> to your { origin }/credentials/oauth/eventsub</li>
-            <li>Pick Application Integration for <strong>category</strong> and create</li>
-            <li>After creation copy clientId and generate clientSecret</li>
-            <li>Authorize your broadcaster account to enable subscription with your account</li>
-          </ol>
-        </Alert>
-
-        <TextField
-          variant='filled'
-          fullWidth
-          value={settings.eventsub.eventSubClientId[0]}
-          label={capitalize(translate('integrations.spotify.settings.clientId'))}
-          onChange={(event) => handleChange('eventsub.eventSubClientId', event.target.value)}
-        />
-
-        <TextField
-          variant='filled'
-          fullWidth
-          type='password'
-          value={settings.eventsub.eventSubClientSecret[0]}
-          label={translate('integrations.spotify.settings.clientSecret')}
-          onChange={(event) => handleChange('eventsub.eventSubClientSecret', event.target.value)}
-        />
-
-        <Stack direction='row' spacing={1} alignItems='center'>
-          <FormGroup sx={{ width: '100%' }}>
-            <FormControlLabel control={<Checkbox onChange={(_, checked) => handleChange('eventsub.useTunneling', checked)}checked={settings.eventsub.useTunneling[0]} />} label="Use unreliable tunneling (works on localhost)" />
-          </FormGroup>
-          <TextField
-            variant='filled'
-            fullWidth
-            helperText={translate('core.ui.settings.domain.help')}
-            value={settings.eventsub.domain[0]}
-            disabled={settings.eventsub.useTunneling[0]}
-            label={translate('core.ui.settings.domain.title')}
-            onChange={(event) => handleChange('eventsub.domain', event.target.value)}
-          />
-        </Stack>
-
-        <Alert severity="info" icon={false}>Authorize by clicking on authorize button. It will then take around ~1
-        minute to subscribe to missing events</Alert>
-        <Typography variant='h6' sx={{ pb: 2 }}>Currently subscribed events</Typography>
-        <List dense>
-          {settings.eventsub.eventSubEnabledSubscriptions[0].map((item: string) => <ListItem key={item}>
-            {item}
-          </ListItem>)}
-        </List>
-      </Stack>
-      <Button sx={{ m: 0.5 }} href={`https://id.twitch.tv/oauth2/authorize?client_id=${settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls channel:manage:predictions`} target='_blank'>{ translate('commons.generate') }</Button>
+      <Typography variant='body2' sx={{ p: 1 }}>Scopes:{' '}
+        { settings.broadcaster.broadcasterCurrentScopes[0].length === 0
+          ? 'Unknown'
+          : settings.broadcaster.broadcasterCurrentScopes[0].sort().join(', ')}
+      </Typography>
     </Paper>}
 
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('categories.general')}</Typography>
