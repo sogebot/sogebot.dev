@@ -20,8 +20,8 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
   return <ListItem disablePadding key={permission.id}
     ref={draggableProvided?.innerRef}
     {...draggableProvided?.draggableProps}>
-    <Link passHref href={`/settings/permissions/${permission.id}`} style={{
-      width: '100%', textDecoration: 'none', 
+    <Link passHref href={`/settings/permissions/edit/${permission.id}`} style={{
+      width: '100%', textDecoration: 'none',
     }}>
       <ListItemButton selected={router.query.permissionId === permission.id}>
         {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>

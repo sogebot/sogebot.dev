@@ -25,8 +25,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { blueGrey, grey } from '@mui/material/colors';
 import Select from '@mui/material/Select';
+import { blueGrey, grey } from '@mui/material/colors';
 import {
   capitalize,
   cloneDeep, orderBy, sortBy,
@@ -38,8 +38,8 @@ import {
 } from 'react';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 
+import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
@@ -76,7 +76,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
           setItems(data);
 
           if (!router.query.permissionId) {
-            router.push(`/settings/permissions/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
+            router.push(`/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
           }
           resolve();
         });
@@ -208,7 +208,7 @@ const PageSettingsPermissions: NextPageWithLayout = () => {
     setRemoving(true);
     getSocket('/core/permissions').emit('generic::deleteById', selectedItem.id, async () => {
       enqueueSnackbar(`Permissions ${selectedItem.name} removed.`, { variant: 'success' });
-      router.push('/settings/permissions/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
+      router.push('/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
       setRemoving(false);
       await refresh();
       await reorder(true);
