@@ -1,4 +1,4 @@
-import PageSettingsPermission from '../permissions';
+import PageSettingsPermission from '.';
 
 const PageSettingsPermissionEdit = PageSettingsPermission;
 

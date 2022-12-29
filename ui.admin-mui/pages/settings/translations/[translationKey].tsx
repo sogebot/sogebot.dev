@@ -1,4 +1,4 @@
-import PageSettingsTranslation from '../translations';
+import PageSettingsTranslation from '.';
 
 const PageSettingsTranslationEdit = PageSettingsTranslation;
 
