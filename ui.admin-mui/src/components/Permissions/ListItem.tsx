@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
@@ -19,34 +20,38 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
   return <ListItem disablePadding key={permission.id}
     ref={draggableProvided?.innerRef}
     {...draggableProvided?.draggableProps}>
-    <ListItemButton selected={router.query.permissionId === permission.id} onClick={() => router.push(`/settings/permissions/${permission.id}`)}>
-      {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
-        <DragIndicatorTwoTone/>
-      </ListItemIcon>}
-      <ListItemIcon sx={{
-        fontSize: '26px', minWidth: '40px',
-      }}>
-        { permission.isWaterfallAllowed ? '≥' : '=' }
-      </ListItemIcon>
-      <ListItemText
-        primary={
-          <Stack direction='row' alignItems={'center'}>
-            <Typography  color={permission.isCorePermission ? 'white' : grey[400]} sx={{
-              fontWeight:   permission.isCorePermission ? 'bold' : 'normal',
-              flexGrow:     1,
-              width:        '100%',
-              textOverflow: 'ellipsis',
-              overflow:     'hidden',
-            }}>
-              {permission.name}
-            </Typography>
-            <Stack direction='row' width={'100%'} alignItems={'center'} justifyContent={'right'} color={grey[400]} spacing={1}>
-              <ManageAccountsTwoTone/>
-              <Typography variant='button' fontSize={12}>
-                { translate('core.permissions.' + permission.automation) }
+    <Link passHref href={`/settings/permissions/${permission.id}`} style={{
+      width: '100%', textDecoration: 'none', 
+    }}>
+      <ListItemButton selected={router.query.permissionId === permission.id}>
+        {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
+          <DragIndicatorTwoTone/>
+        </ListItemIcon>}
+        <ListItemIcon sx={{
+          fontSize: '26px', minWidth: '40px',
+        }}>
+          { permission.isWaterfallAllowed ? '≥' : '=' }
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            <Stack direction='row' alignItems={'center'}>
+              <Typography  color={permission.isCorePermission ? 'white' : grey[400]} sx={{
+                fontWeight:   permission.isCorePermission ? 'bold' : 'normal',
+                flexGrow:     1,
+                width:        '100%',
+                textOverflow: 'ellipsis',
+                overflow:     'hidden',
+              }}>
+                {permission.name}
               </Typography>
-            </Stack>
-          </Stack>} />
-    </ListItemButton>
+              <Stack direction='row' width={'100%'} alignItems={'center'} justifyContent={'right'} color={grey[400]} spacing={1}>
+                <ManageAccountsTwoTone/>
+                <Typography variant='button' fontSize={12}>
+                  { translate('core.permissions.' + permission.automation) }
+                </Typography>
+              </Stack>
+            </Stack>} />
+      </ListItemButton>
+    </Link>
   </ListItem>;
 };

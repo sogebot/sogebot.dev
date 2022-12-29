@@ -15,6 +15,7 @@ import {
 import { Keyword, KeywordGroup } from '@sogebot/backend/src/database/entity/keyword';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -102,18 +103,17 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       title:        ' ',
       getCellValue: (row) => [
         <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/keywords/group/edit/' + row.name);
-            }}>Edit</Button>
+          <Link passHref href={'/commands/keywords/group/edit/' + row.name}>
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}>Edit</Button>
+          </Link>
           <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
       ],
     },
-  ], [ permissions, translate, router, deleteItem, groups ]);
+  ], [ permissions, translate, deleteItem, groups ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -142,9 +142,9 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Button sx={{ width: 240 }} color="secondary" variant="contained" onClick={() => {
-            router.push('/commands/keywords/');
-          }}>Back to Keyword settings</Button>
+          <Link passHref href='/commands/keywords/'>
+            <Button sx={{ width: 240 }} color="secondary" variant="contained">Back to Keyword settings</Button>
+          </Link>
         </Grid>
       </Grid>
 

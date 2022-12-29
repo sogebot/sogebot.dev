@@ -24,6 +24,7 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -73,13 +74,12 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/manage/ranks/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/manage/ranks/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -139,9 +139,9 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='ranks'/>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/manage/ranks/create/');
-          }}>Create new rank</Button>
+          <Link passHref href='/manage/ranks/create/'>
+            <Button sx={{ width: 200 }} variant="contained">Create new rank</Button>
+          </Link>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>

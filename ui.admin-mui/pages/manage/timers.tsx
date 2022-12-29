@@ -27,6 +27,7 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -81,13 +82,12 @@ const PageManageTimers: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<Edit/>}
-              onClick={() => {
-                router.push('/manage/timers/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/manage/timers/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<Edit/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -216,9 +216,9 @@ const PageManageTimers: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='timers'/>
         <Grid item>
-          <Button variant="contained" onClick={() => {
-            router.push('/manage/timers/create/');
-          }}>Create new timer</Button>
+          <Link passHref href='/manage/timers/create/'>
+            <Button variant="contained">Create new timer</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -123,13 +124,12 @@ const PageManageQuotes: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<Edit/>}
-              onClick={() => {
-                router.push('/manage/quotes/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/manage/quotes/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<Edit/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -189,9 +189,9 @@ const PageManageQuotes: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='quotes'/>
         <Grid item>
-          <Button variant="contained" onClick={() => {
-            router.push('/manage/quotes/create/');
-          }}>Create new quote</Button>
+          <Link passHref href='/manage/quotes/create/'>
+            <Button variant="contained">Create new quote</Button>
+          </Link>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>

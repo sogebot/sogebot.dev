@@ -29,6 +29,7 @@ import {
 import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -118,13 +119,9 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/commands/cooldowns/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/commands/cooldowns/edit/' + row.id}>
+              <Button size='small' variant="contained" startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -252,9 +249,9 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='cooldown'/>
         <Grid item>
-          <Button sx={{ width: 220 }} variant="contained" onClick={() => {
-            router.push('/commands/cooldowns/create/');
-          }}>Create new cooldown</Button>
+          <Link passHref href='/commands/cooldowns/create/'>
+            <Button sx={{ width: 220 }} variant="contained">Create new cooldown</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

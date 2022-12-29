@@ -11,6 +11,7 @@ import {
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
@@ -29,28 +30,32 @@ const LinkedListItem = function (props: LinkedListItemProps) {
   const router = useRouter();
   const reducer = useSelector((state: any) => state.loader);
 
-  const isActive = router.asPath === props.path;
+  const isActive = router.asPath?.split('?')[0] === props.path;
+
   return (
-    <MuiListItemButton
-      onClick={() => router.push(props.path)}
-      selected={isActive}
-      sx={{
-        justifyContent: 'center', height: reducer.drawerWidth,
-      }}
-      key={props.title}>
-      <Stack alignContent={'center'} sx={{ color: isActive ? theme.palette.primary.main : 'inherit' }}>
-        <ListItemIcon sx={{
-          placeContent: 'center', color: isActive ? `${theme.palette.primary.main} !important` : 'inherit',
-        }}>
-          {props.icon}
-        </ListItemIcon>
-        <Typography variant="caption" sx={{
-          textAlign: 'center', fontSize: '0.7rem',
-        }}>
-          {props.title}
-        </Typography>
-      </Stack>
-    </MuiListItemButton>
+    <Link passHref href={`${props.path}?server=${JSON.parse(localStorage.server)}`} style={{
+      textDecoration: 'none', color: 'white',
+    }}>
+      <MuiListItemButton
+        selected={isActive}
+        sx={{
+          justifyContent: 'center', height: reducer.drawerWidth, p: '4px',
+        }}
+        key={props.title}>
+        <Stack alignContent={'center'} sx={{ color: isActive ? theme.palette.primary.main : 'inherit' }}>
+          <ListItemIcon sx={{
+            placeContent: 'center', color: isActive ? `${theme.palette.primary.main} !important` : 'inherit',
+          }}>
+            {props.icon}
+          </ListItemIcon>
+          <Typography variant="caption" sx={{
+            textAlign: 'center', fontSize: '0.7rem',
+          }}>
+            {props.title}
+          </Typography>
+        </Stack>
+      </MuiListItemButton>
+    </Link>
   );
 };
 

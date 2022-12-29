@@ -14,10 +14,15 @@ import {
 } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import capitalize from 'lodash/capitalize';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect, useMemo, useState,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import SimpleBar from 'simplebar-react';
 
@@ -59,8 +64,8 @@ const PageCommandsAlias: NextPageWithLayout = () => {
           groupSet.push({
             name:    group,
             options: {
-              filter: null, permission: null, 
-            }, 
+              filter: null, permission: null,
+            },
           } as AliasGroup);
         }
       }
@@ -100,22 +105,21 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       title:        ' ',
       getCellValue: (row) => [
         <Stack direction="row" key="row">
-          <Button
-            size='small'
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/alias/group/edit/' + row.name);
-            }}>Edit</Button>
+          <Link passHref href={'/commands/alias/group/edit/' + row.name}>
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}>Edit</Button>
+          </Link>
           <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
       ],
     },
-  ], [ permissions, translate, router, deleteItem, groups ]);
+  ], [ permissions, translate, deleteItem, groups ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
-  }, [router]);
+  }, [ router ]);
 
   const refresh = async () => {
     console.log('Refresh');
@@ -147,9 +151,9 @@ const PageCommandsAlias: NextPageWithLayout = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Button sx={{ width: 220 }} color="secondary" variant="contained" onClick={() => {
-            router.push('/commands/alias/');
-          }}>Back to Alias settings</Button>
+          <Link passHref href='/commands/alias/'>
+            <Button sx={{ width: 220 }} color="secondary" variant="contained">Back to Alias settings</Button>
+          </Link>
         </Grid>
       </Grid>
 

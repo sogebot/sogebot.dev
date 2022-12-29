@@ -30,6 +30,7 @@ import {
 import { green, red } from '@mui/material/colors';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -281,9 +282,9 @@ const PageManagePolls: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='polls'/>
         <Grid item>
-          <Button variant="contained" onClick={() => {
-            router.push('/manage/polls/create/');
-          }}>Create new poll</Button>
+          <Link passHref href='/manage/polls/create/'>
+            <Button variant="contained">Create new poll</Button>
+          </Link>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>

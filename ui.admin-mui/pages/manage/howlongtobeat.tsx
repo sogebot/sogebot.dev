@@ -31,6 +31,7 @@ import {
 import { timestampToObject } from '@sogebot/ui-helpers/getTime';
 import axios from 'axios';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -252,11 +253,9 @@ const PageManageHLTB: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <IconButton
-              size='small'
-              onClick={() => {
-                router.push('/manage/howlongtobeat/edit/' + row.id);
-              }}><EditIcon/></IconButton>
+            <Link passHref href={'/manage/howlongtobeat/edit/' + row.id}>
+              <IconButton size='small'><EditIcon/></IconButton>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -310,9 +309,9 @@ const PageManageHLTB: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='howlongtobeat'/>
         <Grid item>
-          <Button sx={{ width: 250 }} variant="contained" onClick={() => {
-            router.push('/manage/howlongtobeat/create/');
-          }}>Add new tracked game</Button>
+          <Link passHref href='/manage/howlongtobeat/create/'>
+            <Button sx={{ width: 250 }} variant="contained">Add new tracked game</Button>
+          </Link>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>

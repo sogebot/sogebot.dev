@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -63,13 +64,12 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/registry/plugins/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/registry/plugins/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -330,9 +330,9 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       </Backdrop>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <Button variant="contained" onClick={() => {
-            router.push('/registry/plugins/create/');
-          }}>Create new plugin</Button>
+          <Link passHref href='/registry/plugins/create/'>
+            <Button variant="contained">Create new plugin</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

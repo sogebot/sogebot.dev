@@ -27,6 +27,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -104,13 +105,12 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/commands/alias/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/commands/alias/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -264,14 +264,14 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='alias'/>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/alias/create/');
-          }}>Create new alias</Button>
+          <Link passHref href="/commands/alias/create/">
+            <Button sx={{ width: 200 }} variant="contained">Create new alias</Button>
+          </Link>
         </Grid>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/alias/group/edit');
-          }} color='secondary'>Group settings</Button>
+          <Link passHref href="/commands/alias/group/edit">
+            <Button sx={{ width: 200 }} variant="contained" color='secondary'>Group settings</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">

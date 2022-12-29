@@ -29,11 +29,12 @@ import {
   IconButton,
   Paper,
   Stack,
-  TextField,Typography,
+  TextField, Typography,
 } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -152,11 +153,9 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <PlaylistEdit item={row} tags={tags} open={row.videoId === router.query.id} onSave={() => refresh()} />
-            <IconButton
-              onClick={() => {
-                router.push('/manage/songs/playlist/edit/' + row.videoId);
-              }}><EditTwoTone/>
-            </IconButton>
+            <Link passHref href={'/manage/songs/playlist/edit/' + row.videoId}>
+              <IconButton><EditTwoTone/></IconButton>
+            </Link>
             <IconButton href={`https://youtu.be/${row.videoId}`} target="_blank"><LinkTwoTone/></IconButton>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,

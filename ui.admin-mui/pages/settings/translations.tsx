@@ -22,6 +22,7 @@ import {
   Stack,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton/IconButton';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   ReactElement, useEffect, useRef, useState,
@@ -66,7 +67,9 @@ const PageSettingsTranslations: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <TranslationsEdit item={row} open={row.name === router.query.translationKey} onSave={() => refresh()} />
-            <IconButton onClick={() => router.push(`/settings/translations/${row.name}`)}><EditTwoTone/></IconButton>
+            <Link passHref href={`/settings/translations/${row.name}`}>
+              <IconButton><EditTwoTone/></IconButton>
+            </Link>
           </Stack>,
         ],
       },

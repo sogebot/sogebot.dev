@@ -29,6 +29,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -85,13 +86,12 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/commands/price/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/commands/price/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -260,9 +260,9 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='price'/>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/price/create/');
-          }}>Create new price</Button>
+          <Link passHref href='/commands/price/create/'>
+            <Button sx={{ width: 200 }} variant="contained">Create new price</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

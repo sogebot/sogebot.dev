@@ -3,10 +3,12 @@ import {
   Box, Button, Dialog, DialogContent, Divider, Grid, Grow, InputAdornment, Stack,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
-import { useEffect } from 'react';
+import {
+  useCallback, useEffect, useState,
+} from 'react';
 
 import { getSocket } from '~/src/helpers/socket';
 
@@ -29,10 +31,6 @@ export const TranslationsEdit: React.FC<{
       ...i, [key]: value,
     }));
   }, []);
-
-  const handleClose = () => {
-    router.push('/settings/translations');
-  };
 
   const handleSave = useCallback(() => {
     setSaving(true);
@@ -86,7 +84,9 @@ export const TranslationsEdit: React.FC<{
         <Grid item></Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+            <Link passHref href='/settings/translations'>
+              <Button sx={{ width: 150 }}>Close</Button>
+            </Link>
             <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>
           </Stack>
         </Grid>

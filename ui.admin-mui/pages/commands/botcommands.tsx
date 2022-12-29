@@ -20,6 +20,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   ReactElement, useEffect, useState,
@@ -114,14 +115,12 @@ const PageCommandsBot: NextPageWithLayout = () => {
       sorting:     { sortingEnabled: false },
       column:      {
         getCellValue: (row) => [
-          <Button
-            size='small'
-            key="edit"
-            variant="contained"
-            startIcon={<EditIcon/>}
-            onClick={() => {
-              router.push('/commands/botcommands/edit/' + row.id);
-            }}>Edit</Button>,
+          <Link passHref href={'/commands/botcommands/edit/' + row.id} key='edit'>
+            <Button
+              size='small'
+              variant="contained"
+              startIcon={<EditIcon/>}>Edit</Button>
+          </Link>,
         ],
       },
     },

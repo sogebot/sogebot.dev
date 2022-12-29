@@ -3,6 +3,7 @@ import {
   ListItemIcon, Menu, MenuItem, Stack, Typography,
 } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -129,11 +130,15 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
             );
           }
           return (
-            <MenuItem selected={isItemActive(item)} sx={{
-              fontSize: '14px', color: getColorOfItem(item),
-            }} onClick={() => {
-              handleClose(); router.push(`/${item.id}`);
-            }} key={item.id}>{translate(`menu.${item.name}`)}</MenuItem>
+            <Link passHref href={`/${item.id}?server=${JSON.parse(localStorage.server)}`}  key={item.id} style={{
+              textDecoration: 'none', color: 'white',
+            }}>
+              <MenuItem selected={isItemActive(item)} sx={{
+                fontSize: '14px', color: getColorOfItem(item),
+              }} onClick={() => {
+                handleClose();
+              }}>{translate(`menu.${item.name}`)}</MenuItem>
+            </Link>
           );
         })}
       </Menu>
@@ -151,13 +156,17 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
           horizontal: 'left',
         }}
       >
-        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <MenuItem key={item} sx={{ fontSize: '14px' }}
-          onClick={() => {
-            handleClose(); handleCloseModules(); router.push(`/settings/modules/${item}`);
-          }}
-          selected={isItemActive({
-            id: item, enabled: true, 
-          })}>{translate('menu.' + item).startsWith('{') ? item : translate('menu.' + item)}</MenuItem>
+        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <Link passHref href={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
+          textDecoration: 'none', color: 'white',
+        }}>
+          <MenuItem sx={{ fontSize: '14px' }}
+            onClick={() => {
+              handleClose(); handleCloseModules();
+            }}
+            selected={isItemActive({
+              id: item, enabled: true,
+            })}>{translate('menu.' + item).startsWith('{') ? item : translate('menu.' + item)}</MenuItem>
+        </Link>
         )}
       </Menu>
     </>

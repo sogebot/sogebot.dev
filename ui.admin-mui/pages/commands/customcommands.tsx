@@ -29,6 +29,7 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -128,13 +129,12 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}
-              onClick={() => {
-                router.push('/commands/customcommands/edit/' + row.id);
-              }}>Edit</Button>
+            <Link passHref href={'/commands/customcommands/edit/' + row.id}>
+              <Button
+                size='small'
+                variant="contained"
+                startIcon={<EditIcon/>}>Edit</Button>
+            </Link>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -311,14 +311,14 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='customcommands'/>
         <Grid item>
-          <Button variant="contained" onClick={() => {
-            router.push('/commands/customcommands/create/');
-          }}>Create new custom command</Button>
+          <Link passHref href='/commands/customcommands/create/'>
+            <Button variant="contained">Create new custom command</Button>
+          </Link>
         </Grid>
         <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" onClick={() => {
-            router.push('/commands/customcommands/group/edit');
-          }} color='secondary'>Group settings</Button>
+          <Link passHref href='/commands/customcommands/group/edit'>
+            <Button sx={{ width: 200 }} variant="contained" color='secondary'>Group settings</Button>
+          </Link>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">
