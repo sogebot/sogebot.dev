@@ -25,8 +25,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import Select from '@mui/material/Select';
 import { blueGrey, grey } from '@mui/material/colors';
+import Select from '@mui/material/Select';
 import {
   capitalize,
   cloneDeep, orderBy, sortBy,
@@ -38,8 +38,8 @@ import {
 } from 'react';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-
 import { defaultPermissions } from '~/../backend/src/helpers/permissions/defaultPermissions';
+
 import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { Layout } from '~/src/components/Layout/main';
