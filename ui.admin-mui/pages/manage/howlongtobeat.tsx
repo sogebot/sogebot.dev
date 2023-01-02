@@ -39,8 +39,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { HLTBEdit } from '~/src/components/RightDrawer/HLTBEdit';
 import { DisabledAlert } from '~/src/components/System/DisabledAlert';
@@ -253,7 +253,7 @@ const PageManageHLTB: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <EditButton href={'/manage/howlongtobeat/edit/' + row.id}/>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },

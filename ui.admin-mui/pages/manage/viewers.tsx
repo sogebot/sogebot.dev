@@ -40,7 +40,7 @@ import { v4 } from 'uuid';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import { Layout } from '~/src/components/Layout/main';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import { RowDetail } from '~/src/components/Table/Viewers/RowDetail';
@@ -189,7 +189,7 @@ const PageManageViewers: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },

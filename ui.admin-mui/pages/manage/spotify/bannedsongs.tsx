@@ -38,7 +38,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import { Layout } from '~/src/components/Layout/main';
 import DenseCell from '~/src/components/Table/DenseCell';
 import { getSocket } from '~/src/helpers/socket';
@@ -82,7 +82,7 @@ const PageCommandsSpotifySongBan: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <IconButton href={`${row.spotifyUri}`} target="_blank"><Link/></IconButton>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },

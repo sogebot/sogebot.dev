@@ -44,9 +44,9 @@ import { useWindowSize } from 'rooks';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
 import { ButtonsTagBulk } from '~/src/components/Buttons/TagBulk';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { PlaylistEdit } from '~/src/components/RightDrawer/PlaylistEdit';
 import DenseCell from '~/src/components/Table/DenseCell';
@@ -154,7 +154,7 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
             <PlaylistEdit item={row} tags={tags} open={row.videoId === router.query.id} onSave={() => refresh()} />
             <EditButton href={'/manage/songs/playlist/edit/' + row.videoId}/>
             <IconButton href={`https://youtu.be/${row.videoId}`} target="_blank"><LinkTwoTone/></IconButton>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },

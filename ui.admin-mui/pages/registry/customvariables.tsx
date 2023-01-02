@@ -14,7 +14,8 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
-import EditIcon from '@mui/icons-material/Edit';
+import { PlayArrowTwoTone } from '@mui/icons-material';
+import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import {
   CircularProgress,
   Grid,
@@ -24,20 +25,24 @@ import {
   Typography,
 } from '@mui/material';
 import { VariableInterface } from '@sogebot/backend/dest/database/entity/variable';
-import Link from 'next/link';
+import parse from 'html-react-parser';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
-  ReactElement, useCallback, useEffect,
+  ReactElement,
+  useCallback,
+  useEffect,
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
+import EditButton from '~/src/components/Buttons/EditButton';
 import LinkButton from '~/src/components/Buttons/LinkButton';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -54,6 +59,33 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
+
+  const [ evalsInProgress, setEvalsInProgress ] = useState<string[]>([]);
+
+  const refresh = useCallback(async () => {
+    await Promise.all([
+      new Promise<void>(resolve => {
+        getSocket('/core/customvariables').emit('customvariables::list', (_, data) => {
+          setItems(data);
+          resolve();
+        });
+      }),
+    ]);
+    setLoading(false);
+  }, []);
+
+  const triggerEval = useCallback((item: VariableInterface) => {
+    setEvalsInProgress(v => [...v, item.id!]);
+    getSocket('/core/customvariables').emit('customvariables::runScript', item.id!, (err) => {
+      if (err) {
+        enqueueSnackbar('Script error. ' + err, { variant: 'error' });
+      } else {
+        enqueueSnackbar(parse(`Script&nbsp;<strong>${item.variableName}</strong>&nbsp;(${item.id}) finished successfully`), { variant: 'success' });
+        refresh();
+      }
+      setEvalsInProgress(v => v.filter(o => o !== item.id!));
+    });
+  }, [enqueueSnackbar, refresh]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<VariableInterface & { additionalInfo: string }>([
     {
@@ -102,20 +134,29 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
       columnName:     'currentValue',
       translationKey: 'registry.customvariables.currentValue.name',
       filtering:      { type: 'string' },
+      column:         { getCellValue: (row) => <span title={row.currentValue}>{row.currentValue}</span> },
     },
     {
       columnName:  'actions',
-      table:       { width: 130 },
+      table:       { width: 200 },
       sorting:     { sortingEnabled: false },
       translation: ' ',
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <IconButton
-              LinkComponent={Link}
+            <EditButton
               href={'/registry/customvariables/edit/' + row.id}
-            ><EditIcon/></IconButton>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            />
+            <IconButton
+              onClick={() => clone(row)}
+            ><ContentCopyTwoToneIcon/></IconButton>
+            { row.type ==='eval' && <IconButton disabled={evalsInProgress.includes(row.id!)} onClick={() => triggerEval(row)}>
+              { evalsInProgress.includes(row.id!)
+                ? <CircularProgress color='inherit' size={24}/>
+                : <PlayArrowTwoTone/>
+              }
+            </IconButton>}
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },
@@ -124,17 +165,18 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
-  const refresh = useCallback(async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/customvariables').emit('customvariables::list', (_, data) => {
-          setItems(data);
-          resolve();
-        });
-      }),
-    ]);
-    setLoading(false);
-  }, []);
+  const clone = useCallback((item: VariableInterface) => {
+    getSocket('/core/customvariables').emit('customvariables::save', {
+      ...item, history: [], urls: [], id: v4(), description: '(clone) of ' + item.variableName, variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
+    }, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) cloned.`, { variant: 'success' });
+      }
+      refresh();
+    });
+  }, [refresh, enqueueSnackbar]);
 
   const deleteItem = useCallback((item: VariableInterface) => {
     return new Promise((resolve, reject) => {
@@ -240,5 +282,4 @@ PageRegistryCustomVariables.getLayout = function getLayout(page: ReactElement) {
     </Layout>
   );
 };
-
 export default PageRegistryCustomVariables;

@@ -23,8 +23,8 @@ import {
 import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { KeywordGroupEdit } from '~/src/components/RightDrawer/KeywordGroupEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
@@ -104,7 +104,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       getCellValue: (row) => [
         <Stack direction="row" key="row">
           <EditButton href={'/commands/keywords/group/edit/' + row.name}/>
-          <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+          <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
       ],
     },

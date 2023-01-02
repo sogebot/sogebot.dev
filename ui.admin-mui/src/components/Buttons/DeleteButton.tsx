@@ -1,10 +1,10 @@
-import { Delete } from '@mui/icons-material';
+import { DeleteTwoTone } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import * as React from 'react';
 
 import { DialogDelete } from '~/src/components/Dialog/Delete';
 
-export const DashboardWidgetActionButtonsDelete: React.FC<{
+export const DeleteButton: React.FC<{
   onDelete: () => void,
 }> = ({
   onDelete,
@@ -18,7 +18,7 @@ export const DashboardWidgetActionButtonsDelete: React.FC<{
   return (
     <>
       <IconButton onClick={handleClick}>
-        <Delete color="error"/>
+        <DeleteTwoTone color="error"/>
       </IconButton>
       <DialogDelete open={open} setOpen={setOpen} onDelete={onDelete}/>
     </>

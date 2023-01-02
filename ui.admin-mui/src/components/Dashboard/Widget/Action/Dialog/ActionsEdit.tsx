@@ -17,11 +17,10 @@ import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import * as React from 'react';
 import { SliderPicker } from 'react-color';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 
-import { DashboardWidgetActionButtonsDelete } from '~/src/components/Buttons/Delete';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import { DashboardWidgetActionButtonsAddItem } from '~/src/components/Dashboard/Widget/Action/Buttons/AddItem';
 import { getSocket } from '~/src/helpers/socket';
 import {
@@ -160,7 +159,7 @@ const DraggableComponent: React.FC<{
             {props.children.map((child: React.DetailedReactHTMLElement<any, HTMLElement>, idx: number) => {
               return (<React.Fragment key={'child' + idx}>
                 {React.cloneElement(child, {
-                  provided, snapshot, 
+                  provided, snapshot,
                 })}
               </React.Fragment>);
             })}
@@ -168,17 +167,17 @@ const DraggableComponent: React.FC<{
               <IconButton onClick={() => setEditingItem(editingItem === updateItem.id ? '' : updateItem.id)}>
                 <Edit/>
               </IconButton>
-              <DashboardWidgetActionButtonsDelete onDelete={() => deleteItem()}/>
+              <DeleteButton onDelete={() => deleteItem()}/>
             </TableCellKeepWidth>
           </TableRow>
 
           <TableRow>
             <TableCell style={{
-              paddingBottom: 0, paddingTop: 0, 
+              paddingBottom: 0, paddingTop: 0,
             }} colSpan={5}>
               <Collapse in={editingItem === updateItem.id}>
                 <Box sx={{
-                  width: '100%', p: 2, 
+                  width: '100%', p: 2,
                 }}>
                   <Grid container spacing={2} justifyContent='center'>
                     <Grid item xs={6}>
@@ -368,7 +367,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       }
       dispatch(
         setRandomizers(items.map(o => ({
-          id: o.id, label: o.name, 
+          id: o.id, label: o.name,
         })))
       );
     });
@@ -379,17 +378,17 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       }
       dispatch(
         setCountdowns((result.filter(o => o.value === 'countdown') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name, 
+          id: o.id, label: o.name,
         })))
       );
       dispatch(
         setMarathons((result.filter(o => o.value === 'marathon') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name, 
+          id: o.id, label: o.name,
         })))
       );
       dispatch(
         setStopwatchs((result.filter(o => o.value === 'stopwatch') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name, 
+          id: o.id, label: o.name,
         })))
       );
     });
@@ -490,7 +489,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
         </Container>
         <Divider/>
         <Box sx={{
-          height: '50px', p: 1, 
+          height: '50px', p: 1,
         }}>
           <Grid container sx={{ height: '100%' }} spacing={1}>
             <Grid item flexGrow={1}>

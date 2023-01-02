@@ -31,7 +31,7 @@ import { v4 } from 'uuid';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import { Layout } from '~/src/components/Layout/main';
 import getAccessToken from '~/src/getAccessToken';
 import { dayjs } from '~/src/helpers/dayjsHelper';
@@ -68,7 +68,7 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
               LinkComponent={Link}
               href={'/registry/plugins/edit/' + row.id}
             ><EditIcon/></IconButton>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },

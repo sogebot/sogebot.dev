@@ -39,9 +39,9 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
 import LinkButton from '~/src/components/Buttons/LinkButton';
-import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { PriceEdit } from '~/src/components/RightDrawer/PriceEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
@@ -87,7 +87,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <EditButton href={'/commands/price/edit/' + row.id}/>
-            <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
       },
