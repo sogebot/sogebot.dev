@@ -105,7 +105,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <EditButton href={'/commands/alias,' + row.id}/>
+            <EditButton href={'/commands/alias/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
