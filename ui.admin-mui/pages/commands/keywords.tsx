@@ -16,7 +16,6 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { Keyword, KeywordGroup } from '@entity/keyword';
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -27,7 +26,6 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -39,7 +37,9 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
+import LinkButton from '~/src/components/Buttons/LinkButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { KeywordEdit } from '~/src/components/RightDrawer/KeywordEdit';
@@ -118,12 +118,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/commands/keywords/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/commands/keywords/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -250,14 +245,10 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='keywords'/>
         <Grid item>
-          <Link passHref href='/commands/keywords/create/'>
-            <Button sx={{ width: 200 }} variant="contained">Create new keyword</Button>
-          </Link>
+          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/create/'>Create new keyword</LinkButton>
         </Grid>
         <Grid item>
-          <Link passHref href='/commands/keywords/group/edit'>
-            <Button sx={{ width: 200 }} variant="contained" color='secondary'>Group settings</Button>
-          </Link>
+          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/group/edit' color='secondary'>Group settings</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

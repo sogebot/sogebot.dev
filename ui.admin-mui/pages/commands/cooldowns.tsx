@@ -16,7 +16,6 @@ import {
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone,
 } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -29,7 +28,6 @@ import {
 import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -41,6 +39,8 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
+import LinkButton from '~/src/components/Buttons/LinkButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { CooldownEdit } from '~/src/components/RightDrawer/CooldownEdit';
@@ -119,9 +119,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/commands/cooldowns/edit/' + row.id}>
-              <Button size='small' variant="contained" startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/commands/cooldowns/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -249,9 +247,7 @@ const PageCommandsCooldown: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='cooldown'/>
         <Grid item>
-          <Link passHref href='/commands/cooldowns/create/'>
-            <Button sx={{ width: 220 }} variant="contained">Create new cooldown</Button>
-          </Link>
+          <LinkButton sx={{ width: 220 }} variant="contained" href='/commands/cooldowns/create/'>Create new cooldown</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

@@ -14,7 +14,6 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import { Quotes } from '@entity/quotes';
-import { Edit } from '@mui/icons-material';
 import {
   Button,
   CircularProgress,
@@ -37,6 +36,7 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { QuotesEdit } from '~/src/components/RightDrawer/QuotesEdit';
@@ -124,12 +124,7 @@ const PageManageQuotes: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/manage/quotes/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<Edit/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/manage/quotes/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

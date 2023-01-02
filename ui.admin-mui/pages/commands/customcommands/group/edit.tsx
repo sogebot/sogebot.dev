@@ -4,7 +4,6 @@ import {
   Table,
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -24,6 +23,7 @@ import {
 import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { KeywordGroupEdit } from '~/src/components/RightDrawer/KeywordGroupEdit';
@@ -103,12 +103,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       title:        ' ',
       getCellValue: (row) => [
         <Stack direction="row" key="row">
-          <Link passHref href={'/commands/customcommands/group/edit/' + row.name}>
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}>Edit</Button>
-          </Link>
+          <EditButton href={'/commands/customcommands/group/edit/' + row.name}/>
           <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
       ],

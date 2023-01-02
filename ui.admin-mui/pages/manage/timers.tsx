@@ -15,7 +15,8 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { Timer } from '@entity/timer';
 import {
-  CheckBoxTwoTone, DisabledByDefaultTwoTone, Edit, TimerOffTwoTone, TimerTwoTone,
+  CheckBoxTwoTone, DisabledByDefaultTwoTone,
+  TimerOffTwoTone, TimerTwoTone,
 } from '@mui/icons-material';
 import {
   Button,
@@ -39,6 +40,7 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { TimerEdit } from '~/src/components/RightDrawer/TimerEdit';
@@ -82,12 +84,7 @@ const PageManageTimers: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/manage/timers/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<Edit/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/manage/timers/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

@@ -12,15 +12,12 @@ import {
   TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import EditIcon from '@mui/icons-material/Edit';
 import {
-  Button,
   CircularProgress,
   Grid,
   Paper,
   Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   ReactElement, useEffect, useState,
@@ -29,6 +26,7 @@ import SimpleBar from 'simplebar-react';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { Commands } from '~/src/classes/Commands';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { Layout } from '~/src/components/Layout/main';
 import { BotCommandEdit } from '~/src/components/RightDrawer/BotCommandEdit';
 import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
@@ -113,16 +111,7 @@ const PageCommandsBot: NextPageWithLayout = () => {
       translation: ' ',
       table:       { width: 100 },
       sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => [
-          <Link passHref href={'/commands/botcommands/edit/' + row.id} key='edit'>
-            <Button
-              size='small'
-              variant="contained"
-              startIcon={<EditIcon/>}>Edit</Button>
-          </Link>,
-        ],
-      },
+      column:      { getCellValue: (row) => <EditButton href={'/commands/botcommands/edit/' + row.id}/> },
     },
   ]);
 

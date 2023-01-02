@@ -64,12 +64,10 @@ const PageRegistryPlugins: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/registry/plugins/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <IconButton
+              LinkComponent={Link}
+              href={'/registry/plugins/edit/' + row.id}
+            ><EditIcon/></IconButton>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

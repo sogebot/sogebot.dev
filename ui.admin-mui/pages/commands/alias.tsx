@@ -17,7 +17,6 @@ import { Alias, AliasGroup } from '@entity/alias';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -27,7 +26,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -39,7 +37,9 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
+import LinkButton from '~/src/components/Buttons/LinkButton';
 import { ButtonsPermissionsBulk } from '~/src/components/Buttons/PermissionsBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
@@ -105,12 +105,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/commands/alias/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/commands/alias,' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -264,14 +259,10 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='alias'/>
         <Grid item>
-          <Link passHref href="/commands/alias/create/">
-            <Button sx={{ width: 200 }} variant="contained">Create new alias</Button>
-          </Link>
+          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new custom variable</LinkButton>
         </Grid>
         <Grid item>
-          <Link passHref href="/commands/alias/group/edit">
-            <Button sx={{ width: 200 }} variant="contained" color='secondary'>Group settings</Button>
-          </Link>
+          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/edit' color='secondary'>Group settings</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Set visibility on">

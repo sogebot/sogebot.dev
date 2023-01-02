@@ -18,12 +18,10 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { CacheGamesInterface } from '@entity/cacheGames';
 import { HowLongToBeatGame } from '@entity/howLongToBeatGame';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
   Grid,
-  IconButton,
   Paper,
   Stack,
   Typography,
@@ -41,6 +39,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { HLTBEdit } from '~/src/components/RightDrawer/HLTBEdit';
@@ -253,9 +252,7 @@ const PageManageHLTB: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/manage/howlongtobeat/edit/' + row.id}>
-              <IconButton size='small'><EditIcon/></IconButton>
-            </Link>
+            <EditButton href={'/manage/howlongtobeat/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

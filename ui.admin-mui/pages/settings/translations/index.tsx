@@ -67,9 +67,7 @@ const PageSettingsTranslations: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <TranslationsEdit item={row} open={row.name === router.query.translationKey} onSave={() => refresh()} />
-            <Link passHref href={`/settings/translations/edit/${row.name}`}>
-              <IconButton><EditTwoTone/></IconButton>
-            </Link>
+            <IconButton LinkComponent={Link} href={`/settings/translations/edit/${row.name}`}><EditTwoTone/></IconButton>
           </Stack>,
         ],
       },

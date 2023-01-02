@@ -14,7 +14,6 @@ import {
   VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import { Rank } from '@entity/rank';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -35,6 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { RankEdit } from '~/src/components/RightDrawer/RankEdit';
@@ -74,12 +74,7 @@ const PageCommandsKeyword: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/manage/ranks/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/manage/ranks/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

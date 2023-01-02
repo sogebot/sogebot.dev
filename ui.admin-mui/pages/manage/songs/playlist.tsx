@@ -17,7 +17,6 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import { SongPlaylist } from '@entity/song';
 import {
-  EditTwoTone,
   LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeUpTwoTone,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
@@ -34,7 +33,6 @@ import {
 import Popover from '@mui/material/Popover';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -46,6 +44,7 @@ import { useWindowSize } from 'rooks';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { ButtonsTagBulk } from '~/src/components/Buttons/TagBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
@@ -153,9 +152,7 @@ const PageCommandsSongPlaylist: NextPageWithLayout = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <PlaylistEdit item={row} tags={tags} open={row.videoId === router.query.id} onSave={() => refresh()} />
-            <Link passHref href={'/manage/songs/playlist/edit/' + row.videoId}>
-              <IconButton><EditTwoTone/></IconButton>
-            </Link>
+            <EditButton href={'/manage/songs/playlist/edit/' + row.videoId}/>
             <IconButton href={`https://youtu.be/${row.videoId}`} target="_blank"><LinkTwoTone/></IconButton>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,

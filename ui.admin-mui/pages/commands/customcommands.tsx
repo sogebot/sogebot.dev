@@ -18,7 +18,6 @@ import { Commands, CommandsGroup } from '@entity/commands';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, RestartAltTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -41,6 +40,7 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
 import { ButtonsGroupBulk } from '~/src/components/Buttons/GroupBulk';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
@@ -129,12 +129,7 @@ const PageCommandsCommands: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/commands/customcommands/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/commands/customcommands/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

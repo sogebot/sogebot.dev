@@ -17,7 +17,6 @@ import { Price } from '@entity/price';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, SignalWifi4Bar, SignalWifiOffTwoTone,
 } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -29,7 +28,6 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -41,6 +39,8 @@ import SimpleBar from 'simplebar-react';
 import { DisabledAlert } from '@/components/System/DisabledAlert';
 import { NextPageWithLayout } from '~/pages/_app';
 import { ButtonsDeleteBulk } from '~/src/components/Buttons/DeleteBulk';
+import EditButton from '~/src/components/Buttons/EditButton';
+import LinkButton from '~/src/components/Buttons/LinkButton';
 import { GridActionAliasMenu } from '~/src/components/GridAction/AliasMenu';
 import { Layout } from '~/src/components/Layout/main';
 import { PriceEdit } from '~/src/components/RightDrawer/PriceEdit';
@@ -86,12 +86,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <Link passHref href={'/commands/price/edit/' + row.id}>
-              <Button
-                size='small'
-                variant="contained"
-                startIcon={<EditIcon/>}>Edit</Button>
-            </Link>
+            <EditButton href={'/commands/price/edit/' + row.id}/>
             <GridActionAliasMenu key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -260,9 +255,7 @@ const PageCommandsPrice: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='price'/>
         <Grid item>
-          <Link passHref href='/commands/price/create/'>
-            <Button sx={{ width: 200 }} variant="contained">Create new price</Button>
-          </Link>
+          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/price/create/'>Create new price</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">

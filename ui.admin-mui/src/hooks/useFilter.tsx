@@ -125,9 +125,11 @@ export const useFilter = <T,>(availableFilters: {
       }
     }
 
-    for (const popup of popups) {
-      popup.close();
-    }
+    setTimeout(() => {
+      for (const popup of popups) {
+        popup.close();
+      }
+    }, 10);
   }, [ newFilter, filters ]);
 
   const handleDelete = React.useCallback((idx: number) => {
@@ -275,6 +277,7 @@ export const useFilter = <T,>(availableFilters: {
                                   fullWidth
                                   value={newFilter.value}
                                   onChange={handleStringChange}
+                                  onKeyDown={(ev) => ev.key === 'Enter' && applyFilter([popupState, popupState2])}
                                 />
                               </Box>
                             </>}
