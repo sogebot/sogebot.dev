@@ -5,9 +5,9 @@ ARG COMMIT=2c12db2a
 RUN apk add --no-cache --upgrade bash
 RUN apk upgrade
 
-RUN mkdir -p /app/static/${COMMIT}
-ADD sogeBot-dashboard-${COMMIT} /app/static
-ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
+#RUN mkdir -p /app/static/${COMMIT}
+#ADD sogeBot-dashboard-${COMMIT} /app/static
+#ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
 
 # extract commit files
 COPY *.zip /app/static/

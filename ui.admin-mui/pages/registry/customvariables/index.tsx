@@ -21,6 +21,7 @@ import { PlayArrowTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import {
   CircularProgress,
+  Dialog,
   Grid,
   IconButton,
   Paper,
@@ -49,6 +50,7 @@ import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
 import LinkButton from '~/src/components/Buttons/LinkButton';
 import { Layout } from '~/src/components/Layout/main';
+import { CustomVariablesEdit } from '~/src/components/RightDrawer/CustomVariablesEdit';
 import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -333,6 +335,13 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
             </DataGrid>
           </SimpleBar>
         </Paper>}
+
+      <Dialog
+        open={!!(router.query.params && router.query.params[0] === 'edit' && router.query.params[1])}
+        fullWidth
+        maxWidth='md'>
+        {router.query.params && router.query.params[1] && <CustomVariablesEdit id={router.query.params[1]}/>}
+      </Dialog>
     </>
   );
 };
