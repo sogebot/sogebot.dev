@@ -1,5 +1,5 @@
+import { SearchTwoTone } from '@mui/icons-material';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
-import SearchIcon from '@mui/icons-material/SearchTwoTone';
 import {
   Fade, FormControl, IconButton, InputAdornment, InputBase, Paper, TextField,
 } from '@mui/material';
@@ -40,10 +40,10 @@ export const Search: React.FC = () => {
           <Paper sx={{
             p: '2px 4px', mx: 2, display: 'flex', alignItems: 'center', width: '100%',
           }}>
-            <SearchIcon />
+            <SearchTwoTone />
             <InputBase
               sx={{
-                flex: 1, ml: 1, 
+                flex: 1, ml: 1,
               }}
               value={input}
               placeholder="Type to search"
@@ -67,7 +67,7 @@ export const Search: React.FC = () => {
             InputProps={{
               startAdornment:
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchTwoTone />
               </InputAdornment>,
               endAdornment:
               <Fade in={input.length > 0}>

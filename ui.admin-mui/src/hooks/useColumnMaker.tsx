@@ -36,8 +36,7 @@ export const useColumnMaker = <T,>(props: ColumnMakerProps<T>) => {
 
   const tableColumnExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName: item.columnName,
-    align:      item.table?.align,
-    width:      item.table?.width,
+    ...item.table,
   })) as Table.ColumnExtension[], [ props ]);
 
   const sortingTableExtensions = useMemo(() => props.map((item: typeof props[number]) => ({

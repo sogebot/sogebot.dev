@@ -1,5 +1,4 @@
 import {
-  Filter,
   FilteringState,
   IntegratedFiltering,
   IntegratedSelection,
@@ -14,6 +13,10 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
+import {
+  mdiAlphabeticalVariant, mdiCodeBrackets, mdiCodeJson, mdiNumeric,
+} from '@mdi/js';
+import Icon from '@mdi/react';
 import { PlayArrowTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import {
@@ -24,8 +27,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { Box } from '@mui/system';
 import { VariableInterface } from '@sogebot/backend/dest/database/entity/variable';
 import parse from 'html-react-parser';
+import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import {
@@ -44,15 +49,21 @@ import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import EditButton from '~/src/components/Buttons/EditButton';
 import LinkButton from '~/src/components/Buttons/LinkButton';
 import { Layout } from '~/src/components/Layout/main';
+import { getPermissionName } from '~/src/helpers/getPermissionName';
 import { getSocket } from '~/src/helpers/socket';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
 import { useFilter } from '~/src/hooks/useFilter';
+import { usePermissions } from '~/src/hooks/usePermissions';
+import { usePredicate } from '~/src/hooks/usePredicate';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import { setBulkCount } from '~/src/store/appbarSlice';
 
 const PageRegistryCustomVariables: NextPageWithLayout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useTranslation();
+  const { permissions } = usePermissions();
 
   const [ items, setItems ] = useState<VariableInterface[]>([]);
 
@@ -87,35 +98,30 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
     });
   }, [enqueueSnackbar, refresh]);
 
+  const { defaultStringForAttribute } = usePredicate();
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<VariableInterface & { additionalInfo: string }>([
     {
-      columnName:     'variableName',
+      columnName: 'variableName',
+      table:      {
+        wordWrapEnabled: true, width: 300,
+      },
       translationKey: 'name',
       filtering:      { type: 'string' },
       column:         {
         getCellValue: (row) =>
-          <Stack>
-            <Typography variant='body2' sx={{ fontWeight: 'bold' }} component='strong'>{row.variableName}</Typography>
-            <Typography variant='body2'>{row.description}</Typography>
+          <Stack direction='row' alignItems='center' spacing={1}>
+            {row.type === 'text' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiAlphabeticalVariant} color='white'/>}
+            {row.type === 'number' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiNumeric} color='white'/>}
+            {row.type === 'eval' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiCodeJson} color='white'/>}
+            {row.type === 'options' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiCodeBrackets} color='white'/>}
+            <Stack sx={{ flexShrink: 2 }}>
+              <Typography variant='body2' sx={{ fontWeight: 'bold' }} component='strong'>{row.variableName}</Typography>
+              <Typography variant='body2'>{row.description}</Typography>
+            </Stack>
           </Stack>,
 
       },
-      predicate: (value: string, filter: Filter, row: any) => {
-        const fValue = filter.value.toLowerCase();
-        if (filter.operation === 'contains') {
-          return row.variableName.toLowerCase().includes(fValue);
-        }
-
-        if (filter.operation === 'equal') {
-          return row.variableName.toLowerCase() === fValue;
-        }
-
-        if (filter.operation === 'notEqual') {
-          return row.variableName.toLowerCase() !== fValue;
-        }
-
-        return IntegratedFiltering.defaultPredicate(value, filter, row);
-      },
+      predicate: defaultStringForAttribute('variableName'),
     },
     {
       columnName: 'description',
@@ -123,18 +129,74 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
       hidden:     true,
     },
     {
-      columnName:     'additionalInfo',
-      translationKey: 'registry.customvariables.additional-info',
-    },
-    {
-      columnName: 'type',
-      filtering:  { type: 'string' },
+      columnName: 'permission',
+      table:      { width: 140 },
+      filtering:  { type: 'permission' },
+      column:     { getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []) },
     },
     {
       columnName:     'currentValue',
       translationKey: 'registry.customvariables.currentValue.name',
+      table:          { wordWrapEnabled: true },
       filtering:      { type: 'string' },
       column:         { getCellValue: (row) => <span title={row.currentValue}>{row.currentValue}</span> },
+      predicate:      defaultStringForAttribute('currentValue'),
+    },
+    {
+      columnName: 'additionalInfo',
+      table:      {
+        wordWrapEnabled: true, width: 400,
+      },
+      translationKey: 'registry.customvariables.additional-info',
+      column:         {
+        getCellValue: (row) => <>
+          {row.type === 'eval' && <>
+            <Box>
+              <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.run-script') }:</Typography>
+              {' '}
+              { (row.runEveryTypeValue ?? 0) > 0
+                ? `${(row.runEvery ?? 0) / (row.runEveryTypeValue ?? 0)} ${translate('registry.customvariables.runEvery.' + row.runEveryType)}`
+                : translate('registry.customvariables.runEvery.' + row.runEveryType)}
+            </Box>
+            <Box>
+              <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.last-run') }</Typography>
+              {' '}
+              { row.runAt ? new Date(row.runAt).toLocaleString() : translate('commons.never') }
+            </Box>
+          </>}
+
+          {row.type === 'options' && <Box>
+            <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.usableOptions.name') }:</Typography>
+            {' '}
+            {row.usableOptions.join(', ')}
+          </Box>}
+
+          {row.readOnly && <Box><Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ capitalize(translate('registry.customvariables.isReadOnly')) }</Typography></Box>}
+          <Box>
+            <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.response.name') }:</Typography>
+            {' '}
+            {row.responseType === 0 && <Typography variant='body2' component='span'>{ translate('registry.customvariables.response.default') }</Typography>}
+            {row.responseType === 1 && <Typography variant='body2' component='span'>{ row.responseText } <small>({ translate('registry.customvariables.response.custom') })</small></Typography>}
+            {row.responseType === 2 && <Typography variant='body2' component='span'>{ translate('registry.customvariables.response.command') }</Typography>}
+          </Box>
+        </>,
+      },
+    },
+    {
+      columnName: 'type',
+      table:      { width: 70 },
+      filtering:  {
+        type:    'list',
+        options: {
+          listValues: [
+            translate('registry.customvariables.types.number'),
+            translate('registry.customvariables.types.eval'),
+            translate('registry.customvariables.types.text'),
+            translate('registry.customvariables.types.options'),
+          ],
+        } ,
+      },
+      hidden: true,
     },
     {
       columnName:  'actions',
