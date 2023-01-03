@@ -1,51 +1,48 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Grid,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, Grid, TextField,
 } from '@mui/material';
 import { VariableInterface } from '@sogebot/backend/dest/database/entity/variable';
+import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
 import { getSocket } from '~/src/helpers/socket';
+import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
-/*
-const newAlias = new CustomVariable();
-newAlias.alias = '';
-newAlias.permission = defaultPermissions.VIEWERS;
-newAlias.command = '';
-newAlias.enabled = true;
-newAlias.visible = true;
-newAlias.group = null;
-*/
+const newItem: VariableInterface = {
+  variableName:  '',
+  currentValue:  '',
+  evalValue:     '',
+  permission:    '',
+  responseType:  0,
+  type:          'text',
+  usableOptions: [],
+  description:   '',
+};
 
 export const CustomVariablesEdit: React.FC<{
   id?: string
 }> = ({ id }) => {
   const router = useRouter();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [ item, setItem ] = useState<VariableInterface | null>(null);
+  const { propsError, reset, setErrors, /* validate, */ haveErrors } = useValidator();
+  const { translate } = useTranslation();
+  const [ item, setItem ] = useState<VariableInterface>(cloneDeep(newItem));
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, haveErrors } = useValidator();
 
-  /*
-  const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
-    if (!alias) {
+  const handleValueChange = <T extends keyof VariableInterface>(key: T, value: Required<VariableInterface[T]>) => {
+    if (!item) {
       return;
     }
-    const update = cloneDeep(alias);
-    if (key === 'group' && String(value).trim().length === 0) {
-      update.group = null;
-    } else {
-      update[key] = value;
-    }
-    setAlias(update);
+    setItem(v => ({
+      ...v, [key]: value,
+    }));
   };
-  */
 
   useEffect(() => {
     if (id) {
@@ -55,28 +52,28 @@ export const CustomVariablesEdit: React.FC<{
           enqueueSnackbar('Something went wrong during data loading.');
           router.push(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
         } else {
-          setItem(val.find(o => o.id === id) || null);
+          setItem(val.find(o => o.id === id) ?? cloneDeep(newItem));
         }
+        setLoading(false);
       });
-      setLoading(false);
     } else {
-      //setAlias(newAlias);
+      setItem(cloneDeep(newItem));
       setLoading(false);
     }
     reset();
   }, [router, id, enqueueSnackbar, reset]);
 
-  /*
   useEffect(() => {
-    if (!loading && editDialog && alias) {
+    if (!loading && item) {
+      /*
       const toCheck = new Alias();
       merge(toCheck, alias);
       validateOrReject(toCheck)
         .then(() => setErrors(null))
         .catch(setErrors);
+        */
     }
-  }, [alias, loading, editDialog, setErrors]);
-  */
+  }, [item, loading, setErrors]);
 
   const handleClose = () => {
     router.push(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
@@ -114,6 +111,24 @@ export const CustomVariablesEdit: React.FC<{
           noValidate
           autoComplete="off"
         >
+          <TextField
+            fullWidth
+            {...propsError('variableName')}
+            variant="filled"
+            required
+            value={item?.variableName || ''}
+            label={translate('name')}
+            onChange={(event) => handleValueChange('variableName', event.target.value)}
+          />
+
+          <TextField
+            fullWidth
+            {...propsError('description')}
+            variant="filled"
+            value={item?.description || ''}
+            label={translate('description')}
+            onChange={(event) => handleValueChange('description', event.target.value)}
+          />
         </Box>
       </DialogContent>
     </Fade>
