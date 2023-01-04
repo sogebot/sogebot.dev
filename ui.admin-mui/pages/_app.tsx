@@ -48,7 +48,7 @@ export default function MyApp(props: MyAppProps) {
           <title>sogeBot admin page</title>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />

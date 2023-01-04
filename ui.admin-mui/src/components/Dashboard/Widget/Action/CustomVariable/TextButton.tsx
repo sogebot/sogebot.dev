@@ -3,8 +3,8 @@ import {
   Popover, Stack, TextField, Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import { VariableInterface } from '@sogebot/backend/src/database/entity/variable';
 import {
   useCallback, useRef, useState,
 } from 'react';
@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { getSocket } from '../../../../../helpers/socket';
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: VariableInterface, onUpdate: (value: string) => void }> = ({
+export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void }> = ({
   item, variable, onUpdate,
 }) => {
   const { user } = useSelector((state: any) => state.user);
@@ -37,7 +37,7 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {
       user: {
-        userId: user.id, userName: user.login, 
+        userId: user.id, userName: user.login,
       },
       id:    item.id,
       value: value,

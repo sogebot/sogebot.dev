@@ -14,6 +14,8 @@ type Props = {
   mustBeDirty?: boolean,
 };
 
+const regexps = { 'minLength': 'must be longer than or equal to (\\d+) characters' };
+
 export const useValidator = (props: Props = { mustBeDirty: true }) => {
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -69,6 +71,11 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
             .replace('$constraint1', constraints[0])
           );
         } else {
+          if (type === 'minLength') {
+            // we need to parse argument
+            const match = new RegExp(regexps.minLength).exec(constraints[0]);
+            constraints[0] = match ? match[1] : '0';
+          }
           _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`)
             .replace('$property', translate('properties.thisvalue'))
             .replace('$constraint1', constraints[0])
@@ -85,13 +92,21 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
       if (!error.constraints) {
         continue;
       }
-      for (const [type, constraint] of Object.entries(error.constraints)) {
+      for (let [type, constraint] of Object.entries(error.constraints)) {
         const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.' + error.property));
         if (translation.startsWith('{')) {
           // no translation found
           _errors.push(capitalize(`${constraint}`));
         } else {
-          _errors.push(capitalize(translation));
+          if (type === 'minLength') {
+            // we need to parse argument
+            const match = new RegExp(regexps.minLength).exec(constraint);
+            console.log({
+              constraint, match,
+            });
+            constraint = match ? match[1] : 'n/a';
+          }
+          _errors.push(capitalize(translation).replace('$constraint1', constraint));
         }
       }
     }
@@ -135,14 +150,15 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
         <Typography variant="body2">{err}</Typography>
       </Stack>), { variant: 'error' });
     } else {
+      console.log(err.map(o => o.property));
       setDirty(err.map(o => o.property));
       setErrors(err);
       enqueueSnackbar((<Stack>
-        <Typography variant="body2">Unexpected errors during validation</Typography>
+        <Typography variant="body2">{translate('errors.errorDialogHeader')}</Typography>
         <ul>{errorsList(err).map((o, i) => <li key={i}>{o}</li>)}</ul>
       </Stack>), { variant: 'error' });
     }
-  }, [errorsList, setDirty, enqueueSnackbar]);
+  }, [errorsList, setDirty, enqueueSnackbar, translate]);
 
   return {
     propsError, reset, setErrors, errorsList, validate, haveErrors,

@@ -1,7 +1,7 @@
 import { CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { CustomVariableItem } from '@sogebot/backend/src/database/entity/dashboard';
-import { VariableInterface } from '@sogebot/backend/src/database/entity/variable';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
@@ -20,14 +20,12 @@ export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomV
   item,
 }) => {
   const [ loading, setLoading ] = useState(true);
-  const [ variable, setVariable ] = useState<VariableInterface | null>(null);
+  const [ variable, setVariable ] = useState<Variable | null>(null);
   const [ unknownVariable, setUnknownVariable ] = useState<null | string>(null);
 
   const onUpdateHandle = useCallback((value: number | string) => {
     if (variable) {
-      setVariable({
-        ...variable, currentValue: String(value), 
-      });
+      setVariable(Variable.merge(variable, { currentValue: String(value) }));
     }
   }, [ variable ]);
 

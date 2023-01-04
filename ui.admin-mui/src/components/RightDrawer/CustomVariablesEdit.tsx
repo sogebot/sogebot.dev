@@ -2,62 +2,73 @@ import { LoadingButton } from '@mui/lab';
 import {
   Box, Button, CircularProgress, DialogContent, Divider, Fade, Grid, TextField,
 } from '@mui/material';
-import { VariableInterface } from '@sogebot/backend/dest/database/entity/variable';
 import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useEffect } from 'react';
+import { Variable } from '~/../backend/dest/database/entity/variable';
+import defaultPermissions from '~/../backend/src/helpers/permissions/defaultPermissions';
 
 import { getSocket } from '~/src/helpers/socket';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
-const newItem: VariableInterface = {
-  variableName:  '',
-  currentValue:  '',
-  evalValue:     '',
-  permission:    '',
-  responseType:  0,
-  type:          'text',
-  usableOptions: [],
-  description:   '',
+const createInitialItem = () => {
+  return new Variable({
+    variableName:      '',
+    currentValue:      '',
+    evalValue:         '',
+    permission:        defaultPermissions.MODERATORS,
+    responseType:      0,
+    type:              'text',
+    usableOptions:     [],
+    description:       '',
+    history:           [],
+    urls:              [],
+    runEveryTypeValue: 60000,
+    runEvery:          60000,
+    runAt:             new Date(0).toISOString(),
+  });
 };
 
 export const CustomVariablesEdit: React.FC<{
-  id?: string
-}> = ({ id }) => {
+  id?: string,
+  onSave?: () => void,
+}> = ({ id, onSave }) => {
   const router = useRouter();
-  const { propsError, reset, setErrors, /* validate, */ haveErrors } = useValidator();
   const { translate } = useTranslation();
-  const [ item, setItem ] = useState<VariableInterface>(cloneDeep(newItem));
+  const { propsError, reset, setErrors, validate, haveErrors } = useValidator({
+    mustBeDirty: true, translations: { variableName: translate('name') },
+  });
+  const [ item, setItem ] = useState<Variable>(createInitialItem());
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleValueChange = <T extends keyof VariableInterface>(key: T, value: Required<VariableInterface[T]>) => {
+  const handleValueChange = useCallback(<T extends keyof Variable>(key: T, value: Variable[T]) => {
     if (!item) {
       return;
     }
-    setItem(v => ({
-      ...v, [key]: value,
-    }));
-  };
+    const update = cloneDeep(item);
+    update[key] = value;
+    setItem(update);
+  }, [ item ]);
 
   useEffect(() => {
+    setLoading(true);
     if (id) {
-      setLoading(true);
       getSocket('/core/customvariables').emit('customvariables::list', (err, val) => {
         if (err) {
           enqueueSnackbar('Something went wrong during data loading.');
           router.push(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
         } else {
-          setItem(val.find(o => o.id === id) ?? cloneDeep(newItem));
+          setItem(val.find(o => o.id === id) ?? createInitialItem());
         }
         setLoading(false);
       });
     } else {
-      setItem(cloneDeep(newItem));
+      setItem(createInitialItem());
       setLoading(false);
     }
     reset();
@@ -65,34 +76,42 @@ export const CustomVariablesEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      /*
-      const toCheck = new Alias();
-      merge(toCheck, alias);
-      validateOrReject(toCheck)
+      new Variable({ ...item })
+        .validate()
         .then(() => setErrors(null))
         .catch(setErrors);
-        */
     }
-  }, [item, loading, setErrors]);
+    if (loading) {
+      reset();
+    }
+  }, [item, loading, setErrors, reset]);
 
   const handleClose = () => {
     router.push(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
   };
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     setSaving(true);
-    /*
-    getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
-      if (err) {
+    getSocket('/core/customvariables').emit('customvariables::save', item, (err, cid) => {
+      if (err || !cid) {
         validate(err as any);
       } else {
-        enqueueSnackbar('Alias saved.', { variant: 'success' });
-        router.push(`/commands/alias/edit/${savedItem.id}`);
+        enqueueSnackbar('Custom variable saved.', { variant: 'success' });
+
+        // replace url and add cid to item
+        setItem(() => {
+          item.id = cid;
+          return item;
+        });
+        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
+        window.history.replaceState(null, '', asPath);
+        if (onSave) {
+          onSave();
+        }
       }
       setSaving(false);
     });
-    */
-  };
+  }, [ item, onSave, enqueueSnackbar, validate ]);
 
   return(<>
     {loading
@@ -117,7 +136,7 @@ export const CustomVariablesEdit: React.FC<{
             variant="filled"
             required
             value={item?.variableName || ''}
-            label={translate('name')}
+            label={translate('properties.variableName')}
             onChange={(event) => handleValueChange('variableName', event.target.value)}
           />
 

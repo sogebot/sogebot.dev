@@ -29,7 +29,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { VariableInterface } from '@sogebot/backend/dest/database/entity/variable';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import parse from 'html-react-parser';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
@@ -67,7 +67,7 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
   const { translate } = useTranslation();
   const { permissions } = usePermissions();
 
-  const [ items, setItems ] = useState<VariableInterface[]>([]);
+  const [ items, setItems ] = useState<Variable[]>([]);
 
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
@@ -87,7 +87,7 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
     setLoading(false);
   }, []);
 
-  const triggerEval = useCallback((item: VariableInterface) => {
+  const triggerEval = useCallback((item: Variable) => {
     setEvalsInProgress(v => [...v, item.id!]);
     getSocket('/core/customvariables').emit('customvariables::runScript', item.id!, (err) => {
       if (err) {
@@ -101,21 +101,21 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
   }, [enqueueSnackbar, refresh]);
 
   const { defaultStringForAttribute } = usePredicate();
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<VariableInterface & { additionalInfo: string }>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Variable & { additionalInfo: string }>([
     {
-      columnName: 'variableName',
-      table:      {
+      columnName:     'variableName',
+      translationKey: 'properties.variableName',
+      table:          {
         wordWrapEnabled: true, width: 300,
       },
-      translationKey: 'name',
-      filtering:      { type: 'string' },
-      column:         {
+      filtering: { type: 'string' },
+      column:    {
         getCellValue: (row) =>
-          <Stack direction='row' alignItems='center' spacing={1}>
-            {row.type === 'text' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiAlphabeticalVariant} color='white'/>}
-            {row.type === 'number' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiNumeric} color='white'/>}
-            {row.type === 'eval' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiCodeJson} color='white'/>}
-            {row.type === 'options' && <Icon style={{ width: '24px' }} size={'24px'} path={mdiCodeBrackets} color='white'/>}
+          <Stack direction='row' alignItems='center' spacing={2}>
+            {row.type === 'text' && <Icon style={{ width: '34px' }} size={'34px'} path={mdiAlphabeticalVariant} color='white'/>}
+            {row.type === 'number' && <Icon style={{ width: '34px' }} size={'34px'} path={mdiNumeric} color='white'/>}
+            {row.type === 'eval' && <Icon style={{ width: '34px' }} size={'34px'} path={mdiCodeJson} color='white'/>}
+            {row.type === 'options' && <Icon style={{ width: '34px' }} size={'34px'} path={mdiCodeBrackets} color='white'/>}
             <Stack sx={{ flexShrink: 2 }}>
               <Typography variant='body2' sx={{ fontWeight: 'bold' }} component='strong'>{row.variableName}</Typography>
               <Typography variant='body2'>{row.description}</Typography>
@@ -229,10 +229,15 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
-  const clone = useCallback((item: VariableInterface) => {
-    getSocket('/core/customvariables').emit('customvariables::save', {
-      ...item, history: [], urls: [], id: v4(), description: '(clone) of ' + item.variableName, variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
-    }, (err) => {
+  const clone = useCallback((item: Variable) => {
+    const clonedItem = new Variable({
+      ...item,
+      id:           v4(),
+      description:  '(clone) of ' + item.variableName,
+      variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
+    });
+
+    getSocket('/core/customvariables').emit('customvariables::save', clonedItem, (err) => {
       if (err) {
         console.error(err);
       } else {
@@ -242,7 +247,7 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
     });
   }, [refresh, enqueueSnackbar]);
 
-  const deleteItem = useCallback((item: VariableInterface) => {
+  const deleteItem = useCallback((item: Variable) => {
     return new Promise((resolve, reject) => {
       getSocket('/core/customvariables').emit('customvariables::delete', item.id!, (err) => {
         if (err) {
@@ -337,10 +342,15 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
         </Paper>}
 
       <Dialog
-        open={!!(router.query.params && router.query.params[0] === 'edit' && router.query.params[1])}
+        open={!!(router.query.params
+          && (
+            (router.query.params[0] === 'edit' && router.query.params[1])
+            || router.query.params[0] === 'create'
+          )
+        )}
         fullWidth
         maxWidth='md'>
-        {router.query.params && router.query.params[1] && <CustomVariablesEdit id={router.query.params[1]}/>}
+        {router.query.params && <CustomVariablesEdit id={router.query.params[1]} onSave={refresh}/>}
       </Dialog>
     </>
   );

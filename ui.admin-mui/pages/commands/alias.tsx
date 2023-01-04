@@ -259,7 +259,7 @@ const PageCommandsAlias: NextPageWithLayout = () => {
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='alias'/>
         <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new custom variable</LinkButton>
+          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
         </Grid>
         <Grid item>
           <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/edit' color='secondary'>Group settings</LinkButton>

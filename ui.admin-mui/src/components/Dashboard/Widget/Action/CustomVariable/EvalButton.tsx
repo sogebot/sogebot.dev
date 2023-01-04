@@ -1,11 +1,11 @@
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import { VariableInterface } from '@sogebot/backend/src/database/entity/variable';
 
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableEvalButton: React.FC<{ item: QuickActions.Item; variable: VariableInterface}> = ({
+export const DashboardWidgetActionCustomVariableEvalButton: React.FC<{ item: QuickActions.Item; variable: Variable}> = ({
   item, variable,
 }) => {
 

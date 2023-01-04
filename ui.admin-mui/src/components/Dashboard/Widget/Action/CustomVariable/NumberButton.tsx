@@ -1,8 +1,8 @@
 import { Add, Remove } from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import { VariableInterface } from '@sogebot/backend/src/database/entity/variable';
 import {
   MouseEventHandler, useCallback, useState,
 } from 'react';
@@ -12,7 +12,7 @@ import { useIntervalWhen } from 'rooks';
 import { getSocket } from '../../../../../helpers/socket';
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: VariableInterface, onUpdate: (value: number) => void }> = ({
+export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void }> = ({
   item, variable, onUpdate,
 }) => {
   const { user } = useSelector((state: any) => state.user);
@@ -36,7 +36,7 @@ export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: Q
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {
       user: {
-        userId: user.id, userName: user.login, 
+        userId: user.id, userName: user.login,
       },
       id:    item.id,
       value: increment ? `+${value}` : `-${value}`,
