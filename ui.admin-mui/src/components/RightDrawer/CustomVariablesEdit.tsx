@@ -87,36 +87,36 @@ export const CustomVariablesEdit: React.FC<{
     // do conditional chaining
     const libUri = 'ts:filename/global.d.ts';
     const libSource = `
-      interface UserObject {
-        userId: string; userName: string; displayname?: string; profileImageUrl?: string;
-        isOnline?: boolean; isVIP?: boolean; isModerator?: boolean; isSubscriber?: boolean;
-        haveSubscriberLock?: boolean; haveSubscribedAtLock?: boolean; rank?: string; haveCustomRank?: boolean;
-        subscribedAt?: string | null; seenAt?: string | null; createdAt?: string | null;
-        watchedTime?: number; chatTimeOnline?: number; chatTimeOffline?: number;
-        points?: number; pointsOnlineGivenAt?: number; pointsOfflineGivenAt?: number; pointsByMessageGivenAt?: number;
-        subscribeTier?: string; subscribeCumulativeMonths?: number; subscribeStreak?: number; giftedSubscribes?: number;
-        messages?: number;
-        extra: {
-          jackpotWins?: number;
-          levels?: {
-            xp: string; // we need to use string as we cannot stringify bigint in typeorm
-            xpOfflineGivenAt: number;
-            xpOfflineMessages: number;
-            xpOnlineGivenAt: number;
-            xpOnlineMessages: number;
-          },
-        } | null
-      }
+    interface User {
+      userId: string; userName: string; displayname?: string; profileImageUrl?: string;
+      isOnline?: boolean; isVIP?: boolean; isModerator?: boolean; isSubscriber?: boolean;
+      haveSubscriberLock?: boolean; haveSubscribedAtLock?: boolean; rank?: string; haveCustomRank?: boolean;
+      subscribedAt?: string | null; seenAt?: string | null; createdAt?: string | null;
+      watchedTime?: number; chatTimeOnline?: number; chatTimeOffline?: number;
+      points?: number; pointsOnlineGivenAt?: number; pointsOfflineGivenAt?: number; pointsByMessageGivenAt?: number;
+      subscribeTier?: string; subscribeCumulativeMonths?: number; subscribeStreak?: number; giftedSubscribes?: number;
+      messages?: number;
+      extra: {
+        jackpotWins?: number;
+        levels?: {
+          xp: string; // we need to use string as we cannot stringify bigint in typeorm
+          xpOfflineGivenAt: number;
+          xpOfflineMessages: number;
+          xpOnlineGivenAt: number;
+          xpOnlineMessages: number;
+        },
+      } | null
+    }
 
       declare function info(text: string): void;
       declare function warning(text: string): void;
       declare function user(username?: string): Promise<{ username: string, displayname: string, id: string, is: { follower: boolean, mod: boolean, online: boolean, subscriber: boolean, vip: boolean }}>
       declare function url(url: string, opts?: { method: 'POST' | 'GET', headers: object, data: object}): Promise<{ data: object, status: number, statusText: string}>
       declare function waitMs(miliseconds: number): Promise<undefined>
-      declare function randomOnlineSubscriber(): Promise<UserObject>
-      declare function randomOnlineViewer(): Promise<UserObject>
-      declare function randomSubscriber(): Promise<UserObject>
-      declare function randomViewer(): Promise<UserObject>
+      declare function randomOnlineSubscriber(): Promise<User>
+      declare function randomOnlineViewer(): Promise<User>
+      declare function randomSubscriber(): Promise<User>
+      declare function randomViewer(): Promise<User>
 
       declare var sender: {
         username: string,
@@ -145,11 +145,10 @@ export const CustomVariablesEdit: React.FC<{
     `;
 
     monaco?.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target:               monaco?.languages.typescript.ScriptTarget.ESNext,
       allowNonTsExtensions: true,
       allowJs:              true,
+      lib:                  ['es2020'],
     });
-    monaco?.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
     try {
       // When resolving definitions and references, the editor will try to use created models.
       // Creating a model for the library allows "peek definition/references" commands to work with the library.
@@ -167,6 +166,9 @@ export const CustomVariablesEdit: React.FC<{
       monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_seq, '@types/lodash/common/seq.d.ts');
       monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_string, '@types/lodash/common/string.d.ts');
       monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_util, '@types/lodash/common/util.d.ts');
+
+      // bot typings
+      monaco?.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
     } catch {}
   }, [monaco]);
 
