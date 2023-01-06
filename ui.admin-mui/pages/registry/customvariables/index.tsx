@@ -351,6 +351,7 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
           )
         )}
         fullWidth
+        PaperProps={{ sx: { height: '100% !important' } }}
         maxWidth='md'>
         {router.query.params && <CustomVariablesEdit id={router.query.params[1]} onSave={refresh}/>}
       </Dialog>
