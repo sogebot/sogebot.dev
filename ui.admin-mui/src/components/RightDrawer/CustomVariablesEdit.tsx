@@ -6,17 +6,22 @@ import Icon from '@mdi/react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormLabel, Grid, Stack, TextField, ToggleButton, ToggleButtonGroup,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControl, FormLabel,
+  Grid, InputLabel, MenuItem, Select, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
+import { DAY } from '@sogebot/ui-helpers/constants';
+import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Variable } from '~/../backend/dest/database/entity/variable';
 import defaultPermissions from '~/../backend/src/helpers/permissions/defaultPermissions';
 
 import { getSocket } from '~/src/helpers/socket';
+import { usePermissions } from '~/src/hooks/usePermissions';
 import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
@@ -51,19 +56,18 @@ import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
 const createInitialItem = async () => {
   const response = await fetch(`${JSON.parse(localStorage.server)}/assets/custom-variables-code.txt`);
   return new Variable({
-    variableName:      '',
-    currentValue:      '',
-    evalValue:         await response.text(),
-    permission:        defaultPermissions.MODERATORS,
-    responseType:      0,
-    type:              'text',
-    usableOptions:     [],
-    description:       '',
-    history:           [],
-    urls:              [],
-    runEveryTypeValue: 60000,
-    runEvery:          60000,
-    runAt:             new Date(0).toISOString(),
+    variableName:  '',
+    currentValue:  '',
+    evalValue:     await response.text(),
+    permission:    defaultPermissions.MODERATORS,
+    responseType:  0,
+    type:          'text',
+    usableOptions: [],
+    description:   '',
+    history:       [],
+    urls:          [],
+    runEvery:      0,
+    runAt:         new Date(0).toISOString(),
   });
 };
 
@@ -72,6 +76,8 @@ export const CustomVariablesEdit: React.FC<{
   onSave?: () => void,
 }> = ({ id, onSave }) => {
   const router = useRouter();
+  const { permissions } = usePermissions();
+  const { configuration } = useSelector((state: any) => state.loader);
   const { translate } = useTranslation();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator({
     mustBeDirty: true, translations: { variableName: translate('name') },
@@ -260,7 +266,7 @@ export const CustomVariablesEdit: React.FC<{
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
-      <DialogContent>
+      <DialogContent sx={{ overflowX: 'hidden' }}>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -277,14 +283,31 @@ export const CustomVariablesEdit: React.FC<{
             onChange={(event) => handleValueChange('variableName', event.target.value)}
           />
 
-          <TextField
-            fullWidth
-            {...propsError('description')}
-            variant="filled"
-            value={item?.description || ''}
-            label={translate('description')}
-            onChange={(event) => handleValueChange('description', event.target.value)}
-          />
+          <Grid container columnSpacing={1}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                {...propsError('description')}
+                variant="filled"
+                value={item?.description || ''}
+                label={translate('description')}
+                onChange={(event) => handleValueChange('description', event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="filled" >
+                <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+                <Select
+                  label={translate('permissions')}
+                  labelId="permission-select-label"
+                  onChange={(event) => handleValueChange('permission', event.target.value)}
+                  value={item?.permission || defaultPermissions.VIEWERS}
+                >
+                  {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
 
           <Stack direction='row' spacing={4} alignItems='center' sx={{ py: 1 }}>
             <FormLabel>{ translate('type') }</FormLabel>
@@ -329,16 +352,34 @@ export const CustomVariablesEdit: React.FC<{
             onChange={(event) => handleValueChange('currentValue', event.target.value)}
           />}
 
-          {item?.type === 'eval' && <Editor
-            height="50vh"
-            width={`100%`}
-            language={'javascript'}
-            defaultValue={item?.evalValue || ''}
-            theme='vs-dark'
-            /*value={value}
-        onChange={handleEditorChange}
-        theme={theme}*/
-          />}
+          {item?.type === 'eval' && <>
+            <Editor
+              height="50vh"
+              width={`100%`}
+              language={'javascript'}
+              defaultValue={item?.evalValue || ''}
+              theme='vs-dark'
+              onChange={value => handleValueChange('evalValue', value || '')}
+            />
+
+            <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 30px 0' }}>
+              <FormLabel sx={{ width: '170px' }}>{ translate('registry.customvariables.run-script') }</FormLabel>
+              <Slider
+                value={item?.runEvery || 0}
+                max={7 * DAY}
+                step={30000}
+                valueLabelDisplay="on"
+                valueLabelFormat={(value) => {
+                  if (value === 0) {
+                    return translate('registry.customvariables.runEvery.isUsed');
+                  }
+                  return humanizeDuration(value, { language: configuration.lang });
+                }}
+                size='small'
+                onChange={(event, newValue) => handleValueChange('runEvery', Number(newValue))}
+              />
+            </Stack>
+          </>}
         </Box>
       </DialogContent>
     </Fade>

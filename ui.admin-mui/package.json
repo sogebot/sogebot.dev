@@ -37,6 +37,7 @@
     "dayjs": "^1.11.7",
     "eslint-plugin-react": "^7.31.11",
     "html-react-parser": "^3.0.6",
+    "humanize-duration": "^3.27.3",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.0.4",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
+    "@types/humanize-duration": "^3.27.1",
     "@types/lodash": "^4.14.191",
     "@types/next": "^9.0.0",
     "@types/node": "latest",

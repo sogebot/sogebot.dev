@@ -1,6 +1,7 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "deepscan.ignoreConfirmWarning": true,
+  "eslint.workingDirectories": ["ui.admin-mui", "backend"],
   "sqltools.connections": [
     {
       "previewLimit": 50,

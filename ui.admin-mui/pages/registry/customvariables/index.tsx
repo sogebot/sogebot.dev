@@ -31,6 +31,7 @@ import {
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import parse from 'html-react-parser';
+import humanizeDuration from 'humanize-duration';
 import { capitalize } from 'lodash';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
@@ -66,6 +67,7 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useTranslation();
   const { permissions } = usePermissions();
+  const { configuration } = useSelector((state: any) => state.loader);
 
   const [ items, setItems ] = useState<Variable[]>([]);
 
@@ -156,9 +158,9 @@ const PageRegistryCustomVariables: NextPageWithLayout = () => {
             <Box>
               <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.run-script') }:</Typography>
               {' '}
-              { (row.runEveryTypeValue ?? 0) > 0
-                ? `${(row.runEvery ?? 0) / (row.runEveryTypeValue ?? 0)} ${translate('registry.customvariables.runEvery.' + row.runEveryType)}`
-                : translate('registry.customvariables.runEvery.' + row.runEveryType)}
+              {row.runEvery > 0
+                ? humanizeDuration(row.runEvery, { language: configuration.lang })
+                : translate('registry.customvariables.runEvery.isUsed')}
             </Box>
             <Box>
               <Typography component='strong' variant='body2' sx={{ fontWeight: 'bold' }}>{ translate('registry.customvariables.last-run') }</Typography>

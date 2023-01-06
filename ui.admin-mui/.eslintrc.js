@@ -11,12 +11,10 @@ module.exports = {
     'key-spacing':                              ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
-    'object-property-newline': ['error', {
-      'allowAllPropertiesOnSameLine': true,
-    }],
-    'object-curly-spacing': ['error', 'always'],
-    'object-curly-newline': ['error', {
-      ObjectExpression:  {
+    'object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': true }],
+    'object-curly-spacing':    ['error', 'always'],
+    'object-curly-newline':    ['error', {
+      ObjectExpression: {
         multiline: true, minProperties: 2,
       },
       ImportDeclaration: {
@@ -26,10 +24,8 @@ module.exports = {
         multiline: true, minProperties: 3,
       },
     }],
-    '@typescript-eslint/no-unused-vars': ['error', {
-      ignoreRestSiblings: true,
-    }],
-    'no-multiple-empty-lines': ['error', {
+    '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+    'no-multiple-empty-lines':           ['error', {
       max: 1, maxEOF: 0, maxBOF: 0,
     }],
 
@@ -48,21 +44,15 @@ module.exports = {
       ],
     },
     ],
-    'import/no-cycle': [2, {
-      maxDepth: 1,
-    }],
-    'import/newline-after-import': ['error', {
-      count: 1,
-    }],
+    'import/no-cycle':             [2, { maxDepth: 1 }],
+    'import/newline-after-import': ['error', { count: 1 }],
 
     'no-shadow':                                        'off',
     '@typescript-eslint/no-shadow':                     ['error'],
     indent:                                             'off',
     '@typescript-eslint/indent':                        ['error', 2],
     '@typescript-eslint/explicit-member-accessibility': 'off',
-    quotes:                                             ['error', 'single', {
-      allowTemplateLiterals: true,
-    }],
+    quotes:                                             ['error', 'single', { allowTemplateLiterals: true }],
     '@typescript-eslint/camelcase':                     'off',
     '@typescript-eslint/no-explicit-any':               'off',
     '@typescript-eslint/explicit-function-return-type': 0,
