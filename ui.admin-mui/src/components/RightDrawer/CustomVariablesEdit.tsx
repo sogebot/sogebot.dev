@@ -4,10 +4,11 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Editor, { useMonaco } from '@monaco-editor/react';
+import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControl, FormLabel,
-  Grid, InputLabel, MenuItem, Select, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup,
+  Grid, IconButton, InputAdornment, InputLabel, MenuItem, Radio, Select, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup,
 } from '@mui/material';
 import { DAY } from '@sogebot/ui-helpers/constants';
 import humanizeDuration from 'humanize-duration';
@@ -82,6 +83,7 @@ export const CustomVariablesEdit: React.FC<{
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator({
     mustBeDirty: true, translations: { variableName: translate('name') },
   });
+  const [ page, setPage ] = useState(0);
   const [ item, setItem ] = useState<Variable>();
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
@@ -187,6 +189,64 @@ export const CustomVariablesEdit: React.FC<{
     setItem(update);
   }, [ item ]);
 
+  const [ addUsableOptionValue, setAddUsableOptionValue ] = useState('');
+  const addUsableOption = useCallback(() => {
+    if (!item) {
+      return;
+    }
+    handleValueChange('usableOptions', Array.from(new Set([...item.usableOptions, addUsableOptionValue])));
+    setAddUsableOptionValue('');
+  }, [ addUsableOptionValue, handleValueChange, item ]);
+
+  const updateUsableOption = useCallback((idx: number, value: string) => {
+    if (!item) {
+      return;
+    }
+    const usableOptions = [...item.usableOptions];
+    usableOptions[idx] = value;
+    handleValueChange('usableOptions', usableOptions);
+  }, [ handleValueChange, item ]);
+
+  const removeUsableOption = useCallback((value: string) => {
+    if (!item) {
+      return;
+    }
+    handleValueChange('usableOptions', item.usableOptions.filter(o => o !== value));
+  }, [ handleValueChange, item ]);
+
+  useEffect(() => {
+    // auto select first value if type is options and curernt value doesnt match
+    if (item && item.type === 'options') {
+      if (!item.usableOptions.includes(item.currentValue)) {
+        handleValueChange('currentValue', item.usableOptions[0] ?? '');
+      }
+    }
+    // set to number
+    if (item && item.type === 'number') {
+      if (isNaN(Number(item.currentValue))) {
+        handleValueChange('currentValue', '0');
+      }
+    }
+  }, [ item, handleValueChange ]);
+
+  const [ scriptIsRunning, setScriptIsRunning ] = useState(false);
+  const handleRunScript = useCallback(() => {
+    if (!item) {
+      return;
+    }
+    setScriptIsRunning(true);
+    getSocket('/core/customvariables').emit('customvariables::testScript', {
+      evalValue: item.evalValue, currentValue: item.currentValue,
+    }, (err, response: string) => {
+      if (err) {
+        enqueueSnackbar(String(err), { variant: 'error' });
+      } else {
+        handleValueChange('currentValue', response);
+      }
+      setScriptIsRunning(false);
+    });
+  }, [ item, enqueueSnackbar, handleValueChange ]);
+
   useEffect(() => {
     setLoading(true);
     if (id) {
@@ -267,7 +327,7 @@ export const CustomVariablesEdit: React.FC<{
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       <DialogContent sx={{ overflowX: 'hidden' }}>
-        <Box
+        { page === 0 && <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
           noValidate
@@ -309,7 +369,7 @@ export const CustomVariablesEdit: React.FC<{
             </Grid>
           </Grid>
 
-          <Stack direction='row' spacing={4} alignItems='center' sx={{ py: 1 }}>
+          <Stack direction='row' spacing={4} alignItems='center' sx={{ py: 0.5 }}>
             <FormLabel>{ translate('type') }</FormLabel>
             <ToggleButtonGroup
               color='primary'
@@ -342,19 +402,59 @@ export const CustomVariablesEdit: React.FC<{
             </ToggleButtonGroup>
           </Stack>
 
-          {(item?.type === 'text' || item?.type === 'number') && <TextField
+          {(item?.type !== 'options') && <TextField
             fullWidth
             {...propsError('currentValue')}
             variant="filled"
-            type={item?.type === 'text' ? 'text' : 'number'}
+            type={item?.type === 'number' ? 'number' : 'text'}
             value={item?.currentValue || ''}
+            disabled={item?.type === 'eval'}
             label={translate('registry.customvariables.currentValue.name')}
             onChange={(event) => handleValueChange('currentValue', event.target.value)}
           />}
 
+          { item?.type === 'options' && <Box sx={{ pt: 2 }}>
+            <FormLabel sx={{ pt: 2 }}>{ translate('registry.customvariables.usableOptions.name') }</FormLabel>
+            <TextField
+              fullWidth
+              hiddenLabel
+              variant="filled"
+              value={addUsableOptionValue}
+              onChange={(event) => setAddUsableOptionValue(event.target.value)}
+              onKeyDown={ev => ev.key==='Enter' && addUsableOption()}
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>
+                  <IconButton disabled={addUsableOptionValue.trim().length === 0} onClick={addUsableOption}><AddTwoTone/></IconButton>
+                </InputAdornment>,
+              }}
+            />
+
+            { item.usableOptions.map((option, idx) =>
+              <TextField
+                key={idx}
+                fullWidth
+                hiddenLabel
+                variant="filled"
+                value={option}
+                onChange={(event) => updateUsableOption(idx, event.target.value)}
+                InputProps={{
+                  startAdornment: <InputAdornment position='start'>
+                    <Radio
+                      checked={item.currentValue === option}
+                      onChange={event => handleValueChange('currentValue', event.target.value)}
+                      value={option}
+                    />
+                  </InputAdornment>,
+                  endAdornment: <InputAdornment position='end'>
+                    <IconButton onClick={() => removeUsableOption(option)}><DeleteTwoTone/></IconButton>
+                  </InputAdornment>,
+                }}
+              />)}
+          </Box>}
+
           {item?.type === 'eval' && <>
             <Editor
-              height="50vh"
+              height="44vh"
               width={`100%`}
               language={'javascript'}
               defaultValue={item?.evalValue || ''}
@@ -380,19 +480,34 @@ export const CustomVariablesEdit: React.FC<{
               />
             </Stack>
           </>}
-        </Box>
+        </Box> }
+
+        { page === 1 && <Box>REST
+        </Box>}
       </DialogContent>
     </Fade>
     <Divider/>
     <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+      { page === 0 && <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid item sx={{ marginRight: 'auto' }}>
+          <Button sx={{ width: 200 }} onClick={() => setPage(1)} color='light'>Configure REST Access</Button>
+        </Grid>
+        {item?.type === 'eval' && <Grid item>
+          <LoadingButton loading={scriptIsRunning} sx={{ width: 150 }} color='light' variant='contained' onClick={handleRunScript}>Run Script</LoadingButton>
+        </Grid>}
         <Grid item>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
           <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
         </Grid>
-      </Grid>
+      </Grid> }
+
+      { page === 1 && <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid item sx={{ marginRight: 'auto' }}>
+          <Button sx={{ width: 200 }} onClick={() => setPage(0)} variant='contained' color='primary' >Back</Button>
+        </Grid>
+      </Grid>}
     </Box>
   </>);
 };
