@@ -81,7 +81,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
       behavior: 'smooth',
       block:    'start',
     });
-    history.pushState({}, '', `${router.asPath}#${id}`);
+    history.pushState({}, '', `${router.pathname}#${id}?server=${JSON.parse(localStorage.server)}`);
   }, [ router ]);
 
   useEffect(() => {
