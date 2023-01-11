@@ -81,18 +81,20 @@ const PageSettingsModules: NextPageWithLayout = () => {
       behavior: 'smooth',
       block:    'start',
     });
-    history.pushState({}, '', `${router.pathname}#${id}?server=${JSON.parse(localStorage.server)}`);
+    history.pushState({}, '', `/settings/modules/${router.query.id![0]}/${id}?server=${JSON.parse(localStorage.server)}`);
   }, [ router ]);
 
   useEffect(() => {
     if (settingsLoadingInProgress.length === 0) {
       setTimeout(() => {
-        const id = router.asPath.split('#')[router.asPath.split('#').length - 1];
-        if (id) {
-          document.getElementById(id)?.scrollIntoView({
-            behavior: 'smooth',
-            block:    'start',
-          });
+        if (Array.isArray(router.query.id) && router.query.id.length > 1) {
+          const id = router.query.id[1];
+          if (id) {
+            document.getElementById(id)?.scrollIntoView({
+              behavior: 'smooth',
+              block:    'start',
+            });
+          }
         }
       }, 500);
     }
