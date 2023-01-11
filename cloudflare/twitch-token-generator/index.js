@@ -58,7 +58,9 @@ router.post("/refresh/:token", async ({ params }) => {
 
   const bannedTokens = [
     'f9inswa7vscdwdck8g0m0405eegytd3u41a9yx4grw8mkixya1',
-    '8ur3jam2cr5nvrrfjau6ycv39s1ob60bgyhben365w6g5x5jkp'
+    '8ur3jam2cr5nvrrfjau6ycv39s1ob60bgyhben365w6g5x5jkp',
+    '7d0qzl4g7po7mnp5errn8jxsvt1h0h1qf00ce37g4ci81rajxq',
+    'gmup9w7jc57phm5pvyszqx5e5oivr8lpk2469lio8qgkedhaww',
   ]
 
   if (bannedTokens.includes(token)) {
