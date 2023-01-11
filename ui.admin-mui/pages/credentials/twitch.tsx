@@ -5,18 +5,21 @@ import {
 import axios from 'axios';
 import { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
-import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import { getSocket } from '~/src/helpers/socket';
+import { useLocalStorage } from '~/src/hooks/useLocalStorage';
 
 const serviceUrl = 'https://credentials.sogebot.xyz/twitch/';
 
 const Twitch: NextPage = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useLocalStorage('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
+    if (!server) {
+      return;
+    }
     if (server === 'https://demobot.sogebot.xyz') {
       return;
     }
