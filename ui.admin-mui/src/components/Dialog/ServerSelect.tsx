@@ -7,7 +7,9 @@ import {
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect } from 'react';
+import React, {
+  useCallback, useEffect, useMemo,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UserSimple } from '@/components/User/Simple';
@@ -32,7 +34,6 @@ export const ServerSelect: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [open, setOpen] = React.useState(true);
   const [isInitial, setIsInitial] = React.useState(true);
   const [connecting, setConnecting] = React.useState(false);
 
@@ -120,7 +121,7 @@ export const ServerSelect: React.FC = () => {
   }, [dispatch, router]);
 
   React.useEffect(() => {
-    if (isInitial && router.isReady && !connecting && (!message || !message.includes('Cannot connect'))) {
+    if (isInitial && router.isReady && !connecting && (!message || (!message.includes('Cannot connect') && !message.includes('You don\'t have access to this server')))) {
       // autoconnect by server get parameter
       const queryServer = router.query.server as string;
       if (queryServer) {
@@ -146,11 +147,7 @@ export const ServerSelect: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (connectedToServer && state) {
-      setOpen(false);
-    }
-  }, [connectedToServer, state]);
+  const open = useMemo(() => !(connectedToServer && state), [connectedToServer, state]);
 
   useEffect(() => {
     if (!message) {
@@ -169,7 +166,7 @@ export const ServerSelect: React.FC = () => {
     setTimeout(() => setCopied(false), 1000);
   };
 
-  return (<Dialog open={open}>
+  return (<Dialog open={open} hideBackdrop sx={{ zIndex: 0 }}>
     <DialogTitle>
       <Image src={sogebotLarge} width={190} height={25} unoptimized alt="sogeBot Logo"/>
       <br/>

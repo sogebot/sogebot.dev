@@ -6,6 +6,7 @@ export const loaderSlice = createSlice({
     server:            null,
     connectedToServer: false,
     showLoginWarning:  false,
+    showCookieManager: false,
 
     drawerWidth:           65,
     message:               null,
@@ -78,9 +79,13 @@ export const loaderSlice = createSlice({
     showLoginWarning: (state: any) => {
       state.showLoginWarning = true;
     },
+    toggleCookieManager: (state: { showCookieManager: any }, action: { payload: boolean })=> {
+      console.debug(`toggleCookieManager`, action.payload);
+      state.showCookieManager = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+export const { toggleCookieManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 export default loaderSlice.reducer;

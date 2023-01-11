@@ -6,7 +6,6 @@ import { setUseWhatChange } from '@simbathesailor/use-what-changed';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useRouter } from 'next/router';
-import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce, useRefElement } from 'rooks';
@@ -28,6 +27,7 @@ import {
   setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
 } from '../../store/loaderSlice';
 import { setUser } from '../../store/userSlice';
+import CookieBar from '../CookieBar/CookieBar';
 import { DashboardStats } from '../Dashboard/Stats';
 import { DashboardWidgetAction } from '../Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../Dashboard/Widget/Bot';
@@ -46,27 +46,25 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 
   dispatch(setState(false));
 
-  await new Promise<void>((resolve, reject) => {
+  try {
     const headers = {
       'x-twitch-token':  localStorage.code,
       'x-twitch-userid': localStorage.userId,
     };
-    axios.get(`${sessionStorage.serverUrl}/socket/validate`, { headers }).then(async (validation) => {
-      console.group('isUserLoggedIn::bot::validation');
-      console.debug(JSON.stringify({
-        validation, headers,
-      }));
-      console.groupEnd();
-      localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
-      localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
-      localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
-      resolve();
-    }).catch(e => {
-      dispatch(setMessage('You don\'t have access to this server.'));
-      dispatch(showLoginWarning());
-      reject(e);
-    });
-  });
+    const validation = await axios.get(`${sessionStorage.serverUrl}/socket/validate`, { headers });
+    console.group('isUserLoggedIn::bot::validation');
+    console.debug(JSON.stringify({
+      validation, headers,
+    }));
+    console.groupEnd();
+    localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
+    localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
+    localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
+  } catch(e) {
+    dispatch(showLoginWarning());
+    dispatch(setMessage('You don\'t have access to this server.'));
+    return;
+  }
 
   dispatch(setUser(await isUserLoggedIn()));
 
@@ -140,19 +138,11 @@ export const Layout: React.FC<{ children: any }> = (props) => {
 
   return (
     <>
-      <Script
-        id="clarityFnc"
-        dangerouslySetInnerHTML={{
-          __html: `(function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "cnni7q4jrp");`,
-        }}/>
+      <CookieBar/>
+      <LoginWarning/>
       <ServerSelect/>
       {state && <>
         <OnboardingTokens/>
-        <LoginWarning/>
         <Fade in={state && tokensOnboardingState}>
           <Box sx={{ flexGrow: 1 }}>
             <Slide in={!isIndexPage}>

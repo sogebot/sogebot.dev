@@ -1,4 +1,5 @@
 import BuildIcon from '@mui/icons-material/Build';
+import CookieIcon from '@mui/icons-material/Cookie';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -13,10 +14,11 @@ import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
 
+import { toggleCookieManager } from '../store/loaderSlice';
 import customTheme, { theme } from '../theme';
 import { MenuItemDeep } from './drawer/menuItemDeep';
 import { UserMenu } from './User/userMenu';
@@ -63,6 +65,7 @@ export default function NavDrawer() {
   const { translate } = useTranslation();
   const reducer = useSelector((state: any) => state.loader);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleServerLogout = () => {
     delete localStorage.serverAutoConnect;
@@ -121,8 +124,16 @@ export default function NavDrawer() {
         </ListItem>
       </List>
 
-      <Tooltip title="Logout from server">
-        <Button color="error" sx={{ mb: 2 }} onClick={handleServerLogout}>
+      <Tooltip title="Cookie management" placement='right'>
+        <Button color='light' sx={{ py: 2 }} onClick={() => dispatch(toggleCookieManager(true))}>
+          <CookieIcon/>
+        </Button>
+      </Tooltip>
+
+      <Tooltip title="Logout from server" placement='right'>
+        <Button color="error" sx={{
+          mb: 2, py: 2,
+        }} onClick={handleServerLogout}>
           <LogoutIcon/>
         </Button>
       </Tooltip>
