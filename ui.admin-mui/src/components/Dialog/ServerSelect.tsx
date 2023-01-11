@@ -11,6 +11,7 @@ import React, {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import semver from 'semver';
 
 import { UserSimple } from '@/components/User/Simple';
 import sogebotLarge from '~/public/sogebot_large.png';
@@ -92,7 +93,7 @@ export const ServerSelect: React.FC = () => {
           // 'OK' response was last in 16.8.0
           const version = res.data === 'OK' ? '16.8.0' : res.data;
           for (const versionKey of Object.keys(versions).sort()) {
-            if (version.includes('-') || version > versionKey || router.basePath.length > 0) {
+            if (semver.gt(version, versionKey) || router.basePath.length > 0) {
               // we have snapshot or we are on basePath, we are good
               dispatch(setServer(serverURL));
               isBotStarted(dispatch, serverURL).then(() => {
@@ -104,7 +105,7 @@ export const ServerSelect: React.FC = () => {
               });
               return;
             }
-            if (version <= versionKey) {
+            if (semver.lte(version, versionKey)) {
               window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
               return;
             }
