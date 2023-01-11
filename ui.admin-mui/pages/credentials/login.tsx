@@ -4,13 +4,19 @@ import { useDidMount } from 'rooks';
 
 const Login: NextPage = () => {
   useDidMount(() => {
-    window.location.assign('http://ui-oauth-redirecter.soge.workers.dev/?state=' + encodeURIComponent(window.btoa(
+    const scopes = [
+      'user:edit',
+      'user:read:email',
+    ];
+    const clientId = '25ptx7puxva3gg1lt557qjp1ii0uur';
+    const state = encodeURIComponent(window.btoa(
       JSON.stringify({
         url:      window.location.origin,
         version:  2,
         referrer: document.referrer,
       })
-    )));
+    ));
+    window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=https://oauth.sogebot.xyz/&response_type=token&scope=${scopes.join('+')}&state=${state}&force_verify=true`);
   });
   return (<Backdrop open={true}><CircularProgress/></Backdrop>);
 };
