@@ -16,7 +16,7 @@ const Login: NextPage = () => {
         referrer: document.referrer,
       })
     ));
-    window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=https://oauth.sogebot.xyz/&response_type=token&scope=${scopes.join('+')}&state=${state}&force_verify=true`);
+    window.location.assign(`https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=http://oauth.sogebot.xyz/&response_type=token&scope=${scopes.join('+')}&state=${state}&force_verify=true`);
   });
   return (<Backdrop open={true}><CircularProgress/></Backdrop>);
 };
