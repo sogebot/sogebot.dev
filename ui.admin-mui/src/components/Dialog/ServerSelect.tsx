@@ -90,16 +90,17 @@ export const ServerSelect: React.FC = () => {
           if (serverURL !== url.origin) {
             return;
           }
-          // 'OK' response was last in 16.8.0
-          const version = res.data === 'OK' ? '16.8.0' : res.data;
-          for (const versionKey of Object.keys(versions).reverse()) {
-            console.log({
-              version, versionKey, satisfies: semver.satisfies(version, versionKey),
-            });
-            if (semver.satisfies(version, versionKey)) {
-              // we have found version and returning basepath
-              window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
-              return;
+
+          // we don't have base path, do checks
+          if (router.basePath.length === 0) {
+            // 'OK' response was last in 16.8.0
+            const version = res.data === 'OK' ? '16.8.0' : res.data;
+            for (const versionKey of Object.keys(versions).reverse()) {
+              if (semver.satisfies(version, versionKey)) {
+                // we have found version and returning basepath
+                window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
+                return;
+              }
             }
           }
 

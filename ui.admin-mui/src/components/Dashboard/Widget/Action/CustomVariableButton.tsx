@@ -10,11 +10,11 @@ import { ColorButton } from '~/src/components/Dashboard/Widget/Action/_ColorButt
 import { DashboardWidgetActionCustomVariableUnknownButton } from '~/src/components/Dashboard/Widget/Action/CustomVariable/UnknownButton';
 import { isHexColor } from '~/src/validators';
 
-import { getSocket } from '../../../../helpers/socket';
 import { DashboardWidgetActionCustomVariableEvalButton } from './CustomVariable/EvalButton';
 import { DashboardWidgetActionCustomVariableNumberButton } from './CustomVariable/NumberButton';
 import { DashboardWidgetActionCustomVariableOptionsButton } from './CustomVariable/OptionsButton';
 import { DashboardWidgetActionCustomVariableTextButton } from './CustomVariable/TextButton';
+import { getSocket } from '../../../../helpers/socket';
 
 export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomVariableItem }> = ({
   item,

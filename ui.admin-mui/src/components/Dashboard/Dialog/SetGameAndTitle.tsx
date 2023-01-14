@@ -1,8 +1,7 @@
-import { Stack } from '@mdi/react';
 import { CheckSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, Dialog, Divider, Drawer, Grid, List, ListItem, ListItemButton, TextField, Typography,
+  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
 } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';

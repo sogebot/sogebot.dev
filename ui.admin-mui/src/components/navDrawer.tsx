@@ -18,10 +18,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useTranslation } from '~/src/hooks/useTranslation';
 
-import { toggleCookieManager } from '../store/loaderSlice';
-import customTheme, { theme } from '../theme';
 import { MenuItemDeep } from './drawer/menuItemDeep';
 import { UserMenu } from './User/userMenu';
+import { toggleCookieManager } from '../store/loaderSlice';
+import customTheme, { theme } from '../theme';
 
 interface LinkedListItemProps {
   path: string;

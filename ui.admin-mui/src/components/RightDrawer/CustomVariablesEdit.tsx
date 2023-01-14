@@ -35,6 +35,7 @@ import { useTranslation } from '~/src/hooks/useTranslation';
 import { useValidator } from '~/src/hooks/useValidator';
 
 // This is ugly hack but we need it to import lodash bindings
+/* eslint-disable */
 // @ts-ignore
 import LODASH_array from '!raw-loader!@types/lodash/common/array.d.ts';
 // @ts-ignore
@@ -61,6 +62,7 @@ import LODASH_string from '!raw-loader!@types/lodash/common/string.d.ts';
 import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
+/* eslint-enable */
 
 const createInitialItem = async () => {
   const response = await fetch(`${JSON.parse(localStorage.server)}/assets/custom-variables-code.txt`);

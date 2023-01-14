@@ -2,8 +2,8 @@ import { CommandItem } from '@sogebot/backend/src/database/entity/dashboard';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getSocket } from '../../../../helpers/socket';
 import { ColorButton } from './_ColorButton';
+import { getSocket } from '../../../../helpers/socket';
 
 export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }> = ({
   item,
