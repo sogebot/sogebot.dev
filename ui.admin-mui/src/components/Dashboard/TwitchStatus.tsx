@@ -6,7 +6,6 @@ import { Box } from '@mui/system';
 import parse from 'html-react-parser';
 import { capitalize, isNil } from 'lodash';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
 
 import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
@@ -19,14 +18,13 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const [hover, setHover] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { configuration } = useSelector((state: any) => state.loader);
   const { translate } = useTranslation();
 
   const [game, setGame] = useState<null | string>(null);
   const [title, setTitle] = useState<null | string>(null);
   const [rawTitle, setRawTitle] = useState<null | string>(null);
   const [cachedTitle, setCachedTitle] = useState<null | string>(null);
-  const [tags, setTags] = useState<{ is_auto: boolean; localization_names: { [x:string]: string } }[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -75,23 +73,6 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
     return raw;
   };
 
-  const filterTags = (is_auto: boolean) => {
-    return tags.filter(o => !!o.is_auto === is_auto).map((o) => {
-      const key = Object.keys(o.localization_names).find(key2 => key2.includes(configuration.lang));
-      return {
-        name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto,
-      };
-    }).sort((a, b) => {
-      if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
-        return -1;
-      }
-      if ((a || { name: '' }).name > (b || { name: '' }).name) {
-        return 1;
-      }
-      return 0; // default return value (no sorting)
-    });
-  };
-
   return (
     <Grid item xs={12} sm={12} md={12} lg={12} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Paper sx={{
@@ -124,17 +105,10 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
             <Typography sx={{
               transform: 'translateY(5px)', ...classes.truncate,
             }}>
-              { tags.length === 0 && <Typography component="span">{capitalize(translate('not-available'))}</Typography> }
-              {filterTags(true).map((tag, idx) => {
-                return(<Typography component="span" key={tag.name} sx={tag.is_auto ? classes.greyColor : {}}>
-                  { tag.name }
-                  {(idx + 1) < tags.length && <Typography component="span" sx={classes.whiteColor}>,&nbsp;</Typography>}
-                </Typography>);
-              })}
-              {filterTags(false).map((tag, idx) => {
-                return(<Typography key={tag.name} sx={tag.is_auto ? classes.greyColor : {}}>
-                  { tag.name }
-                  {(idx + 1) < tags.length && <Typography component="span" sx={classes.whiteColor}>,&nbsp;</Typography>}
+              { tags.length === 0 && <Typography component="span">&nbsp;</Typography> }
+              {tags.map((tag) => {
+                return(<Typography component="span" key={tag}>
+                  #{ tag.toLocaleLowerCase() }{' '}
                 </Typography>);
               })}
             </Typography>
@@ -148,7 +122,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
         </Backdrop>}
       </Paper>
 
-      {!loading && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawTitle || ''}/>}
+      {!loading && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawTitle || ''} tags={tags || []}/>}
     </Grid>
   );
 };

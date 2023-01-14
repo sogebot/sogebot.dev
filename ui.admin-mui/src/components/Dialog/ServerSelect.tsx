@@ -92,26 +92,30 @@ export const ServerSelect: React.FC = () => {
           }
           // 'OK' response was last in 16.8.0
           const version = res.data === 'OK' ? '16.8.0' : res.data;
-          for (const versionKey of Object.keys(versions).sort()) {
-            if (semver.gt(version, versionKey) || router.basePath.length > 0) {
-              // we have snapshot or we are on basePath, we are good
-              dispatch(setServer(serverURL));
-              isBotStarted(dispatch, serverURL).then(() => {
-                const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
-                localStorage.serverHistory = JSON.stringify(
-                  Array
-                    .from(new Set([serverURL, ...serverHistoryLS, 'http://localhost:20000']))
-                );
-              });
-              return;
-            }
-            if (semver.lte(version, versionKey)) {
+          for (const versionKey of Object.keys(versions).reverse()) {
+            console.log({
+              version, versionKey, satisfies: semver.satisfies(version, versionKey),
+            });
+            if (semver.satisfies(version, versionKey)) {
+              // we have found version and returning basepath
               window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
               return;
             }
           }
+
+          // version is higher than in compatibility list -> without base path
+          dispatch(setServer(serverURL));
+          isBotStarted(dispatch, serverURL).then(() => {
+            const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
+            localStorage.serverHistory = JSON.stringify(
+              Array
+                .from(new Set([serverURL, ...serverHistoryLS, 'http://localhost:20000']))
+            );
+          });
+          return;
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e);
           // request is not valid anymore
           if (serverURL !== url.origin) {
             return;
