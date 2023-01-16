@@ -194,7 +194,7 @@ export const ServerSelect: React.FC = () => {
           renderInput={(params) =>
             <TextField
               error={!isValidHttps}
-              helperText={isValidHttps ? '' : 'Incorrect entry. You can connect only on https unless using localhost'}
+              helperText={isValidHttps ? '' : 'Consider use of https unless using localhost'}
               type="url"
               label="Server address"
               variant="filled"
@@ -202,7 +202,7 @@ export const ServerSelect: React.FC = () => {
           }
         />
         <UserSimple/>
-        {typeof window !== 'undefined' && isValidHttps && !serverInputValue.includes('-- demo') && <TextField
+        {typeof window !== 'undefined' && !serverInputValue.includes('-- demo') && <TextField
           label="Autoconnect link"
           helperText={'Use this link to skip server select'}
           variant="filled"
@@ -234,7 +234,6 @@ export const ServerSelect: React.FC = () => {
       {getUser() && <LoadingButton
         onClick={() => handleConnect(serverInputValue)}
         loading={connecting}
-        disabled={!isValidHttps}
         variant="outlined"
       >
         Connect
