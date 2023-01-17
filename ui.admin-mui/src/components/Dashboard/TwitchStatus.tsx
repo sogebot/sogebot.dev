@@ -85,36 +85,26 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
         </Box>}
 
         <Grid container justifyContent={'left'}>
-          <Grid item sm={4} xs={12}>
-            <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate,
-            }}>{ game ?? capitalize(translate('not-available')) }</Typography>
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1,
-            }}>{ capitalize(translate('game')) }</Typography>
-          </Grid>
-          <Grid item sm={4} xs={12}>
-            <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate,
-            }}>{ parse(title ?? capitalize(translate('not-available'))) }</Typography>
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1,
-            }}>{ capitalize(translate('title')) }</Typography>
-          </Grid>
-          <Grid item sm={4} xs={12}>
+          <Grid item sm={12} xs={12}>
             <Typography sx={{
               transform: 'translateY(5px)', ...classes.truncate,
             }}>
-              { tags.length === 0 && <Typography component="span">&nbsp;</Typography> }
+              <Typography component="span" sx={{
+                color: theme.palette.primary.main, fontWeight: 'bold', 
+              }}>
+                { game ?? ''}
+              </Typography>
+              {' '}
+              {parse(title ?? '')}
+              {' '}
               {tags.map((tag) => {
-                return(<Typography component="span" key={tag}>
-                  #{ tag.toLocaleLowerCase() }{' '}
+                return(<Typography component="span" key={tag} sx={{ color: theme.palette.primary.main }}>
+                #{ tag.toLocaleLowerCase() }{' '}
                 </Typography>);
-              })}
-            </Typography>
+              })}</Typography>
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{
               pt: 2, pa: 1,
-            }}>{ capitalize(translate('tags')) }</Typography>
+            }}>{ capitalize(translate('game')) }, { capitalize(translate('title')) }, { capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
         {!loading && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
