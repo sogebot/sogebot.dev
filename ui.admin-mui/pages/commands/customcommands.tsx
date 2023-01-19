@@ -47,7 +47,6 @@ import { Layout } from '~/src/components/Layout/main';
 import { CommandsEdit } from '~/src/components/RightDrawer/CommandsEdit';
 import { BoolTypeProvider } from '~/src/components/Table/BoolTypeProvider';
 import { GroupTypeProvider } from '~/src/components/Table/GroupTypeProvider';
-import { PermissionTypeProvider } from '~/src/components/Table/PermissionTypeProvider';
 import { Responses } from '~/src/components/Table/Responses';
 import getAccessToken from '~/src/getAccessToken';
 import { useColumnMaker } from '~/src/hooks/useColumnMaker';
@@ -373,9 +372,6 @@ const PageCommandsCommands: NextPageWithLayout = () => {
               columns={columns}
               getRowId={row => row.id}
             >
-              <PermissionTypeProvider
-                for={['permission']}
-              />
               <GroupTypeProvider
                 for={['group']}
               />

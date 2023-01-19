@@ -13,6 +13,7 @@ import { CommonProps } from '@mui/material/OverridableComponent';
 import { Box, SxProps } from '@mui/system';
 import { OverlayMapperCountdown } from '@sogebot/backend/src/database/entity/overlay';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import * as React from 'react';
@@ -22,6 +23,7 @@ import { v4 } from 'uuid';
 
 import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
 import { DashboardWidgetActionButtonsAddItem } from '~/src/components/Dashboard/Widget/Action/Buttons/AddItem';
+import getAccessToken from '~/src/getAccessToken';
 import { getSocket } from '~/src/helpers/socket';
 import {
   setCountdowns, setMarathons, setRandomizers, setStopwatchs,
@@ -361,16 +363,12 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       setActions(orderBy(items, 'order', 'asc'));
     });
 
-    getSocket('/registries/randomizer').emit('generic::getAll', (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      dispatch(
-        setRandomizers(items.map(o => ({
+    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(({ data }) => {
+        setRandomizers(data.data.map((o: any) => ({
           id: o.id, label: o.name,
-        })))
-      );
-    });
+        })));
+      });
 
     getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
       if (err) {

@@ -1,4 +1,4 @@
-import { RandomizerInterface } from '@entity/randomizer';
+import { Randomizer } from '@entity/randomizer';
 import {
   PlayArrow, Visibility, VisibilityOff,
 } from '@mui/icons-material';
@@ -6,12 +6,14 @@ import { CircularProgress, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
+import axios from 'axios';
 import {
   MouseEventHandler, useCallback, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
+import getAccessToken from '~/src/getAccessToken';
 import { getSocket } from '~/src/helpers/socket';
 import { isHexColor } from '~/src/validators';
 
@@ -23,7 +25,7 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
   const { user } = useSelector((state: any) => state.user);
   const [ running, setRunning ] = useState(false);
 
-  const [ randomizers, setRandomizers ] = useState<RandomizerInterface[]>([]);
+  const [ randomizers, setRandomizers ] = useState<Randomizer[]>([]);
 
   const currentRandomizer = useMemo(() => {
     return randomizers.find(o => o.id === item.options.randomizerId);
@@ -39,7 +41,7 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
     const increment = mouseOffsetX > boxWidth / 2;
 
     if (increment) {
-      getSocket('/registries/randomizer').emit('randomizer::startSpin');
+      axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${currentRandomizer.id}/spin`, null, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       setRunning(true);
       setTimeout(() => {
         setRunning(false);
@@ -47,29 +49,21 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
     } else {
       getSocket('/widgets/quickaction').emit('trigger', {
         user: {
-          userId: user.id, userName: user.login, 
+          userId: user.id, userName: user.login,
         },
         id:    item.id,
         value: !currentRandomizer.isShown,
       });
-      getSocket('/registries/randomizer').emit('generic::getAll', (err, items) => {
-        if (err) {
-          return console.error(err);
-        }
-        setRandomizers(items);
-      });
+      axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        .then((res: any) => setRandomizers(res.data.data));
 
     }
     // trigger
   }, [currentRandomizer, user, item.id]);
 
   useIntervalWhen(() => {
-    getSocket('/registries/randomizer').emit('generic::getAll', (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setRandomizers(items);
-    });
+    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((res: any) => setRandomizers(res.data.data));
   }, 1000, true, true);
 
   return (
