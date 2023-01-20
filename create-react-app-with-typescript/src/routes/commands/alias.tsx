@@ -8,10 +8,10 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
-  Table,
   TableColumnVisibility,
   TableHeaderRow,
   TableSelection,
+  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
@@ -19,6 +19,7 @@ import {
 import {
   Button,
   CircularProgress,
+  Container,
   Dialog,
   Grid,
   Paper,
@@ -33,7 +34,6 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
-import SimpleBar from 'simplebar-react';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
@@ -44,6 +44,7 @@ import { ButtonsPermissionsBulk } from '../../components/Buttons/PermissionsBulk
 import { DisabledAlert } from '../../components/DisabledAlert';
 import { AliasEdit } from '../../components/Form/AliasEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
+import DenseCell from '../../components/Table/DenseCell';
 import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
@@ -71,7 +72,9 @@ const PageCommandsAlias = () => {
       columnName: 'alias', filtering: { type: 'string' },
     },
     {
-      columnName: 'command', filtering: { type: 'string' }, table: { width: '40%' },
+      columnName: 'command',
+      filtering:  { type: 'string' },
+      table:      { wordWrapEnabled: true },
     },
     {
       columnName: 'group',
@@ -263,63 +266,63 @@ const PageCommandsAlias = () => {
 
   return (
     <>
-      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <DisabledAlert system='alias'/>
-        <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
+      <Container disableGutters>
+        <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+          <DisabledAlert system='alias'/>
+          <Grid item>
+            <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
+          </Grid>
+          <Grid item>
+            <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/' color='secondary'>Group settings</LinkButton>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Set visibility on">
+              <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Set visibility off">
+              <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+          </Grid>
+          <Grid item>
+            <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+          <Grid item>{filterElement}</Grid>
+          <Grid item>
+            {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
+          </Grid>
         </Grid>
-        <Grid item>
-          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/' color='secondary'>Group settings</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
-        </Grid>
-        <Grid item>
-          <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
-        <Grid item>{filterElement}</Grid>
-        <Grid item>
-          {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
-        </Grid>
-      </Grid>
 
-      {loading
-        ? <CircularProgress color="inherit" sx={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-        }} />
-        : <Paper>
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+        {loading
+          ? <CircularProgress color="inherit" sx={{
+            position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+          }} />
+          : <Paper>
             <DataGrid
               rows={items}
               columns={columns}
@@ -355,15 +358,15 @@ const PageCommandsAlias = () => {
                 onSelectionChange={setSelection}
               />
               <IntegratedSelection/>
-              <Table columnExtensions={tableColumnExtensions}/>
+              <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
               <TableHeaderRow showSortingControls/>
               <TableColumnVisibility
                 defaultHiddenColumnNames={defaultHiddenColumnNames}
               />
               <TableSelection showSelectAll/>
             </DataGrid>
-          </SimpleBar>
-        </Paper>}
+          </Paper>}
+      </Container>
 
       <Dialog
         open={open}

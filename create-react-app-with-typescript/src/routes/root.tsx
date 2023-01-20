@@ -1,11 +1,12 @@
 import {
-  AppBar, Box, Fade, Grid, Slide, Toolbar,
+  AppBar, Backdrop, Box, CircularProgress, Fade, Grid, Slide, Toolbar,
 } from '@mui/material';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import React, {
-  lazy, useEffect, useState, 
+  lazy,
+  Suspense, useEffect, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -38,6 +39,7 @@ import { setUser } from '../store/userSlice';
 
 const PageCommandsAlias = lazy(() => import('./commands/alias'));
 const PageCommandsAliasGroup = lazy(() => import('./commands/aliasGroup'));
+const PageCommandsBot = lazy(() => import('./commands/botcommands'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -183,11 +185,17 @@ export default function Root() {
               <Box ref={pageRef} sx={{
                 minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
               }}>
-                <Routes>
-                  <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
-                  <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
-                  <Route path="*" element={<Error404/>}/>
-                </Routes>
+                <Suspense fallback={<Backdrop open={true}>
+                  <CircularProgress/>
+                </Backdrop>}>
+                  <Routes>
+                    <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
+                    <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
+                    <Route path="/commands/botcommands/:type?/:id?" element={<PageCommandsBot/>}/>
+                    <Route path="/" element={<span/>}/>
+                    <Route path="*" element={<Error404/>}/>
+                  </Routes>
+                </Suspense>
               </Box>
             </Fade>
           </Box>}

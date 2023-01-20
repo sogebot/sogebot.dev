@@ -1,12 +1,13 @@
 import { Column } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
-  Table,
   TableHeaderRow,
+  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   Button,
   CircularProgress,
+  Container,
   Dialog,
   Grid,
   Paper,
@@ -28,6 +29,7 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import { AliasGroupEdit } from '../../components/Form/AliasGroupEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
+import DenseCell from '../../components/Table/DenseCell';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { getSocket } from '../../helpers/socket';
@@ -141,8 +143,8 @@ const PageCommandsAliasGroup = () => {
 
   const open = React.useMemo(() => id !== undefined, [id]);
 
-  return (
-    <>
+  return (<>
+    <Container disableGutters>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <Button sx={{ width: 220 }} color="secondary" variant="contained" href='/commands/alias/'>Back to Alias settings</Button>
@@ -166,20 +168,21 @@ const PageCommandsAliasGroup = () => {
               <PermissionTypeProvider
                 for={['permission']}
               />
-              <Table columnExtensions={tableColumnExtensions as any}/>
+              <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
               <TableHeaderRow/>
             </DataGrid>
           </SimpleBar>
         </Paper>}
+    </Container>
 
-      <Dialog
-        open={open}
-        fullWidth
-        maxWidth='md'>
-        {open && <AliasGroupEdit onSave={()=> refresh()}/>}
-      </Dialog>
+    <Dialog
+      open={open}
+      fullWidth
+      maxWidth='md'>
+      {open && <AliasGroupEdit onSave={()=> refresh()}/>}
+    </Dialog>
 
-    </>
+  </>
   );
 };
 export default PageCommandsAliasGroup;
