@@ -1,7 +1,6 @@
 {
   "name": "@sogebot/ui-admin-react",
   "version": "1.0.0",
-  "homepage": "/test",
   "private": true,
   "dependencies": {
     "@devexpress/dx-react-core": "4.0.2",

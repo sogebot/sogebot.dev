@@ -42,7 +42,7 @@ jobs:
           path: ./ui.admin-mui/out
 
       - name: Build a UI (with old_commit basePath)
-        run: cd ./ui.admin-mui/ && npm install && COMMIT="${{ steps.slug.outputs.SHA }}" npm run build
+        run: cd ./ui.admin-mui/ && npm install && PUBLIC_URL="${{ steps.slug.outputs.SHA }}" npm run build
 
       - uses: actions/upload-artifact@v3
         with:
@@ -102,7 +102,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           build-args: |
-            COMMIT=${{ steps.slug.outputs.SHA }}
+            PUBLIC_URL=${{ steps.slug.outputs.SHA }}
           context: ./ui.admin-mui/
           file: ./ui.admin-mui/Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64

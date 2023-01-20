@@ -1,5 +1,8 @@
 import grey from '@mui/material/colors/grey';
+import { LinkProps } from '@mui/material/Link';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import React from 'react';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -19,7 +22,21 @@ declare module '@mui/material/Button' {
   }
 }
 
+const LinkBehavior = React.forwardRef<
+HTMLAnchorElement,
+Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
+>((props, ref) => {
+  const { href, ...other } = props;
+  // Map href (MUI) -> to (react-router)
+  return <RouterLink ref={ref} to={href} {...other} />;
+});
+
 export let theme = createTheme({
+  components: {
+    MuiLink:       { defaultProps: { component: LinkBehavior } as LinkProps },
+    MuiButtonBase: { defaultProps: { LinkComponent: LinkBehavior } },
+    MuiIconButton: { defaultProps: { LinkComponent: LinkBehavior } },
+  },
   typography: {
     fontFamily: [
       'Roboto',

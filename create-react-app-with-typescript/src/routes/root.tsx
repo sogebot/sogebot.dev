@@ -4,7 +4,9 @@ import {
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, {
+  lazy, useEffect, useState, 
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Route, Routes, useLocation,
@@ -33,6 +35,9 @@ import {
 } from '../store/loaderSlice';
 import { setScrollY } from '../store/pageSlice';
 import { setUser } from '../store/userSlice';
+
+const PageCommandsAlias = lazy(() => import('./commands/alias'));
+const PageCommandsAliasGroup = lazy(() => import('./commands/aliasGroup'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -179,6 +184,8 @@ export default function Root() {
                 minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
               }}>
                 <Routes>
+                  <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
+                  <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
                   <Route path="*" element={<Error404/>}/>
                 </Routes>
               </Box>
