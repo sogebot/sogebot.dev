@@ -1,0 +1,35 @@
+import { Stack, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
+import React from 'react';
+
+import { ColorButton } from '../_ColorButton';
+
+export const DashboardWidgetActionCustomVariableUnknownButton: React.FC<{ item: QuickActions.Item, variableName: string }> = ({
+  variableName, item,
+}) => {
+  return (<>
+    <ColorButton
+      key={item.id}
+      variant="contained"
+      htmlcolor={item.options.color}
+      fullWidth
+      disabled
+      sx={{ borderRadius: 0 }}>
+      <Box sx={{
+        position: 'absolute', width: '100%', height: '100%',
+      }}></Box>
+      <Stack direction="row" alignItems='center' width='100%'>
+        <Stack sx={{ width: '100%' }} spacing={0}>
+          <Typography sx={{
+            fontWeight: 'bold', fontSize: '14px', lineHeight: '20px',
+          }}>Unknown variable</Typography>
+          <Typography variant="button" sx={{
+            fontWeight: '300', fontSize: '12px', lineHeight: '10px',
+          }}>{variableName}</Typography>
+        </Stack>
+      </Stack>
+    </ColorButton>
+  </>
+  );
+};

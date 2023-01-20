@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.condensed {
+  font-family: 'Roboto Condensed', sans-serif !important;
+}
+
+a {
+  color: #ffa000;
+}
+
+.mobileScrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background: transparent;
+}
+.mobileScrollbar::-webkit-scrollbar-thumb {
+  background: #ffa000;
+}
+
+.monospace {
+  font-family: 'Roboto mono', 'Courier New', Courier, monospace;
+  font-weight: 100;
+}
+
+#notistack-snackbar ul {
+  margin: 0;
+  margin-top: 0.5em;
+}
+
+.simplebar-scrollbar:before {
+  background-color: #ffa000 !important;
+}
+
+.TableFilterCell-flexContainer .Mui-disabled {
+  display: none;
+}
+
+.Pager-pager {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-bottom: 0 !important;
+}
+
+.Pagination-pagination * {
+  color: white !important;
+}
+
+.Container-wrapper,
+.IndentCell-indentCell {
+  background-color: transparent !important;
+}
+
+.MuiLink-root {
+  cursor: pointer !important;
+}
+
+.MuiTypography-h1  {
+  font-weight: lighter;
+  font-size: 2.2rem;
+}
+
+.MuiTypography-h2  {
+  font-weight: lighter;
+  font-size: 2rem;
+}
+
+.MuiTypography-h3  {
+  font-weight: lighter;
+  font-size: 1.8rem;
+}
+
+.MuiTypography-h4  {
+  font-weight: lighter;
+  font-size: 1.6rem;
+}
+
+.MuiTypography-h5  {
+  font-weight: lighter;
+  font-size: 1.4rem;
+}
+
+.MuiTypography-h6  {
+  font-weight: lighter;
+  font-size: 1.2rem;
+}
