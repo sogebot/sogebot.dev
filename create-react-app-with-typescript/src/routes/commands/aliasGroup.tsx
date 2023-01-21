@@ -1,16 +1,14 @@
 import { Column } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
+  Table,
   TableHeaderRow,
-  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   Button,
   CircularProgress,
-  Container,
   Dialog,
   Grid,
-  Paper,
   Stack,
 } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
@@ -29,7 +27,6 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import { AliasGroupEdit } from '../../components/Form/AliasGroupEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
-import DenseCell from '../../components/Table/DenseCell';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { getSocket } from '../../helpers/socket';
@@ -144,36 +141,32 @@ const PageCommandsAliasGroup = () => {
   const open = React.useMemo(() => id !== undefined, [id]);
 
   return (<>
-    <Container disableGutters>
-      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <Button sx={{ width: 220 }} color="secondary" variant="contained" href='/commands/alias/'>Back to Alias settings</Button>
-        </Grid>
+    <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+      <Grid item>
+        <Button sx={{ width: 220 }} color="secondary" variant="contained" href='/commands/alias/'>Back to Alias settings</Button>
       </Grid>
+    </Grid>
 
-      {loading
-        ? <CircularProgress color="inherit" sx={{
-          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-        }} />
-        : <Paper>
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-            <DataGrid
-              rows={groupsSettingsAll}
-              columns={columns}
-              getRowId={row => row.name}
-            >
-              <BoolTypeProvider
-                for={['used']}
-              />
-              <PermissionTypeProvider
-                for={['permission']}
-              />
-              <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
-              <TableHeaderRow/>
-            </DataGrid>
-          </SimpleBar>
-        </Paper>}
-    </Container>
+    {loading
+      ? <CircularProgress color="inherit" sx={{
+        position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+      }} />
+      : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+        <DataGrid
+          rows={groupsSettingsAll}
+          columns={columns}
+          getRowId={row => row.name}
+        >
+          <BoolTypeProvider
+            for={['used']}
+          />
+          <PermissionTypeProvider
+            for={['permission']}
+          />
+          <Table columnExtensions={tableColumnExtensions}/>
+          <TableHeaderRow/>
+        </DataGrid>
+      </SimpleBar>}
 
     <Dialog
       open={open}

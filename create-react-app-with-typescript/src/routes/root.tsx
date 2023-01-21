@@ -40,6 +40,8 @@ import { setUser } from '../store/userSlice';
 const PageCommandsAlias = lazy(() => import('./commands/alias'));
 const PageCommandsAliasGroup = lazy(() => import('./commands/aliasGroup'));
 const PageCommandsBot = lazy(() => import('./commands/botcommands'));
+const PageCommandsPrice = lazy(() => import('./commands/price'));
+const PageCommandsCooldowns = lazy(() => import('./commands/cooldowns'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -192,6 +194,8 @@ export default function Root() {
                     <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
                     <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
                     <Route path="/commands/botcommands/:type?/:id?" element={<PageCommandsBot/>}/>
+                    <Route path="/commands/price/:type?/:id?" element={<PageCommandsPrice/>}/>
+                    <Route path="/commands/cooldowns/:type?/:id?" element={<PageCommandsCooldowns/>}/>
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
                   </Routes>

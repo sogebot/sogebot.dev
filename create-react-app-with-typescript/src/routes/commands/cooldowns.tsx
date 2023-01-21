@@ -14,7 +14,7 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
-  CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone,
 } from '@mui/icons-material';
 import {
   Button,
@@ -25,7 +25,10 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
+import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
+import axios from 'axios';
+import humanizeDuration from 'humanize-duration';
+import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
@@ -37,78 +40,86 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
-import { ButtonsGroupBulk } from '../../components/Buttons/GroupBulk';
 import LinkButton from '../../components/Buttons/LinkButton';
-import { ButtonsPermissionsBulk } from '../../components/Buttons/PermissionsBulk';
 import { DisabledAlert } from '../../components/DisabledAlert';
-import { AliasEdit } from '../../components/Form/AliasEdit';
+import { CooldownEdit } from '../../components/Form/CooldownEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
-import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
-import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
-import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
-import { usePermissions } from '../../hooks/usePermissions';
+import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
-const PageCommandsAlias = () => {
+const PageCommandsCooldown = () => {
+  const { translate } = useTranslation();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const { type, id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const { configuration } = useSelector((state: any) => state.loader);
 
-  const [ items, setItems ] = useState<Alias[]>([]);
-  const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
+  const [ items, setItems ] = useState<Required<Cooldown>[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
-  const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Alias>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Cooldown>([
     {
-      columnName: 'alias', filtering: { type: 'string' },
+      columnName:  'name',
+      table:       { width: '25%' },
+      translation: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
+      filtering:   { type: 'string' },
     },
     {
-      columnName: 'command',
+      columnName: 'type',
+      column:     { getCellValue: (row) => capitalize(translate(row.type)) },
       filtering:  { type: 'string' },
-      table:      {
-        wordWrapEnabled: true, width: '40%',
-      },
     },
     {
-      columnName: 'group',
-      column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' },
-      filtering:  {
-        type:    'list' ,
-        options: {
-          showDisabled:  true,
-          disabledName:  'Ungrouped',
-          disabledValue: '_ungroup',
-          listValues:    groupsSettings
-            .filter(group => group.name !== 'undefined')
-            .map(group => group.name),
-        },
-      },
+      columnName:     'miliseconds',
+      translationKey: 'cooldown',
+      table:          { align: 'right' },
+      column:         { getCellValue: (row) => humanizeDuration(row.miliseconds, { language: configuration.lang }) },
     },
     {
-      columnName: 'permission', filtering: { type: 'permission' }, column: { getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []) },
+      columnName:     'isEnabled',
+      table:          { align: 'center' },
+      translationKey: 'enabled',
+      filtering:      { type: 'boolean' },
     },
     {
-      columnName: 'visible', filtering: { type: 'boolean' }, table: { align: 'center' },
+      columnName:     'isErrorMsgQuiet',
+      table:          { align: 'center' },
+      translationKey: 'quiet',
+      filtering:      { type: 'boolean' },
     },
     {
-      columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
+      columnName:     'isOwnerAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.casters',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isModeratorAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.moderators',
+      filtering:      { type: 'boolean' },
+    },
+    {
+      columnName:     'isSubscriberAffected',
+      table:          { align: 'center' },
+      translationKey: 'core.permissions.subscribers',
+      filtering:      { type: 'boolean' },
     },
     {
       columnName:  'actions',
-      translation: ' ',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
+      translation: ' ',
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <EditButton href={'/commands/alias/edit/' + row.id}/>
+            <EditButton href={'/commands/cooldowns/edit/' + row.id}/>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -116,18 +127,15 @@ const PageCommandsAlias = () => {
     },
   ]);
 
-  const { element: filterElement, filters } = useFilter<Alias>(useFilterSetup);
-
-  const groups = useMemo(() => {
-    return Array.from(new Set(items.map(o => o.group)));
-  }, [items]);
-
-  const deleteItem = useCallback((item: Alias) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-      enqueueSnackbar(`Alias ${item.alias} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+  const deleteItem = useCallback((item: Cooldown) => {
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Cooldown ${item.name} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
+
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -136,24 +144,11 @@ const PageCommandsAlias = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setItems(data.data);
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
-      }),
-      new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };
@@ -162,20 +157,20 @@ const PageCommandsAlias = () => {
     dispatch(setBulkCount(selection.length));
   }, [selection, dispatch]);
 
-  const bulkCanVisOff = useMemo(() => {
+  const bulkCanBeLoud = useMemo(() => {
     for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
-      if (item && item.visible) {
+      if (item && item.isErrorMsgQuiet) {
         return true;
       }
     }
     return false;
   }, [ selection, items ]);
 
-  const bulkCanVisOn = useMemo(() => {
+  const bulkCanBeQuiet = useMemo(() => {
     for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
-      if (item && !item.visible) {
+      if (item && !item.isErrorMsgQuiet) {
         return true;
       }
     }
@@ -185,7 +180,7 @@ const PageCommandsAlias = () => {
   const bulkCanEnable = useMemo(() => {
     for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
-      if (item && !item.enabled) {
+      if (item && !item.isEnabled) {
         return true;
       }
     }
@@ -195,22 +190,25 @@ const PageCommandsAlias = () => {
   const bulkCanDisable = useMemo(() => {
     for (const itemId of selection) {
       const item = items.find(o => o.id === itemId);
-      if (item && item.enabled) {
+      if (item && item.isEnabled) {
         return true;
       }
     }
     return false;
   }, [ selection, items ]);
 
-  const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
+  const bulkToggleAttribute = useCallback(async <T extends keyof Required<Cooldown>>(attribute: T, value: Required<Cooldown>[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/systems/alias').emit('generic::save', item, () => {
-            resolve();
-          });
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/cooldown`,
+            { ...item },
+            { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .then(() => {
+              resolve();
+            });
         });
       }
     }
@@ -222,33 +220,20 @@ const PageCommandsAlias = () => {
       return item;
     }));
 
-    if (attribute === 'visible') {
-      enqueueSnackbar(`Bulk operation set visibility ${value ? 'on' : 'off'}.`, { variant: 'success' });
-    } else if (attribute === 'enabled') {
+    if (attribute === 'isEnabled') {
       enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
-    } else if (attribute === 'permission') {
-      enqueueSnackbar(`Bulk operation set permission to ${permissions.find(o => o.id === value)?.name}.`, { variant: 'success' });
-    } else if (attribute === 'group') {
-      // we need next tick as it doesn't reselect without it
-      // nextTick(() => setSelection(selectedItems));
-      if (value) {
-        enqueueSnackbar(`Bulk operation set group to ${value}.`, { variant: 'success' });
-      } else {
-        enqueueSnackbar(`Bulk operation removed group.`, { variant: 'success' });
-      }
     }
 
     refresh();
-  }, [ enqueueSnackbar, items, permissions, selection ]);
+  }, [ enqueueSnackbar, items, selection ]);
 
   const bulkDelete =  useCallback(async () => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-            resolve();
-          });
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => resolve());
         });
       }
     }
@@ -267,46 +252,37 @@ const PageCommandsAlias = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <DisabledAlert system='alias'/>
+        <DisabledAlert system='cooldown'/>
         <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
-        </Grid>
-        <Grid item>
-          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/' color='secondary'>Group settings</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
-          </Tooltip>
+          <LinkButton sx={{ width: 220 }} variant="contained" href='/commands/cooldowns/create/'>Create new cooldown</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
             <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
               minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Disable">
             <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
               minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
           </Tooltip>
         </Grid>
         <Grid item>
-          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+          <Tooltip arrow title="Error message will appear in chat">
+            <Button disabled={!bulkCanBeLoud} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', false)}><NotificationsActiveTwoTone/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
-          <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
+          <Tooltip arrow title="Hide error messages in chat">
+            <Button disabled={!bulkCanBeQuiet} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('isErrorMsgQuiet', true)}><NotificationsOffTwoTone/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
@@ -327,23 +303,13 @@ const PageCommandsAlias = () => {
             columns={columns}
             getRowId={row => row.id}
           >
-            <PermissionTypeProvider
-              for={['permission']}
-            />
-            <GroupTypeProvider
-              for={['group']}
-            />
             <BoolTypeProvider
-              for={['visible', 'enabled']}
+              for={['isEnabled', 'isErrorMsgQuiet', 'isOwnerAffected', 'isModeratorAffected', 'isSubscriberAffected']}
             />
 
             <SortingState
               defaultSorting={[{
-                columnName: 'group', direction: 'asc',
-              }, {
-                columnName: 'alias', direction: 'asc',
-              }, {
-                columnName: 'enabled', direction: 'asc',
+                columnName: 'command', direction: 'asc',
               }]}
               columnExtensions={sortingTableExtensions}
             />
@@ -370,10 +336,10 @@ const PageCommandsAlias = () => {
         open={open}
         fullWidth
         maxWidth='md'>
-        {open && <AliasEdit aliasGroups={groupsSettings} aliases={items}/>}
+        {open && <CooldownEdit items={items}/>}
       </Dialog>
     </>
   );
 };
 
-export default PageCommandsAlias;
+export default PageCommandsCooldown;

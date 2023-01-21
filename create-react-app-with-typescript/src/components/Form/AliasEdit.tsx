@@ -101,7 +101,8 @@ export const AliasEdit: React.FC<{
     });
   };
 
-  return(<>{loading
+  return(<>
+    {loading
       && <Grid
         sx={{ pt: 10 }}
         container
@@ -109,142 +110,142 @@ export const AliasEdit: React.FC<{
         justifyContent="flex-start"
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
-  <Fade in={!loading}>
-    <DialogContent>
-      <Box
-        component="form"
-        sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-        noValidate
-        autoComplete="off"
-      >
-        <TextField
-          fullWidth
-          {...propsError('alias')}
-          variant="filled"
-          required
-          value={alias?.alias || ''}
-          label={translate('alias')}
-          onChange={(event) => handleValueChange('alias', event.target.value)}
-        />
+    <Fade in={!loading}>
+      <DialogContent>
+        <Box
+          component="form"
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            fullWidth
+            {...propsError('alias')}
+            variant="filled"
+            required
+            value={alias?.alias || ''}
+            label={translate('alias')}
+            onChange={(event) => handleValueChange('alias', event.target.value)}
+          />
 
-        <TextField
-          fullWidth
-          {...propsError('command')}
-          variant="filled"
-          value={alias?.command || ''}
-          required
-          multiline
-          onKeyPress={(e) => {
-            e.key === 'Enter' && e.preventDefault();
-          }}
-          label={translate('command')}
-          onChange={(event) => handleValueChange('command', event.target.value)}
-        />
+          <TextField
+            fullWidth
+            {...propsError('command')}
+            variant="filled"
+            value={alias?.command || ''}
+            required
+            multiline
+            onKeyPress={(e) => {
+              e.key === 'Enter' && e.preventDefault();
+            }}
+            label={translate('command')}
+            onChange={(event) => handleValueChange('command', event.target.value)}
+          />
 
-        <Grid container columnSpacing={1}>
-          <Grid item xs={6}>
-            <FormControl fullWidth variant="filled" >
-              <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
-              <Select
-                label={translate('permissions')}
-                labelId="permission-select-label"
-                onChange={(event) => handleValueChange('permission', event.target.value)}
-                value={alias?.permission || defaultPermissions.VIEWERS}
-              >
-                {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth variant="filled">
-              <Autocomplete
-                sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
-                selectOnFocus
-                handleHomeEndKeys
-                onChange={(event, newValue) => {
-                  if (typeof newValue === 'string') {
-                    handleValueChange('group', newValue);
-                  } else if (newValue && newValue.inputValue) {
+          <Grid container columnSpacing={1}>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="filled" >
+                <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+                <Select
+                  label={translate('permissions')}
+                  labelId="permission-select-label"
+                  onChange={(event) => handleValueChange('permission', event.target.value)}
+                  value={alias?.permission || defaultPermissions.VIEWERS}
+                >
+                  {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="filled">
+                <Autocomplete
+                  sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
+                  selectOnFocus
+                  handleHomeEndKeys
+                  onChange={(event, newValue) => {
+                    if (typeof newValue === 'string') {
+                      handleValueChange('group', newValue);
+                    } else if (newValue && newValue.inputValue) {
                     // Create a new value from the user input
-                    handleValueChange('group', newValue.inputValue);
-                  } else {
-                    handleValueChange('group', newValue?.title ?? '');
-                  }
-                }}
-                getOptionLabel={(option) => {
+                      handleValueChange('group', newValue.inputValue);
+                    } else {
+                      handleValueChange('group', newValue?.title ?? '');
+                    }
+                  }}
+                  getOptionLabel={(option) => {
                   // Value selected with enter, right from the input
-                  if (typeof option === 'string') {
-                    return option;
+                    if (typeof option === 'string') {
+                      return option;
+                    }
+                    // Add "xxx" option created dynamically
+                    if (option.inputValue) {
+                      return option.inputValue;
+                    }
+                    // Regular option
+                    return option.title;
+                  }}
+                  filterOptions={(options, params) => {
+                    const filtered = filter(options, params);
+                    const { inputValue } = params;
+                    // Suggest the creation of a new value
+                    const isExisting = options.some((option) => inputValue === option.title);
+                    if (inputValue !== '' && !isExisting) {
+                      filtered.push({
+                        inputValue,
+                        title: `Add "${inputValue}"`,
+                      });
+                    }
+                    return filtered;
+                  }}
+                  renderOption={(props2, option) => <li {...props2}>{option.title}</li>}
+                  value={{ title: alias?.group ?? '' }}
+                  options={[...props.aliasGroups.map((o) => ({ title: o.name }))] as GroupType[]}
+                  renderInput={(params) =>
+                    <TextField
+                      label={translate('group')}
+                      variant="filled"
+                      {...params}/>
                   }
-                  // Add "xxx" option created dynamically
-                  if (option.inputValue) {
-                    return option.inputValue;
-                  }
-                  // Regular option
-                  return option.title;
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
-                  const { inputValue } = params;
-                  // Suggest the creation of a new value
-                  const isExisting = options.some((option) => inputValue === option.title);
-                  if (inputValue !== '' && !isExisting) {
-                    filtered.push({
-                      inputValue,
-                      title: `Add "${inputValue}"`,
-                    });
-                  }
-                  return filtered;
-                }}
-                renderOption={(props2, option) => <li {...props2}>{option.title}</li>}
-                value={{ title: alias?.group ?? '' }}
-                options={[...props.aliasGroups.map((o) => ({ title: o.name }))] as GroupType[]}
-                renderInput={(params) =>
-                  <TextField
-                    label={translate('group')}
-                    variant="filled"
-                    {...params}/>
-                }
-              />
-            </FormControl>
+                />
+              </FormControl>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid container columnSpacing={1}>
-          <Grid item xs={6}>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={alias?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-              <FormHelperText sx={{
-                position: 'relative', top: '-10px',
-              }}>
-                {alias?.enabled ? 'Alias is enabled': 'Alias is disabled'}
-              </FormHelperText>
-            </FormGroup>
+          <Grid container columnSpacing={1}>
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel control={<Checkbox checked={alias?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px',
+                }}>
+                  {alias?.enabled ? 'Alias is enabled': 'Alias is disabled'}
+                </FormHelperText>
+              </FormGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <FormGroup>
+                <FormControlLabel control={<Checkbox checked={alias?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px',
+                }}>
+                  {alias?.visible ? 'Alias will be visible in lists': 'Alias won\'t be visible in lists'}
+                </FormHelperText>
+              </FormGroup>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={alias?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
-              <FormHelperText sx={{
-                position: 'relative', top: '-10px',
-              }}>
-                {alias?.visible ? 'Alias will be visible in lists': 'Alias won\'t be visible in lists'}
-              </FormHelperText>
-            </FormGroup>
-          </Grid>
+        </Box>
+      </DialogContent>
+    </Fade>
+    <Divider/>
+    <Box sx={{ p: 1 }}>
+      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid item>
+          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
-      </Box>
-    </DialogContent>
-  </Fade>
-  <Divider/>
-  <Box sx={{ p: 1 }}>
-    <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-      <Grid item>
-        <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+        <Grid item>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+        </Grid>
       </Grid>
-      <Grid item>
-        <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
-      </Grid>
-    </Grid>
-  </Box>
+    </Box>
   </>);
 };

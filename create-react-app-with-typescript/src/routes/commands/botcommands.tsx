@@ -7,14 +7,13 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid as DataGrid,
+  Table,
   TableColumnVisibility,
   TableHeaderRow,
-  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import {
   CircularProgress,
-  Container,
   Dialog,
   Grid,
   Paper,
@@ -22,11 +21,11 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import SimpleBar from 'simplebar-react';
 
 import { Commands } from '../../classes/Commands';
 import EditButton from '../../components/Buttons/EditButton';
 import { BotCommandEdit } from '../../components/Form/BotCommandEdit';
-import DenseCell from '../../components/Table/DenseCell';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { getSocket } from '../../helpers/socket';
@@ -143,15 +142,15 @@ const PageCommandsBot = () => {
 
   return (
     <>
-      <Container disableGutters>
-        <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-          <Grid item>{filterElement}</Grid>
-        </Grid>
-        {loading && items.length === 0 && permissions.length === 0
-          ? <CircularProgress color="inherit" sx={{
-            position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-          }} />
-          : <Paper>
+      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <Grid item>{filterElement}</Grid>
+      </Grid>
+      {loading && items.length === 0 && permissions.length === 0
+        ? <CircularProgress color="inherit" sx={{
+          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+        }} />
+        : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+          <Paper>
             <DataGrid
               rows={items}
               columns={columns}
@@ -172,14 +171,14 @@ const PageCommandsBot = () => {
               <FilteringState filters={filters}/>
               <IntegratedFiltering columnExtensions={filteringColumnExtensions}/>
 
-              <VirtualTable columnExtensions={tableColumnExtensions} cellComponent={DenseCell} estimatedRowHeight={80} height='calc(100vh - 116px)'/>
+              <Table columnExtensions={tableColumnExtensions}/>
               <TableHeaderRow showSortingControls/>
               <TableColumnVisibility
                 defaultHiddenColumnNames={defaultHiddenColumnNames}
               />
             </DataGrid>
-          </Paper>}
-      </Container>
+          </Paper>
+        </SimpleBar>}
 
       <Dialog
         open={open}

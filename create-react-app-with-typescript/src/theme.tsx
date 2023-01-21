@@ -27,8 +27,11 @@ HTMLAnchorElement,
 Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
 >((props, ref) => {
   const { href, ...other } = props;
+  const to = href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.sserver)}`;
   // Map href (MUI) -> to (react-router)
-  return <RouterLink ref={ref} to={href} {...other} />;
+  {
+    return <RouterLink ref={ref} to={to} {...other} />;
+  }
 });
 
 export let theme = createTheme({

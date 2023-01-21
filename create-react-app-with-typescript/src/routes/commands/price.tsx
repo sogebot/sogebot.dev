@@ -14,7 +14,7 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
-  CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+  CheckBoxTwoTone, DisabledByDefaultTwoTone, SignalWifi4Bar, SignalWifiOffTwoTone,
 } from '@mui/icons-material';
 import {
   Button,
@@ -25,7 +25,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
+import { Price } from '@sogebot/backend/dest/database/entity/price';
+import axios from 'axios';
+import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
@@ -37,78 +39,53 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
-import { ButtonsGroupBulk } from '../../components/Buttons/GroupBulk';
 import LinkButton from '../../components/Buttons/LinkButton';
-import { ButtonsPermissionsBulk } from '../../components/Buttons/PermissionsBulk';
 import { DisabledAlert } from '../../components/DisabledAlert';
-import { AliasEdit } from '../../components/Form/AliasEdit';
+import { PriceEdit } from '../../components/Form/PriceEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
-import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
-import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
-import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
-import { usePermissions } from '../../hooks/usePermissions';
+import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
-const PageCommandsAlias = () => {
+const PageCommandsPrice = () => {
+  const { translate } = useTranslation();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const { type, id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Alias[]>([]);
-  const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
+  const [ items, setItems ] = useState<Required<Price>[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useSelector((state: any) => state.appbar);
-  const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Alias>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Price>([
     {
-      columnName: 'alias', filtering: { type: 'string' },
+      columnName: 'command', filtering: { type: 'string' }, table: { width: '40%' },
     },
     {
-      columnName: 'command',
-      filtering:  { type: 'string' },
-      table:      {
-        wordWrapEnabled: true, width: '40%',
-      },
+      columnName: 'enabled', filtering: { type: 'boolean' }, table: { align: 'center' },
     },
     {
-      columnName: 'group',
-      column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' },
-      filtering:  {
-        type:    'list' ,
-        options: {
-          showDisabled:  true,
-          disabledName:  'Ungrouped',
-          disabledValue: '_ungroup',
-          listValues:    groupsSettings
-            .filter(group => group.name !== 'undefined')
-            .map(group => group.name),
-        },
-      },
+      columnName: 'emitRedeemEvent', filtering: { type: 'boolean' }, translationKey: 'systems.price.emitRedeemEvent', table: { align: 'center' },
     },
     {
-      columnName: 'permission', filtering: { type: 'permission' }, column: { getCellValue: (row) => row.permission === null ? '_disabled' : getPermissionName(row.permission, permissions || []) },
+      columnName: 'price', filtering: { type: 'number' }, translation: capitalize(translate('systems.price.price.name') + ' (points)'), table: { align: 'right' },
     },
     {
-      columnName: 'visible', filtering: { type: 'boolean' }, table: { align: 'center' },
-    },
-    {
-      columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
+      columnName: 'priceBits', filtering: { type: 'number' }, translation: capitalize(translate('systems.price.price.name') + ' (bits)'), table: { align: 'right' },
     },
     {
       columnName:  'actions',
-      translation: ' ',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
+      translation: ' ',
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <EditButton href={'/commands/alias/edit/' + row.id}/>
+            <EditButton href={'/commands/price/edit/' + row.id}/>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -116,17 +93,14 @@ const PageCommandsAlias = () => {
     },
   ]);
 
-  const { element: filterElement, filters } = useFilter<Alias>(useFilterSetup);
+  const { element: filterElement, filters } = useFilter(useFilterSetup);
 
-  const groups = useMemo(() => {
-    return Array.from(new Set(items.map(o => o.group)));
-  }, [items]);
-
-  const deleteItem = useCallback((item: Alias) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-      enqueueSnackbar(`Alias ${item.alias} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+  const deleteItem = useCallback((item: Price) => {
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   useEffect(() => {
@@ -136,51 +110,55 @@ const PageCommandsAlias = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setItems(data.data);
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
-      }),
-      new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };
 
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      let shouldShow = true;
+
+      for (const filter of filters) {
+        if (filter.columnName === 'command') {
+          shouldShow = item.command.toLowerCase().includes(filter.value.toLowerCase());
+        } else if (filter.columnName === 'enabled') {
+          shouldShow = filter.value === item.enabled;
+        } else if (filter.columnName === 'emitRedeemEvent') {
+          shouldShow = filter.value === item.emitRedeemEvent;
+        } else if (filter.columnName === 'price' && filter.value !== '') {
+          if ((filter as any).type === '>') {
+            shouldShow = item.price > Number(filter.value);
+          } else if ((filter as any).type === '=') {
+            shouldShow = item.price === Number(filter.value);
+          } else if ((filter as any).type === '<') {
+            shouldShow = item.price < Number(filter.value);
+          }
+        } else if (filter.columnName === 'priceBits' && filter.value !== '') {
+          if ((filter as any).type === '>') {
+            shouldShow = item.priceBits > Number(filter.value);
+          } else if ((filter as any).type === '=') {
+            shouldShow = item.priceBits === Number(filter.value);
+          } else if ((filter as any).type === '<') {
+            shouldShow = item.priceBits < Number(filter.value);
+          }
+        }
+
+        if (!shouldShow) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [items, filters]);
+
   useEffect(() => {
     dispatch(setBulkCount(selection.length));
   }, [selection, dispatch]);
-
-  const bulkCanVisOff = useMemo(() => {
-    for (const itemId of selection) {
-      const item = items.find(o => o.id === itemId);
-      if (item && item.visible) {
-        return true;
-      }
-    }
-    return false;
-  }, [ selection, items ]);
-
-  const bulkCanVisOn = useMemo(() => {
-    for (const itemId of selection) {
-      const item = items.find(o => o.id === itemId);
-      if (item && !item.visible) {
-        return true;
-      }
-    }
-    return false;
-  }, [ selection, items ]);
 
   const bulkCanEnable = useMemo(() => {
     for (const itemId of selection) {
@@ -202,15 +180,38 @@ const PageCommandsAlias = () => {
     return false;
   }, [ selection, items ]);
 
-  const bulkToggleAttribute = useCallback(async <T extends keyof Alias>(attribute: T, value: Alias[T]) => {
+  const bulkCanEnableEmit = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && !item.emitRedeemEvent) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkCanDisableEmit = useMemo(() => {
+    for (const itemId of selection) {
+      const item = items.find(o => o.id === itemId);
+      if (item && item.emitRedeemEvent) {
+        return true;
+      }
+    }
+    return false;
+  }, [ selection, items ]);
+
+  const bulkToggleAttribute = useCallback(async <T extends keyof Required<Price>>(attribute: T, value: Required<Price>[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/systems/alias').emit('generic::save', item, () => {
-            resolve();
-          });
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
+            { ...item },
+            { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .then(() => {
+              resolve();
+            });
         });
       }
     }
@@ -222,33 +223,24 @@ const PageCommandsAlias = () => {
       return item;
     }));
 
-    if (attribute === 'visible') {
-      enqueueSnackbar(`Bulk operation set visibility ${value ? 'on' : 'off'}.`, { variant: 'success' });
-    } else if (attribute === 'enabled') {
+    if (attribute === 'enabled') {
       enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'}.`, { variant: 'success' });
-    } else if (attribute === 'permission') {
-      enqueueSnackbar(`Bulk operation set permission to ${permissions.find(o => o.id === value)?.name}.`, { variant: 'success' });
-    } else if (attribute === 'group') {
-      // we need next tick as it doesn't reselect without it
-      // nextTick(() => setSelection(selectedItems));
-      if (value) {
-        enqueueSnackbar(`Bulk operation set group to ${value}.`, { variant: 'success' });
-      } else {
-        enqueueSnackbar(`Bulk operation removed group.`, { variant: 'success' });
-      }
+    }
+
+    if (attribute === 'emitRedeemEvent') {
+      enqueueSnackbar(`Bulk operation set ${value ? 'enabled' : 'disabled'} emit.`, { variant: 'success' });
     }
 
     refresh();
-  }, [ enqueueSnackbar, items, permissions, selection ]);
+  }, [ enqueueSnackbar, items, selection ]);
 
   const bulkDelete =  useCallback(async () => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-            resolve();
-          });
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => resolve());
         });
       }
     }
@@ -267,26 +259,9 @@ const PageCommandsAlias = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <DisabledAlert system='alias'/>
+        <DisabledAlert system='price'/>
         <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
-        </Grid>
-        <Grid item>
-          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/' color='secondary'>Group settings</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
-          </Tooltip>
+          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/price/create/'>Create new price</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
@@ -303,10 +278,18 @@ const PageCommandsAlias = () => {
           </Tooltip>
         </Grid>
         <Grid item>
-          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+          <Tooltip arrow title="Enable emit">
+            <Button disabled={!bulkCanEnableEmit} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', true)}><SignalWifi4Bar/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
-          <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
+          <Tooltip arrow title="Disable emit">
+            <Button disabled={!bulkCanDisableEmit} variant="contained" color="secondary" sx={{
+              minWidth: '36px', width: '36px',
+            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', false)}><SignalWifiOffTwoTone/></Button>
+          </Tooltip>
         </Grid>
         <Grid item>
           <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
@@ -323,27 +306,17 @@ const PageCommandsAlias = () => {
         }} />
         : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
           <DataGrid
-            rows={items}
+            rows={filteredItems}
             columns={columns}
             getRowId={row => row.id}
           >
-            <PermissionTypeProvider
-              for={['permission']}
-            />
-            <GroupTypeProvider
-              for={['group']}
-            />
             <BoolTypeProvider
-              for={['visible', 'enabled']}
+              for={['emitRedeemEvent', 'enabled']}
             />
 
             <SortingState
               defaultSorting={[{
-                columnName: 'group', direction: 'asc',
-              }, {
-                columnName: 'alias', direction: 'asc',
-              }, {
-                columnName: 'enabled', direction: 'asc',
+                columnName: 'command', direction: 'asc',
               }]}
               columnExtensions={sortingTableExtensions}
             />
@@ -370,10 +343,11 @@ const PageCommandsAlias = () => {
         open={open}
         fullWidth
         maxWidth='md'>
-        {open && <AliasEdit aliasGroups={groupsSettings} aliases={items}/>}
+        {open && <PriceEdit items={items}/>}
       </Dialog>
+
     </>
   );
 };
 
-export default PageCommandsAlias;
+export default PageCommandsPrice;
