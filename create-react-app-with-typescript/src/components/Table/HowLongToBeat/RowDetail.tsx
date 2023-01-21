@@ -8,15 +8,15 @@ import {
   Box, Button, Slider, Stack, Typography,
 } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
-import { HOUR, MINUTE } from '@sogebot/ui-helpers/constants';
-import { timestampToObject } from '@sogebot/ui-helpers/getTime';
-import React from 'react';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { HOUR, MINUTE } from '../../../constants';
 import { dayjs } from '../../../helpers/dayjsHelper';
+import { timestampToObject } from '../../../helpers/getTime';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { setToggle, setOffset } from '../../../store/hltbSlice';
+import { setOffset, setToggle } from '../../../store/hltbSlice';
 import { DateTypeProvider } from '../DateTypeProvider';
 
 type Props = {

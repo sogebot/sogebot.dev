@@ -1,7 +1,7 @@
 import { CheckSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
+  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
 } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
@@ -15,6 +15,8 @@ import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 import theme from '../../../theme';
 import { classes } from '../../styles';
+
+const filter = createFilterOptions<string>();
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
@@ -52,7 +54,6 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
     for (const title of titles) {
       title.tags.forEach(val => tagList.add(val));
     }
-    console.log({ tagList });
     return [...tagList];
   }, [titles]);
 
@@ -200,8 +201,18 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           selectOnFocus
           handleHomeEndKeys
           freeSolo
-          disableClearable
-          filterOptions={(x) => x}
+          filterOptions={(opts, params) => {
+            const filtered = filter(opts, params);
+
+            const { inputValue: iv } = params;
+            // Suggest the creation of a new value
+            const isExisting = opts.some((option) => iv === option);
+            if (iv !== '' && !isExisting) {
+              filtered.push(iv);
+            }
+
+            return filtered;
+          }}
           options={usedTagsOptions}
           loading={isSearching}
           onChange={(_, value) => {
@@ -211,7 +222,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           multiple
           renderTags={(value: readonly string[], getTagProps) =>
             value.map((option: string, index: number) => (
-              <Chip size='small' variant="outlined" label={option} {...getTagProps({ index })} key={option} />
+              <Chip size='small' color="primary" label={option} {...getTagProps({ index })} key={option} />
             ))
           }
           value={selectedTags}

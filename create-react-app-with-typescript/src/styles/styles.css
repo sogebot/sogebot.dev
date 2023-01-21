@@ -45,7 +45,7 @@ a {
 }
 
 .Pager-pager {
-  position: absolute;
+  position: fixed !important;
   bottom: 0;
   right: 0;
   padding-bottom: 0 !important;

@@ -17,12 +17,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
 
-interface GroupType {
-  inputValue?: string;
-  title: string;
-}
-
-const filter = createFilterOptions<GroupType>();
+const filter = createFilterOptions<string>();
 
 const newAlias = new Alias();
 newAlias.alias = '';
@@ -159,47 +154,28 @@ export const AliasEdit: React.FC<{
             <Grid item xs={6}>
               <FormControl fullWidth variant="filled">
                 <Autocomplete
-                  sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
                   selectOnFocus
+                  sx={{ '& .MuiFormControl-root': { marginTop: 0 } }}
                   handleHomeEndKeys
-                  onChange={(event, newValue) => {
-                    if (typeof newValue === 'string') {
-                      handleValueChange('group', newValue);
-                    } else if (newValue && newValue.inputValue) {
-                    // Create a new value from the user input
-                      handleValueChange('group', newValue.inputValue);
-                    } else {
-                      handleValueChange('group', newValue?.title ?? '');
-                    }
-                  }}
-                  getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                    if (typeof option === 'string') {
-                      return option;
-                    }
-                    // Add "xxx" option created dynamically
-                    if (option.inputValue) {
-                      return option.inputValue;
-                    }
-                    // Regular option
-                    return option.title;
+                  freeSolo
+                  clearOnBlur
+                  options={[...props.aliasGroups.map((o) => o.name)]}
+                  onChange={(_, value) => {
+                    handleValueChange('group', value as string);
                   }}
                   filterOptions={(options, params) => {
                     const filtered = filter(options, params);
+
                     const { inputValue } = params;
                     // Suggest the creation of a new value
-                    const isExisting = options.some((option) => inputValue === option.title);
+                    const isExisting = options.some((option) => inputValue === option);
                     if (inputValue !== '' && !isExisting) {
-                      filtered.push({
-                        inputValue,
-                        title: `Add "${inputValue}"`,
-                      });
+                      filtered.push(inputValue);
                     }
+
                     return filtered;
                   }}
-                  renderOption={(props2, option) => <li {...props2}>{option.title}</li>}
-                  value={{ title: alias?.group ?? '' }}
-                  options={[...props.aliasGroups.map((o) => ({ title: o.name }))] as GroupType[]}
+                  value={alias?.group ?? ''}
                   renderInput={(params) =>
                     <TextField
                       label={translate('group')}

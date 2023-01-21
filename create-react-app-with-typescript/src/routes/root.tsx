@@ -42,6 +42,14 @@ const PageCommandsAliasGroup = lazy(() => import('./commands/aliasGroup'));
 const PageCommandsBot = lazy(() => import('./commands/botcommands'));
 const PageCommandsPrice = lazy(() => import('./commands/price'));
 const PageCommandsCooldowns = lazy(() => import('./commands/cooldowns'));
+const PageCommandsKeywords = lazy(() => import('./commands/keywords'));
+const PageCommandsKeywordsGroup = lazy(() => import('./commands/keywordsGroup'));
+const PageCommandsCustomCommands = lazy(() => import('./commands/customcommands'));
+const PageCommandsCustomCommandsGroup = lazy(() => import('./commands/customcommandsGroup'));
+
+const PageManageQuotes = lazy(() => import('./manage/quotes'));
+const PageManageTimers = lazy(() => import('./manage/timers'));
+const PageManageViewers = lazy(() => import('./manage/viewers'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -196,6 +204,15 @@ export default function Root() {
                     <Route path="/commands/botcommands/:type?/:id?" element={<PageCommandsBot/>}/>
                     <Route path="/commands/price/:type?/:id?" element={<PageCommandsPrice/>}/>
                     <Route path="/commands/cooldowns/:type?/:id?" element={<PageCommandsCooldowns/>}/>
+                    <Route path="/commands/keywords/group/:type?/:id?" element={<PageCommandsKeywordsGroup/>}/>
+                    <Route path="/commands/keywords/:type?/:id?" element={<PageCommandsKeywords/>}/>
+                    <Route path="/commands/customcommands/group/:type?/:id?" element={<PageCommandsCustomCommandsGroup/>}/>
+                    <Route path="/commands/customcommands/:type?/:id?" element={<PageCommandsCustomCommands/>}/>
+
+                    <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
+                    <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
+                    <Route path="/manage/viewers/:type?/:id?" element={<PageManageViewers/>}/>
+
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
                   </Routes>

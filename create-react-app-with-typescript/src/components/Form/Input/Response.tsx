@@ -38,7 +38,7 @@ export const FormResponse: React.FC<{
     if (onChange) {
       onChange(propsValue);
     }
-  }, [ propsValue, onChange ]);
+  }, [ propsValue ]);
 
   const onResponseChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {

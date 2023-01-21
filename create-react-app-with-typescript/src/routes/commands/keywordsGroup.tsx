@@ -11,35 +11,33 @@ import {
   Grid,
   Stack,
 } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
+import { Keyword, KeywordGroup } from '@sogebot/backend/src/database/entity/keyword';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
-import { AliasGroupEdit } from '../../components/Form/AliasGroupEdit';
+import { KeywordGroupEdit } from '../../components/Form/KeywordGroupEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
+import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 
-const PageCommandsAliasGroup = () => {
+const PageCommandsKeyword = () => {
   const { translate } = useTranslation();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ items, setItems ] = useState<Alias[]>([]);
-  const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
+  const [ items, setItems ] = useState<Keyword[]>([]);
+  const [ groupsSettings, setGroupsSettings ] = useState<KeywordGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
   const tableColumnExtensions = [
@@ -52,8 +50,8 @@ const PageCommandsAliasGroup = () => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
 
-  const groupsSettingsAll = useMemo((): AliasGroup[] => {
-    const groupSet: AliasGroup[] = [...groupsSettings];
+  const groupsSettingsAll = useMemo((): KeywordGroup[] => {
+    const groupSet: KeywordGroup[] = [...groupsSettings];
     for (const group of groups) {
       if (group) {
         if (!groupsSettings.find(o => o.name === group)) {
@@ -62,18 +60,19 @@ const PageCommandsAliasGroup = () => {
             options: {
               filter: null, permission: null,
             },
-          } as AliasGroup);
+          } as KeywordGroup);
         }
       }
     }
     return groupSet;
   }, [ groupsSettings, groups ]);
 
-  const deleteItem = useCallback((item: AliasGroup) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.name, () => {
-      enqueueSnackbar(`Alias group ${item.name} deleted successfully. You can still see this group if it is being activelly used by aliases.`, { variant: 'success' });
-      refresh();
-    });
+  const deleteItem = useCallback((item: KeywordGroup) => {
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Keyword group ${item.name} deleted successfully. You can still see this group if it is being activelly used by keywords.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   const columns = useMemo<Column[]>(() => [
@@ -101,7 +100,7 @@ const PageCommandsAliasGroup = () => {
       title:        ' ',
       getCellValue: (row) => [
         <Stack direction="row" key="row">
-          <EditButton href={'/commands/alias/group/edit/' + row.name}/>
+          <EditButton href={'/commands/keywords/group/edit/' + row.name}/>
           <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
         </Stack>,
       ],
@@ -110,71 +109,65 @@ const PageCommandsAliasGroup = () => {
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
-  }, []);
+  }, [location.pathname]);
 
   const refresh = async () => {
-    console.log('Refresh');
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setItems(data.data);
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
+          });
       }),
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            setGroupsSettings(data.data);
             resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };
 
   const open = React.useMemo(() => id !== undefined, [id]);
 
-  return (<>
-    <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-      <Grid item>
-        <Button sx={{ width: 220 }} color="secondary" variant="contained" href='/commands/alias/'>Back to Alias settings</Button>
+  return (
+    <>
+      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+        <Grid item>
+          <Button href='/commands/keywords/' sx={{ width: 240 }} color="secondary" variant="contained">Back to Keyword settings</Button>
+        </Grid>
       </Grid>
-    </Grid>
 
-    {loading
-      ? <CircularProgress color="inherit" sx={{
-        position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
-      }} />
-      : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
-        <DataGrid
-          rows={groupsSettingsAll}
-          columns={columns}
-          getRowId={row => row.name}
-        >
-          <BoolTypeProvider
-            for={['used']}
-          />
-          <PermissionTypeProvider
-            for={['permission']}
-          />
-          <Table columnExtensions={tableColumnExtensions}/>
-          <TableHeaderRow/>
-        </DataGrid>
-      </SimpleBar>}
+      {loading
+        ? <CircularProgress color="inherit" sx={{
+          position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, 0)',
+        }} />
+        : <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+          <DataGrid
+            rows={groupsSettingsAll}
+            columns={columns}
+            getRowId={row => row.name}
+          >
+            <BoolTypeProvider
+              for={['used']}
+            />
+            <PermissionTypeProvider
+              for={['permission']}
+            />
+            <Table columnExtensions={tableColumnExtensions as any}/>
+            <TableHeaderRow/>
+          </DataGrid>
+        </SimpleBar>}
 
-    <Dialog
-      open={open}
-      fullWidth
-      maxWidth='md'>
-      {open && <AliasGroupEdit onSave={()=> refresh()}/>}
-    </Dialog>
-  </>
+      <Dialog
+        open={open}
+        fullWidth
+        maxWidth='md'>
+        {open && <KeywordGroupEdit onSave={()=> refresh()}/>}
+      </Dialog>
+    </>
   );
 };
-export default PageCommandsAliasGroup;
+export default PageCommandsKeyword;
