@@ -110,5 +110,4 @@ jobs:
           tags: |
             sogebot/dashboard:latest
             sogebot/dashboard:${{ steps.slug.outputs.SHA }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
