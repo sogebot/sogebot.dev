@@ -50,6 +50,7 @@ const PageCommandsCustomCommandsGroup = lazy(() => import('./commands/customcomm
 const PageManageQuotes = lazy(() => import('./manage/quotes'));
 const PageManageTimers = lazy(() => import('./manage/timers'));
 const PageManageViewers = lazy(() => import('./manage/viewers'));
+const PageManageHighlights = lazy(() => import('./manage/highlights'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -212,6 +213,7 @@ export default function Root() {
                     <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
                     <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
                     <Route path="/manage/viewers/:type?/:id?" element={<PageManageViewers/>}/>
+                    <Route path="/manage/highlights" element={<PageManageHighlights/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
