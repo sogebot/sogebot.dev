@@ -15,99 +15,88 @@ import {
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
-import { useRouter } from 'next/router';
-import {
-  ReactElement, useCallback, useEffect, useState,
+import React, {
+  useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-import { NextPageWithLayout } from '~/pages/_app';
-import { Layout } from '~/src/components/Layout/main';
-import PageSettingsModulesCoreCurrency from '~/src/components/Settings/Core/currency';
-import PageSettingsModulesCoreDashboard from '~/src/components/Settings/Core/dashboard';
-import PageSettingsModulesCoreEmotes from '~/src/components/Settings/Core/emotes';
-import PageSettingsModulesCoreGeneral from '~/src/components/Settings/Core/general';
-import PageSettingsModulesCoreSocket from '~/src/components/Settings/Core/socket';
-import PageSettingsModulesCoreTTS from '~/src/components/Settings/Core/tts';
-import PageSettingsModulesCoreUI from '~/src/components/Settings/Core/ui';
-import PageSettingsModulesCoreUpdater from '~/src/components/Settings/Core/updater';
-import PageSettingsModulesGamesDuel from '~/src/components/Settings/Games/duel';
-import PageSettingsModulesGamesGamble from '~/src/components/Settings/Games/gamble';
-import PageSettingsModulesGamesHeist from '~/src/components/Settings/Games/heist';
-import PageSettingsModulesGamesModules from '~/src/components/Settings/Games/modules';
-import PageSettingsModulesGamesRoulette from '~/src/components/Settings/Games/roulette';
-import PageSettingsModulesIntegrationsDiscord from '~/src/components/Settings/Integrations/discord';
-import PageSettingsModulesIntegrationsDonatello from '~/src/components/Settings/Integrations/donatello';
-import PageSettingsModulesIntegrationsDonationAlerts from '~/src/components/Settings/Integrations/donationalerts';
-import PageSettingsModulesIntegrationsKofi from '~/src/components/Settings/Integrations/kofi';
-import PageSettingsModulesIntegrationsLastFM from '~/src/components/Settings/Integrations/lastfm';
-import PageSettingsModulesIntegrationsModules from '~/src/components/Settings/Integrations/modules';
-import PageSettingsModulesIntegrationsPUBG from '~/src/components/Settings/Integrations/pubg';
-import PageSettingsModulesIntegrationsQiwi from '~/src/components/Settings/Integrations/qiwi';
-import PageSettingsModulesIntegrationsSpotify from '~/src/components/Settings/Integrations/spotify';
-import PageSettingsModulesIntegrationsStreamelements from '~/src/components/Settings/Integrations/streamelements';
-import PageSettingsModulesIntegrationsStreamlabs from '~/src/components/Settings/Integrations/streamlabs';
-import PageSettingsModulesIntegrationsTiltify from '~/src/components/Settings/Integrations/tiltify';
-import PageSettingsModulesIntegrationsTipeeestream from '~/src/components/Settings/Integrations/tipeeestream';
-import PageSettingsModulesIntegrationsTwitter from '~/src/components/Settings/Integrations/twitter';
-import PageSettingsModulesServiceGoogle from '~/src/components/Settings/Service/google';
-import PageSettingsModulesServiceTwitch from '~/src/components/Settings/Service/twitch';
-import PageSettingsModulesSystemsAntihateRaid from '~/src/components/Settings/Systems/antihateraid';
-import PageSettingsModulesSystemsBets from '~/src/components/Settings/Systems/bets';
-import PageSettingsModulesSystemsChecklist from '~/src/components/Settings/Systems/checklist';
-import PageSettingsModulesSystemsCooldown from '~/src/components/Settings/Systems/cooldown';
-import PageSettingsModulesSystemsEmotesCombo from '~/src/components/Settings/Systems/emotescombo';
-import PageSettingsModulesSystemsHighlights from '~/src/components/Settings/Systems/highlights';
-import PageSettingsModulesSystemsLevels from '~/src/components/Settings/Systems/levels';
-import PageSettingsModulesSystemsModeration from '~/src/components/Settings/Systems/moderation';
-import PageSettingsModulesSystemsModules from '~/src/components/Settings/Systems/modules';
-import PageSettingsModulesSystemsPoints from '~/src/components/Settings/Systems/points';
-import PageSettingsModulesSystemsPolls from '~/src/components/Settings/Systems/polls';
-import PageSettingsModulesSystemsRaffles from '~/src/components/Settings/Systems/raffles';
-import PageSettingsModulesSystemsScrim from '~/src/components/Settings/Systems/scrim';
-import PageSettingsModulesSystemsSongs from '~/src/components/Settings/Systems/songs';
-import PageSettingsModulesSystemsUserinfo from '~/src/components/Settings/Systems/userinfo';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import PageSettingsModulesCoreCurrency from '../../components/Settings/Core/currency';
+import PageSettingsModulesCoreDashboard from '../../components/Settings/Core/dashboard';
+import PageSettingsModulesCoreEmotes from '../../components/Settings/Core/emotes';
+import PageSettingsModulesCoreGeneral from '../../components/Settings/Core/general';
+import PageSettingsModulesCoreSocket from '../../components/Settings/Core/socket';
+import PageSettingsModulesCoreTTS from '../../components/Settings/Core/tts';
+import PageSettingsModulesCoreUI from '../../components/Settings/Core/ui';
+import PageSettingsModulesCoreUpdater from '../../components/Settings/Core/updater';
+import PageSettingsModulesGamesDuel from '../../components/Settings/Games/duel';
+import PageSettingsModulesGamesGamble from '../../components/Settings/Games/gamble';
+import PageSettingsModulesGamesHeist from '../../components/Settings/Games/heist';
+import PageSettingsModulesGamesModules from '../../components/Settings/Games/modules';
+import PageSettingsModulesGamesRoulette from '../../components/Settings/Games/roulette';
+import PageSettingsModulesIntegrationsDiscord from '../../components/Settings/Integrations/discord';
+import PageSettingsModulesIntegrationsDonatello from '../../components/Settings/Integrations/donatello';
+import PageSettingsModulesIntegrationsDonationAlerts from '../../components/Settings/Integrations/donationalerts';
+import PageSettingsModulesIntegrationsKofi from '../../components/Settings/Integrations/kofi';
+import PageSettingsModulesIntegrationsLastFM from '../../components/Settings/Integrations/lastfm';
+import PageSettingsModulesIntegrationsModules from '../../components/Settings/Integrations/modules';
+import PageSettingsModulesIntegrationsPUBG from '../../components/Settings/Integrations/pubg';
+import PageSettingsModulesIntegrationsQiwi from '../../components/Settings/Integrations/qiwi';
+import PageSettingsModulesIntegrationsSpotify from '../../components/Settings/Integrations/spotify';
+import PageSettingsModulesIntegrationsStreamelements from '../../components/Settings/Integrations/streamelements';
+import PageSettingsModulesIntegrationsStreamlabs from '../../components/Settings/Integrations/streamlabs';
+import PageSettingsModulesIntegrationsTiltify from '../../components/Settings/Integrations/tiltify';
+import PageSettingsModulesIntegrationsTipeeestream from '../../components/Settings/Integrations/tipeeestream';
+import PageSettingsModulesIntegrationsTwitter from '../../components/Settings/Integrations/twitter';
+import PageSettingsModulesServiceGoogle from '../../components/Settings/Service/google';
+import PageSettingsModulesServiceTwitch from '../../components/Settings/Service/twitch';
+import PageSettingsModulesSystemsAntihateRaid from '../../components/Settings/Systems/antihateraid';
+import PageSettingsModulesSystemsBets from '../../components/Settings/Systems/bets';
+import PageSettingsModulesSystemsChecklist from '../../components/Settings/Systems/checklist';
+import PageSettingsModulesSystemsCooldown from '../../components/Settings/Systems/cooldown';
+import PageSettingsModulesSystemsEmotesCombo from '../../components/Settings/Systems/emotescombo';
+import PageSettingsModulesSystemsHighlights from '../../components/Settings/Systems/highlights';
+import PageSettingsModulesSystemsLevels from '../../components/Settings/Systems/levels';
+import PageSettingsModulesSystemsModeration from '../../components/Settings/Systems/moderation';
+import PageSettingsModulesSystemsModules from '../../components/Settings/Systems/modules';
+import PageSettingsModulesSystemsPoints from '../../components/Settings/Systems/points';
+import PageSettingsModulesSystemsPolls from '../../components/Settings/Systems/polls';
+import PageSettingsModulesSystemsRaffles from '../../components/Settings/Systems/raffles';
+import PageSettingsModulesSystemsScrim from '../../components/Settings/Systems/scrim';
+import PageSettingsModulesSystemsSongs from '../../components/Settings/Systems/songs';
+import PageSettingsModulesSystemsUserinfo from '../../components/Settings/Systems/userinfo';
+import { useTranslation } from '../../hooks/useTranslation';
 
-const PageSettingsModules: NextPageWithLayout = () => {
-  const {type} = useRouter();
+const PageSettingsModules = () => {
+  const { id, type } = useParams();
   const { translate } = useTranslation();
 
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
   const settingsLoadingInProgress = useSelector<string[], string[]>((state: any) => state.loader.settingsLoadingInProgress);
 
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({
+  const scrollTo = useCallback((idScroll: string) => {
+    document.getElementById(idScroll)?.scrollIntoView({
       behavior: 'smooth',
       block:    'start',
     });
-    history.pushState({}, '', `/settings/modules/${router.query.id![0]}/${id}?server=${JSON.parse(localStorage.server)}`);
-  }, [ router ]);
+    history.pushState({}, '', `/settings/modules/${type}/${idScroll}?server=${JSON.parse(localStorage.server)}`);
+  }, [ type ]);
 
   useEffect(() => {
     if (settingsLoadingInProgress.length === 0) {
       setTimeout(() => {
-        if (Array.isArray(router.query.id) && router.query.id.length > 1) {
-          const id = router.query.id[1];
-          if (id) {
-            document.getElementById(id)?.scrollIntoView({
-              behavior: 'smooth',
-              block:    'start',
-            });
-          }
+        if (id) {
+          document.getElementById(id)?.scrollIntoView({
+            behavior: 'smooth',
+            block:    'start',
+          });
         }
       }, 500);
     }
-  }, [settingsLoadingInProgress, scrollTo, router]);
+  }, [settingsLoadingInProgress, scrollTo]);
 
   const [ activeTab, setActiveTab ] = useState('');
   const matches = useMediaQuery('(min-width:1536px)');
-
-  useEffect(() => {
-    if (router.route === '/settings/modules' || router.route === '/settings/modules/') {
-      router.push(`/settings/modules/core/?server=${JSON.parse(localStorage.server)}`);
-    }
-  }, [router]);
 
   return (
     <Container>
@@ -119,7 +108,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
             }}
             dense
           >
-            {router.asPath.includes(`/settings/modules/core`) && <>
+            {type === `core` && <>
               {['dashboard', 'tts', 'emotes', 'currency', 'general', 'socket', 'updater', 'ui'].map(item => <ListItemButton
                 key={`core-${item}`}
                 selected={activeTab === `core-${item}`}
@@ -131,7 +120,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               </ListItemButton>)}
             </>}
 
-            {router.asPath.includes(`/settings/modules/services`) && <>
+            {type === `services` && <>
               {['google', 'twitch'].map(item => <ListItemButton
                 key={`services-${item}`}
                 selected={activeTab === `services-${item}`}
@@ -143,7 +132,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               </ListItemButton>)}
             </>}
 
-            {router.asPath.includes(`/settings/modules/systems`) && <>
+            {type === `systems` && <>
               {['antihateraid',
                 'bets',
                 'checklist',
@@ -169,7 +158,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               </ListItemButton>)}
             </>}
 
-            {router.asPath.includes(`/settings/modules/integrations`) && <>
+            {type === `integrations` && <>
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
                 'lastfm', 'pubg', 'qiwi', 'spotify', 'streamelements', 'streamlabs',
@@ -185,7 +174,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               </ListItemButton>)}
             </>}
 
-            {router.asPath.includes(`/settings/modules/games`) && <>
+            {type === `games` && <>
               {['duel', 'gamble',
                 'heist', 'roulette'].map(item => <ListItemButton
                 key={`games-${item}`}
@@ -205,7 +194,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
               <CircularProgress color="inherit"/>
             </Backdrop>
             <Stack spacing={4}>
-              {router.asPath.includes(`/settings/modules/core`) && <>
+              {type === `core` && <>
                 <PageSettingsModulesCoreDashboard onVisible={() => setActiveTab('core-dashboard')}/>
                 <PageSettingsModulesCoreTTS onVisible={() => setActiveTab('core-tts')}/>
                 <PageSettingsModulesCoreEmotes onVisible={() => setActiveTab('core-emotes')}/>
@@ -215,11 +204,11 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
                 <PageSettingsModulesCoreUI onVisible={() => setActiveTab('core-ui')}/>
               </>}
-              {router.asPath.includes(`/settings/modules/services`) && <>
+              {type === `services` && <>
                 <PageSettingsModulesServiceGoogle onVisible={() => setActiveTab('services-google')}/>
                 <PageSettingsModulesServiceTwitch onVisible={() => setActiveTab('services-twitch')}/>
               </>}
-              {router.asPath.includes(`/settings/modules/systems`) && <>
+              {type === `systems` && <>
                 <PageSettingsModulesSystemsModules onVisible={() => setActiveTab('systems-modules')}/>
                 <PageSettingsModulesSystemsAntihateRaid onVisible={() => setActiveTab('systems-antihateraid')}/>
                 <PageSettingsModulesSystemsBets onVisible={() => setActiveTab('systems-bets')}/>
@@ -236,7 +225,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesSystemsSongs onVisible={() => setActiveTab('systems-songs')}/>
                 <PageSettingsModulesSystemsUserinfo onVisible={() => setActiveTab('systems-userinfo')}/>
               </>}
-              {router.asPath.includes(`/settings/modules/integrations`) && <>
+              {type === `integrations` && <>
                 <PageSettingsModulesIntegrationsModules onVisible={() => setActiveTab('integrations-modules')}/>
                 <PageSettingsModulesIntegrationsDonatello onVisible={() => setActiveTab('integrations-donatello')}/>
                 <PageSettingsModulesIntegrationsKofi onVisible={() => setActiveTab('integrations-kofi')}/>
@@ -253,7 +242,7 @@ const PageSettingsModules: NextPageWithLayout = () => {
                 <PageSettingsModulesIntegrationsTwitter onVisible={() => setActiveTab('integrations-twitter')}/>
               </>
               }
-              {router.asPath.includes(`/settings/modules/games`) && <>
+              {type === `games` && <>
                 <PageSettingsModulesGamesModules onVisible={() => setActiveTab('games-modules')}/>
                 <PageSettingsModulesGamesDuel onVisible={() => setActiveTab('games-duel')}/>
                 <PageSettingsModulesGamesGamble onVisible={() => setActiveTab('games-gamble')}/>
@@ -281,13 +270,4 @@ const PageSettingsModules: NextPageWithLayout = () => {
     </Container>
   );
 };
-
-PageSettingsModules.getLayout = function getLayout(page: ReactElement) {
-  return (
-    <Layout>
-      {page}
-    </Layout>
-  );
-};
-
 export default PageSettingsModules;
