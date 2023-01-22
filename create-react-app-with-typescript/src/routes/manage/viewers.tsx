@@ -11,11 +11,11 @@ import {
 import {
   Grid as DataGrid,
   PagingPanel,
+  Table,
   TableColumnVisibility,
   TableHeaderRow,
   TableRowDetail,
   TableSelection,
-  VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
 import {
@@ -369,7 +369,7 @@ const PageManageViewers = () => {
             totalCount={totalCount}
           />
 
-          <VirtualTable columnExtensions={tableColumnExtensions} height='calc(100vh - 165px)'/>
+          <Table columnExtensions={tableColumnExtensions}/>
 
           <TableHeaderRow showSortingControls/>
           <TableRowDetail

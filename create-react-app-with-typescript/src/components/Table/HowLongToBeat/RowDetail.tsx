@@ -2,7 +2,7 @@ import {
   IntegratedSorting, Sorting, SortingState,
 } from '@devexpress/dx-react-grid';
 import {
-  Grid as DataGrid, TableHeaderRow, VirtualTable,
+  Grid as DataGrid, Table, TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   Box, Button, Slider, Stack, Typography,
@@ -10,6 +10,7 @@ import {
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import SimpleBar from 'simplebar-react';
 
 import { HOUR, MINUTE } from '../../../constants';
 import { dayjs } from '../../../helpers/dayjsHelper';
@@ -182,21 +183,23 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
       { row.streams.length === 0
         ? <Typography>No streams recorded for user</Typography>
         : <Box sx={{ width: 'calc(250px + 250px + 450px + 350px + 50px)' }}>
-          <DataGrid
-            rows={row.streams}
-            columns={columns}
-          >
-            <DateTypeProvider for={['createdAt']}/>
+          <SimpleBar style={{ maxHeight: 'calc(50vh)' }} autoHide={false}>
+            <DataGrid
+              rows={row.streams}
+              columns={columns}
+            >
+              <DateTypeProvider for={['createdAt']}/>
 
-            <SortingState
-              sorting={sorting}
-              onSortingChange={setSorting}
-            />
-            <IntegratedSorting />
+              <SortingState
+                sorting={sorting}
+                onSortingChange={setSorting}
+              />
+              <IntegratedSorting />
 
-            <VirtualTable columnExtensions={tableColumnExtensions}/>
-            <TableHeaderRow/>
-          </DataGrid>
+              <Table columnExtensions={tableColumnExtensions}/>
+              <TableHeaderRow/>
+            </DataGrid>
+          </SimpleBar>
         </Box>}
     </Box>
   </>

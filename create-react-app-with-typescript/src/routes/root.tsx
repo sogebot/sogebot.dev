@@ -51,6 +51,12 @@ const PageManageQuotes = lazy(() => import('./manage/quotes'));
 const PageManageTimers = lazy(() => import('./manage/timers'));
 const PageManageViewers = lazy(() => import('./manage/viewers'));
 const PageManageHighlights = lazy(() => import('./manage/highlights'));
+const PageManagePolls = lazy(() => import('./manage/polls'));
+const PageManageRanks = lazy(() => import('./manage/ranks'));
+const PageManageHLTB = lazy(() => import('./manage/howlongtobeat'));
+const PageManagePlaylist = lazy(() => import('./manage/youtube/playlist'));
+const PageManageBannedSongs = lazy(() => import('./manage/youtube/bannedsongs'));
+const PageManageBannedSongsSpotify = lazy(() => import('./manage/spotify/bannedsongs'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -214,6 +220,12 @@ export default function Root() {
                     <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
                     <Route path="/manage/viewers/:type?/:id?" element={<PageManageViewers/>}/>
                     <Route path="/manage/highlights" element={<PageManageHighlights/>}/>
+                    <Route path="/manage/polls/:type?/:id?" element={<PageManagePolls/>}/>
+                    <Route path="/manage/ranks/:type?/:id?" element={<PageManageRanks/>}/>
+                    <Route path="/manage/howlongtobeat/:type?/:id?" element={<PageManageHLTB/>}/>
+                    <Route path="/manage/songs/playlist/:type?/:id?" element={<PageManagePlaylist/>}/>
+                    <Route path="/manage/songs/bannedsongs/" element={<PageManageBannedSongs/>}/>
+                    <Route path="/manage/spotify/bannedsongs/" element={<PageManageBannedSongsSpotify/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
