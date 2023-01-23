@@ -24,7 +24,7 @@ RUN chmod +x generate-nginx-location.sh
 RUN sh /generate-nginx-location.sh > /etc/nginx/conf.d/locations.paths
 RUN cat /etc/nginx/conf.d/locations.paths
 
-# RUN ls -R /app/static
+RUN ls -R /app/static
 
 # cleanup
 RUN rm generate-nginx-location.sh
