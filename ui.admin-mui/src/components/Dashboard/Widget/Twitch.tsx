@@ -2,12 +2,12 @@ import { TabContext, TabList } from '@mui/lab';
 import {
   Box, Card, Tab,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { getSocket } from '../../../helpers/socket';
+import { useTranslation } from '../../../hooks/useTranslation';
+import theme from '../../../theme';
+import { classes } from '../../styles';
 
 export const DashboardWidgetTwitch: React.FC = () => {
   const { translate } = useTranslation();
@@ -62,10 +62,10 @@ export const DashboardWidgetTwitch: React.FC = () => {
           </TabList>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);', 
+          position: 'relative', height: 'calc(100% - 48px);',
         }}>
           <Box sx={{
-            ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', 
+            ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
           }}>
             <iframe
               frameBorder="0"
@@ -76,7 +76,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
             />
           </Box>
           <Box sx={{
-            ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', 
+            ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
           }}>
             <iframe
               frameBorder="0"

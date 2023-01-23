@@ -4,12 +4,12 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDidMount } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
 
 export const DashboardStatsGeneralCurrentSong: React.FC = () => {
   const { translate } = useTranslation();
@@ -37,7 +37,7 @@ export const DashboardStatsGeneralCurrentSong: React.FC = () => {
           transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{ song || capitalize(translate('not-available')) }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-          pt: 2, pa: 1, 
+          pt: 2, pa: 1,
         }}>{ capitalize(translate('currentsong')) }</Typography>
       </Paper>
     </Grid>

@@ -3,7 +3,7 @@ import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import {
+import React, {
   MouseEventHandler, useCallback, useState,
 } from 'react';
 import { useSelector } from 'react-redux';

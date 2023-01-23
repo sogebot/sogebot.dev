@@ -1,13 +1,12 @@
 import { Badge, Box } from '@mui/material';
-import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { useDispatch, useSelector } from 'react-redux';
 
-import sogebotLarge from '~/public/sogebot_large.png';
-import sogebotSmall from '~/public/sogebot_small.png';
-import { getSocket } from '~/src/helpers/socket';
-import { setCurrentVersion, setNextVersion } from '~/src/store/loaderSlice';
+import { getSocket } from '../../helpers/socket';
+import sogebotLarge from '../../images/sogebot_large.png';
+import sogebotSmall from '../../images/sogebot_small.png';
+import { setCurrentVersion, setNextVersion } from '../../store/loaderSlice';
 
 export const Logo: React.FC = () => {
   const { currentVersion, state, connectedToServer } = useSelector((s: any) => s.loader);
@@ -41,7 +40,7 @@ export const Logo: React.FC = () => {
         const botVersion = version.replace('-SNAPSHOT', '').split('.').map(o => Number(o));
         const gitVersion = (response.tag_name as string).split('.').map(o => Number(o));
         console.debug({
-          botVersion, gitVersion, 
+          botVersion, gitVersion,
         });
 
         let isNewer = false;
@@ -62,7 +61,9 @@ export const Logo: React.FC = () => {
         } else {
           dispatch(setNextVersion(null));
         }
-      } catch (e) {}
+      } catch (e) {
+        return;
+      }
     });
   }, [state, connectedToServer, dispatch]);
 
@@ -79,10 +80,10 @@ export const Logo: React.FC = () => {
           }}>
           <a href="https://sogebot.xyz" target={'_blank'} rel="noreferrer">
             <MobileView>
-              <Image src={sogebotSmall} width={40} height={25} alt="sogeBot Logo" />
+              <img src={sogebotSmall} width={40} height={25} alt="sogeBot Logo" />
             </MobileView>
             <BrowserView>
-              <Image src={sogebotLarge} width={190} height={25} alt="sogeBot Logo" />
+              <img src={sogebotLarge} width={190} height={25} alt="sogeBot Logo" />
             </BrowserView>
           </a>
         </Badge>

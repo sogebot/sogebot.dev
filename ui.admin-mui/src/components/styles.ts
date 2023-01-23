@@ -1,6 +1,6 @@
 import { grey } from '@mui/material/colors';
 
-import theme from '~/src/theme';
+import theme from '../theme';
 
 export const classes  = {
   selectAdornment: { marginRight: theme.spacing(3) },

@@ -5,20 +5,20 @@ import {
 import { Stack } from '@mui/system';
 import axios from 'axios';
 import camelCase from 'lodash/camelCase';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
-import { Commands } from '~/src/classes/Commands';
-import getAccessToken from '~/src/getAccessToken';
-import { getSocket } from '~/src/helpers/socket';
+import { Commands } from '../classes/Commands';
+import getAccessToken from '../getAccessToken';
+import { getSocket } from '../helpers/socket';
 
 export const useBotCommandsExample = (item: Commands | null) => {
-  const router = useRouter();
   const { user } = useSelector((state: any) => state.user);
+  const location = useLocation();
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ loading, setLoading ] = useState(true);
@@ -28,7 +28,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
   useEffect(() => {
     setLoading(true);
-  }, [ router ]);
+  }, [location]);
 
   useEffect(() => {
     if (!item) {
@@ -36,7 +36,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
       return;
     }
     getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any)
-      .emit('settings', (err: any, data: { [x: string]: any[]; }, ui: { [x: string]: any[]; },) => {
+      .emit('settings', (err: any, data: { [x: string]: any[]; }, ui: { [x: string]: any[]; }) => {
         if (err) {
           console.error(err);
           return;
@@ -93,7 +93,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
                 return 'unknown';
               }
             } else {
-              let message = value.message.replace(/[\+-]/g, '');
+              let message = value.message.replace(/[\\+-]/g, '');
               // replace command with current value
               if (item) {
                 message = message.replace(item.defaultValue, item.command);

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Button, ButtonProps } from '@mui/material';
-import { getContrastColor } from '@sogebot/ui-helpers/colors';
 
+import { getContrastColor } from '../../../../colors';
 import { isHexColor } from '../../../../validators';
 
 type ButtonPropsWithColor = ButtonProps & {

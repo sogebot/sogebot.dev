@@ -1,21 +1,20 @@
 import { Edit } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
+import { OverlayMapperMarathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayMarathonItem } from '@sogebot/backend/src/database/entity/dashboard';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '@sogebot/ui-helpers/constants';
 import parse from 'html-react-parser';
-import {
+import React, {
   MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useIntervalWhen } from 'rooks';
-import { OverlayMapperMarathon } from '~/../backend/src/database/entity/overlay';
-
-import { FormInputTime } from '~/src/components/Form/Input/Time';
-import { getSocket } from '~/src/helpers/socket';
 
 import { ColorButton } from './_ColorButton';
+import {
+  DAY, HOUR, MINUTE, SECOND,
+} from '../../../../constants';
+import { getSocket } from '../../../../helpers/socket';
+import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarathonItem }> = ({
   item,

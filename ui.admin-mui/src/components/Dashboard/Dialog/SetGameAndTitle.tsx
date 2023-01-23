@@ -1,21 +1,22 @@
 import { CheckSharp } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
+  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
 } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
 import { capitalize } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
-import Image from 'next/image';
-import * as React from 'react';
+import React from 'react';
 import SimpleBar from 'simplebar-react';
 
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { getSocket } from '../../../helpers/socket';
+import { useTranslation } from '../../../hooks/useTranslation';
+import theme from '../../../theme';
+import { classes } from '../../styles';
+
+const filter = createFilterOptions<string>();
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
@@ -53,7 +54,6 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
     for (const title of titles) {
       title.tags.forEach(val => tagList.add(val));
     }
-    console.log({ tagList });
     return [...tagList];
   }, [titles]);
 
@@ -201,8 +201,18 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           selectOnFocus
           handleHomeEndKeys
           freeSolo
-          disableClearable
-          filterOptions={(x) => x}
+          filterOptions={(opts, params) => {
+            const filtered = filter(opts, params);
+
+            const { inputValue: iv } = params;
+            // Suggest the creation of a new value
+            const isExisting = opts.some((option) => iv === option);
+            if (iv !== '' && !isExisting) {
+              filtered.push(iv);
+            }
+
+            return filtered;
+          }}
           options={usedTagsOptions}
           loading={isSearching}
           onChange={(_, value) => {
@@ -212,7 +222,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           multiple
           renderTags={(value: readonly string[], getTagProps) =>
             value.map((option: string, index: number) => (
-              <Chip size='small' variant="outlined" label={option} {...getTagProps({ index })} key={option} />
+              <Chip size='small' color="primary" label={option} {...getTagProps({ index })} key={option} />
             ))
           }
           value={selectedTags}
@@ -238,7 +248,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
                   <Grid sx={{
                     padding: '0px !important', height: '130px', ...classes.parent,
                   }} item key={game} xs={1} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
-                    <Image title={game} alt={game} fill src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
+                    <img style={{ width: '100%' }} title={game} alt={game} src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
                     <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
                       <CheckSharp/>
                     </Backdrop>

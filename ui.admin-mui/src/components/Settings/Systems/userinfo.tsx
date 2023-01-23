@@ -17,16 +17,15 @@ import {
   Typography,
 } from '@mui/material';
 import { xor } from 'lodash';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { SortableListItem } from '~/src/components/Sortable/SortableListItem';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SortableListItem } from '../../Sortable/SortableListItem';
 
 const PageSettingsModulesSystemsUserinfo: React.FC<{
   onVisible: () => void,
@@ -42,14 +41,13 @@ const PageSettingsModulesSystemsUserinfo: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, handleChange } = useSettings('/systems/userinfo' as any, validator);
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -63,7 +61,7 @@ const PageSettingsModulesSystemsUserinfo: React.FC<{
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   function handleDragEnd(event: { active: any; over: any; }) {

@@ -4,20 +4,19 @@ import {
 } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { DashboardWidgetActionUnknownButton } from '~/src/components/Dashboard/Widget/Action/Buttons/UnknownButton';
-import { DashboardWidgetActionCommandButton } from '~/src/components/Dashboard/Widget/Action/CommandButton';
-import { DashboardWidgetActionCountdownButton } from '~/src/components/Dashboard/Widget/Action/CountdownButton';
-import { DashboardWidgetActionCustomVariableButton } from '~/src/components/Dashboard/Widget/Action/CustomVariableButton';
-import { DashboardWidgetBotDialogActionsEdit } from '~/src/components/Dashboard/Widget/Action/Dialog/ActionsEdit';
-import { DashboardWidgetActionMarathonButton } from '~/src/components/Dashboard/Widget/Action/MarathonButton';
-import { DashboardWidgetActionStopwatchButton } from '~/src/components/Dashboard/Widget/Action/StopwatchButton';
-import { getSocket } from '~/src/helpers/socket';
-import theme from '~/src/theme';
-
+import { DashboardWidgetActionUnknownButton } from './Action/Buttons/UnknownButton';
+import { DashboardWidgetActionCommandButton } from './Action/CommandButton';
+import { DashboardWidgetActionCountdownButton } from './Action/CountdownButton';
+import { DashboardWidgetActionCustomVariableButton } from './Action/CustomVariableButton';
+import { DashboardWidgetBotDialogActionsEdit } from './Action/Dialog/ActionsEdit';
+import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
+import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
+import { getSocket } from '../../../helpers/socket';
+import theme from '../../../theme';
 
 export const DashboardWidgetAction: React.FC = () => {
   const [value, setValue] = React.useState('1');
@@ -65,7 +64,7 @@ export const DashboardWidgetAction: React.FC = () => {
           </Stack>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);', 
+          position: 'relative', height: 'calc(100% - 48px);',
         }}>
           {actions.map(action => {
             if (action.type === 'command') {

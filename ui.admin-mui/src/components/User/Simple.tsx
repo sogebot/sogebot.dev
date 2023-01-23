@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { getSocket } from '~/src/helpers/socket';
+import { getSocket } from '../../helpers/socket';
 
 export const UserSimple: React.FC = () => {
   const logout = () => {

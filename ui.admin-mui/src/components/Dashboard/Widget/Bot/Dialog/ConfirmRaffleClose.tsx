@@ -2,9 +2,9 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import * as React from 'react';
+import React from 'react';
 
-import { getSocket } from '~/src/helpers/socket';
+import { getSocket } from '../../../../../helpers/socket';
 
 export interface ConfirmationDialogProps {
   id: string;
@@ -29,8 +29,8 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
     <Dialog
       sx={{
         '& .MuiDialog-paper': {
-          width: '80%', maxHeight: 435, 
-        }, 
+          width: '80%', maxHeight: 435,
+        },
       }}
       maxWidth="xs"
       open={open}

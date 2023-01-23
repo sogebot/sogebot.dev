@@ -8,8 +8,8 @@ import { capitalize } from 'lodash';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import React from 'react';
 
-import { usePermissions } from '~/src/hooks/usePermissions';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { usePermissions } from './usePermissions';
+import { useTranslation } from './useTranslation';
 
 export const useFilter = <T,>(availableFilters: {
   columnName: keyof T;

@@ -11,8 +11,8 @@ ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
 
 # extract commit files
 COPY *.zip /app/static/
-RUN ls -R /app/static
-RUN cd /app/static/ && for z in *.zip; do unzip "$z"; done
+RUN ls /app/static/*.zip
+RUN cd /app/static/ && for z in *.zip; do echo "$z"; if [[ "$z" != *"${COMMIT}"* ]]; then unzip "$z"; fi; done;
 RUN cd /app/static/ && rm *.zip
 RUN cd /
 

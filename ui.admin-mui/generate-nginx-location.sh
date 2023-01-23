@@ -1,7 +1,8 @@
 #/bin/bash
 DIR="/app/static/"
-PATHS=$(find $DIR | grep \\\[ | grep -wv _next | grep -wv index.html)
 
+# NEXT FILES
+PATHS=$(find $DIR | grep \\\[ | grep -wv _next | grep -wv index.html)
 for item in $PATHS
 do
   PATH="${item/$DIR/}"
@@ -12,4 +13,16 @@ do
   echo "    \"/$PATH/index.html\""
   echo "    proxy_pass;"
   echo "}"
-done
+done;
+
+PATHS2=$(find $DIR | grep index.html)
+for item in $PATHS2
+do
+  item=${item/index.html/}
+  PATH="${item/$DIR/}"
+  URL="${PATH/\///}"
+  echo "location ~ ^/${PATH}/* {"
+  echo "  index index.html index.htm;"
+  echo "  try_files \$uri /${PATH}index.html;"
+  echo "}"
+done;

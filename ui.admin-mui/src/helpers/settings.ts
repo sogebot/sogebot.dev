@@ -2,7 +2,7 @@ import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/sr
 import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
 import { cloneDeep } from 'lodash';
 
-import { getSocket } from '~/src/helpers/socket';
+import { getSocket } from './socket';
 
 export const saveSettings = async (endpoint: keyof ClientToServerEventsWithNamespace, settings: Record<string, any>) => {
   let clonedSettings = cloneDeep(settings);

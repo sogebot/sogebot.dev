@@ -12,25 +12,24 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntervalWhen, useRefElement } from 'rooks';
 
-import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
 
 const PageSettingsModulesIntegrationsSpotify: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, handleChange, TextFieldProps } = useSettings('/integrations/spotify' as any);
@@ -38,7 +37,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const user = useMemo(() => {
     if (settings && settings.connection.username[0].length > 0) {

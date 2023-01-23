@@ -6,11 +6,10 @@ import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widg
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-import theme from '~/src/theme';
-
 import { DashboardWidgetBotDialogCustomURLsEdit } from './Dialog/CustomURLsEdit';
+import { getSocket } from '../../../../helpers/socket';
+import theme from '../../../../theme';
+import { classes } from '../../../styles';
 
 export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
   sx,
@@ -50,7 +49,7 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
           </Stack>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);', 
+          position: 'relative', height: 'calc(100% - 48px);',
         }}>
           {custom.map((item, idx) => <Box sx={{
             ...(tab === String(idx+1) ? classes.showTab : classes.hideTab), height: '100%', width: '100%',

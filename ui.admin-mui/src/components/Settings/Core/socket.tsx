@@ -11,18 +11,17 @@ import InputAdornment from '@mui/material/InputAdornment';
 import {
   IsInt, IsNotEmpty, Min, validateOrReject,
 } from 'class-validator';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 
-import { ConfirmButton } from '~/src/components/Buttons/ConfirmButton';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { useValidator } from '~/src/hooks/useValidator';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidator';
+import { ConfirmButton } from '../../Buttons/ConfirmButton';
 
 class Settings {
   @IsNotEmpty()
@@ -41,13 +40,12 @@ const PageSettingsModulesCoreSocket: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/core/socket');
   const { translate } = useTranslation();
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, setErrors, haveErrors } = useValidator({
@@ -67,10 +65,6 @@ const PageSettingsModulesCoreSocket: React.FC<{
         .catch(setErrors);
     }
   }, [loading, settings, setErrors]);
-
-  useEffect(() => {
-    refresh();
-  }, [ router, refresh ]);
 
   const copy = useCallback((text: string) => {
     navigator.clipboard.writeText(text);

@@ -4,7 +4,7 @@ import {
 import { isEqual } from 'lodash';
 import React from 'react';
 
-import { Item, SettingsSystemsDialogResultsInput } from '~/src/components/Settings/Dialog/ResultsInput';
+import { Item, SettingsSystemsDialogResultsInput } from './ResultsInput';
 
 export const SettingsSystemsDialogHeistResults: React.FC<{
   items: Item[],
@@ -89,7 +89,7 @@ export const SettingsSystemsDialogHeistResults: React.FC<{
             onChange={(value) => handleChange(idx, value)}
             onError={haveError => handleError(idx, haveError)}
             onDelete={() => deleteResult(idx)}
-          />
+          />,
           )}
         </List>
       </DialogContent>

@@ -1,18 +1,18 @@
 import {
-  Column, Filter, IntegratedFiltering, SortingState, Table,
+  Column, Filter, IntegratedFiltering, SortingState, VirtualTable,
 } from '@devexpress/dx-react-grid';
 import { capitalize } from 'lodash';
 import { useCallback, useMemo } from 'react';
 
-import { customPredicate } from '~/src/helpers/customPredicate';
-import { useFilter } from '~/src/hooks/useFilter';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useFilter } from './useFilter';
+import { useTranslation } from './useTranslation';
+import { customPredicate } from '../helpers/customPredicate';
 
 export type ColumnMakerProps<T,> = {
   columnName: keyof T | 'actions';
   translationKey?: string;
   translation?: string;
-  table?: Omit<Table.ColumnExtension, 'columnName'>;
+  table?: Omit<VirtualTable.ColumnExtension, 'columnName'>;
   column?: {
     getCellValue (row: T, columnName: string): any
   }
@@ -37,7 +37,7 @@ export const useColumnMaker = <T,>(props: ColumnMakerProps<T>) => {
   const tableColumnExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName: item.columnName,
     ...item.table,
-  })) as Table.ColumnExtension[], [ props ]);
+  })) as VirtualTable.ColumnExtension[], [ props ]);
 
   const sortingTableExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
     columnName:     item.columnName,

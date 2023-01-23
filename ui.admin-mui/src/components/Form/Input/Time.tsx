@@ -1,12 +1,13 @@
 import {
   SxProps, TextField, Theme,
 } from '@mui/material';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '@sogebot/ui-helpers/constants';
-import {
+import React, {
   ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useState,
 } from 'react';
+
+import {
+  DAY, HOUR, MINUTE, SECOND,
+} from '../../../constants';
 
 export const FormInputTime: React.FC<{
   label?: string, disabled?: boolean, sx?: SxProps<Theme>, variant?: 'filled' | 'outlined' | 'standard', value?: number, onChange?: (value: number) => void,

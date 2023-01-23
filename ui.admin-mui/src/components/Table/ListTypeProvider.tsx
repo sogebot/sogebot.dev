@@ -1,6 +1,6 @@
 import { DataTypeProvider, DataTypeProviderProps } from '@devexpress/dx-react-grid';
 import { Typography } from '@mui/material';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 export const ListFormatter = ({ value }: { value: string[] }) => {
   return <Typography>{value.join(', ')}</Typography>;

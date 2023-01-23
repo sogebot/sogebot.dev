@@ -2,12 +2,12 @@ import {
   Autocomplete,
   TextField,
 } from '@mui/material';
-import {
+import React,{
   useEffect, useMemo, useState,
 } from 'react';
 import { v4 } from 'uuid';
 
-import { getSocket } from '~/src/helpers/socket';
+import { getSocket } from '../../helpers/socket';
 
 let state = v4();
 

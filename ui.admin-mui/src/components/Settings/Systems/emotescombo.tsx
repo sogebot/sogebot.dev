@@ -12,15 +12,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesSystemsEmotesCombo: React.FC<{
   onVisible: () => void,
@@ -92,14 +91,13 @@ const PageSettingsModulesSystemsEmotesCombo: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, handleChange, TextFieldProps } = useSettings('/systems/emotescombo' as any, validator);
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -125,7 +123,7 @@ const PageSettingsModulesSystemsEmotesCombo: React.FC<{
     handleChange(attr, update[attr][0]);
   }, [ settings, handleChange ]);
 
-  const handleItemDelete = useCallback((idx: number, attr: 'comboMessages' | 'hypeMessages',) => {
+  const handleItemDelete = useCallback((idx: number, attr: 'comboMessages' | 'hypeMessages') => {
     const update = { ...settings };
     update[attr][0].splice(idx, 1);
     handleChange(attr, update[attr][0]);

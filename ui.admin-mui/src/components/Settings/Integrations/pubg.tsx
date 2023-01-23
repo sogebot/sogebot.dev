@@ -15,17 +15,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { JsonViewer, NamedColorspace } from '@textea/json-viewer';
 import { escapeRegExp } from 'lodash';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedValue, useRefElement } from 'rooks';
-import { flatten } from '~/../backend/dest/helpers/flatten';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const ocean: NamedColorspace = {
   scheme: 'Ocean',
@@ -53,7 +52,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, handleChange } = useSettings('/integrations/pubg' as any);
@@ -108,7 +107,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
       updateExample(values.customization.rankedGameModeStatsCustomization[0], 'rankedGameModeStats', values.stats.rankedGameModeStats[0]);
       updateExample(values.customization.gameModeStatsCustomization[0], 'gameModeStats', values.stats.gameModeStats[0]);
     });
-  }, [ router, refresh, updateExample ]);
+  }, [ refresh, updateExample ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

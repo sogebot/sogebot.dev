@@ -1,6 +1,3 @@
-/* eslint-disable react/display-name */
-
-import { QuickActions } from '@entity/dashboard';
 import {
   DragDropContext, Draggable, Droppable,
 } from '@hello-pangea/dnd';
@@ -9,26 +6,27 @@ import { LoadingButton } from '@mui/lab';
 import {
   Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableBodyClasses, TableCell, TableContainer, TableRow, TextField, Theme, Tooltip, Typography,
 } from '@mui/material';
-import { CommonProps } from '@mui/material/OverridableComponent';
+import type { CommonProps } from '@mui/material/OverridableComponent';
 import { Box, SxProps } from '@mui/system';
+import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import { OverlayMapperCountdown } from '@sogebot/backend/src/database/entity/overlay';
-import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
-import * as React from 'react';
+import React from 'react';
 import { SliderPicker } from 'react-color';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 
-import { DeleteButton } from '~/src/components/Buttons/DeleteButton';
-import { DashboardWidgetActionButtonsAddItem } from '~/src/components/Dashboard/Widget/Action/Buttons/AddItem';
-import getAccessToken from '~/src/getAccessToken';
-import { getSocket } from '~/src/helpers/socket';
+import { getContrastColor, getRandomColor } from '../../../../../colors';
+import getAccessToken from '../../../../../getAccessToken';
+import { getSocket } from '../../../../../helpers/socket';
 import {
   setCountdowns, setMarathons, setRandomizers, setStopwatchs,
-} from '~/src/store/quickActionsSlice';
-import { isHexColor } from '~/src/validators';
+} from '../../../../../store/quickActionsSlice';
+import { isHexColor } from '../../../../../validators';
+import { DeleteButton } from '../../../../Buttons/DeleteButton';
+import { DashboardWidgetActionButtonsAddItem } from '../Buttons/AddItem';
 
 type List = { id: string, label: string, };
 type State = { quickaction: { randomizers: List[], countdowns: List[], stopwatchs: List[], marathons: List[] } };
@@ -337,7 +335,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     const items = reorder(
       actions,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
 
     for(let i =0; i < items.length; i++) {
@@ -377,17 +375,17 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       dispatch(
         setCountdowns((result.filter(o => o.value === 'countdown') as OverlayMapperCountdown[]).map(o => ({
           id: o.id, label: o.name,
-        })))
+        }))),
       );
       dispatch(
         setMarathons((result.filter(o => o.value === 'marathon') as OverlayMapperCountdown[]).map(o => ({
           id: o.id, label: o.name,
-        })))
+        }))),
       );
       dispatch(
         setStopwatchs((result.filter(o => o.value === 'stopwatch') as OverlayMapperCountdown[]).map(o => ({
           id: o.id, label: o.name,
-        })))
+        }))),
       );
     });
 
@@ -479,7 +477,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
                       </TableCellKeepWidth>
                     </DraggableComponent>
                   );
-                }
+                },
                 )}
               </TableBody>
             </Table>

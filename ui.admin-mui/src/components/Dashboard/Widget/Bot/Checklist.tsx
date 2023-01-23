@@ -3,7 +3,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { getSocket } from '~/src/helpers/socket';
+import { getSocket } from '../../../../helpers/socket';
 
 export const DashboardWidgetBotChecklist: React.FC<{ sx: SxProps }> = ({
   sx,

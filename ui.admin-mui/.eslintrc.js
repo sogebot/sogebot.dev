@@ -1,7 +1,8 @@
 module.exports = {
   extends: [
-    'next/core-web-vitals',
+    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/recommended',
     'plugin:import/typescript',
   ],
   rules: {
@@ -28,8 +29,8 @@ module.exports = {
     'no-multiple-empty-lines':           ['error', {
       max: 1, maxEOF: 0, maxBOF: 0,
     }],
-
-    'import/order': ['error', {
+    'import/no-named-as-default': 'off',
+    'import/order':               ['error', {
       groups:             ['builtin', 'external', ['internal'], ['parent', 'sibling'], 'index'],
       'newlines-between': 'always',
       alphabetize:        {

@@ -1,16 +1,15 @@
 import {
   Button, Checkbox, Divider, Fade, FormControlLabel, InputAdornment, TextField,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-import { Commands } from '~/src/classes/Commands';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from './useTranslation';
+import { Commands } from '../classes/Commands';
+import { getSocket } from '../helpers/socket';
 
 export const useBotCommandsSpecificSettings = (item: Commands | null) => {
-  const router = useRouter();
-
+  const location = useLocation();
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const [ settings, setSettings ] = useState<Record<string, any>>({});
@@ -19,7 +18,7 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
 
   useEffect(() => {
     setLoading(true);
-  }, [ router ]);
+  }, [location]);
 
   const handleSettingsValueChange = (key: string, val: any) => {
     setSettings((value) => {
@@ -47,7 +46,7 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
             resolve();
           });
         });
-      })
+      }),
     );
   };
 

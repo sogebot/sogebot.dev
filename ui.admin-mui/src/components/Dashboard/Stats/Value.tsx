@@ -1,9 +1,9 @@
 import { Typography } from '@mui/material';
 import parse from 'html-react-parser';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
-import theme from '~/src/theme';
+import theme from '../../../theme';
 
 export const Value: React.FC<{current: number, isStreamOnline: boolean, showValueIfOffline?: boolean, type?: 'bigNumber' | 'hours' | 'currency'}> = (props) => {
   const { configuration } = useSelector((state: any) => state.loader);
@@ -41,10 +41,10 @@ export const Value: React.FC<{current: number, isStreamOnline: boolean, showValu
           maximumFractionDigits: 2,
         }).formatToParts(((props.isStreamOnline || props.showValueIfOffline) ? props.current || 0 : 0) / 1000 / 60 / 60),
         {
-          type: '', value: ' ', 
+          type: '', value: ' ',
         },
         {
-          type: 'currency', value: 'h', 
+          type: 'currency', value: 'h',
         },
       ].reduce(numberReducer, '');
     }
@@ -52,7 +52,7 @@ export const Value: React.FC<{current: number, isStreamOnline: boolean, showValu
     return Intl.NumberFormat(configuration.lang).format(
       (props.isStreamOnline || props.showValueIfOffline)
         ? props.current
-        : 0
+        : 0,
     );
   }, [props, configuration]);
 

@@ -11,15 +11,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
-import { PermissionTabs } from '~/src/components/Settings/PermissionTabs';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
+import { PermissionTabs } from '../PermissionTabs';
 
 const PageSettingsModulesSystemsModeration: React.FC<{
   onVisible: () => void,
@@ -115,14 +114,13 @@ const PageSettingsModulesSystemsModeration: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, handleChange, handleChangePermissionBased, getPermissionSettingsValue, TextFieldProps } = useSettings('/systems/moderation' as any, validator);
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -207,7 +205,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('caps_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -220,7 +218,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('color_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -233,7 +231,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('emotes_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -248,7 +246,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('links_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -261,7 +259,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('longMessage_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -274,7 +272,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('spam_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
 
             <Divider sx={{ margin: '30px 0 15px 0px !important' }}/>
@@ -287,7 +285,7 @@ const PageSettingsModulesSystemsModeration: React.FC<{
                 {...TextFieldPropsTabs('symbols_filter.' + key)}
                 type='number'
                 label={translate('systems.moderation.settings.' + key)}
-              />
+              />,
             )}
           </Stack>}
         </PermissionTabs>

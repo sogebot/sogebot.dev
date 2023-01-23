@@ -10,18 +10,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { PermissionTabs } from '~/src/components/Settings/PermissionTabs';
-import { dayjs } from '~/src/helpers/dayjsHelper';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { PermissionTabs } from '../PermissionTabs';
 
 const PageSettingsModulesSystemsPoints: React.FC<{
   onVisible: () => void,
@@ -77,7 +76,6 @@ const PageSettingsModulesSystemsPoints: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, handleChange, handleChangePermissionBased, getPermissionSettingsValue, TextFieldProps } = useSettings('/systems/points' as any, validator);
@@ -105,7 +103,7 @@ const PageSettingsModulesSystemsPoints: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -139,7 +137,7 @@ const PageSettingsModulesSystemsPoints: React.FC<{
               {...TextFieldPropsTabs('customization.' + item)}
               type='number'
               label={translate('systems.points.settings.' + item)}
-            />
+            />,
             )}
           </Stack>
           }

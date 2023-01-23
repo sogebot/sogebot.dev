@@ -3,8 +3,10 @@ import isNil from 'lodash/isNil';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getSocket } from '~/src/helpers/socket';
-import { setTranslation } from '~/src/store/loaderSlice';
+import { getSocket } from '../helpers/socket';
+import {
+  selectStateState, selectTranslationState, setTranslation, 
+} from '../store/loaderSlice';
 
 function castObject (key: string, value: string | { [x: string]: any }) {
   if (typeof value === 'string') {
@@ -16,7 +18,9 @@ function castObject (key: string, value: string | { [x: string]: any }) {
 
 export const useTranslation = () => {
   const dispatch = useDispatch();
-  const { translation, state } = useSelector<any, { translation: Record<string, any>, state: boolean } >(s => s.loader);
+
+  const translation = useSelector(selectTranslationState);
+  const state = useSelector(selectStateState);
 
   const refresh = React.useCallback(() => {
     getSocket('/', true).emit('translations', (translations) => {
@@ -43,6 +47,6 @@ export const useTranslation = () => {
   }, [ translation ]);
 
   return {
-    translate, translateAsObject, 
+    translate, translateAsObject,
   };
 };

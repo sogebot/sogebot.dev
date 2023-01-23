@@ -3,9 +3,9 @@ import {
   Autocomplete,
   Button, Chip, createFilterOptions, Menu, Stack, TextField, Tooltip,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const ButtonsTagBulk: React.FC<{
   onSelect: (groupId: string[]) => void,

@@ -4,7 +4,7 @@ import {
 import { isEqual } from 'lodash';
 import React from 'react';
 
-import { Item, SettingsSystemsDialogLevelsInput } from '~/src/components/Settings/Dialog/LevelsInput';
+import { Item, SettingsSystemsDialogLevelsInput } from './LevelsInput';
 
 export const SettingsSystemsDialogHeistLevels: React.FC<{
   items: Item[],
@@ -91,7 +91,7 @@ export const SettingsSystemsDialogHeistLevels: React.FC<{
             onChange={(value) => handleChange(idx, value)}
             onLevelsError={haveError => handleLevelError(idx, haveError)}
             onLevelDelete={() => deleteLevel(idx)}
-          />
+          />,
           )}
         </List>
       </DialogContent>

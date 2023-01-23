@@ -8,23 +8,22 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesIntegrationsStreamelements: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -32,7 +31,7 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

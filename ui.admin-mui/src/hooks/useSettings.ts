@@ -1,3 +1,4 @@
+import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 import parse from 'html-react-parser';
 import {
   cloneDeep, get, set,
@@ -8,13 +9,12 @@ import {
   useCallback, useEffect, useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { ClientToServerEventsWithNamespace } from '~/../backend/d.ts/src/helpers/socket';
 
-import { saveSettings } from '~/src/helpers/settings';
-import { getSocket } from '~/src/helpers/socket';
-import { usePermissions } from '~/src/hooks/usePermissions';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { addSettingsLoading, rmSettingsLoading } from '~/src/store/loaderSlice';
+import { usePermissions } from './usePermissions';
+import { useTranslation } from './useTranslation';
+import { saveSettings } from '../helpers/settings';
+import { getSocket } from '../helpers/socket';
+import { addSettingsLoading, rmSettingsLoading } from '../store/loaderSlice';
 
 export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[]}) => {
   const { enqueueSnackbar } = useSnackbar();

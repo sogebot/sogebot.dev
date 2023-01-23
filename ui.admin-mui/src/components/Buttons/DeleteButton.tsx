@@ -1,8 +1,8 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
-import { DialogDelete } from '~/src/components/Dialog/Delete';
+import { DialogDelete } from '../DialogDelete';
 
 export const DeleteButton: React.FC<{
   onDelete: () => void,

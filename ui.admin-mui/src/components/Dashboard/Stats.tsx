@@ -1,10 +1,7 @@
 import { Grid } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
-
-import { getSocket } from '~/src/helpers/socket';
-import { setAverageStats } from '~/src/store/pageSlice';
 
 import { DashboardStatsGeneralCurrentSong } from './GeneralCurrentSong';
 import { DashboardStatsGeneralTips } from './GeneralTips';
@@ -18,6 +15,8 @@ import { DashboardStatsTwitchSubscribers } from './TwitchSubscribers';
 import { DashboardStatsUptime } from './TwitchUptime';
 import { DashboardStatsTwitchViewers } from './TwitchViewers';
 import { DashboardStatsTwitchWatchedTime } from './TwitchWatchedTime';
+import { getSocket } from '../../helpers/socket';
+import { setAverageStats } from '../../store/pageSlice';
 
 export const DashboardStats: React.FC = () => {
   const { configuration } = useSelector((state: any) => state.loader);

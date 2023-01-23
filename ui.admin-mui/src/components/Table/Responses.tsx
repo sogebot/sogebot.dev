@@ -1,15 +1,16 @@
 import {
-  FilterAlt, Key, Pause, PlayArrow, 
+  FilterAlt, Key, Pause, PlayArrow,
 } from '@mui/icons-material';
 import {
-  Divider, Grid, List, ListItem, Stack, Typography, 
+  Divider, Grid, List, ListItem, Stack, Typography,
 } from '@mui/material';
 import { KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
 import orderBy from 'lodash/orderBy';
+import React from 'react';
 
-import { getPermissionName } from '~/src/helpers/getPermissionName';
-import { usePermissions } from '~/src/hooks/usePermissions';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getPermissionName } from '../../helpers/getPermissionName';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const Responses: React.FC<{
   responses: KeywordResponses[],

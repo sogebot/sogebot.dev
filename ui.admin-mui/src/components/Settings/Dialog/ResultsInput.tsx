@@ -8,8 +8,8 @@ import {
 import { isEqual } from 'lodash';
 import React from 'react';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { useValidator } from '~/src/hooks/useValidator';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidator';
 
 export class Item {
   @IsNotEmpty()

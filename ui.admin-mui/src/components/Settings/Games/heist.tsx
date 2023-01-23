@@ -7,17 +7,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { SettingsSystemsDialogHeistLevels } from '~/src/components/Settings/Dialog/HeistLevels';
-import { SettingsSystemsDialogHeistResults } from '~/src/components/Settings/Dialog/HeistResults';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SettingsSystemsDialogHeistLevels } from '../Dialog/HeistLevels';
+import { SettingsSystemsDialogHeistResults } from '../Dialog/HeistResults';
 
 const PageSettingsModulesGamesHeist: React.FC<{
   onVisible: () => void,
@@ -66,7 +65,6 @@ const PageSettingsModulesGamesHeist: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, settingsInitial, handleChange } = useSettings('/games/heist' as any, validator);
@@ -75,7 +73,7 @@ const PageSettingsModulesGamesHeist: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh, handleChange, translate ]);
+  }, [ refresh, handleChange, translate ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

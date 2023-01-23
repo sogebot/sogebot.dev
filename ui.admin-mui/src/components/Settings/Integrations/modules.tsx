@@ -8,27 +8,25 @@ import {
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import capitalize from 'lodash/capitalize';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { addSettingsLoading, rmSettingsLoading } from '~/src/store/loaderSlice';
+import { getSocket } from '../../../helpers/socket';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { addSettingsLoading, rmSettingsLoading } from '../../../store/loaderSlice';
 
-const PageSettingsIntegrationsModules: React.FC<{
+const PageSettingsModulesIntegrationsModules: React.FC<{
   onVisible: () => void,
   sx?: SxProps<Theme> | undefined
 }> = ({
   onVisible,
   sx,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -98,7 +96,7 @@ const PageSettingsIntegrationsModules: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -122,4 +120,4 @@ const PageSettingsIntegrationsModules: React.FC<{
   </Box>
   );
 };
-export default PageSettingsIntegrationsModules;
+export default PageSettingsModulesIntegrationsModules;
