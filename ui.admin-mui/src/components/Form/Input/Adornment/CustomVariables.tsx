@@ -10,9 +10,9 @@ import {
   bindTrigger,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from '../../../../hooks/useTranslation';
 
 export const FormInputAdornmentCustomVariable: React.FC<{
   onSelect: (value: string) => void,
@@ -38,7 +38,7 @@ export const FormInputAdornmentCustomVariable: React.FC<{
       'latestCheer', 'isBotSubscriber', 'isStreamOnline', 'uptime',
     ];
     return globalFilters.map(o => ({
-      label: translate('responses.variable.' + o), id: `$${o}`, 
+      label: translate('responses.variable.' + o), id: `$${o}`,
     }));
   }, [translate]);
 

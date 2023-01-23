@@ -1,37 +1,72 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
+import type { AppState } from './store';
+
+// NOT USED, KEEPING AS EXAMPLE TO USE REDUX
+
+// Type for our state
+export interface LoaderState {
+  server:            null,
+  connectedToServer: boolean,
+  showLoginWarning:  boolean,
+  showCookieManager: boolean,
+
+  drawerWidth:           number,
+  message:               null,
+  state:                 boolean,
+  tokensOnboardingState: boolean,
+  configuration:         Record<string,any>,
+  translation:           Record<string,any>,
+
+  nextVersion:    null,
+  currentVersion: null,
+
+  core:         null,
+  services:     null,
+  systems:      null,
+  integrations: null,
+
+  settingsLoadingInProgress: string[],
+}
+
+// Initial state
+const initialState: LoaderState = {
+  server:            null,
+  connectedToServer: false,
+  showLoginWarning:  false,
+  showCookieManager: false,
+
+  drawerWidth:           65,
+  message:               null,
+  state:                 false,
+  tokensOnboardingState: false,
+  configuration:         {},
+  translation:           {},
+
+  nextVersion:    null,
+  currentVersion: null,
+
+  core:         null,
+  services:     null,
+  systems:      null,
+  integrations: null,
+
+  settingsLoadingInProgress: [],
+};
+
+// Actual Slice
 export const loaderSlice = createSlice({
-  name:         'loader',
-  initialState: {
-    server:            null,
-    connectedToServer: false,
-    showLoginWarning:  false,
-    showCookieManager: false,
-
-    drawerWidth:           65,
-    message:               null,
-    state:                 false,
-    tokensOnboardingState: false,
-    configuration:         {},
-    translation:           {},
-
-    nextVersion:    null,
-    currentVersion: null,
-
-    core:         null,
-    services:     null,
-    systems:      null,
-    integrations: null,
-
-    settingsLoadingInProgress: [],
-  },
+  name:     'loader',
+  initialState,
   reducers: {
-    addSettingsLoading: (state: any, action: { payload: any }) => {
-      console.debug(`addSettingsLoading`, action.payload);
+    setTranslation(state, action: PayloadAction<Record<string, any>>) {
+      state.translation = action.payload;
+    },
+    addSettingsLoading(state, action: PayloadAction<string>) {
       state.settingsLoadingInProgress = [...state.settingsLoadingInProgress, action.payload];
     },
-    rmSettingsLoading: (state: any, action: { payload: any }) => {
-      console.debug(`rmSettingsLoading`, action.payload);
+    rmSettingsLoading(state, action: PayloadAction<string>) {
       state.settingsLoadingInProgress = state.settingsLoadingInProgress.filter((o: string) => o !== action.payload);
     },
     setSystem: (state: any, action: { payload: any }) => {
@@ -53,9 +88,6 @@ export const loaderSlice = createSlice({
     setConfiguration: (state: { configuration: any }, action: { payload: any }) => {
       console.debug(`setConfiguration`, action.payload);
       state.configuration = action.payload;
-    },
-    setTranslation: (state: { translation: any }, action: { payload: any }) => {
-      state.translation = action.payload;
     },
     setCurrentVersion: (state: { currentVersion: any }, action: { payload: any }) => {
       console.debug(`setCurrentVersion`, action.payload);
@@ -86,6 +118,9 @@ export const loaderSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
 export const { toggleCookieManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+
+export const selectTranslationState = (state: AppState) => state.loader.translation;
+export const selectStateState = (state: AppState) => state.loader.state;
+
 export default loaderSlice.reducer;

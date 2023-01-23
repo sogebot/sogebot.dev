@@ -11,27 +11,25 @@ import {
 } from '@mui/material';
 import FormLabel from '@mui/material/FormLabel';
 import Slider from '@mui/material/Slider';
-import { format } from '@sogebot/ui-helpers/number';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { format } from '../../../helpers/number';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesCoreGeneral: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
   const { settings, loading, refresh, save, saving, ui, handleChange } = useSettings('/core/general');
   const { translate } = useTranslation();
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const formats = ['', ' ', ',', '.'];
   const pointsOptions = formats.map(o => ({

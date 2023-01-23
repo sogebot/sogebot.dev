@@ -1,8 +1,8 @@
 import { DataTypeProvider, DataTypeProviderProps } from '@devexpress/dx-react-grid';
 import { Typography } from '@mui/material';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
-import { dayjs } from '~/src/helpers/dayjsHelper';
+import { dayjs } from '../../helpers/dayjsHelper';
 
 export const DateFormatter = ({ value }: { value: string }) => {
   return (<Typography>{ dayjs(value).format('LL LTS') }</Typography>);

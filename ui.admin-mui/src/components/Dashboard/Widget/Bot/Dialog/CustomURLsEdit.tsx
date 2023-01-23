@@ -7,7 +7,7 @@ import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import clone from 'lodash/clone';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 
@@ -145,7 +145,7 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimesta
         </Container>
         <Divider/>
         <Box sx={{
-          height: '50px', p: 1, 
+          height: '50px', p: 1,
         }}>
           <Grid container sx={{ height: '100%' }} spacing={1}>
             <Grid item flexGrow={1}><Button onClick={addNewItem} sx={{ width: '150px' }}>Add item</Button></Grid>

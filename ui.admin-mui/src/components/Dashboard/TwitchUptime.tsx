@@ -4,16 +4,16 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
-import { classes } from '~/src/components/styles';
-import { getTime } from '~/src/helpers/getTime';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { setStreamOnline } from '~/src/store/pageSlice';
-import theme from '~/src/theme';
+import { getTime } from '../../helpers/getTime';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import { setStreamOnline } from '../../store/pageSlice';
+import theme from '../../theme';
+import { classes } from '../styles';
 
 export const DashboardStatsUptime: React.FC = () => {
   const { translate } = useTranslation();
@@ -51,7 +51,7 @@ export const DashboardStatsUptime: React.FC = () => {
         </Box>}
         <Typography sx={{ transform: 'translateY(5px)' }}>{ getTime(uptime, false) }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-          pt: 2, pa: 1, 
+          pt: 2, pa: 1,
         }} key={timestamp}>{ capitalize(translate('uptime')) }</Typography>
         <Backdrop open={hover} sx={classes.backdrop} onClick={() => saveHighlight()}>
           <Typography variant="button">{translate('click-to-highlight')}</Typography>

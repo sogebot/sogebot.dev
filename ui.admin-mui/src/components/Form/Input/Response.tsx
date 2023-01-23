@@ -5,15 +5,15 @@ import {
   Grid,
   InputAdornment, InputLabel, MenuItem, Select, TextField,
 } from '@mui/material';
-import {
+import React, {
   ChangeEventHandler,
   useCallback,
   useEffect, useState,
 } from 'react';
 
-import { FormInputAdornmentCustomVariable } from '~/src/components/Form/Input/Adornment/CustomVariables';
-import { usePermissions } from '~/src/hooks/usePermissions';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { FormInputAdornmentCustomVariable } from './Adornment/CustomVariables';
+import { usePermissions } from '../../../hooks/usePermissions';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 export const FormResponse: React.FC<{
   value: any,
@@ -38,7 +38,7 @@ export const FormResponse: React.FC<{
     if (onChange) {
       onChange(propsValue);
     }
-  }, [ propsValue, onChange ]);
+  }, [ propsValue ]);
 
   const onResponseChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     setPropsValue((o: any) => {

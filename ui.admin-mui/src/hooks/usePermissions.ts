@@ -1,9 +1,9 @@
-import { Permissions } from '@entity/permissions';
+import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getSocket } from '~/src/helpers/socket';
-import { setPermissions } from '~/src/store/pageSlice';
+import { getSocket } from '../helpers/socket';
+import { setPermissions } from '../store/pageSlice';
 
 export const usePermissions = () => {
   const dispatch = useDispatch();

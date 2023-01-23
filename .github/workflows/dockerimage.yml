@@ -39,15 +39,15 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
-          path: ./ui.admin-mui/out
+          path: ./ui.admin-mui/build
 
       - name: Build a UI (with old_commit basePath)
-        run: cd ./ui.admin-mui/ && npm install && PUBLIC_URL="${{ steps.slug.outputs.SHA }}" npm run build
+        run: cd ./ui.admin-mui/ && npm install && PUBLIC_URL="https://dash.sogebot.xyz/${{ steps.slug.outputs.SHA }}/" npm run build
 
       - uses: actions/upload-artifact@v3
         with:
           name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
-          path: ./ui.admin-mui/out
+          path: ./ui.admin-mui/build
 
   build:
     needs: artifact
@@ -102,7 +102,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           build-args: |
-            PUBLIC_URL=${{ steps.slug.outputs.SHA }}
+            PUBLIC_URL=https://dash.sogebot.xyz/${{ steps.slug.outputs.SHA }}/
           context: ./ui.admin-mui/
           file: ./ui.admin-mui/Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64

@@ -1,7 +1,7 @@
 import { DataTypeProvider, DataTypeProviderProps } from '@devexpress/dx-react-grid';
 import { Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 export const GroupFormatter = ({ value }: { value: string }) => {
   if (value !== '_ungroup') {

@@ -2,22 +2,23 @@ import {
   IntegratedSorting, Sorting, SortingState,
 } from '@devexpress/dx-react-grid';
 import {
-  Grid as DataGrid, TableHeaderRow, VirtualTable,
+  Grid as DataGrid, Table, TableHeaderRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   Box, Button, Slider, Stack, Typography,
 } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
-import { HOUR, MINUTE } from '@sogebot/ui-helpers/constants';
-import { timestampToObject } from '@sogebot/ui-helpers/getTime';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import SimpleBar from 'simplebar-react';
 
-import { DateTypeProvider } from '~/src/components/Table/DateTypeProvider';
-import { dayjs } from '~/src/helpers/dayjsHelper';
-import { useColumnMaker } from '~/src/hooks/useColumnMaker';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { setOffset, setToggle } from '~/src/store/hltbSlice';
+import { HOUR, MINUTE } from '../../../constants';
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { timestampToObject } from '../../../helpers/getTime';
+import { useColumnMaker } from '../../../hooks/useColumnMaker';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { setOffset, setToggle } from '../../../store/hltbSlice';
+import { DateTypeProvider } from '../DateTypeProvider';
 
 type Props = {
   row: HowLongToBeatGame
@@ -182,21 +183,23 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
       { row.streams.length === 0
         ? <Typography>No streams recorded for user</Typography>
         : <Box sx={{ width: 'calc(250px + 250px + 450px + 350px + 50px)' }}>
-          <DataGrid
-            rows={row.streams}
-            columns={columns}
-          >
-            <DateTypeProvider for={['createdAt']}/>
+          <SimpleBar style={{ maxHeight: 'calc(50vh)' }} autoHide={false}>
+            <DataGrid
+              rows={row.streams}
+              columns={columns}
+            >
+              <DateTypeProvider for={['createdAt']}/>
 
-            <SortingState
-              sorting={sorting}
-              onSortingChange={setSorting}
-            />
-            <IntegratedSorting />
+              <SortingState
+                sorting={sorting}
+                onSortingChange={setSorting}
+              />
+              <IntegratedSorting />
 
-            <VirtualTable columnExtensions={tableColumnExtensions}/>
-            <TableHeaderRow/>
-          </DataGrid>
+              <Table columnExtensions={tableColumnExtensions}/>
+              <TableHeaderRow/>
+            </DataGrid>
+          </SimpleBar>
         </Box>}
     </Box>
   </>

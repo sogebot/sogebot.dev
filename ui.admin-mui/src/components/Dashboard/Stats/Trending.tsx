@@ -5,10 +5,10 @@ import {
   Box, Stack, Typography,
 } from '@mui/material';
 import parse from 'html-react-parser';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
-import theme from '~/src/theme';
+import theme from '../../../theme';
 
 export const Trending: React.FC<{average: number, current: number, isStreamOnline: boolean, type?: 'bigNumber'}> = (props) => {
   const { configuration } = useSelector((state: any) => state.loader);
@@ -66,10 +66,10 @@ export const Trending: React.FC<{average: number, current: number, isStreamOnlin
             maximumFractionDigits: 2,
           }).formatToParts((props.current - props.average) / 1000 / 60 / 60),
           {
-            type: '', value: ' ', 
+            type: '', value: ' ',
           },
           {
-            type: '', value: 'h', 
+            type: '', value: 'h',
           },
         ].reduce(numberReducer, '');
       }

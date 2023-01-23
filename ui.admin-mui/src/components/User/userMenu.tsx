@@ -9,9 +9,9 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
 
 export const UserMenu: React.FC = () => {
   const { translate } = useTranslation();
@@ -103,7 +103,7 @@ export const UserMenu: React.FC = () => {
                 return (
                   <Chip label={o} key={o} sx={{ mr: 1 }} color="primary" size='small'/>
                 );
-              }
+              },
               )}
             <Divider sx={{ pt: 1 }}/>
 

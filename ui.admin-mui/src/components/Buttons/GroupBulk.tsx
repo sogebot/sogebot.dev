@@ -2,7 +2,7 @@ import { WorkspacesTwoTone } from '@mui/icons-material';
 import {
   Button, Menu, MenuItem, TextField, Tooltip,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
 export const ButtonsGroupBulk: React.FC<{
   onSelect: (groupId: string | null) => void,
@@ -56,7 +56,7 @@ export const ButtonsGroupBulk: React.FC<{
           variant="contained"
           color="info"
           sx={{
-            minWidth: '36px', width: '36px', 
+            minWidth: '36px', width: '36px',
           }}
         >
           <WorkspacesTwoTone/>

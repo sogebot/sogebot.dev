@@ -1,17 +1,17 @@
 import {
   Delete, PlayArrow, PlaylistRemove, SkipNext, Stop,
 } from '@mui/icons-material';
-import { SxProps } from '@mui/material';
 import {
-  Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip,
+  Box ,
+  FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip,
 } from '@mui/material';
 import { currentSongType } from '@sogebot/backend/src/database/entity/song';
 import React, { useEffect, useMemo } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDidMount, useIntervalWhen } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
-import theme from '~/src/theme';
+import { getSocket } from '../../../../helpers/socket';
+import theme from '../../../../theme';
 
 const emptyCurrentSong: currentSongType = {
   videoId: null, title: '', type: '', username: '', volume: 0, loudness: 0, forceVolume: false, startTime: 0, endTime: Number.MAX_SAFE_INTEGER,
@@ -177,7 +177,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   return (
     <Box sx={{
-      height: '100%', ...sx, 
+      height: '100%', ...sx,
     }}>
       <Box sx={{
         borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],

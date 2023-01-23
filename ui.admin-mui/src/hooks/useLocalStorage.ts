@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export const useLocalStorage = <S>(
   key: string,
-  initialState?: S | (() => S)
+  initialState?: S | (() => S),
 ): [S | null, React.Dispatch<React.SetStateAction<S | null>>] => {
   const [state, setState] = useState<S | null>(null);
   const [init, setInit] = useState(false);

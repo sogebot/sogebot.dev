@@ -10,6 +10,7 @@ import {
   Switch,
 } from '@mui/material';
 import { grey, orange } from '@mui/material/colors';
+import React from 'react';
 
 export function SortableListItem(props: { draggable?: boolean, id: string, isDragging: boolean, visible: boolean, onVisibilityChange: () => void }) {
   const {

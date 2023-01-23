@@ -11,6 +11,7 @@ import {
 import { orange } from '@mui/material/colors';
 import { capitalize } from 'lodash';
 import { Twitch } from 'mdi-material-ui';
+import React from 'react';
 
 export function DashboardSortableItem(props: { draggable?: boolean, id: string, isDragging: boolean, onClick: () => void, isClicked: boolean }) {
   const {

@@ -9,14 +9,13 @@ import {
 import {
   IsInt, IsNotEmpty, Min, validateOrReject,
 } from 'class-validator';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import { useValidator } from '~/src/hooks/useValidator';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidator';
 
 class Settings {
   @IsNotEmpty()
@@ -30,7 +29,7 @@ const PageSettingsModulesSystemsBets: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/systems/bets');
   const { translate } = useTranslation();
 
@@ -48,7 +47,7 @@ const PageSettingsModulesSystemsBets: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

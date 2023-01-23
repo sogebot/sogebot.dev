@@ -12,21 +12,19 @@ import {
 } from '@mui/material';
 import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import getAccessToken from '~/src/getAccessToken';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import getAccessToken from '../../../getAccessToken';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesCoreTTS: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
   const { settings, loading, refresh, save, saving, handleChange, setLoading } = useSettings('/core/tts');
   const { translate } = useTranslation();
 
@@ -36,7 +34,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
     axios.get(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => setPrivateKeys(response.data.data))
       .finally(refresh);
-  }, [ router, refresh, setLoading ]);
+  }, [ refresh, setLoading ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);

@@ -66,7 +66,7 @@ export const SettingsSystemsDialogStringArray: React.FC<{
               <TextField id="outlined-basic" variant="outlined" value={item} fullWidth multiline onChange={(event) => handleChange(idx, event.currentTarget.value)}/>
               <IconButton onClick={() => deleteMessage(idx)} sx={{ height: 'fit-content' }}color='error'><DeleteTwoTone/></IconButton>
             </Stack>
-          </ListItem>
+          </ListItem>,
           )}
         </List>
       </DialogContent>

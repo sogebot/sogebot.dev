@@ -4,11 +4,11 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { WidgetSocialInterface } from '@sogebot/backend/src/database/entity/widget';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
+import { dayjs } from '../../../../helpers/dayjsHelper';
+import { getSocket } from '../../../../helpers/socket';
 
 export const DashboardWidgetBotSocial: React.FC<{ sx: SxProps }> = ({
   sx,

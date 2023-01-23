@@ -2,9 +2,9 @@ import { KeyTwoTone } from '@mui/icons-material';
 import {
   Button, Menu, MenuItem, Tooltip,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 
-import { usePermissions } from '~/src/hooks/usePermissions';
+import { usePermissions } from '../../hooks/usePermissions';
 
 export const ButtonsPermissionsBulk: React.FC<{
   onSelect: (permissionId: string) => void,
@@ -42,7 +42,7 @@ export const ButtonsPermissionsBulk: React.FC<{
           variant="contained"
           color="info"
           sx={{
-            minWidth: '36px', width: '36px', 
+            minWidth: '36px', width: '36px',
           }}
         >
           <KeyTwoTone/>

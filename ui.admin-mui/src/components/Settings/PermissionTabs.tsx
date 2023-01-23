@@ -18,7 +18,7 @@ import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
 import React, { ChangeEvent } from 'react';
 
-import { usePermissions } from '~/src/hooks/usePermissions';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const getIgnoredPermissions = (settings: Record<string, any>, category: string) => {
   const ignored = [];

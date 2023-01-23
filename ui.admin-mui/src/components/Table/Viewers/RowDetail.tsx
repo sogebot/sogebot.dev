@@ -5,15 +5,15 @@ import {
   Box, Button, LinearProgress, Typography,
 } from '@mui/material';
 import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import SimpleBar from 'simplebar-react';
 
-import { dayjs } from '~/src/helpers/dayjsHelper';
-import { getSocket } from '~/src/helpers/socket';
-import { useColumnMaker } from '~/src/hooks/useColumnMaker';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { getSocket } from '../../../helpers/socket';
+import { useColumnMaker } from '../../../hooks/useColumnMaker';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
   row: any

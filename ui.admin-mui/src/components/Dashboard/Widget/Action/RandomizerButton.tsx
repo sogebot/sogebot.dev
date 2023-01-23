@@ -1,23 +1,22 @@
-import { Randomizer } from '@entity/randomizer';
 import {
   PlayArrow, Visibility, VisibilityOff,
 } from '@mui/icons-material';
 import { CircularProgress, Stack } from '@mui/material';
 import { Box } from '@mui/system';
+import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
-import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import axios from 'axios';
-import {
+import React, {
   MouseEventHandler, useCallback, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
-import getAccessToken from '~/src/getAccessToken';
-import { getSocket } from '~/src/helpers/socket';
-import { isHexColor } from '~/src/validators';
-
 import { ColorButton } from './_ColorButton';
+import { getContrastColor } from '../../../../colors';
+import getAccessToken from '../../../../getAccessToken';
+import { getSocket } from '../../../../helpers/socket';
+import { isHexColor } from '../../../../validators';
 
 export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerItem }> = ({
   item,

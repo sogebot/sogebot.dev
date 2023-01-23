@@ -9,17 +9,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { PermissionTabs } from '~/src/components/Settings/PermissionTabs';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { PermissionTabs } from '../PermissionTabs';
 
 const PageSettingsModulesSystemsLevels: React.FC<{
   onVisible: () => void,
@@ -85,7 +84,6 @@ const PageSettingsModulesSystemsLevels: React.FC<{
     ],
   }), []);
 
-  const router = useRouter();
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, handleChange, TextFieldProps, errors, getPermissionSettingsValue, handleChangePermissionBased } = useSettings('/systems/levels' as any, validator);
@@ -110,7 +108,7 @@ const PageSettingsModulesSystemsLevels: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -164,7 +162,7 @@ const PageSettingsModulesSystemsLevels: React.FC<{
 
         { !showcase && <List sx={{ columnCount: 3 }}>
           {[...Array(20)].map((_, i) =>
-            <ListItem key={i}><Skeleton width='100%'/></ListItem>
+            <ListItem key={i}><Skeleton width='100%'/></ListItem>,
           )}
         </List>}
         { showcase && typeof showcase === 'string' && <Alert color='error'>{showcase}</Alert>}
@@ -173,7 +171,7 @@ const PageSettingsModulesSystemsLevels: React.FC<{
             <ListItem key={i} sx={{ justifyContent: 'space-between' }}>
               <Typography><strong>{i+ 1}</strong></Typography>
               <Typography>{xp}</Typography>
-            </ListItem>
+            </ListItem>,
           )}
         </List>}
 

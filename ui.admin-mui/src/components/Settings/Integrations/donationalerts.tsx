@@ -7,24 +7,23 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesIntegrationsDonationAlerts: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
 
   const { settings, loading, refresh } = useSettings('/integrations/donationalerts' as any);
@@ -32,7 +31,7 @@ const PageSettingsModulesIntegrationsDonationAlerts: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const user = useMemo(() => {
     if (settings && settings.channel[0].length > 0) {

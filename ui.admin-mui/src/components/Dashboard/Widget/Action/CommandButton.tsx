@@ -1,5 +1,5 @@
 import { CommandItem } from '@sogebot/backend/src/database/entity/dashboard';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { ColorButton } from './_ColorButton';
@@ -14,7 +14,7 @@ export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }>
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {
       user: {
-        userId: user.id, userName: user.login, 
+        userId: user.id, userName: user.login,
       },
       id: item.id,
     });

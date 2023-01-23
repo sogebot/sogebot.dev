@@ -19,32 +19,30 @@ import {
   Typography,
 } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 
-import { DashboardSortableItem } from '~/src/components/Sortable/DashboardSortableItem';
-import { useSettings } from '~/src/hooks/useSettings';
+import { useSettings } from '../../../hooks/useSettings';
+import { DashboardSortableItem } from '../../Sortable/DashboardSortableItem';
 
 const PageSettingsModulesCoreDashboard: React.FC<{
   onVisible: () => void,
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
   const { settings, setSettings, refresh, save, saving } = useSettings('/core/dashboard');
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   function handleDragEnd(event: { active: any; over: any; }) {

@@ -7,20 +7,18 @@ import {
 import Stack from '@mui/material/Stack';
 import parse from 'html-react-parser';
 import { capitalize } from 'lodash';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
 import { v4 } from 'uuid';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const TestUserField: React.FC<{ permissionId: string }> = ({
   permissionId,
 }) => {
   const { translate } = useTranslation();
-  const router = useRouter();
 
   const [ testUserName, setTestUserName ] = useState('');
   const [ error, setError ] = useState('');
@@ -116,7 +114,7 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
           {Number(partialStatus.access) === 1 && <li>
             {parse(translate('core.permissions.accessDirectlyThrough'))}&nbsp;
             <Typography component='span'>
-              <Link component={'a'} onClick={() => router.push(`/settings/permissions/${partialStatus.permission.id}`)}>
+              <Link href={`/settings/permissions/${partialStatus.permission.id}`}>
                 { partialStatus.permission.name }
               </Link>
               &nbsp;
@@ -126,7 +124,7 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
           {(Number(status.access) === 1 && status.permission.id !== partialStatus.permission.id) && <li>
             {parse(translate('core.permissions.accessThroughHigherPermission'))}&nbsp;
             <Typography component='span'>
-              <Link onClick={() => router.push(`/settings/permissions/${status.permission.id}`)}>
+              <Link href={`/settings/permissions/${status.permission.id}`}>
                 { status.permission.name }
               </Link>
               &nbsp;

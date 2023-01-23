@@ -2,12 +2,8 @@ import { TabContext, TabList } from '@mui/lab';
 import {
   Box, Card, Tab,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-
-import { classes } from '~/src/components/styles';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
 
 import { DashboardWidgetBotChecklist } from './Bot/Checklist';
 import { DashboardWidgetBotCustom } from './Bot/Custom';
@@ -16,6 +12,9 @@ import { DashboardWidgetBotQueue } from './Bot/Queue';
 import { DashboardWidgetBotRaffles } from './Bot/Raffles';
 import { DashboardWidgetBotSocial } from './Bot/Social';
 import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
+import { useTranslation } from '../../../hooks/useTranslation';
+import theme from '../../../theme';
+import { classes } from '../../styles';
 
 export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useSelector((state: any) => state.loader);
@@ -56,7 +55,7 @@ export const DashboardWidgetBot: React.FC = () => {
           </TabList>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);', 
+          position: 'relative', height: 'calc(100% - 48px);',
         }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>

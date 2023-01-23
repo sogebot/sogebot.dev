@@ -5,14 +5,14 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import parse from 'html-react-parser';
 import { capitalize, isNil } from 'lodash';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDidMount } from 'rooks';
 
-import { DashboardDialogSetGameAndTitle } from '~/src/components/Dashboard/Dialog/SetGameAndTitle';
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { DashboardDialogSetGameAndTitle } from './Dialog/SetGameAndTitle';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
+import { classes } from '../styles';
 
 export const DashboardStatsTwitchStatus: React.FC = () => {
   const [hover, setHover] = useState(false);
@@ -90,7 +90,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
               transform: 'translateY(5px)', ...classes.truncate,
             }}>
               <Typography component="span" sx={{
-                color: theme.palette.primary.main, fontWeight: 'bold', 
+                color: theme.palette.primary.main, fontWeight: 'bold',
               }}>
                 { game ?? ''}
               </Typography>

@@ -2,24 +2,24 @@ import {
   Breadcrumbs,
   Fade, Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { validate } from 'uuid';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const AppBarBreadcrumbs: React.FC = () => {
-  const router = useRouter();
+  const location = useLocation();
   const { translate } = useTranslation();
 
   const breadcrumbsItems = useMemo(() => {
-    const path = router.asPath
+    const path = location.pathname
       .split('/')
       .filter(Boolean)
       .map(o => validate(o) ? o : translate(`menu.${o}`))
       .filter(o => !o.startsWith('{menu.'));
     return path;
-  }, [router, translate]);
+  }, [location.pathname, translate]);
 
   return (
     <Fade in={breadcrumbsItems && breadcrumbsItems.length > 0}>

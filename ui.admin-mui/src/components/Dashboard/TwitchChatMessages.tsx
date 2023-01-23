@@ -4,15 +4,15 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDidMount } from 'rooks';
 
-import { Trending } from '~/src/components/Dashboard/Stats/Trending';
-import { Value } from '~/src/components/Dashboard/Stats/Value';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { Trending } from './Stats/Trending';
+import { Value } from './Stats/Value';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
 
 export const DashboardStatsTwitchChatMessages: React.FC = () => {
   const { translate } = useTranslation();
@@ -48,7 +48,7 @@ export const DashboardStatsTwitchChatMessages: React.FC = () => {
           <Trending current={value} average={average} isStreamOnline={isStreamOnline}/>
         </Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-          pt: 2, pa: 1, 
+          pt: 2, pa: 1,
         }}>{ capitalize(translate('chat-messages')) }</Typography>
       </Paper>
     </Grid>

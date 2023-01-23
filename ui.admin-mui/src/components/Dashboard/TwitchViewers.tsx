@@ -4,12 +4,12 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { getSocket } from '../../helpers/socket';
+import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
 
 export const DashboardStatsTwitchViewers: React.FC = () => {
   const [viewers, setViewers] = useState<null | number>(null);
@@ -35,7 +35,7 @@ export const DashboardStatsTwitchViewers: React.FC = () => {
         </Box>}
         <Typography sx={{ transform: 'translateY(5px)' }}>{ isStreamOnline ? viewers : 0 }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-          pt: 2, pa: 1, 
+          pt: 2, pa: 1,
         }}>{ capitalize(translate('viewers')) }</Typography>
       </Paper>
     </Grid>

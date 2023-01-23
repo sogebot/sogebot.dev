@@ -11,13 +11,13 @@ import {
   TextField,
 } from '@mui/material';
 import { Stack } from '@mui/system';
+import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import { isEqual } from 'lodash';
-import {
+import React, {
   useEffect, useMemo, useState,
 } from 'react';
-import { Permissions } from '~/../backend/dest/database/entity/permissions';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const FilterMaker: React.FC<{
   model: Permissions['filters'],

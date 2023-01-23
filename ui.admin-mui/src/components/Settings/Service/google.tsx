@@ -1,4 +1,3 @@
-import { GooglePrivateKeysInterface } from '@entity/google';
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -23,22 +22,22 @@ import {
   Typography,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 
-import getAccessToken from '~/src/getAccessToken';
-import { dayjs } from '~/src/helpers/dayjsHelper';
-import { getBase64FromUrl } from '~/src/helpers/getBase64FromURL';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import getAccessToken from '../../../getAccessToken';
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { getBase64FromUrl } from '../../../helpers/getBase64FromURL';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 declare namespace stream {
 
@@ -92,7 +91,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   onVisible,
   sx,
 }) => {
-  const router = useRouter();
+
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/google');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -133,7 +132,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     refresh();
     refreshKeys();
     refreshStreams();
-  }, [ router, refresh, refreshKeys, refreshStreams ]);
+  }, [ refresh, refreshKeys, refreshStreams ]);
 
   const [ saving2, setSaving2 ] = useState(false);
   const handleSave = useCallback(async () => {
@@ -372,6 +371,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
       </TableContainer>
 
       <input
+        title="File upload"
         ref={refUploadInput}
         type="file"
         multiple

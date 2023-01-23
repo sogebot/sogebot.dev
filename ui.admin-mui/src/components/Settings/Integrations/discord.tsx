@@ -25,19 +25,18 @@ import {
 } from '@mui/material';
 import parse from 'html-react-parser';
 import { xor } from 'lodash';
-import { useRouter } from 'next/router';
-import {
+import React, {
   useCallback, useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
-import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
-import { SortableListItem } from '~/src/components/Sortable/SortableListItem';
-import { getSocket } from '~/src/helpers/socket';
-import { usePermissions } from '~/src/hooks/usePermissions';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { usePermissions } from '../../../hooks/usePermissions';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SortableListItem } from '../../Sortable/SortableListItem';
+import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
 
 type Guild = { text: string, value: string };
 type Channel = { text: string, value: string };
@@ -47,7 +46,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
 }> = ({
   onVisible,
 }) => {
-  const router = useRouter();
+
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, settingsInitial, handleChange } = useSettings('/integrations/discord' as any);
@@ -100,7 +99,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
         setChannels(channels2);
       });
     });
-  }, [ router, refresh, handleChange, translate ]);
+  }, [ refresh, handleChange, translate ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
@@ -114,7 +113,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   function handleDragEnd(event: { active: any; over: any; }) {

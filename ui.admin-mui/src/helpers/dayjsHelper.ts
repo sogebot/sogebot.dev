@@ -6,12 +6,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { default as tz } from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 
-import 'dayjs/plugin/customParseFormat';
-import 'dayjs/plugin/localizedFormat';
-import 'dayjs/plugin/relativeTime';
-import 'dayjs/plugin/timezone';
-import 'dayjs/plugin/utc';
-
 dayjs.extend(utc);
 dayjs.extend(tz);
 dayjs.extend(relativeTime);

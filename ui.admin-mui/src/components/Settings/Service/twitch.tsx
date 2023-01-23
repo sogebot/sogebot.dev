@@ -10,6 +10,7 @@ import {
   Grid,
   InputAdornment,
   InputLabel,
+  Link,
   MenuItem,
   Paper,
   Stack,
@@ -20,19 +21,17 @@ import Select from '@mui/material/Select/Select';
 import { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import capitalize from 'lodash/capitalize';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
-import { SettingsSystemsDialogStringArray } from '~/src/components/Settings/Dialog/StringArray';
-import { getSocket } from '~/src/helpers/socket';
-import { useSettings } from '~/src/hooks/useSettings';
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { getSocket } from '../../../helpers/socket';
+import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
 
 const PageSettingsModulesServiceTwitch: React.FC<{
   onVisible: () => void,
@@ -41,7 +40,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   onVisible,
   sx,
 }) => {
-  const router = useRouter();
+
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/twitch');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -49,7 +48,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ router, refresh ]);
+  }, [ refresh ]);
 
   const handleSave = useCallback(async () => {
     // save settings

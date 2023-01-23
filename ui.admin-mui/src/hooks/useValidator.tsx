@@ -3,11 +3,11 @@ import { ValidationError } from 'class-validator';
 import { isEqual } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
-import {
+import React, {
   useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 
-import { useTranslation } from '~/src/hooks/useTranslation';
+import { useTranslation } from './useTranslation';
 
 type Props = {
   translations?: Record<string, string>
@@ -68,7 +68,7 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
         if (translation.startsWith('{')) {
           _errors[error.property].push(capitalize(`${constraint}`)
             .replace('$property', property)
-            .replace('$constraint1', constraints[0])
+            .replace('$constraint1', constraints[0]),
           );
         } else {
           if (type === 'minLength') {
@@ -78,7 +78,7 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
           }
           _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`)
             .replace('$property', translate('properties.thisvalue'))
-            .replace('$constraint1', constraints[0])
+            .replace('$constraint1', constraints[0]),
           ));
         }
       }

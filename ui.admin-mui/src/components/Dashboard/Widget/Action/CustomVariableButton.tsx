@@ -2,19 +2,18 @@ import { CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { CustomVariableItem } from '@sogebot/backend/src/database/entity/dashboard';
-import { getContrastColor } from '@sogebot/ui-helpers/colors';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
-import { ColorButton } from '~/src/components/Dashboard/Widget/Action/_ColorButton';
-import { DashboardWidgetActionCustomVariableUnknownButton } from '~/src/components/Dashboard/Widget/Action/CustomVariable/UnknownButton';
-import { isHexColor } from '~/src/validators';
-
+import { ColorButton } from './_ColorButton';
 import { DashboardWidgetActionCustomVariableEvalButton } from './CustomVariable/EvalButton';
 import { DashboardWidgetActionCustomVariableNumberButton } from './CustomVariable/NumberButton';
 import { DashboardWidgetActionCustomVariableOptionsButton } from './CustomVariable/OptionsButton';
 import { DashboardWidgetActionCustomVariableTextButton } from './CustomVariable/TextButton';
+import { DashboardWidgetActionCustomVariableUnknownButton } from './CustomVariable/UnknownButton';
+import { getContrastColor } from '../../../../colors';
 import { getSocket } from '../../../../helpers/socket';
+import { isHexColor } from '../../../../validators';
 
 export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomVariableItem }> = ({
   item,

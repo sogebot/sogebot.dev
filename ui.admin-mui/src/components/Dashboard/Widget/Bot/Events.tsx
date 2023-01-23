@@ -9,7 +9,6 @@ import {
 import {
   blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow,
 } from '@mui/material/colors';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
 import React, { useCallback, useState } from 'react';
@@ -18,11 +17,12 @@ import { useDidMount, useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
-import { DashboardWidgetBotDialogFilterEvents } from '~/src/components/Dashboard/Widget/Bot/Dialog/FilterEvents';
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-import { useTranslation } from '~/src/hooks/useTranslation';
-import theme from '~/src/theme';
+import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
+import { dayjs } from '../../../../helpers/dayjsHelper';
+import { getSocket } from '../../../../helpers/socket';
+import { useTranslation } from '../../../../hooks/useTranslation';
+import theme from '../../../../theme';
+import { classes } from '../../../styles';
 
 export const DotDivider: React.FC = () => {
   return (

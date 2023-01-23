@@ -7,17 +7,16 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import React from 'react';
 import {
-  useDidMount, useIntervalWhen, usePreviousImmediate, 
+  useDidMount, useIntervalWhen, usePreviousImmediate,
 } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
-import { classes } from '~/src/components/styles';
-import { getSocket } from '~/src/helpers/socket';
-
 import 'simplebar-react/dist/simplebar.min.css';
+import { dayjs } from '../../../../helpers/dayjsHelper';
+import { getSocket } from '../../../../helpers/socket';
+import { classes } from '../../../styles';
 
 export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   sx,
@@ -81,7 +80,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
       // all was disabled
       if (!eligibility.all && !eligibility.subscribers) {
         setEligibilty({
-          all: true, subscribers: false, 
+          all: true, subscribers: false,
         });
         return;
       }
@@ -89,21 +88,21 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
         // we cannot disable if flws and subs are disabled
         if (!eligibility.subscribers) {
           setEligibilty({
-            all: true, subscribers: false, 
+            all: true, subscribers: false,
           });
           return;
         }
       } else if (eligibility.all && !eligibilityCache.all) {
         // remove subscribers if all was enabled
         setEligibilty({
-          all: true, subscribers: false, 
+          all: true, subscribers: false,
         });
         return;
       }
 
       if (eligibility.all && eligibility.subscribers) {
         setEligibilty({
-          all: false, subscribers: eligibility.subscribers, 
+          all: false, subscribers: eligibility.subscribers,
         });
         return;
       }
@@ -121,7 +120,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
 
   React.useEffect(() => {
     getSocket('/systems/queue').emit('set.value', {
-      variable: 'locked', value: locked, 
+      variable: 'locked', value: locked,
     }, () => {
       return true;
     });
@@ -213,7 +212,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
           </Stack>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);', 
+          position: 'relative', height: 'calc(100% - 48px);',
         }}>
           <Box sx={value === '1' ? classes.showTab : classes.hideTab}>
             <Box sx={{
@@ -221,17 +220,17 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
             }}>
               <Stack direction="row" alignItems={'center'}>
                 <ButtonGroup color={'secondary'} variant="text" size='small' sx={{
-                  p: 0.5, width: '100%', 
+                  p: 0.5, width: '100%',
                 }}>
                   <Button
                     onClick={() => setEligibilty({
-                      all: true, subscribers: false, 
+                      all: true, subscribers: false,
                     })}
                     color={eligibility.all ? 'success' : 'error'}
                   >ALL</Button>
                   <Button
                     onClick={() => setEligibilty({
-                      all: false, subscribers: !eligibility.subscribers, 
+                      all: false, subscribers: !eligibility.subscribers,
                     })}
                     color={eligibility.subscribers ? 'success' : 'error'}>SUBSCRIBERS</Button>
                 </ButtonGroup>
@@ -283,7 +282,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
                         <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ user.message }</Typography>
                       </ListItemText>
                     </ListItemButton>
-                  </ListItem>
+                  </ListItem>,
                   )}
                 </List>
               </Box>
@@ -292,7 +291,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
           <Box sx={value === '2' ? classes.showTab : classes.hideTab}>
             {picked.length === 0 && <Alert severity="info">No users were picked yet</Alert>}
             {picked.length > 0 && <List dense disablePadding sx={{
-              height: '100%', overflow: 'auto', 
+              height: '100%', overflow: 'auto',
             }}>
               {picked.map((user) => <ListItem key={user.username}>
                 <ListItemText>
@@ -303,7 +302,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
                   </Stack>
                   <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ user.message }</Typography>
                 </ListItemText>
-              </ListItem>
+              </ListItem>,
               )}
             </List>}
           </Box>

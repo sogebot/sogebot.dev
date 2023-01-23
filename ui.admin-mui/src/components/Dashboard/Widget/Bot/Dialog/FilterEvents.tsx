@@ -3,10 +3,10 @@ import { LoadingButton } from '@mui/lab';
 import {
   Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip,
 } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setWidgetsEvents } from '~/src/store/pageSlice';
+import { setWidgetsEvents } from '../../../../../store/pageSlice';
 
 export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
       <Tooltip title="Filter Events">
         <IconButton onClick={handleClick}>
           <FilterAlt sx={{
-            position: 'relative', right: '2px', 
+            position: 'relative', right: '2px',
           }}/>
           <ArrowDropDown sx={{
             position: 'absolute', right: '2px', bottom: 0, fontSize: '20px',
