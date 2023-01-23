@@ -59,6 +59,8 @@ const PageManageBannedSongs = lazy(() => import('./manage/youtube/bannedsongs'))
 const PageManageBannedSongsSpotify = lazy(() => import('./manage/spotify/bannedsongs'));
 
 const PageSettingsModules = lazy(() => import('./settings/modules'));
+const PageSettingsPermissions = lazy(() => import('./settings/permissions'));
+const PageSettingsTranslations = lazy(() => import('./settings/translations'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -230,6 +232,8 @@ export default function Root() {
                     <Route path="/manage/spotify/bannedsongs/" element={<PageManageBannedSongsSpotify/>}/>
 
                     <Route path="/settings/modules/:type/:id?" element={<PageSettingsModules/>}/>
+                    <Route path="/settings/permissions/:type?/:id?" element={<PageSettingsPermissions/>}/>
+                    <Route path="/settings/translations/:type?/:id?" element={<PageSettingsTranslations/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>

@@ -36,9 +36,10 @@ Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
 
 export let theme = createTheme({
   components: {
-    MuiLink:       { defaultProps: { component: LinkBehavior } as LinkProps },
-    MuiButtonBase: { defaultProps: { LinkComponent: LinkBehavior } },
-    MuiIconButton: { defaultProps: { LinkComponent: LinkBehavior } },
+    MuiLink:           { defaultProps: { component: LinkBehavior } as LinkProps },
+    MuiButtonBase:     { defaultProps: { LinkComponent: LinkBehavior } },
+    MuiIconButton:     { defaultProps: { LinkComponent: LinkBehavior } },
+    MuiListItemButton: { defaultProps: { LinkComponent: LinkBehavior } },
   },
   typography: {
     fontFamily: [

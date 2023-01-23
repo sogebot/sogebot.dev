@@ -1,5 +1,5 @@
 import { VirtualTable } from '@devexpress/dx-react-grid-material-ui';
-import React from 'react'
+import React from 'react';
 
 const DenseCellOneLine = (props: any) => (
   <VirtualTable.Cell
