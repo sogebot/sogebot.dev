@@ -102,7 +102,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           build-args: |
-            PUBLIC_URL=https://dash.sogebot.xyz/${{ steps.slug.outputs.SHA }}/
+            COMMIT=${{ steps.slug.outputs.SHA }}
           context: ./ui.admin-mui/
           file: ./ui.admin-mui/Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64
