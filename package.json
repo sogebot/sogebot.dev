@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "create-react-app-with-typescript",
     "ui.admin-mui",
     "backend",
     "ui.public"
