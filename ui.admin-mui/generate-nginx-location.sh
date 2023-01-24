@@ -2,18 +2,18 @@
 DIR="/app/static/"
 
 # NEXT FILES
-PATHS=$(find $DIR | grep \\\[ | grep -wv _next | grep -wv index.html)
-for item in $PATHS
-do
-  PATH="${item/$DIR/}"
-  URL="${PATH/\[*\]/([a-z0-9-]+)/?}"
-  echo "location ~ ^/$URL {"
-  echo "  root $DIR;"
-  echo "  try_files"
-  echo "    \"/$PATH/index.html\""
-  echo "    proxy_pass;"
-  echo "}"
-done;
+# PATHS=$(find $DIR | grep \\\[ | grep -wv _next | grep -wv index.html)
+# for item in $PATHS
+# do
+#   PATH="${item/$DIR/}"
+#   URL="${PATH/\[*\]/([a-z0-9-]+)/?}"
+#   echo "location ~ ^/$URL {"
+#   echo "  root $DIR;"
+#   echo "  try_files"
+#   echo "    \"/$PATH/index.html\""
+#   echo "    proxy_pass;"
+#   echo "}"
+# done;
 
 PATHS2=$(find $DIR | grep index.html)
 for item in $PATHS2
