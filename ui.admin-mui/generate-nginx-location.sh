@@ -21,7 +21,7 @@ do
   item=${item/index.html/}
   PATH="${item/$DIR/}"
   URL="${PATH/\///}"
-  echo "location ~ ^/${PATH}/* {"
+  echo "location ~ ^/${PATH}* {"
   echo "  index index.html index.htm;"
   echo "  try_files \$uri /${PATH}index.html;"
   echo "}"
