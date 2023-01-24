@@ -43,6 +43,7 @@ import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
+import { RandomizerEdit } from '../../components/Form/RandomizerEdit';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
@@ -275,7 +276,7 @@ const PageRegistryRandomizer = () => {
         fullWidth
         PaperProps={{ sx: { height: '100% !important' } }}
         maxWidth='md'>
-        {/*id && <CustomVariablesEdit id={id} onSave={refresh}/>*/}
+        {open && <RandomizerEdit/>}
       </Dialog>
     </>
   );

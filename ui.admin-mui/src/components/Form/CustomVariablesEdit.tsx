@@ -8,17 +8,15 @@ import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Alert, Box, Button, Checkbox, CircularProgress, DialogContent, Divider, FormControl,
-  FormLabel, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Radio, Select,
-  Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography,
+  FormLabel, Grid, IconButton, InputAdornment, InputLabel, Link, MenuItem, Paper, Radio,
+  Select, Slider, Stack, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography,
 
 } from '@mui/material';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { DAY } from '@sogebot/ui-helpers/constants';
 import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
-import Link from 'next/link';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback,
@@ -63,6 +61,7 @@ import LODASH_string from '!raw-loader!@types/lodash/common/string.d.ts';
 import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
+import { DAY } from '../../constants';
 /* eslint-enable */
 
 const createInitialItem = async () => {
