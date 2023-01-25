@@ -111,98 +111,100 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     }
   }, [ text, service, model ]);
 
-  return <Accordion {...accordionProps} disabled={props.disabled || !isConfigured} expanded={open === accordionId && !props.disabled && isConfigured}>
+  return <>
     <Helmet>
       {configuration.core.tts.responsiveVoiceKey.length > 0 && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`}></script>}
     </Helmet>
-    <AccordionSummary
-      expandIcon={<ExpandMoreTwoTone />}
-      onClick={() => handleClick()}
-      aria-controls="panel1a-content"
-      id="panel1a-header"
-    >
-      {isConfigured && <>
-        {model.enabled !== undefined && <Switch
-          size='small'
-          sx={{ mr: 1 }}
-          checked={model.enabled}
-          onClick={ev => ev.stopPropagation()}
-          onChange={(_, val) => onChange({
-            ...model, enabled: val,
-          }) }/>}
-      </>}
-      <Typography>{ translate('registry.alerts.tts.setting') }</Typography>
+    <Accordion {...accordionProps} disabled={props.disabled || !isConfigured} expanded={open === accordionId && !props.disabled && isConfigured}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreTwoTone />}
+        onClick={() => handleClick()}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        {isConfigured && <>
+          {model.enabled !== undefined && <Switch
+            size='small'
+            sx={{ mr: 1 }}
+            checked={model.enabled}
+            onClick={ev => ev.stopPropagation()}
+            onChange={(_, val) => onChange({
+              ...model, enabled: val,
+            }) }/>}
+        </>}
+        <Typography>{ translate('registry.alerts.tts.setting') }</Typography>
 
-      {!isConfigured && <Paper sx={{
-        color: theme.palette.error.light, marginLeft: 'auto', px: 1, mr: 1,
-      }} elevation={0}>
+        {!isConfigured && <Paper sx={{
+          color: theme.palette.error.light, marginLeft: 'auto', px: 1, mr: 1,
+        }} elevation={0}>
         TTS is not properly set, go to{' '}<Link href="/settings/modules/core/tts">{' '}TTS settings</Link> and configure.
-      </Paper>}
-    </AccordionSummary>
-    <AccordionDetails>
-      {model.voice !== undefined && <FormControl fullWidth variant="filled" >
-        <InputLabel id="type-select-label">{translate('registry.alerts.voice')}</InputLabel>
-        <Select
-          MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-          label={translate('registry.alerts.voice')}
-          labelId="type-select-label"
-          value={model.voice}
-          onChange={(ev) => onChange({
-            ...model, voice: ev.target.value as typeof model.voice,
-          })}
-        >
-          {voices.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
-        </Select>
-      </FormControl>}
+        </Paper>}
+      </AccordionSummary>
+      <AccordionDetails>
+        {model.voice !== undefined && <FormControl fullWidth variant="filled" >
+          <InputLabel id="type-select-label">{translate('registry.alerts.voice')}</InputLabel>
+          <Select
+            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+            label={translate('registry.alerts.voice')}
+            labelId="type-select-label"
+            value={model.voice}
+            onChange={(ev) => onChange({
+              ...model, voice: ev.target.value as typeof model.voice,
+            })}
+          >
+            {voices.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
+          </Select>
+        </FormControl>}
 
-      <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
-        <Slider
-          step={0.01}
-          min={0}
-          max={1}
-          valueLabelFormat={(val) => `${Number(val * 100).toFixed(0)}%`}
-          valueLabelDisplay="on"
-          value={model.volume}
-          onChange={(_, newValue) => onChange({
-            ...model, volume: newValue as number,
-          })}/>
-      </Stack>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
+          <Slider
+            step={0.01}
+            min={0}
+            max={1}
+            valueLabelFormat={(val) => `${Number(val * 100).toFixed(0)}%`}
+            valueLabelDisplay="on"
+            value={model.volume}
+            onChange={(_, newValue) => onChange({
+              ...model, volume: newValue as number,
+            })}/>
+        </Stack>
 
-      <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
-        <Slider
-          step={0.01}
-          min={0}
-          max={service === 0 ? 1.5 : 4.0}
-          valueLabelDisplay="on"
-          value={model.rate}
-          onChange={(_, newValue) => onChange({
-            ...model, rate: newValue as number,
-          })}/>
-      </Stack>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
+          <Slider
+            step={0.01}
+            min={0}
+            max={service === 0 ? 1.5 : 4.0}
+            valueLabelDisplay="on"
+            value={model.rate}
+            onChange={(_, newValue) => onChange({
+              ...model, rate: newValue as number,
+            })}/>
+        </Stack>
 
-      <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 30px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
-        <Slider
-          step={service === 0 ? 0.1 : 1}
-          min={service === 0 ? 0.0 : -20.0}
-          max={service === 0 ? 2.0 : 20.0}
-          valueLabelDisplay="on"
-          value={model.pitch}
-          onChange={(_, newValue) => onChange({
-            ...model, pitch: newValue as number,
-          })}/>
-      </Stack>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 30px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
+          <Slider
+            step={service === 0 ? 0.1 : 1}
+            min={service === 0 ? 0.0 : -20.0}
+            max={service === 0 ? 2.0 : 20.0}
+            valueLabelDisplay="on"
+            value={model.pitch}
+            onChange={(_, newValue) => onChange({
+              ...model, pitch: newValue as number,
+            })}/>
+        </Stack>
 
-      {model.voice !== undefined && <TextField
-        value={text}
-        variant='filled'
-        fullWidth
-        label={translate('registry.alerts.test')}
-        onChange={(ev) => setText(ev.currentTarget.value)}
-        InputProps={{ endAdornment: <IconButton onClick={speak}><PlayArrowTwoTone/></IconButton> }}
-      />}
-    </AccordionDetails>
-  </Accordion>;
+        {model.voice !== undefined && <TextField
+          value={text}
+          variant='filled'
+          fullWidth
+          label={translate('registry.alerts.test')}
+          onChange={(ev) => setText(ev.currentTarget.value)}
+          InputProps={{ endAdornment: <IconButton onClick={speak}><PlayArrowTwoTone/></IconButton> }}
+        />}
+      </AccordionDetails>
+    </Accordion>
+  </>;
 };

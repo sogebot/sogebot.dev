@@ -46,7 +46,7 @@ export const RandomizerEdit: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
-  const [ expanded, setExpanded ] = React.useState('tts');
+  const [ expanded, setExpanded ] = React.useState('');
 
   const handleValueChange = <T extends keyof Randomizer>(key: T, value: Randomizer[T]) => {
     if (!item) {
