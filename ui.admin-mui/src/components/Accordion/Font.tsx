@@ -1,6 +1,8 @@
-import { ExpandMoreTwoTone } from '@mui/icons-material';
+import { AddTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Divider, FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack, TextField, Typography,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Button, Divider,
+  FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
+  Tab, Tabs, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
@@ -40,6 +42,7 @@ export const AccordionFont: React.FC<Props> = (props) => {
   const [server] = useLocalStorage('server', 'https://demobot.sogebot.xyz');
   const [ fonts, setFonts ] = React.useState<string[]>([]);
   const [ exampleText, setExampleText ] = React.useState('The quick brown fox jumps over the lazy dog');
+  const [ shadowTab, setShadowTab ] = React.useState(0);
 
   const handleClick = () => {
     onClick(open === accordionId ? '' : accordionId);
@@ -137,6 +140,151 @@ export const AccordionFont: React.FC<Props> = (props) => {
             ...model, borderColor: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
           })} />
       </Box>}
+      <Divider sx={{ my: 2 }}/>
+
+      {(model.shadow !== undefined && model.shadow !== null) && <>
+        <Stack direction='row'>
+          <Button
+            onClick={() => {
+              onChange({
+                ...model,
+                shadow: [
+                  ...model.shadow,
+                  {
+                    shiftRight: 1,
+                    shiftDown:  1,
+                    blur:       5,
+                    opacity:    100,
+                    color:      '#ffffff',
+                  },
+                ],
+              });
+            }}
+            sx={{
+              height: 'fit-content', transform: 'translateY(6px)',
+            }}><AddTwoTone/> Add new Shadow</Button>
+          <Tabs
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              flexShrink: '10000', width: '100%', 
+            }}
+            value={shadowTab}
+            onChange={(_, value) => setShadowTab(value)}>
+            {model.shadow.map((_, idx) => <Tab label={`Shadow#${idx + 1}`} key={idx}/>)}
+          </Tabs>
+        </Stack>
+
+        {model.shadow[shadowTab] && <>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowShiftRight') }</FormLabel>
+            <Slider
+              step={1}
+              min={-50}
+              max={50}
+              valueLabelFormat={(val) => `${val}px`}
+              valueLabelDisplay="on"
+              value={model.shadow[shadowTab].shiftRight}
+              onChange={(_, newValue) => {
+                const shadows = model.shadow;
+                const shadowValue = shadows[shadowTab];
+                shadowValue.shiftRight = newValue as number;
+                onChange({
+                  ...model, shadow: [ ...shadows ],
+                });
+              }}/>
+          </Stack>
+
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowShiftDown') }</FormLabel>
+            <Slider
+              step={1}
+              min={-50}
+              max={50}
+              valueLabelFormat={(val) => `${val}px`}
+              valueLabelDisplay="on"
+              value={model.shadow[shadowTab].shiftDown}
+              onChange={(_, newValue) => {
+                const shadows = model.shadow;
+                const shadowValue = shadows[shadowTab];
+                shadowValue.shiftDown = newValue as number;
+                onChange({
+                  ...model, shadow: [ ...shadows ],
+                });
+              }}/>
+          </Stack>
+
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowBlur') }</FormLabel>
+            <Slider
+              step={1}
+              min={0}
+              max={50}
+              valueLabelDisplay="on"
+              value={model.shadow[shadowTab].blur}
+              onChange={(_, newValue) => {
+                const shadows = model.shadow;
+                const shadowValue = shadows[shadowTab];
+                shadowValue.blur = newValue as number;
+                onChange({
+                  ...model, shadow: [ ...shadows ],
+                });
+              }}/>
+          </Stack>
+
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowOpacity') }</FormLabel>
+            <Slider
+              step={1}
+              min={0}
+              max={100}
+              valueLabelFormat={(val) => `${val}%`}
+              valueLabelDisplay="on"
+              value={model.shadow[shadowTab].opacity}
+              onChange={(_, newValue) => {
+                const shadows = model.shadow;
+                const shadowValue = shadows[shadowTab];
+                shadowValue.opacity = newValue as number;
+                onChange({
+                  ...model, shadow: [ ...shadows ],
+                });
+              }}/>
+          </Stack>
+
+          <Box
+            sx={{ pt: 2 }}>
+            <MuiColorInput
+              label={ translate('dialog.font.color') }
+              fullWidth
+              isAlphaHidden
+              format="hex"
+              variant='filled'
+              value={isHexColor(model.shadow[shadowTab].color) ? model.shadow[shadowTab].color : '#111111'}
+              onChange={(_, newValue) => {
+                const shadows = model.shadow;
+                const shadowValue = shadows[shadowTab];
+                shadowValue.color = newValue.hex;
+                onChange({
+                  ...model, shadow: [ ...shadows ],
+                });
+              }}/>
+          </Box>
+
+          <Box sx={{
+            my: 2, textAlign: 'center',
+          }}>
+            <Button
+              onClick={() => {
+                onChange({
+                  ...model, shadow: model.shadow.filter((_, idx) => idx !== shadowTab),
+                });
+                setShadowTab(0);
+              }}
+              variant='contained'
+              color='error'>{ translate('dialog.buttons.delete') }</Button>
+          </Box>
+        </>}
+      </>}
 
       <Divider sx={{ my: 2 }}/>
       <TextField
