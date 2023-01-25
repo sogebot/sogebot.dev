@@ -1,12 +1,14 @@
+import { DragHandleTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField,
+  Box, Button, Card, CircularProgress, DialogContent, Divider, Fade, FormControl, Unstable_Grid2 as Grid, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { validateOrReject } from 'class-validator';
 import { cloneDeep, merge } from 'lodash';
+import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -15,6 +17,7 @@ import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
+import { isHexColor } from '../../validators';
 import { AccordionFont } from '../Accordion/Font';
 import { AccordionPosition } from '../Accordion/Position';
 import { AccordionTTS } from '../Accordion/TTS';
@@ -114,91 +117,188 @@ export const RandomizerEdit: React.FC = () => {
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       { item && <DialogContent>
-        <Box
-          component="form"
-          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            fullWidth
-            {...propsError('item')}
-            variant="filled"
-            required
-            value={item?.name || ''}
-            label={translate('registry.randomizer.form.name')}
-            onChange={(event) => handleValueChange('name', event.target.value)}
-          />
+        <Grid container spacing={1}>
+          <Grid lg={6} md={12}>
+            <Box
+              component="form"
+              sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                fullWidth
+                {...propsError('item')}
+                variant="filled"
+                required
+                value={item?.name || ''}
+                label={translate('registry.randomizer.form.name')}
+                onChange={(event) => handleValueChange('name', event.target.value)}
+              />
 
-          <Stack direction='row' spacing={1}>
-            <TextField
-              fullWidth
-              {...propsError('command')}
-              variant="filled"
-              required
-              value={item?.command || ''}
-              label={translate('registry.randomizer.form.command')}
-              onChange={(event) => handleValueChange('command', event.target.value)}
-            />
-            <FormControl fullWidth variant="filled" >
-              <InputLabel id="type-select-label">{translate('registry.randomizer.form.type')}</InputLabel>
-              <Select
-                label={translate('registry.randomizer.form.type')}
-                labelId="type-select-label"
-                onChange={(event) => handleValueChange('type', event.target.value as 'simple' | 'wheelOfFortune' | 'tape')}
-                value={item?.type || 'simple'}
-              >
-                <MenuItem value='simple'>{translate('registry.randomizer.form.simple')}</MenuItem>
-                <MenuItem value='wheelOfFortune'>{translate('registry.randomizer.form.wheelOfFortune')}</MenuItem>
-                <MenuItem value='tape'>{translate('registry.randomizer.form.tape')}</MenuItem>
-              </Select>
-            </FormControl>
+              <Stack direction='row' spacing={1}>
+                <TextField
+                  fullWidth
+                  {...propsError('command')}
+                  variant="filled"
+                  required
+                  value={item?.command || ''}
+                  label={translate('registry.randomizer.form.command')}
+                  onChange={(event) => handleValueChange('command', event.target.value)}
+                />
+                <FormControl fullWidth variant="filled" >
+                  <InputLabel id="type-select-label">{translate('registry.randomizer.form.type')}</InputLabel>
+                  <Select
+                    label={translate('registry.randomizer.form.type')}
+                    labelId="type-select-label"
+                    onChange={(event) => handleValueChange('type', event.target.value as 'simple' | 'wheelOfFortune' | 'tape')}
+                    value={item?.type || 'simple'}
+                  >
+                    <MenuItem value='simple'>{translate('registry.randomizer.form.simple')}</MenuItem>
+                    <MenuItem value='wheelOfFortune'>{translate('registry.randomizer.form.wheelOfFortune')}</MenuItem>
+                    <MenuItem value='tape'>{translate('registry.randomizer.form.tape')}</MenuItem>
+                  </Select>
+                </FormControl>
 
-            <FormControl fullWidth variant="filled" >
-              <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
-              <Select
-                label={translate('permissions')}
-                labelId="permission-select-label"
-                onChange={(event) => handleValueChange('permissionId', event.target.value)}
-                value={item?.permissionId || defaultPermissions.VIEWERS}
-              >
-                {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-              </Select>
-            </FormControl>
-          </Stack>
+                <FormControl fullWidth variant="filled" >
+                  <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+                  <Select
+                    label={translate('permissions')}
+                    labelId="permission-select-label"
+                    onChange={(event) => handleValueChange('permissionId', event.target.value)}
+                    value={item?.permissionId || defaultPermissions.VIEWERS}
+                  >
+                    {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+                  </Select>
+                </FormControl>
+              </Stack>
 
-          {item.position && <AccordionPosition
-            model={item.position}
-            disabled={item.type === 'wheelOfFortune'}
-            open={expanded}
-            onClick={value => typeof value === 'string' && setExpanded(value)}
-            onChange={(value) => handleValueChange('position', value)}
-          />}
+              {item.position && <AccordionPosition
+                model={item.position}
+                disabled={item.type === 'wheelOfFortune'}
+                open={expanded}
+                onClick={value => typeof value === 'string' && setExpanded(value)}
+                onChange={(value) => handleValueChange('position', value)}
+              />}
 
-          {item.tts && <AccordionTTS
-            model={item.tts}
-            open={expanded}
-            onClick={value => typeof value === 'string' && setExpanded(value)}
-            onChange={(value) => handleValueChange('tts', value)}
-          />}
+              {item.tts && <AccordionTTS
+                model={item.tts}
+                open={expanded}
+                onClick={value => typeof value === 'string' && setExpanded(value)}
+                onChange={(value) => handleValueChange('tts', value)}
+              />}
 
-          {item.customizationFont && <AccordionFont
-            model={item.customizationFont}
-            open={expanded}
-            onClick={value => typeof value === 'string' && setExpanded(value)}
-            onChange={(value) => handleValueChange('customizationFont', value)}
-          />}
+              {item.customizationFont && <AccordionFont
+                model={item.customizationFont}
+                open={expanded}
+                onClick={value => typeof value === 'string' && setExpanded(value)}
+                onChange={(value) => handleValueChange('customizationFont', value)}
+              />}
+            </Box>
+          </Grid>
+          <Grid lg={6} md={12}>
+            <Box
+              component="form"
+              sx={{
+                '& .MuiFormControl-root': { my: 0.5 },
+                width:                    '100%',
+                mt:                       '2px !important',
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <Card variant='outlined' sx={{ backgroundColor: '#1e1e1e' }}>
+                <Typography gutterBottom sx={{
+                  pt: 2, pl: 2, pb: 2,
+                }}>{ translate('registry.randomizer.form.options') }</Typography>
 
-        </Box>
+                <TableContainer component={Paper}>
+                  <Table sx={{
+                    '.MuiTableCell-root': { p: 0.5 }, overflow: 'hidden',
+                  }}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell>{translate('registry.randomizer.form.name')}</TableCell>
+                        <TableCell width={100}>{translate('registry.randomizer.form.numOfDuplicates')}</TableCell>
+                        <TableCell width={100}>{translate('registry.randomizer.form.minimalSpacing')}</TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {(item.items || []).map((row) => (
+                        <TableRow
+                          key={row.name}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell><DragHandleTwoTone/></TableCell>
+                          <TableCell component="th" scope="row">
+                            <TextField
+                              InputProps={{
+                                startAdornment: <MuiColorInput
+                                  sx={{
+                                    width:                   '24px',
+                                    mr:                      '10px',
+                                    '.MuiInput-root:before': { borderBottom: '0 !important' },
+                                    '.MuiInput-root:after':  { borderBottom: '0 !important' },
+                                  }}
+                                  isAlphaHidden
+                                  format="hex"
+                                  variant='standard'
+                                  value={isHexColor(row.color) ? row.color : '#111111'}
+                                />,
+                              }}
+                              variant='standard'
+                              fullWidth
+                              value={row.name}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              sx={{
+                                position: 'relative', top: '4px',
+                              }}
+                              variant='standard'
+                              fullWidth
+                              inputProps={{
+                                min: '1', type: 'number',
+                              }}
+                              value={row.numOfDuplicates}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              sx={{
+                                position: 'relative', top: '4px',
+                              }}
+                              variant='standard'
+                              fullWidth
+                              inputProps={{
+                                min: '1', type: 'number',
+                              }}
+                              value={row.minimalSpacing}
+                            />
+                          </TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Box>
+          </Grid>
+        </Grid>
       </DialogContent>}
     </Fade>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid item>
+        <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
-        <Grid item>
+        <Grid>
           <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
         </Grid>
       </Grid>

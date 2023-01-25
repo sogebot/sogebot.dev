@@ -167,7 +167,7 @@ export const AccordionFont: React.FC<Props> = (props) => {
             variant="scrollable"
             scrollButtons="auto"
             sx={{
-              flexShrink: '10000', width: '100%', 
+              flexShrink: '10000', width: '100%',
             }}
             value={shadowTab}
             onChange={(_, value) => setShadowTab(value)}>
@@ -296,12 +296,14 @@ export const AccordionFont: React.FC<Props> = (props) => {
       />
 
       <Paper
+        elevation={0}
         sx={{
-          fontSize:   model.size + 'px',
-          fontWeight: model.weight,
-          fontFamily: `'${model.family}'`,
-          textAlign:  'center',
-          textShadow: [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', '),
+          fontSize:        model.size + 'px',
+          backgroundColor: 'transparent',
+          fontWeight:      model.weight,
+          fontFamily:      `'${model.family}'`,
+          textAlign:       'center',
+          textShadow:      [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', '),
         }}>
         <Box sx={{
           lineHeight: (model.size + 15) + 'px',

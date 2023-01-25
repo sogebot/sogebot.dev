@@ -275,7 +275,7 @@ const PageRegistryRandomizer = () => {
         open={open}
         fullWidth
         PaperProps={{ sx: { height: '100% !important' } }}
-        maxWidth='md'>
+        maxWidth={false}>
         {open && <RandomizerEdit/>}
       </Dialog>
     </>
