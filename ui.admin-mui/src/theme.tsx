@@ -40,6 +40,16 @@ export let theme = createTheme({
     MuiButtonBase:     { defaultProps: { LinkComponent: LinkBehavior } },
     MuiIconButton:     { defaultProps: { LinkComponent: LinkBehavior } },
     MuiListItemButton: { defaultProps: { LinkComponent: LinkBehavior } },
+    MuiSlider:         {
+      styleOverrides: {
+        thumb: {
+          '& .MuiSlider-valueLabel': {
+            backgroundColor: 'transparent',
+            top:             0,
+          },
+        },
+      },
+    },
   },
   typography: {
     fontFamily: [
