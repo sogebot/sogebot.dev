@@ -15,6 +15,7 @@ import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
+import { AccordionFont } from '../Accordion/Font';
 import { AccordionPosition } from '../Accordion/Position';
 import { AccordionTTS } from '../Accordion/TTS';
 
@@ -179,6 +180,13 @@ export const RandomizerEdit: React.FC = () => {
             open={expanded}
             onClick={value => typeof value === 'string' && setExpanded(value)}
             onChange={(value) => handleValueChange('tts', value)}
+          />}
+
+          {item.customizationFont && <AccordionFont
+            model={item.customizationFont}
+            open={expanded}
+            onClick={value => typeof value === 'string' && setExpanded(value)}
+            onChange={(value) => handleValueChange('customizationFont', value)}
           />}
 
         </Box>
