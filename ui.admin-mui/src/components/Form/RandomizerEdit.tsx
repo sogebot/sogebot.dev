@@ -16,6 +16,23 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
 import { AccordionPosition } from '../Accordion/Position';
+import { AccordionTTS } from '../Accordion/TTS';
+
+const emptyItem: Partial<Randomizer> = {
+  position: {
+    x:       50,
+    y:       50,
+    anchorX: 'middle',
+    anchorY: 'middle',
+  },
+  tts: {
+    enabled: false,
+    pitch:   1,
+    rate:    1,
+    voice:   '',
+    volume:  0.5,
+  },
+};
 
 export const RandomizerEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -23,13 +40,13 @@ export const RandomizerEdit: React.FC = () => {
 
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
-  const [ item, setItem ] = React.useState<Randomizer>(new Randomizer());
+  const [ item, setItem ] = React.useState<Randomizer>(new Randomizer(emptyItem));
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
-  const [ expanded, setExpanded ] = React.useState('position');
+  const [ expanded, setExpanded ] = React.useState('tts');
 
   const handleValueChange = <T extends keyof Randomizer>(key: T, value: Randomizer[T]) => {
     if (!item) {
@@ -45,12 +62,12 @@ export const RandomizerEdit: React.FC = () => {
       setLoading(true);
       axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
-          console.log({ data: data.data });
-          setItem(data.data ?? new Randomizer());
+          console.log(data.data);
+          setItem(data.data ?? new Randomizer(emptyItem));
           setLoading(false);
         });
     } else {
-      setItem(new Randomizer());
+      setItem(new Randomizer(emptyItem));
       setLoading(false);
     }
     reset();
@@ -155,6 +172,13 @@ export const RandomizerEdit: React.FC = () => {
             open={expanded}
             onClick={value => typeof value === 'string' && setExpanded(value)}
             onChange={(value) => handleValueChange('position', value)}
+          />}
+
+          {item.tts && <AccordionTTS
+            model={item.tts}
+            open={expanded}
+            onClick={value => typeof value === 'string' && setExpanded(value)}
+            onChange={(value) => handleValueChange('tts', value)}
           />}
 
         </Box>

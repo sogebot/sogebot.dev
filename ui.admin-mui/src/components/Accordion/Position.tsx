@@ -38,69 +38,38 @@ export const AccordionPosition: React.FC<Props> = (props) => {
     ...accordionProps } = props;
   const { translate } = useTranslation();
 
-  const [ value, setValue ] = React.useState(model);
-
   const anchorRef = React.useRef<any>();
   const textRef = React.useRef<any>();
   const paperRef = React.useRef<any>();
-
-  React.useEffect(() => {
-    onChange(value);
-  }, [ value ]);
 
   const handleClick = () => {
     onClick(open === accordionId ? '' : accordionId);
   };
 
-  const anchorPosition = React.useMemo(() => {
-    if (anchorRef.current && paperRef.current) {
-      const widthPxPerCent = paperRef.current.getBoundingClientRect().width / 100;
-      const heightPxPerCent = paperRef.current.getBoundingClientRect().height / 100;
+  const position = (value: typeof model, papRef: typeof paperRef, posRef: typeof anchorRef) => {
+    if (posRef.current && papRef.current) {
+      const widthPxPerCent = papRef.current.getBoundingClientRect().width / 100;
+      const heightPxPerCent = papRef.current.getBoundingClientRect().height / 100;
 
       let top = 0;
       if (value.anchorY === 'middle') {
-        top = anchorRef.current.getBoundingClientRect().height / 2;
+        top = posRef.current.getBoundingClientRect().height / 2;
       } else if (value.anchorY === 'bottom') {
-        top = anchorRef.current.getBoundingClientRect().height;
+        top = posRef.current.getBoundingClientRect().height;
       }
 
       let left = 0;
       if (value.anchorX === 'middle') {
-        left = anchorRef.current.getBoundingClientRect().width / 2;
+        left = posRef.current.getBoundingClientRect().width / 2;
       } else if (value.anchorX === 'right') {
-        left = anchorRef.current.getBoundingClientRect().width;
+        left = posRef.current.getBoundingClientRect().width;
       }
 
       return { transform: `translate(${(value.x * widthPxPerCent) - left}px, ${(value.y * heightPxPerCent) - top}px)` };
     } else {
       return { transform: `translate(0, 0)` };
     }
-  }, [ anchorRef, paperRef, value ]);
-
-  const textPosition = React.useMemo(() => {
-    if (textRef.current && paperRef.current) {
-      const widthPxPerCent = paperRef.current.getBoundingClientRect().width / 100;
-      const heightPxPerCent = paperRef.current.getBoundingClientRect().height / 100;
-
-      let top = 0;
-      if (value.anchorY === 'middle') {
-        top = textRef.current.getBoundingClientRect().height / 2;
-      } else if (value.anchorY === 'bottom') {
-        top = textRef.current.getBoundingClientRect().height;
-      }
-
-      let left = 0;
-      if (value.anchorX === 'middle') {
-        left = textRef.current.getBoundingClientRect().width / 2;
-      } else if (value.anchorX === 'right') {
-        left = textRef.current.getBoundingClientRect().width;
-      }
-
-      return { transform: `translate(${(value.x * widthPxPerCent) - left}px, ${(value.y * heightPxPerCent) - top}px)` };
-    } else {
-      return { transform: `translate(0, 0)` };
-    }
-  }, [ textRef, paperRef, value ]);
+  };
 
   return <Accordion {...accordionProps} expanded={open === accordionId && !props.disabled}>
     <AccordionSummary
@@ -117,9 +86,9 @@ export const AccordionPosition: React.FC<Props> = (props) => {
         <Select
           label={translate('dialog.position.anchorX')}
           labelId="type-select-label"
-          value={value.anchorX}
-          onChange={(ev) => setValue({
-            ...value, anchorX: ev.target.value as typeof model.anchorX,
+          value={model.anchorX}
+          onChange={(ev) => onChange({
+            ...model, anchorX: ev.target.value as typeof model.anchorX,
           })}
         >
           <MenuItem value='left'>{translate('dialog.position.left')}</MenuItem>
@@ -133,9 +102,9 @@ export const AccordionPosition: React.FC<Props> = (props) => {
         <Select
           label={translate('dialog.position.anchorY')}
           labelId="type-select-label"
-          value={value.anchorY}
-          onChange={(ev) => setValue({
-            ...value, anchorY: ev.target.value as typeof model.anchorY,
+          value={model.anchorY}
+          onChange={(ev) => onChange({
+            ...model, anchorY: ev.target.value as typeof model.anchorY,
           })}
         >
           <MenuItem value='top'>{translate('dialog.position.top')}</MenuItem>
@@ -146,7 +115,9 @@ export const AccordionPosition: React.FC<Props> = (props) => {
 
       <Stack direction='row' sx={{ pt: 4 }} justifyContent='center'>
         <Slider sx={{
-          height: 'auto', mt: 4,
+          height:                           'auto',
+          mt:                               4,
+          '& .MuiSlider-valueLabel:before': { display: 'none' },
         }}
         track={false}
         step={0.01}
@@ -155,21 +126,22 @@ export const AccordionPosition: React.FC<Props> = (props) => {
         valueLabelDisplay="on"
         max={100}
         orientation="vertical"
-        value={100 - value.y}
-        onChange={(_, newValue) => setValue({
-          ...value, y: 100 - (newValue as typeof model.y),
+        value={Math.round((100 - model.y) * 1000) / 1000}
+        onChange={(_, newValue) => onChange({
+          ...model, y: 100 - (newValue as typeof model.y),
         })}/>
         <Stack sx={{ width: '50%' }}>
           <Slider
+            sx={{ '& .MuiSlider-valueLabel:before': { display: 'none' } }}
             valueLabelFormat={(val) => `${val}%`}
             valueLabelDisplay="on"
             track={false}
             max={100}
             min={0}
             step={0.01}
-            value={value.x}
-            onChange={(_, newValue) => setValue({
-              ...value, x: (newValue as typeof model.x),
+            value={model.x}
+            onChange={(_, newValue) => onChange({
+              ...model, x: newValue as typeof model.x,
             })}/>
 
           <Paper ref={paperRef} sx={{
@@ -179,10 +151,10 @@ export const AccordionPosition: React.FC<Props> = (props) => {
             position:    'relative',
           }}>
             <Square ref={anchorRef} sx={{
-              ...anchorPosition, position: 'absolute', fontSize: '10px', color: theme.palette.primary.main,
+              ...position(model, paperRef, anchorRef), position: 'absolute', fontSize: '10px', color: theme.palette.primary.main,
             }}/>
             <Typography ref={textRef} sx={{
-              ...textPosition, position: 'absolute', fontSize: '1rem',
+              ...position(model, paperRef, textRef), position: 'absolute', fontSize: '1rem',
             }}>
               EXAMPLE TEXT
             </Typography>
