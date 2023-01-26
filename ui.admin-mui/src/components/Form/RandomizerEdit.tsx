@@ -1,5 +1,5 @@
 import {
-  DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable,
+  DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable, OnDragEndResponder,
 } from '@hello-pangea/dnd';
 import {
   DeleteTwoTone,
@@ -292,39 +292,48 @@ export const RandomizerEdit: React.FC = () => {
     return generatedItems;
   };
 
-  const onDragEndHandler = React.useCallback((value: any) => {
-    if (!value.destination || !item) {
+  const onDragEndHandler = React.useCallback<OnDragEndResponder>((result, provided) => {
+    if (!result.destination || !item) {
       return;
     }
 
-    console.log({ value });
+    console.log({
+      result, provided,
+    });
+    console.log(item.items);
 
-    /*
+    const destIdx = result.destination?.index;
+    const fromIdx = result.source.index;
+
+    const itemsToMove = [
+      item.items[fromIdx],
+      ...getChildren(item.items[fromIdx].id),
+    ];
+
+    console.log({
+      itemsToMove, destIdx,
+    });
+
     const update = cloneDeep(item);
 
-    const responseId = value.draggableId;
-    const ordered = orderBy(update.responses, 'order', 'asc');
-
-    const destIdx = value.destination.index;
-    const fromIdx = ordered.findIndex(m => m.id === responseId);
-    const fromItem = ordered.find(m => m.id === responseId);
-
-    if (fromIdx === destIdx || !fromItem) {
-      return;
+    if (fromIdx > destIdx) {
+      // delete items from original position
+      update.items.splice(fromIdx, itemsToMove.length);
+      // add new items
+      update.items.splice(destIdx, 0, ...itemsToMove);
+    } else {
+      // add new items
+      update.items.splice(destIdx + 1, 0, ...itemsToMove);
+      // delete items from original position
+      update.items.splice(fromIdx, itemsToMove.length);
     }
 
-    // remove fromIdx
-    ordered.splice(fromIdx, 1);
-
-    // insert into destIdx
-    ordered.splice(destIdx, 0, fromItem);
-
-    update.responses = ordered.map((o, idx) => ({
+    // reorder
+    update.items = update.items.map((o, idx) => ({
       ...o, order: idx,
     }));
-
     setItem(update);
-    */
+    return;
   }, [ item.items ]);
 
   return(<>
@@ -442,7 +451,7 @@ export const RandomizerEdit: React.FC = () => {
                 >
                   <Typography>{ translate('registry.randomizer.form.generatedOptionsPreview') }</Typography>
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails key={(item.items || []).map(o => o.id).join()}>
                   {
                     generateItems(item.items).length === 0
                       ? translate('registry.randomizer.form.optionsAreEmpty')
