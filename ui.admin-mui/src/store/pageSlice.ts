@@ -40,7 +40,7 @@ export const pageSlice = createSlice({
     setWidgetsEvents: (state: any, action: { payload: any }) => {
       state.widgets.events = action.payload;
     },
-    setStreamOnline: (state: any, action: { payload: boolean }) => {
+    setStreamOnline: (state: any, action: { payload: any }) => {
       state.isStreamOnline = action.payload;
     },
     setAverageStats: (state: any, action: { payload: Record<string, any> }) => {

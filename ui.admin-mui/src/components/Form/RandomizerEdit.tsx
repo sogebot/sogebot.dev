@@ -1,7 +1,12 @@
-import { DragHandleTwoTone } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Card, CircularProgress, DialogContent, Divider, Fade, FormControl, Unstable_Grid2 as Grid, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography,
+  DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable,
+} from '@hello-pangea/dnd';
+import {
+  DeleteTwoTone,
+  DragHandleTwoTone, LinkOffTwoTone, LinkTwoTone,
+} from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
+import {
+  Box, Button, Card, CircularProgress, DialogContent, Divider, Fade, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -36,6 +41,84 @@ const emptyItem: Partial<Randomizer> = {
     voice:   '',
     volume:  0.5,
   },
+};
+
+const ItemGrid: React.FC<{
+  item: Randomizer['items'][number],
+  dragHandleProps?: DraggableProvidedDragHandleProps | null,
+}> = ({
+  item,
+  dragHandleProps,
+}) => {
+  return <Grid container>
+    {
+      dragHandleProps
+        ? <Grid width={50} {...dragHandleProps} sx={{
+          alignSelf: 'center', textAlign: 'center', cursor: 'grab',
+        }}><DragHandleTwoTone/></Grid>
+        : <Grid width={50}/>
+    }
+
+    <Grid sx={{ flexGrow: 1 }}>
+      <TextField
+        InputProps={{
+          startAdornment: <MuiColorInput
+            sx={{
+              width:                   '24px',
+              mr:                      '10px',
+              '.MuiInput-root:before': { borderBottom: '0 !important' },
+              '.MuiInput-root:after':  { borderBottom: '0 !important' },
+            }}
+            isAlphaHidden
+            format="hex"
+            variant='standard'
+            value={isHexColor(item.color) ? item.color : '#111111'}
+          />,
+        }}
+        variant='standard'
+        fullWidth
+        value={item.name}
+      />
+    </Grid>
+    <Grid width={100}>
+      <TextField
+        sx={{
+          position: 'relative', top: '8px',
+        }}
+        variant='standard'
+        fullWidth
+        inputProps={{
+          min: '1', type: 'number',
+        }}
+        value={item.numOfDuplicates}
+      />
+    </Grid>
+    <Grid width={100}>
+      <TextField
+        sx={{
+          position: 'relative', top: '8px',
+        }}
+        variant='standard'
+        fullWidth
+        inputProps={{
+          min: '1', type: 'number',
+        }}
+        value={item.minimalSpacing}
+      />
+    </Grid>
+    <Grid width={50} sx={{
+      alignSelf: 'center', textAlign: 'center',
+    }}>
+      {
+        item.groupId === null
+          ? <IconButton><LinkTwoTone/></IconButton>
+          : <IconButton><LinkOffTwoTone/></IconButton>
+      }
+    </Grid>
+    <Grid width={50} sx={{
+      alignSelf: 'center', textAlign: 'center',
+    }}><IconButton color='error'><DeleteTwoTone/></IconButton></Grid>
+  </Grid>;
 };
 
 export const RandomizerEdit: React.FC = () => {
@@ -105,6 +188,60 @@ export const RandomizerEdit: React.FC = () => {
       })
       .finally(() => setSaving(false));
   };
+
+  const getChildren = (parentId: string) => {
+    console.log({ parentId });
+    const groupedChildren: Randomizer['items'][number][] = [];
+
+    const children = item?.items.filter(o => o.groupId === parentId);
+    console.log({ children });
+    if (children.length === 0) {
+      return [];
+    } else {
+      // add children
+      groupedChildren.push(...children);
+      for (const child of children) {
+        groupedChildren.push(...getChildren(child.id));
+      }
+      console.log({ groupedChildren });
+      return groupedChildren;
+    }
+  };
+
+  const onDragEndHandler = React.useCallback((value: any) => {
+    if (!value.destination || !item) {
+      return;
+    }
+
+    console.log({ value });
+
+    /*
+    const update = cloneDeep(item);
+
+    const responseId = value.draggableId;
+    const ordered = orderBy(update.responses, 'order', 'asc');
+
+    const destIdx = value.destination.index;
+    const fromIdx = ordered.findIndex(m => m.id === responseId);
+    const fromItem = ordered.find(m => m.id === responseId);
+
+    if (fromIdx === destIdx || !fromItem) {
+      return;
+    }
+
+    // remove fromIdx
+    ordered.splice(fromIdx, 1);
+
+    // insert into destIdx
+    ordered.splice(destIdx, 0, fromItem);
+
+    update.responses = ordered.map((o, idx) => ({
+      ...o, order: idx,
+    }));
+
+    setItem(update);
+    */
+  }, [ item.items ]);
 
   return(<>
     {loading
@@ -211,81 +348,38 @@ export const RandomizerEdit: React.FC = () => {
                   pt: 2, pl: 2, pb: 2,
                 }}>{ translate('registry.randomizer.form.options') }</Typography>
 
-                <TableContainer component={Paper}>
-                  <Table sx={{
-                    '.MuiTableCell-root': { p: 0.5 }, overflow: 'hidden',
-                  }}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell></TableCell>
-                        <TableCell>{translate('registry.randomizer.form.name')}</TableCell>
-                        <TableCell width={100}>{translate('registry.randomizer.form.numOfDuplicates')}</TableCell>
-                        <TableCell width={100}>{translate('registry.randomizer.form.minimalSpacing')}</TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {(item.items || []).map((row) => (
-                        <TableRow
-                          key={row.name}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell><DragHandleTwoTone/></TableCell>
-                          <TableCell component="th" scope="row">
-                            <TextField
-                              InputProps={{
-                                startAdornment: <MuiColorInput
-                                  sx={{
-                                    width:                   '24px',
-                                    mr:                      '10px',
-                                    '.MuiInput-root:before': { borderBottom: '0 !important' },
-                                    '.MuiInput-root:after':  { borderBottom: '0 !important' },
-                                  }}
-                                  isAlphaHidden
-                                  format="hex"
-                                  variant='standard'
-                                  value={isHexColor(row.color) ? row.color : '#111111'}
-                                />,
-                              }}
-                              variant='standard'
-                              fullWidth
-                              value={row.name}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              sx={{
-                                position: 'relative', top: '4px',
-                              }}
-                              variant='standard'
-                              fullWidth
-                              inputProps={{
-                                min: '1', type: 'number',
-                              }}
-                              value={row.numOfDuplicates}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              sx={{
-                                position: 'relative', top: '4px',
-                              }}
-                              variant='standard'
-                              fullWidth
-                              inputProps={{
-                                min: '1', type: 'number',
-                              }}
-                              value={row.minimalSpacing}
-                            />
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <Grid container sx={{ borderBottom: '1px solid divider' }}>
+                  <Grid width={50}></Grid>
+                  <Grid sx={{ flexGrow: 1 }}><Typography variant='subtitle2'>{translate('registry.randomizer.form.name')}</Typography></Grid>
+                  <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.numOfDuplicates')}</Typography></Grid>
+                  <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.minimalSpacing')}</Typography></Grid>
+                  <Grid width={50}></Grid>
+                  <Grid width={50}></Grid>
+                </Grid>
+
+                <DragDropContext onDragEnd={onDragEndHandler}>
+                  <Droppable droppableId={'1'} direction="vertical">
+                    {(provided) => {
+                      return (
+                        <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ '& > div': { width: '100%' } }}>
+                          {(item.items || []).filter(o => o.groupId === null).map((row, idx) => (
+                            <Draggable key={row.id} draggableId={row.id} index={idx}>
+                              {(draggableProvided) => (
+                                <div
+                                  ref={draggableProvided.innerRef}
+                                  {...draggableProvided.draggableProps}>
+                                  <ItemGrid item={row} key={row.id} dragHandleProps={draggableProvided.dragHandleProps}/>
+                                  {getChildren(row.id).map(val => <ItemGrid item={val} key={val.id}/>)}
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Box>
+                      );
+                    }}
+                  </Droppable>
+                </DragDropContext>
               </Card>
             </Box>
           </Grid>

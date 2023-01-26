@@ -42,6 +42,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.7.0",
     "react-scripts": "latest",
+    "react-window": "^1.8.8",
     "react-youtube": "^10.1.0",
     "rooks": "^7.4.3",
     "semver": "^7.3.8",

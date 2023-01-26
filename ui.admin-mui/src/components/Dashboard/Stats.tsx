@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import { isEqual } from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
@@ -21,16 +22,23 @@ import { setAverageStats } from '../../store/pageSlice';
 export const DashboardStats: React.FC = () => {
   const { configuration } = useSelector((state: any) => state.loader);
   const dispatch = useDispatch();
+  const averageStats = useSelector((state: any) => state.page.averageStats);
 
   useIntervalWhen(() => {
     getSocket('/').emit('getLatestStats', (err, data: any) => {
       console.groupCollapsed('navbar::getLatestStats');
-      console.log(data);
+      console.log({
+        averageStats, data,
+      });
       if (err) {
         return console.error(err);
       }
       console.groupEnd();
-      dispatch(setAverageStats(data));
+
+      // this is causing rerenders (not sure why, so we force it only to change on actual change)
+      if (!isEqual(data, averageStats)) {
+        dispatch(setAverageStats(data));
+      }
     });
   }, 10000, true, true);
 

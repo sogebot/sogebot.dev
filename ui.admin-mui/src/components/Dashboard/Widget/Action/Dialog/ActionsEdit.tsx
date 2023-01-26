@@ -1,13 +1,10 @@
-import {
-  DragDropContext, Draggable, Droppable,
-} from '@hello-pangea/dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import { DragIndicator, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableBodyClasses, TableCell, TableContainer, TableRow, TextField, Theme, Tooltip, Typography,
+  Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Tooltip, Typography,
 } from '@mui/material';
-import type { CommonProps } from '@mui/material/OverridableComponent';
-import { Box, SxProps } from '@mui/system';
+import { Box } from '@mui/system';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import { OverlayMapperCountdown } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
@@ -26,6 +23,8 @@ import {
 } from '../../../../../store/quickActionsSlice';
 import { isHexColor } from '../../../../../validators';
 import { DeleteButton } from '../../../../Buttons/DeleteButton';
+import { DroppableComponent } from '../../../../Table/DroppableComponent';
+import { TableCellKeepWidth } from '../../../../Table/TableCellKeepWidth';
 import { DashboardWidgetActionButtonsAddItem } from '../Buttons/AddItem';
 
 type List = { id: string, label: string, };
@@ -56,26 +55,6 @@ const RenderList: React.FC<{label?: string, id: string}> = ({
     }} component='span'>
       not set up
     </Typography>;
-};
-
-const TableCellKeepWidth: React.FC<{ children: any, dragHandleProps?: any, snapshot?: any, sx?: any  }> = ({ children, dragHandleProps, snapshot, sx }) => {
-  const ref = React.useRef<HTMLElement>();
-  const [width, setWidth] = React.useState(0);
-  const isDragging = React.useMemo(() => {
-    return snapshot.isDragging;
-  }, [snapshot]);
-
-  React.useEffect(() => {
-    if (ref.current) {
-      setWidth(ref.current.getBoundingClientRect().width);
-    }
-  }, [ref]);
-
-  return (
-    <TableCell {...dragHandleProps} ref={ref} sx={{
-      backgroundColor: '#1e1e1e', ...sx, width: isDragging ? `${width}px` : 'inherit', borderBottom: '1px solid rgba(81, 81, 81, 1)',
-    }}>{children}</TableCell>
-  );
 };
 
 const DraggableComponent: React.FC<{
@@ -295,23 +274,6 @@ const DraggableComponent: React.FC<{
         </React.Fragment>
       )}
     </Draggable>
-  );
-};
-const DroppableComponent = (
-  onDragEnd: (result: any, provided: any) => void) => (props: JSX.IntrinsicAttributes & { component: React.ElementType<any>; } & { children?: React.ReactNode; classes?: Partial<TableBodyClasses> | undefined; sx?: SxProps<Theme> | undefined; } & CommonProps & Omit<any, 'children' | 'sx' | keyof CommonProps>) => {
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId={'1'} direction="vertical">
-        {(provided) => {
-          return (
-            <TableBody ref={provided.innerRef} {...provided.droppableProps} {...props}>
-              {props.children}
-              {provided.placeholder}
-            </TableBody>
-          );
-        }}
-      </Droppable>
-    </DragDropContext>
   );
 };
 
