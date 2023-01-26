@@ -3,21 +3,28 @@ import {
 } from '@hello-pangea/dnd';
 import {
   DeleteTwoTone,
-  DragHandleTwoTone, LinkOffTwoTone, LinkTwoTone,
+  DragHandleTwoTone, ExpandMoreTwoTone, LinkOffTwoTone, LinkTwoTone,
 } from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box, Button, Card, CircularProgress, DialogContent, Divider, Fade, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { validateOrReject } from 'class-validator';
-import { cloneDeep, merge } from 'lodash';
+import {
+  cloneDeep, isEqual, merge, orderBy,
+} from 'lodash';
 import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { v4 } from 'uuid';
 
+import { getContrastColor, getRandomColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -46,9 +53,15 @@ const emptyItem: Partial<Randomizer> = {
 const ItemGrid: React.FC<{
   item: Randomizer['items'][number],
   dragHandleProps?: DraggableProvidedDragHandleProps | null,
+  previousId?: string,
+  onChange: (value: Randomizer['items'][number]) => void
+  onDelete?: () => void
 }> = ({
   item,
   dragHandleProps,
+  previousId,
+  onChange,
+  onDelete,
 }) => {
   return <Grid container>
     {
@@ -73,15 +86,21 @@ const ItemGrid: React.FC<{
             format="hex"
             variant='standard'
             value={isHexColor(item.color) ? item.color : '#111111'}
+            onChange={(val) => onChange({
+              ...item, color: val,
+            })}
           />,
         }}
         variant='standard'
         fullWidth
         value={item.name}
+        onChange={(ev) => onChange({
+          ...item, name: ev.currentTarget.value,
+        })}
       />
     </Grid>
     <Grid width={100}>
-      <TextField
+      {item.groupId === null && <TextField
         sx={{
           position: 'relative', top: '8px',
         }}
@@ -91,10 +110,13 @@ const ItemGrid: React.FC<{
           min: '1', type: 'number',
         }}
         value={item.numOfDuplicates}
-      />
+        onChange={(ev) => onChange({
+          ...item, numOfDuplicates: Number(ev.currentTarget.value),
+        })}
+      />}
     </Grid>
     <Grid width={100}>
-      <TextField
+      {item.groupId === null && <TextField
         sx={{
           position: 'relative', top: '8px',
         }}
@@ -104,20 +126,28 @@ const ItemGrid: React.FC<{
           min: '1', type: 'number',
         }}
         value={item.minimalSpacing}
-      />
+        onChange={(ev) => onChange({
+          ...item, minimalSpacing: Number(ev.currentTarget.value),
+        })}
+      />}
     </Grid>
     <Grid width={50} sx={{
       alignSelf: 'center', textAlign: 'center',
     }}>
-      {
-        item.groupId === null
-          ? <IconButton><LinkTwoTone/></IconButton>
-          : <IconButton><LinkOffTwoTone/></IconButton>
-      }
+      {previousId !== undefined && (item.groupId === null
+        ? <IconButton onClick={() => onChange({
+          ...item, groupId: previousId,
+        })}><LinkTwoTone/></IconButton>
+        : <IconButton onClick={() => onChange({
+          ...item, groupId: null,
+        })}><LinkOffTwoTone/></IconButton>
+      )}
     </Grid>
     <Grid width={50} sx={{
       alignSelf: 'center', textAlign: 'center',
-    }}><IconButton color='error'><DeleteTwoTone/></IconButton></Grid>
+    }}>
+      {item.groupId === null && <IconButton color='error' onClick={onDelete}><DeleteTwoTone/></IconButton>}
+    </Grid>
   </Grid>;
 };
 
@@ -143,6 +173,21 @@ export const RandomizerEdit: React.FC = () => {
     update[key] = value;
     setItem(update);
   };
+
+  const handleItemChange = React.useCallback((idx: number, value: Randomizer['items'][number]) => {
+    const items = item.items || [];
+    items[idx] = value;
+    handleValueChange('items', items);
+  }, [ item, handleValueChange ]);
+
+  const handleItemDelete = React.useCallback((itemId: string) => {
+    const items = item.items || [];
+    const ids = [
+      itemId,
+      ...getChildren(itemId).map(o => o.id),
+    ];
+    handleValueChange('items', items.filter(o => !ids.includes(o.id)));
+  }, [ item, handleValueChange ]);
 
   React.useEffect(() => {
     if (id) {
@@ -190,11 +235,9 @@ export const RandomizerEdit: React.FC = () => {
   };
 
   const getChildren = (parentId: string) => {
-    console.log({ parentId });
     const groupedChildren: Randomizer['items'][number][] = [];
 
     const children = item?.items.filter(o => o.groupId === parentId);
-    console.log({ children });
     if (children.length === 0) {
       return [];
     } else {
@@ -203,9 +246,50 @@ export const RandomizerEdit: React.FC = () => {
       for (const child of children) {
         groupedChildren.push(...getChildren(child.id));
       }
-      console.log({ groupedChildren });
       return groupedChildren;
     }
+  };
+
+  const generateItems = (items: any[], generatedItems: Required<Randomizer['items']> = []) => {
+    const beforeItems = cloneDeep(orderBy(items, 'order'));
+    items = cloneDeep(orderBy(items, 'order'));
+    items = items.filter(o => o.numOfDuplicates > 0);
+
+    const countGroupItems = (item2: Randomizer['items'][number], count = 0): number => {
+      const child = items.find(o => o.groupId === item2.id);
+      if (child) {
+        return countGroupItems(child, count + 1);
+      } else {
+        return count;
+      }
+    };
+    const haveMinimalSpacing = (item2: any) => {
+      const lastIdx = generatedItems.map(o => o.name).lastIndexOf(item2.name);
+      const currentIdx = generatedItems.length;
+      return lastIdx === -1 || lastIdx + item2.minimalSpacing + countGroupItems(item2) < currentIdx;
+    };
+    const addGroupItems = (item2: Randomizer['items'][number], _generatedItems: Randomizer['items'][]) => {
+      const child = items.find(o => o.groupId === item2.id);
+      if (child) {
+        _generatedItems.push(child);
+        addGroupItems(child, _generatedItems);
+      }
+    };
+
+    for (const item2 of items) {
+      if (item2.numOfDuplicates > 0 && haveMinimalSpacing(item2) && !item2.groupId /* is not grouped or is parent of group */) {
+        generatedItems.push(item2);
+        item2.numOfDuplicates--;
+        addGroupItems(item2, generatedItems as any);
+      }
+    }
+
+    // run next iteration if some items are still there and that any change was made
+    // so we don't have infinite loop when e.g. minimalspacing is not satisfied
+    if (items.filter(o => o.numOfDuplicates > 0).length > 0 && !isEqual(items.filter(o => o.numOfDuplicates > 0), beforeItems)) {
+      generateItems(items, generatedItems);
+    }
+    return generatedItems;
   };
 
   const onDragEndHandler = React.useCallback((value: any) => {
@@ -330,6 +414,46 @@ export const RandomizerEdit: React.FC = () => {
                 onClick={value => typeof value === 'string' && setExpanded(value)}
                 onChange={(value) => handleValueChange('customizationFont', value)}
               />}
+
+              <Accordion expanded={expanded === 'probability'}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreTwoTone />}
+                  onClick={() => setExpanded('probability')}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>{ translate('registry.randomizer.form.probability') }</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {(item.items || []).length > 0 && Array.from(new Set(item.items.map(o => <div>
+                    {o.name}
+                    <strong style={{ paddingLeft: '5px' }}>{ Number((generateItems(item.items).filter(b => b.name === o.name).length / generateItems(item.items).length) * 100).toFixed(2) }%</strong>
+                  </div>,
+                  )))}
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion expanded={expanded === 'preview'}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreTwoTone />}
+                  onClick={() => setExpanded('preview')}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>{ translate('registry.randomizer.form.generatedOptionsPreview') }</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {
+                    generateItems(item.items).length === 0
+                      ? translate('registry.randomizer.form.optionsAreEmpty')
+                      : generateItems(item.items).map(o => <div key={o.id} style={{
+                        color: getContrastColor(o.color), backgroundColor: o.color, width: '100%',
+                      }}>
+                        {o.name}
+                      </div>)
+                  }
+                </AccordionDetails>
+              </Accordion>
             </Box>
           </Grid>
           <Grid lg={6} md={12}>
@@ -362,18 +486,29 @@ export const RandomizerEdit: React.FC = () => {
                     {(provided) => {
                       return (
                         <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ '& > div': { width: '100%' } }}>
-                          {(item.items || []).filter(o => o.groupId === null).map((row, idx) => (
-                            <Draggable key={row.id} draggableId={row.id} index={idx}>
-                              {(draggableProvided) => (
-                                <div
-                                  ref={draggableProvided.innerRef}
-                                  {...draggableProvided.draggableProps}>
-                                  <ItemGrid item={row} key={row.id} dragHandleProps={draggableProvided.dragHandleProps}/>
-                                  {getChildren(row.id).map(val => <ItemGrid item={val} key={val.id}/>)}
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
+                          {(item.items || []).map((row, idx) => row.groupId === null && <Draggable key={row.id} draggableId={row.id} index={idx}>
+                            {(draggableProvided) => (
+                              <div
+                                ref={draggableProvided.innerRef}
+                                {...draggableProvided.draggableProps}>
+                                <ItemGrid
+                                  item={row}
+                                  key={row.id}
+                                  previousId={item.items[idx - 1]?.id}
+                                  onChange={(value) => handleItemChange(idx, value)}
+                                  dragHandleProps={draggableProvided.dragHandleProps}
+                                  onDelete={(() => handleItemDelete(row.id))}
+                                />
+                                {getChildren(row.id).map((val, idx2) => <ItemGrid
+                                  onChange={(value) => handleItemChange(idx + idx2 + 1, value)}
+                                  previousId={item.items[idx + idx2 + 1]?.id}
+                                  item={val}
+                                  key={val.id}/>,
+                                )}
+                              </div>
+                            )}
+                          </Draggable>,
+                          )}
                           {provided.placeholder}
                         </Box>
                       );
@@ -389,6 +524,19 @@ export const RandomizerEdit: React.FC = () => {
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid>
+          <Button sx={{ width: 150 }} onClick={() => {
+            handleValueChange('items', [ ...item.items, {
+              id:              v4(),
+              name:            '',
+              color:           getRandomColor(),
+              numOfDuplicates: 1,
+              minimalSpacing:  1,
+              groupId:         null,
+              order:           item.items.length,
+            }]);
+          }}>Add option</Button>
+        </Grid>
         <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
