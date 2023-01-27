@@ -41,7 +41,8 @@ const emptyItem: Partial<Randomizer> = {
     anchorX: 'middle',
     anchorY: 'middle',
   },
-  tts: {
+  items: [],
+  tts:   {
     enabled: false,
     pitch:   1,
     rate:    1,
@@ -93,6 +94,7 @@ const ItemGrid: React.FC<{
         }}
         variant='standard'
         fullWidth
+        id={`item-${item.id}`}
         value={item.name}
         onChange={(ev) => onChange({
           ...item, name: ev.currentTarget.value,
@@ -146,7 +148,7 @@ const ItemGrid: React.FC<{
     <Grid width={50} sx={{
       alignSelf: 'center', textAlign: 'center',
     }}>
-      {item.groupId === null && <IconButton color='error' onClick={onDelete}><DeleteTwoTone/></IconButton>}
+      {(item.groupId === null && onDelete) && <IconButton color='error' onClick={onDelete}><DeleteTwoTone/></IconButton>}
     </Grid>
   </Grid>;
 };
@@ -163,6 +165,16 @@ export const RandomizerEdit: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
 
+  const [ emptyItemToAdd, setEmptyItemToAdd ] = React.useState<Randomizer['items'][number]>({
+    id:              v4(),
+    color:           getRandomColor(),
+    groupId:         null,
+    name:            '',
+    order:           0,
+    minimalSpacing:  1,
+    numOfDuplicates: 1,
+  });
+
   const [ expanded, setExpanded ] = React.useState('');
 
   const handleValueChange = <T extends keyof Randomizer>(key: T, value: Randomizer[T]) => {
@@ -173,6 +185,36 @@ export const RandomizerEdit: React.FC = () => {
     update[key] = value;
     setItem(update);
   };
+
+  React.useEffect(() => {
+    if (emptyItemToAdd.name.trim() === '') {
+      return;
+    }
+
+    handleValueChange('items', [ ...item.items, {
+      ...emptyItemToAdd, order: item.items.length,
+    }]);
+
+    // set focus to element
+    const interval = setInterval(() => {
+      console.log('check');
+      const el = document.getElementById(`item-${emptyItemToAdd.id}`);
+      el?.focus();
+      if (el === document.activeElement) {
+        clearInterval(interval);
+      }
+    }, 1);
+
+    setEmptyItemToAdd({
+      id:              v4(),
+      color:           getRandomColor(),
+      groupId:         null,
+      name:            '',
+      order:           0,
+      minimalSpacing:  1,
+      numOfDuplicates: 1,
+    });
+  }, [emptyItemToAdd, handleValueChange]);
 
   const handleItemChange = React.useCallback((idx: number, value: Randomizer['items'][number]) => {
     const items = item.items || [];
@@ -455,7 +497,7 @@ export const RandomizerEdit: React.FC = () => {
                   {
                     generateItems(item.items).length === 0
                       ? translate('registry.randomizer.form.optionsAreEmpty')
-                      : generateItems(item.items).map(o => <div key={o.id} style={{
+                      : generateItems(item.items).map(o => <div key={`generated-${o.id}`} style={{
                         color: getContrastColor(o.color), backgroundColor: o.color, width: '100%',
                       }}>
                         {o.name}
@@ -495,14 +537,14 @@ export const RandomizerEdit: React.FC = () => {
                     {(provided) => {
                       return (
                         <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ '& > div': { width: '100%' } }}>
-                          {(item.items || []).map((row, idx) => row.groupId === null && <Draggable key={row.id} draggableId={row.id} index={idx}>
+                          {(item.items || []).map((row, idx) => row.groupId === null && <Draggable key={`row-${row.id}`} draggableId={row.id} index={idx}>
                             {(draggableProvided) => (
                               <div
                                 ref={draggableProvided.innerRef}
                                 {...draggableProvided.draggableProps}>
                                 <ItemGrid
                                   item={row}
-                                  key={row.id}
+                                  key={`itemGrid-${row.id}`}
                                   previousId={item.items[idx - 1]?.id}
                                   onChange={(value) => handleItemChange(idx, value)}
                                   dragHandleProps={draggableProvided.dragHandleProps}
@@ -512,7 +554,7 @@ export const RandomizerEdit: React.FC = () => {
                                   onChange={(value) => handleItemChange(idx + idx2 + 1, value)}
                                   previousId={item.items[idx + idx2 + 1]?.id}
                                   item={val}
-                                  key={val.id}/>,
+                                  key={`itemGridChild-${val.id}`}/>,
                                 )}
                               </div>
                             )}
@@ -523,6 +565,12 @@ export const RandomizerEdit: React.FC = () => {
                       );
                     }}
                   </Droppable>
+                  <Divider/>
+                  <ItemGrid
+                    item={emptyItemToAdd}
+                    key={`emptyItem-${emptyItemToAdd.id}`}
+                    onChange={(value) => setEmptyItemToAdd(value)}
+                  />
                 </DragDropContext>
               </Card>
             </Box>
@@ -533,19 +581,6 @@ export const RandomizerEdit: React.FC = () => {
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid>
-          <Button sx={{ width: 150 }} onClick={() => {
-            handleValueChange('items', [ ...item.items, {
-              id:              v4(),
-              name:            '',
-              color:           getRandomColor(),
-              numOfDuplicates: 1,
-              minimalSpacing:  1,
-              groupId:         null,
-              order:           item.items.length,
-            }]);
-          }}>Add option</Button>
-        </Grid>
         <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
