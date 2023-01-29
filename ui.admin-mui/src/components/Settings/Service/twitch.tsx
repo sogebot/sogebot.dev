@@ -74,14 +74,14 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       return '';
     }
 
-    const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast';
+    const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast moderator:read:chatters';
     const clientId = settings.general.tokenServiceCustomClientId[0];
     const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
 
     if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
       return null;
     } else {
-      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
+      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}&type=bot`;
     }
   }, [settings, redirectUri ]);
 
@@ -97,7 +97,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
       return null;
     } else {
-      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
+      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}&type=broadcaster`;
     }
   }, [settings, redirectUri ]);
 
@@ -109,7 +109,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
-    const popup = window.open('/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const url = accountType === 'bot' ? botUrl : broadcasterUrl;
+    const popup = window.open(url ?? '/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       try {
         if (popup?.window.location.href.includes('status=done')) {
@@ -125,7 +126,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar, refresh, botUrl, broadcasterUrl ]);
 
   return (loading ? null : <Box ref={ref} sx={sx} id="twitch">
     <Typography variant='h2' sx={{ pb: 2 }}>Twitch</Typography>
@@ -200,7 +201,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
-      {!botUrl && <Stack spacing={1}>
+      <Stack spacing={1}>
         <TextField
           variant='filled'
           fullWidth
@@ -216,36 +217,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
             </InputAdornment>,
           }}
         />
-      </Stack>}
-      {botUrl && <>
-        <Stack spacing={1}>
-          <TextField
-            variant='filled'
-            fullWidth
-            type='password'
-            value={settings.bot.botAccessToken[0]}
-            label={translate('core.oauth.settings.botAccessToken')}
-            onChange={(event) => handleChange('bot.botAccessToken', event.target.value)}
-          />
-          <TextField
-            variant='filled'
-            fullWidth
-            type='password'
-            value={settings.bot.botRefreshToken[0]}
-            label={translate('core.oauth.settings.botRefreshToken')}
-            onChange={(event) => handleChange('bot.botRefreshToken', event.target.value)}
-          />
-          <TextField
-            variant='filled'
-            fullWidth
-            disabled
-            value={settings.bot.botUsername[0]}
-            label={translate('core.oauth.settings.botUsername')}
-            onChange={(event) => handleChange('bot.botUsername', event.target.value)}
-          />
-        </Stack>
-        <Button sx={{ m: 0.5 }} href={botUrl} target='_blank'>{ translate('commons.generate') }</Button>
-      </>}
+      </Stack>
 
       <Typography variant='body2' sx={{ p: 1 }}>Scopes:{' '}
         { settings.bot.botCurrentScopes[0].length === 0
@@ -258,7 +230,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     {settings && <Paper elevation={1} sx={{
       p: 1, mb: 2,
     }}>
-      {!broadcasterUrl && <Stack spacing={1}>
+      <Stack spacing={1}>
         <TextField
           variant='filled'
           fullWidth
@@ -274,36 +246,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
             </InputAdornment>,
           }}
         />
-      </Stack>}
-      {broadcasterUrl && <>
-        <Stack spacing={1}>
-          <TextField
-            variant='filled'
-            fullWidth
-            type='password'
-            value={settings.broadcaster.broadcasterAccessToken[0]}
-            label={translate('core.oauth.settings.botAccessToken')}
-            onChange={(event) => handleChange('broadcaster.broadcasterAccessToken', event.target.value)}
-          />
-          <TextField
-            variant='filled'
-            fullWidth
-            type='password'
-            value={settings.broadcaster.broadcasterRefreshToken[0]}
-            label={translate('core.oauth.settings.botRefreshToken')}
-            onChange={(event) => handleChange('broadcaster.broadcasterRefreshToken', event.target.value)}
-          />
-          <TextField
-            variant='filled'
-            fullWidth
-            disabled
-            value={settings.broadcaster.broadcasterUsername[0]}
-            label={translate('core.oauth.settings.botUsername')}
-            onChange={(event) => handleChange('broadcaster.broadcasterUsername', event.target.value)}
-          />
-        </Stack>
-        <Button sx={{ m: 0.5 }} href={broadcasterUrl} target='_blank'>{ translate('commons.generate') }</Button>
-      </>}
+      </Stack>
 
       <Typography variant='body2' sx={{ p: 1 }}>Scopes:{' '}
         { settings.broadcaster.broadcasterCurrentScopes[0].length === 0

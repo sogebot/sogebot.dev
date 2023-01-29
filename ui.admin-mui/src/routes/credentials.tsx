@@ -9,6 +9,7 @@ import OAuth from './credentials/oauth';
 import Spotify from './credentials/spotify';
 import Streamlabs from './credentials/streamlabs';
 import Tiltify from './credentials/tiltify';
+import TwitchOwnAppTokens from './credentials/tokens';
 import Twitch from './credentials/twitch';
 
 export default function Credentials() {
@@ -18,6 +19,7 @@ export default function Credentials() {
       <Route path='google' element={<Google/>}/>
       <Route path='login' element={<Login/>}/>
       <Route path='oauth' element={<OAuth/>}/>
+      <Route path='oauth/tokens' element={<TwitchOwnAppTokens/>}/>
       <Route path='spotify' element={<Spotify/>}/>
       <Route path='streamlabs' element={<Streamlabs/>}/>
       <Route path='tiltify' element={<Tiltify/>}/>
