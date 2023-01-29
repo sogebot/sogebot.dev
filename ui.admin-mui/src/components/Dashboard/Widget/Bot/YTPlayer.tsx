@@ -98,10 +98,14 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   const setPlayerStatus = React.useCallback((play: boolean) => {
     if (player) {
-      if (play) {
-        player.playVideo();
-      } else {
-        player.pauseVideo();
+      try {
+        if (play) {
+          setTimeout(() => player.playVideo(), 1000);
+        } else {
+          setTimeout(() => player.pauseVideo(), 1000);
+        }
+      } catch {
+        return;
       }
     }
   }, [player]);
@@ -111,14 +115,18 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   }, [autoplay, setPlayerStatus]);
 
   useIntervalWhen(() => {
-    if (player) {
-      if (volumeSetForId !== currentSong.videoId) {
-        player.setVolume(currentSong.volume);
-        setVolumeSetForId(currentSong.videoId ?? '');
+    try {
+      if (player) {
+        if (volumeSetForId !== currentSong.videoId) {
+          player.setVolume(currentSong.volume);
+          setVolumeSetForId(currentSong.videoId ?? '');
+        }
+        if (player.getCurrentTime() > currentSong.endTime) {
+          next();
+        }
       }
-      if (player.getCurrentTime() > currentSong.endTime) {
-        next();
-      }
+    } catch {
+      return;
     }
   }, 100, true, true);
 
@@ -164,6 +172,15 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const opts = useMemo<YouTubeProps['opts']>(() => {
+    console.log({
+      height:     '100%',
+      width:      '100%',
+      playerVars: {
+        // https://developers.google.com/youtube/player_parameters
+        autoplay: autoplay,
+        start:    currentSong.startTime,
+      },
+    });
     return {
       height:     '100%',
       width:      '100%',
