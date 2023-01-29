@@ -16,7 +16,7 @@ import defaultPermissions from '@sogebot/backend/src/helpers/permissions/default
 import axios from 'axios';
 import { validateOrReject } from 'class-validator';
 import {
-  cloneDeep, isEqual, merge, orderBy,
+  cloneDeep, debounce, isEqual, merge, orderBy,
 } from 'lodash';
 import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
@@ -186,19 +186,18 @@ export const RandomizerEdit: React.FC = () => {
     setItem(update);
   };
 
-  React.useEffect(() => {
-    if (emptyItemToAdd.name.trim() === '') {
-      return;
-    }
-
-    handleValueChange('items', [ ...item.items, {
-      ...emptyItemToAdd, order: item.items.length,
-    }]);
+  const addNewOption = React.useCallback(debounce((newItem: typeof emptyItemToAdd) => {
+    setItem((val) => ({
+      ...val,
+      items: [
+        ...val.items, {
+          ...newItem, order: val.items.length,
+        }],
+    }) as Randomizer);
 
     // set focus to element
     const interval = setInterval(() => {
-      console.log('check');
-      const el = document.getElementById(`item-${emptyItemToAdd.id}`);
+      const el = document.getElementById(`item-${newItem.id}`);
       el?.focus();
       if (el === document.activeElement) {
         clearInterval(interval);
@@ -214,7 +213,15 @@ export const RandomizerEdit: React.FC = () => {
       minimalSpacing:  1,
       numOfDuplicates: 1,
     });
-  }, [emptyItemToAdd, handleValueChange]);
+  }, 250, { trailing: true }), []);
+
+  React.useEffect(() => {
+    if (emptyItemToAdd.name.trim() === '') {
+      return;
+    }
+    addNewOption(emptyItemToAdd);
+
+  }, [emptyItemToAdd]);
 
   const handleItemChange = React.useCallback((idx: number, value: Randomizer['items'][number]) => {
     const items = item.items || [];
