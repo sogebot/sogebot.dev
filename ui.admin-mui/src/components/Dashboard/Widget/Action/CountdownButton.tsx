@@ -5,7 +5,7 @@ import {
 } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
-import { OverlayMapperCountdown } from '@sogebot/backend/dest/database/entity/overlay';
+import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayCountdownItem } from '@sogebot/backend/src/database/entity/dashboard';
 import parse from 'html-react-parser';
 import React, {
@@ -14,16 +14,14 @@ import React, {
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../../constants';
+import { GenerateTime } from './GenerateTime';
 import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCountdownItem }> = ({
   item,
 }) => {
-  const [ countdown, setCountdown ] = useState<null | OverlayMapperCountdown>(null);
+  const [ countdown, setCountdown ] = useState<null | Countdown>(null);
   const [ isStarted, setIsStarted ] = useState(false);
   const [ timestamp, setTimestamp ] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -32,30 +30,7 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
   const open = Boolean(anchorEl);
 
   const time = useMemo(() => {
-    if (timestamp === null || !countdown) {
-      return '--:--:--';
-    }
-    const days = Math.floor(timestamp / DAY);
-    const hours = Math.floor((timestamp - days * DAY) / HOUR);
-    const minutes = Math.floor((timestamp - (days * DAY) - (hours * HOUR)) / MINUTE);
-    const seconds = Math.floor((timestamp - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-    let millis: number | string = Math.floor((timestamp - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
-
-    if (millis < 10) {
-      millis = `0${millis}`;
-    }
-
-    let output = '';
-    if (days > 0) {
-      output += `${days}d`;
-    }
-
-    output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    const opts = typeof countdown.opts === 'string' ? JSON.parse(countdown.opts) : countdown.opts;
-    if (opts) {
-      output += `<small>.${millis}</small>`;
-    }
-    return output;
+    return GenerateTime(timestamp, countdown?.showMilliseconds ?? false);
   }, [ timestamp, countdown ]);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -84,7 +59,7 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
       getSocket('/overlays/countdown').emit('countdown::update::set', {
         isEnabled: !isStarted,
         time:      null,
-        id:        countdown.id,
+        id:        item.options.countdownId,
       });
       setIsStarted(!isStarted);
     }
@@ -96,14 +71,14 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
       if (err) {
         return console.error(err);
       }
-      setCountdown(result as any ?? null);
+      setCountdown(result?.items.find(o => o.id === item.options.countdownId && o.opts.typeId === 'countdown')?.opts as Countdown ?? null);
     });
   }, [item.options.countdownId]);
 
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (countdown && !anchorEl) {
-      getSocket('/overlays/countdown').emit('countdown::check', countdown.id, (_err, data) => {
+      getSocket('/overlays/countdown').emit('countdown::check', item.options.countdownId, (_err, data) => {
         if (data && countdown) {
           setIsStarted(data.isEnabled);
           setTimestamp(data.time);
@@ -117,7 +92,7 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
       getSocket('/overlays/countdown').emit('countdown::update::set', {
         isEnabled: null,
         time:      value,
-        id:        countdown.id,
+        id:        item.options.countdownId,
       });
     }
   };

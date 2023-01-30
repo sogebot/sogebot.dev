@@ -1,6 +1,7 @@
 import { dayjs } from './dayjsHelper';
 
 export function getTime(time: null | number, isChat: false): string;
+export function getTime(time: null | number, isChat: true): string;
 export function getTime(time: null | number, isChat: boolean) {
   let days: string | number = 0;
   let hours: string | number = 0;

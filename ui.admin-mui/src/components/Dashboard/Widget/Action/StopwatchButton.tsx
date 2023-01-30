@@ -5,7 +5,7 @@ import {
 } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
-import { OverlayMapperStopwatch } from '@sogebot/backend/dest/database/entity/overlay';
+import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayStopwatchItem } from '@sogebot/backend/src/database/entity/dashboard';
 import parse from 'html-react-parser';
 import React, {
@@ -14,16 +14,14 @@ import React, {
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../../constants';
+import { GenerateTime } from './GenerateTime';
 import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopwatchItem }> = ({
   item,
 }) => {
-  const [ stopwatch, setStopwatch ] = useState<null | OverlayMapperStopwatch>(null);
+  const [ stopwatch, setStopwatch ] = useState<null | Stopwatch>(null);
   const [ isStarted, setIsStarted ] = useState(false);
   const [ timestamp, setTimestamp ] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -32,30 +30,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   const open = Boolean(anchorEl);
 
   const time = useMemo(() => {
-    if (timestamp === null || !stopwatch) {
-      return '--:--:--';
-    }
-    const days = Math.floor(timestamp / DAY);
-    const hours = Math.floor((timestamp - days * DAY) / HOUR);
-    const minutes = Math.floor((timestamp - (days * DAY) - (hours * HOUR)) / MINUTE);
-    const seconds = Math.floor((timestamp - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-    let millis: number | string = Math.floor((timestamp - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
-
-    if (millis < 10) {
-      millis = `0${millis}`;
-    }
-
-    let output = '';
-    if (days > 0) {
-      output += `${days}d`;
-    }
-
-    output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    const opts = typeof stopwatch.opts === 'string' ? JSON.parse(stopwatch.opts) : stopwatch.opts;
-    if (opts) {
-      output += `<small>.${millis}</small>`;
-    }
-    return output;
+    return GenerateTime(timestamp, stopwatch?.showMilliseconds ?? false);
   }, [ timestamp, stopwatch ]);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -84,7 +59,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
       getSocket('/overlays/stopwatch').emit('stopwatch::update::set', {
         isEnabled: !isStarted,
         time:      null,
-        id:        stopwatch.id,
+        id:        item.options.stopwatchId,
       });
       setIsStarted(!isStarted);
     }
@@ -96,14 +71,14 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
       if (err) {
         return console.error(err);
       }
-      setStopwatch(result as any ?? null);
+      setStopwatch(result?.items.find(o => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
     });
   }, [ item.options.stopwatchId ]);
 
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (stopwatch && !anchorEl) {
-      getSocket('/overlays/stopwatch').emit('stopwatch::check', stopwatch.id, (_err, data) => {
+      getSocket('/overlays/stopwatch').emit('stopwatch::check', item.options.stopwatchId, (_err, data) => {
         if (data && stopwatch) {
           setIsStarted(data.isEnabled);
           setTimestamp(data.time);
@@ -117,7 +92,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
       getSocket('/overlays/stopwatch').emit('stopwatch::update::set', {
         isEnabled: null,
         time:      value,
-        id:        stopwatch.id,
+        id:        item.options.stopwatchId,
       });
     }
   };
