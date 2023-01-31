@@ -63,6 +63,7 @@ const PageSettingsPermissions = lazy(() => import('./settings/permissions'));
 const PageSettingsTranslations = lazy(() => import('./settings/translations'));
 
 const PageRegistryOBSWebsocket = lazy(() => import('./registry/obswebsocket'));
+const PageRegistryOverlays = lazy(() => import('./registry/overlays'));
 const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
 const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
 const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
@@ -241,6 +242,7 @@ export default function Root() {
                     <Route path="/settings/translations/:type?/:id?" element={<PageSettingsTranslations/>}/>
 
                     <Route path="/registry/obswebsocket/:type?/:id?" element={<PageRegistryOBSWebsocket/>}/>
+                    <Route path="/registry/overlays/:type?/:id?" element={<PageRegistryOverlays/>}/>
                     <Route path="/registry/randomizer/:type?/:id?" element={<PageRegistryRandomizer/>}/>
                     <Route path="/registry/plugins/:type?/:id?" element={<PageRegistryPlugins/>}/>
                     <Route path="/registry/customvariables/:type?/:id?" element={<PageRegistryCustomVariables/>}/>

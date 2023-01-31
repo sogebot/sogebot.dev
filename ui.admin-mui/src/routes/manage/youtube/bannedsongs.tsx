@@ -85,7 +85,7 @@ const PageCommandsSongBan = () => {
       column:      {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
-            <IconButton href={`https://youtu.be/${row.videoId}`} target="_blank"><Link/></IconButton>
+            <IconButton LinkComponent='a' href={`https://youtu.be/${row.videoId}`} target="_blank"><Link/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
