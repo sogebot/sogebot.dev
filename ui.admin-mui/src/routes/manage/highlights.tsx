@@ -98,7 +98,7 @@ const PageManageViewers = () => {
           row.expired
             ? <Typography color={red[500]}>Expired</Typography>
             : <Stack direction="row" key="row">
-              <IconButton href={'https://www.twitch.tv/videos/' + row.videoId + '?t=' + timestampToString(row.timestamp)} target="_blank"><Link/></IconButton>
+              <IconButton LinkComponent={'a'} href={'https://www.twitch.tv/videos/' + row.videoId + '?t=' + timestampToString(row.timestamp)} target="_blank"><Link/></IconButton>
             </Stack>
           ,
         ],

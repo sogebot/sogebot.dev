@@ -5,9 +5,12 @@ import {
   Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
+import {
+  Countdown, Marathon , Stopwatch,
+} from '@sogebot/backend/dest/database/entity/overlay';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import { OverlayMapperCountdown } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
+import HTMLReactParser from 'html-react-parser';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
@@ -26,6 +29,7 @@ import { DeleteButton } from '../../../../Buttons/DeleteButton';
 import { DroppableComponent } from '../../../../Table/DroppableComponent';
 import { TableCellKeepWidth } from '../../../../Table/TableCellKeepWidth';
 import { DashboardWidgetActionButtonsAddItem } from '../Buttons/AddItem';
+import { GenerateTime } from '../GenerateTime';
 
 type List = { id: string, label: string, };
 type State = { quickaction: { randomizers: List[], countdowns: List[], stopwatchs: List[], marathons: List[] } };
@@ -43,7 +47,7 @@ const RenderList: React.FC<{label?: string, id: string}> = ({
 }) => {
   return id.length > 0
     ? <Typography sx={{ fontWeight: label ? 'bold' : 'inherit' }} component='span'>
-      {label ? label : '?'}
+      {label ? HTMLReactParser(label) : '?'}
       <Typography sx={{
         fontWeight: 'normal', fontSize: '12px', fontStyle: 'italic', pl: 1,
       }} component='span'>
@@ -334,21 +338,24 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       if (err) {
         return console.error(err);
       }
-      dispatch(
-        setCountdowns((result.filter(o => o.value === 'countdown') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name,
-        }))),
-      );
-      dispatch(
-        setMarathons((result.filter(o => o.value === 'marathon') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name,
-        }))),
-      );
-      dispatch(
-        setStopwatchs((result.filter(o => o.value === 'stopwatch') as OverlayMapperCountdown[]).map(o => ({
-          id: o.id, label: o.name,
-        }))),
-      );
+      const _countdowns: { id: string, label: string }[] = [];
+      const _marathons: { id: string, label: string }[] = [];
+      const _stopwatches: { id: string, label: string }[] = [];
+
+      for (const item of result) {
+        _countdowns.push(...item.items.filter(o => o.opts.typeId === 'countdown').map(o => ({
+          id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Countdown).time, (o.opts as Countdown).showMilliseconds)}`,
+        })));
+        _marathons.push(...item.items.filter(o => o.opts.typeId === 'marathon').map(o => ({
+          id: o.id, label: `${item.name} | ${GenerateTime(Math.max(Math.max((o.opts as Marathon).endTime, Date.now() - Date.now())), (o.opts as Marathon).showMilliseconds)}`,
+        })));
+        _stopwatches.push(...item.items.filter(o => o.opts.typeId === 'stopwatch').map(o => ({
+          id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Stopwatch).currentTime, (o.opts as Stopwatch).showMilliseconds)}`,
+        })));
+      }
+      dispatch(setCountdowns(_countdowns));
+      dispatch(setMarathons(_marathons));
+      dispatch(setStopwatchs(_stopwatches));
     });
 
     if (!open) {

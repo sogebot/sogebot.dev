@@ -150,7 +150,7 @@ const PageCommandsSongPlaylist = () => {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <EditButton href={'/manage/songs/playlist/edit/' + row.videoId}/>
-            <IconButton href={`https://youtu.be/${row.videoId}`} target="_blank"><LinkTwoTone/></IconButton>
+            <IconButton LinkComponent='a' href={`https://youtu.be/${row.videoId}`} target="_blank"><LinkTwoTone/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],

@@ -1,7 +1,7 @@
 import { Edit } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
-import { OverlayMapperMarathon } from '@sogebot/backend/dest/database/entity/overlay';
+import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayMarathonItem } from '@sogebot/backend/src/database/entity/dashboard';
 import parse from 'html-react-parser';
 import React, {
@@ -10,16 +10,14 @@ import React, {
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../../constants';
+import { GenerateTime } from './GenerateTime';
 import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarathonItem }> = ({
   item,
 }) => {
-  const [ marathon, setMarathon ] = useState<null | OverlayMapperMarathon>(null);
+  const [ marathon, setMarathon ] = useState<null | Marathon>(null);
   const [ timestamp, setTimestamp ] = useState(0);
   const [ key, setKey ] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -28,32 +26,7 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
   const open = Boolean(anchorEl);
 
   const time = useMemo(() => {
-    if (timestamp === 0 || !marathon) {
-      return '--:--:--';
-    }
-
-    const _time = Math.max(timestamp - Date.now(), 0);
-    const days = Math.floor(_time / DAY);
-    const hours = Math.floor((_time - days * DAY) / HOUR);
-    const minutes = Math.floor((_time - (days * DAY) - (hours * HOUR)) / MINUTE);
-    const seconds = Math.floor((_time - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-    let millis: number | string = Math.floor((_time - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
-
-    if (millis < 10) {
-      millis = `0${millis}`;
-    }
-
-    let output = '';
-    if (days > 0) {
-      output += `${days}d`;
-    }
-
-    output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    const opts = typeof marathon.opts === 'string' ? JSON.parse(marathon.opts) : marathon.opts;
-    if (opts.showMilliseconds) {
-      output += `<small>.${millis}</small>`;
-    }
-    return output;
+    return GenerateTime(Math.max(timestamp - Date.now(), 0), marathon?.showMilliseconds ?? false);
   }, [ timestamp, marathon ]);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -78,14 +51,14 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       if (err) {
         return console.error(err);
       }
-      setMarathon(result as any ?? null);
+      setMarathon(result?.items.find(o => o.id === item.options.marathonId && o.opts.typeId === 'marathon')?.opts as Marathon ?? null);
     });
   }, [item.options.marathonId]);
 
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (marathon) {
-      getSocket('/overlays/marathon').emit('marathon::check', marathon.id, (_err, data) => {
+      getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err, data) => {
         setKey(Date.now());
         if (data && marathon) {
           setTimestamp(Math.max(data.opts.endTime, Date.now()));
@@ -101,7 +74,7 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       });
       getSocket('/overlays/marathon').emit('marathon::update::set', {
         time: value,
-        id:   marathon.id,
+        id:   item.options.marathonId,
       });
     }
   };
