@@ -39,6 +39,7 @@ import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
+import { OverlayEdit } from '../../components/Form/OverlayEdit';
 import { getSocket } from '../../helpers/socket';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -205,7 +206,7 @@ const PageRegistryOverlays = () => {
         fullWidth
         PaperProps={{ sx: { height: '100% !important' } }}
         maxWidth={false}>
-        {/*open && <RandomizerEdit/>*/}
+        {open && <OverlayEdit/>}
       </Dialog>
     </>
   );
