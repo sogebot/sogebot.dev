@@ -1,18 +1,19 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, Paper,
+  Avatar,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, List, ListItemButton, ListItemText, Paper, Stack,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { validateOrReject } from 'class-validator';
-import { merge } from 'lodash';
+import { merge, set } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { flushSync } from 'react-dom';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
+import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 
 const emptyItem: Partial<Overlay> = {
   canvas: {
@@ -23,35 +24,67 @@ const emptyItem: Partial<Overlay> = {
   items: [],
 };
 
+const generateColorFromString = (stringInput: string) => {
+  const stringUniqueHash = [...stringInput].reduce((acc, char) => {
+    return char.charCodeAt(0) + ((acc << 5) - acc);
+  }, 0);
+  return `hsl(${stringUniqueHash % 360}, 30%, 30%)`;
+};
+
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
-  const [elementGuidelines, setElementGuidelines] = React.useState([]);
+  const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
+  const [ key, setKey ] = React.useState(Date.now());
+
+  const containerRef = React.useRef<HTMLDivElement>();
+  const [ zoom, setZoom ] = React.useState(1);
+
   const [frame, setFrame] = React.useState({ translate: [0,0]  });
   const [bounds, setBounds] = React.useState({
     top: 0, left: 0, right: 0, bottom: 0,
   });
+  const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
 
-  React.useEffect(() => {
-    // items to have snaps
-    setElementGuidelines([
-      document.querySelector('#item1')!,
-      document.querySelector('#item2')!,
-    ]);
+  const selectedItem = React.useMemo(() => {
+    return item.items.find(o => o.id.replace(/-/g, '') === moveableId);
+  }, [item, moveableId]);
 
-    // set bounds
-    const el = document.querySelector('#container')!;
-    setBounds({
-      left:   0,
-      top:    0,
-      right:  el.getBoundingClientRect().width,
-      bottom: el.getBoundingClientRect().height,
+  const refresh = React.useCallback(() => setKey(Date.now()), [ setKey ]);
+
+  const handleItemChange = React.useCallback((path: string, value: any) => {
+    setItem((val) => {
+      const updatedItems = val.items;
+      const updatedItem = updatedItems.find(o => o.id.replace(/-/g, '') === moveableId);
+      if (updatedItem) {
+        set(updatedItem, path, value);
+      }
+      return {
+        ...val,
+        items: updatedItems,
+      } as Overlay;
     });
   }, [moveableId]);
 
-  const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
+  React.useEffect(() => {
+    // items to have snaps
+    const els: any[] = [];
+    for (const i of item.items) {
+      els.push(document.getElementById(i.id.replace(/-/g, '')));
+    }
+    setElementGuidelines(els);
+
+    // set bounds
+    setBounds({
+      left:   0,
+      top:    0,
+      right:  item.canvas.width * zoom,
+      bottom: item.canvas.height * zoom,
+    });
+  }, [moveableId, item, zoom]);
+
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -97,6 +130,15 @@ export const OverlayEdit: React.FC = () => {
     setSaving(true);
   };
 
+  React.useEffect(() => {
+    if (!loading && containerRef.current) {
+      const zoomHeight = ((containerRef.current.getBoundingClientRect().height) / containerRef.current.scrollHeight);
+      const zoomWidth = ((containerRef.current.getBoundingClientRect().width) / containerRef.current.scrollWidth);
+      setZoom(Math.min(zoomHeight, zoomWidth));
+      setZoomDimensionViewable(Math.min(zoomHeight, zoomWidth));
+    }
+  }, [loading, containerRef.current]);
+
   return(<>
     {loading
       && <Grid
@@ -108,50 +150,129 @@ export const OverlayEdit: React.FC = () => {
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
       { item && <DialogContent>
-        {frame.translate[0]},{frame.translate[1]}
-        <Paper id="container" sx={{
-          aspectRatio: '16/9', height: '100%', maxWidth: '100%', position: 'relative',
-        }}>
-          <Paper onClick={() => setMoveableId('item1')} sx={{
-            width: '100px', height: '100px', position: 'absolute', border: '1px solid white',
-          }} id="item1">Target</Paper>
-          <Paper onClick={() => setMoveableId('item2')} sx={{
-            width: '200px', height: '50px', position: 'absolute', border: '1px solid white',
-          }} id="item2">Target2</Paper>
-          {moveableId && <Moveable
-            key={moveableId}
-            target={moveableRef}
-            resizable={true}
-            flushSync={flushSync}
-            bounds={bounds}
-            elementGuidelines={elementGuidelines}
-            snappable={true}
-            verticalGuidelines={[0,200,400]}
-            horizontalGuidelines={[0,200,400]}
-            snapThreshold={5}
-            isDisplaySnapDigit={true}
-            snapGap={true}
-            snapDirections={{
-              'top': true,'right': true,'bottom': true,'left': true,
-            }}
-            elementSnapDirections={{
-              'top': true,'right': true,'bottom': true,'left': true,
-            }}
-            snapDigit={0}
-            draggable={true}
-            throttleDrag={0}
-            startDragRotate={0}
-            throttleDragRotate={0}
-            zoom={1}
-            padding={{
-              'left': 0,'top': 0,'right': 0,'bottom': 0,
-            }}
-            onDrag={e => {
-              setFrame({ translate: e.beforeTranslate });
-              e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px)`;
-            }}
-          />}
-        </Paper>
+        {JSON.stringify({
+          frame, zoom, bounds, key,
+        })}
+        <Grid container spacing={2} sx={{ height: 'calc(100% - 10px)' }}>
+          <Grid xs={3}>
+            <Box>
+              <List dense>
+                {item.items.map(o => <ListItemButton key={o.id} onClick={() => setMoveableId(o.id.replace(/-/g, ''))}>
+                  <ListItemText primary={<Stack direction='row' alignItems='center'>
+                    <Avatar sx={{
+                      backgroundColor: generateColorFromString(o.id),
+                      width:           24,
+                      height:          24,
+                      mr:              2,
+                    }}>{' '}</Avatar>
+                    {o.name && o.name.length > 0 ? o.name : o.opts.typeId}
+                  </Stack>}
+                  secondary={<>
+                    w: {o.width}px, h: {o.height}px, {o.alignX}x{o.alignY}
+                  </>}/>
+                </ListItemButton>,
+                )}
+              </List>
+            </Box>
+          </Grid>
+          <Grid xs>
+            <Box sx={{
+              width: '100%', height: '100%', position: 'relative',
+            }}  ref={containerRef}>
+              <Paper id="container" sx={{
+                height:   `${item.canvas.height * zoom}px`,
+                width:    `${item.canvas.width * zoom}px`,
+                position: 'absolute',
+              }}>
+                {item.items.map(o => <Paper
+                  id={o.id.replace(/-/g, '')}
+                  key={o.id}
+                  onClick={() => setMoveableId(o.id.replace(/-/g, ''))}
+                  sx={{
+                    zIndex:          moveableId === o.id.replace(/-/g, '') ? '2': undefined,
+                    opacity:         moveableId === o.id.replace(/-/g, '') || moveableId == null ? '1': '0.2',
+                    position:        'absolute',
+                    width:           `${o.width * zoom}px`,
+                    height:          `${o.height * zoom}px`,
+                    border:          '1px solid white',
+                    backgroundColor: generateColorFromString(o.id),
+                    left:            `${o.alignX * zoom}px`,
+                    top:             `${o.alignY * zoom}px`,
+                  }}
+                >
+                  {o.name && o.name.length > 0 ? o.name : o.opts.typeId}
+                </Paper>)}
+
+                {moveableId && <Moveable
+                  key={moveableId + key}
+                  ables={[DimensionViewable]}
+                  props={{ dimensionViewable: true }}
+                  target={moveableRef}
+                  resizable={true}
+                  bounds={bounds}
+                  verticalGuidelines={[item.canvas.height / 4, item.canvas.height / 2, (item.canvas.height / 4) * 3]}
+                  horizontalGuidelines={[item.canvas.width / 4, item.canvas.width / 2, (item.canvas.width / 4) * 3]}
+                  elementGuidelines={elementGuidelines}
+                  snappable={true}
+                  snapThreshold={5}
+                  isDisplaySnapDigit={true}
+                  snapGap={true}
+                  snapDirections={{
+                    'top': true,'right': true,'bottom': true,'left': true, 'center': true,
+                  }}
+                  elementSnapDirections={{
+                    'top': true,'right': true,'bottom': true,'left': true, 'center': true,
+                  }}
+                  snapDigit={0}
+                  draggable={true}
+                  throttleDrag={0}
+                  startDragRotate={0}
+                  throttleDragRotate={0}
+                  zoom={1}
+                  padding={{
+                    'left': 0,'top': 0,'right': 0,'bottom': 0,
+                  }}
+                  onResizeEnd={e => {
+                    if (selectedItem) {
+                      console.log({ e });
+                      handleItemChange('width', Math.round((e.target as any).offsetWidth / zoom));
+                      handleItemChange('height', Math.round((e.target as any).offsetHeight / zoom));
+                      handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0] / zoom));
+                      handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1] / zoom));
+                      e.target.style.transform = `translate(0px, 0px)`;
+                      refresh();
+                    }
+                  }}
+                  onResizeStart={e => {
+                    e.setOrigin(['%', '%']);
+                    e.dragStart && e.dragStart.set(frame.translate);
+                  }}
+                  onResize={e => {
+                    const beforeTranslate = e.drag.beforeTranslate;
+
+                    frame.translate = beforeTranslate;
+                    e.target.style.width = `${e.width}px`;
+                    e.target.style.height = `${e.height}px`;
+                    e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+                  }}
+                  onDragEnd={(e) => {
+                    if (selectedItem) {
+                      handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0] / zoom));
+                      handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1] / zoom));
+                      e.target.style.transform = `translate(0px, 0px)`;
+                      refresh();
+                    }
+                  }}
+                  onDragStart={() => setFrame({ translate: [0, 0] })}
+                  onDrag={e => {
+                    setFrame({ translate: e.beforeTranslate });
+                    e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px)`;
+                  }}
+                />}
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>
       </DialogContent>}
     </Fade>
     <Divider/>
