@@ -179,15 +179,21 @@ export const OverlayEdit: React.FC = () => {
             <Box sx={{
               width: '100%', height: '100%', position: 'relative',
             }}  ref={containerRef}>
-              <Paper id="container" sx={{
-                height:   `${item.canvas.height * zoom}px`,
-                width:    `${item.canvas.width * zoom}px`,
-                position: 'absolute',
-              }}>
+              <Paper id="container"
+                onClick={() => setMoveableId(null)}
+                sx={{
+                  height:   `${item.canvas.height * zoom}px`,
+                  width:    `${item.canvas.width * zoom}px`,
+                  position: 'absolute',
+                }}>
                 {item.items.map(o => <Paper
                   id={o.id.replace(/-/g, '')}
                   key={o.id}
-                  onClick={() => setMoveableId(o.id.replace(/-/g, ''))}
+                  onClick={(e) => {
+                    setMoveableId(o.id.replace(/-/g, ''));
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
                   sx={{
                     zIndex:          moveableId === o.id.replace(/-/g, '') ? '2': undefined,
                     opacity:         moveableId === o.id.replace(/-/g, '') || moveableId == null ? '1': '0.2',
