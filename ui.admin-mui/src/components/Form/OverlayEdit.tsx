@@ -200,7 +200,6 @@ export const OverlayEdit: React.FC = () => {
                     position:        'absolute',
                     width:           `${o.width * zoom}px`,
                     height:          `${o.height * zoom}px`,
-                    border:          '1px solid white',
                     backgroundColor: generateColorFromString(o.id),
                     left:            `${o.alignX * zoom}px`,
                     top:             `${o.alignY * zoom}px`,
