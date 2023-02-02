@@ -255,7 +255,7 @@ export const OverlayEdit: React.FC = () => {
                   id={o.id.replace(/-/g, '')}
                   key={`${o.id}`}
                   onMouseDown={(e) => {
-                    if (e.nativeEvent.which !== 2) {
+                    if (e.button !== 1) {
                       e.stopPropagation();
                       e.preventDefault();
                     }
