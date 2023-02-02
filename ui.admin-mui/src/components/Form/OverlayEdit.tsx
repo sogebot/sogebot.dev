@@ -3,8 +3,7 @@ import Icon from '@mdi/react';
 import { SettingsTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Avatar,
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, List, ListItemButton, ListItemText, Paper, Stack,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControlLabel, Unstable_Grid2 as Grid, IconButton, List, ListItemButton, ListItemText, Paper, Stack, Switch,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { validateOrReject } from 'class-validator';
@@ -28,19 +27,6 @@ const emptyItem: Partial<Overlay> = {
   items: [],
 };
 
-const generateColorFromString = (str: string) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  let colour = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xFF;
-    colour += ('00' + value.toString(16)).substr(-2);
-  }
-  return colour;
-};
-
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -53,9 +39,13 @@ export const OverlayEdit: React.FC = () => {
   const [ zoom, setZoom ] = React.useState(1);
 
   const [frame, setFrame] = React.useState({ translate: [0,0]  });
-  const [bounds, setBounds] = React.useState({
+
+  const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
   });
+  const [boundsEnabled, setBoundsEnabled] = React.useState(true);
+  const [snapEnabled, setSnapEnabled] = React.useState(true);
+
   const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
 
   const selectedItem = React.useMemo(() => {
@@ -87,13 +77,17 @@ export const OverlayEdit: React.FC = () => {
     setElementGuidelines(els);
 
     // set bounds
-    setBounds({
-      left:   0,
-      top:    0,
-      right:  item.canvas.width,
-      bottom: item.canvas.height,
-    });
-  }, [moveableId, item, zoom]);
+    if (boundsEnabled) {
+      setBounds({
+        left:   0,
+        top:    0,
+        right:  item.canvas.width,
+        bottom: item.canvas.height,
+      });
+    } else {
+      setBounds(undefined);
+    }
+  }, [moveableId, item, zoom, boundsEnabled]);
 
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
@@ -160,7 +154,9 @@ export const OverlayEdit: React.FC = () => {
         alignItems="center"
       ><CircularProgress color="inherit" /></Grid>}
     <Fade in={!loading}>
-      { item && <DialogContent>
+      { item && <DialogContent sx={{
+        p: 0, overflowX: 'hidden',
+      }}>
         <Grid container spacing={2} sx={{ height: 'calc(100% - 10px)' }}>
           <Grid xs={3}>
             <Box>
@@ -173,12 +169,6 @@ export const OverlayEdit: React.FC = () => {
                     textTransform: 'uppercase',
                     '& small':     { fontSize: '8px !important' },
                   }}>
-                    <Avatar sx={{
-                      backgroundColor: generateColorFromString(o.id),
-                      width:           24,
-                      height:          24,
-                      mr:              0.5,
-                    }}>{' '}</Avatar>
                     <div>
                       {o.name && o.name.length > 0
                         ? <>
@@ -205,6 +195,22 @@ export const OverlayEdit: React.FC = () => {
             <Box id="container" sx={{
               width: '100%', height: '100%', position: 'relative',
             }}  ref={containerRef}>
+              <FormControlLabel
+                value="end"
+                onChange={(_, checked) => setSnapEnabled(checked)}
+                control={<Switch color="primary" checked={snapEnabled} />}
+                label="Snap"
+                labelPlacement="end"
+              />
+
+              <FormControlLabel
+                value="end"
+                onChange={(_, checked) => setBoundsEnabled(checked)}
+                control={<Switch color="primary" checked={boundsEnabled} />}
+                label="Bounds"
+                labelPlacement="end"
+              />
+
               <Paper
                 onClick={() => setMoveableId(null)}
                 sx={{
@@ -224,26 +230,24 @@ export const OverlayEdit: React.FC = () => {
                     e.preventDefault();
                   }}
                   sx={{
-                    zIndex:           moveableId === o.id.replace(/-/g, '') ? '2': undefined,
-                    opacity:          moveableId === o.id.replace(/-/g, '') || moveableId == null ? '1': '0.2',
-                    position:         'absolute',
-                    width:            `${o.width}px`,
-                    height:           `${o.height}px`,
-                    backgroundColor:  generateColorFromString(o.id),
-                    left:             `${o.alignX}px`,
-                    top:              `${o.alignY}px`,
-                    fontWeight:       '900',
-                    fontSize:         `${20  / zoom}px`,
-                    textTransform:    'uppercase',
-                    textFillColor:    'white',
-                    WebkitTextStroke: `${1 / zoom}px black`,
-                    alignItems:       'center',
-                    justifyContent:   'center',
-                    textAlign:        'center',
-                    display:          'flex',
-                    userSelect:       'none',
-                    lineHeight:       `${12  / zoom}px`,
-                    '& small':        { fontSize: `${12  / zoom}px` },
+                    zIndex:          moveableId === o.id.replace(/-/g, '') ? '2': undefined,
+                    opacity:         moveableId === o.id.replace(/-/g, '') || moveableId == null ? '1': '0.2',
+                    position:        'absolute',
+                    width:           `${o.width}px`,
+                    height:          `${o.height}px`,
+                    backgroundColor: 'transparent',
+                    left:            `${o.alignX}px`,
+                    top:             `${o.alignY}px`,
+                    fontWeight:      '900',
+                    fontSize:        `${20  / zoom}px`,
+                    textTransform:   'uppercase',
+                    alignItems:      'center',
+                    justifyContent:  'center',
+                    textAlign:       'center',
+                    display:         'flex',
+                    userSelect:      'none',
+                    lineHeight:      `${12  / zoom}px`,
+                    '& small':       { fontSize: `${12  / zoom}px` },
                   }}
                 >
                   <div>
@@ -256,7 +260,7 @@ export const OverlayEdit: React.FC = () => {
                 </Paper>)}
 
                 {moveableId && <Moveable
-                  key={moveableId + key}
+                  key={`${moveableId}-${key}-${snapEnabled}`}
                   ables={[DimensionViewable, RemoveButton]}
                   props={{
                     dimensionViewable: true, removeButton: true,
@@ -280,10 +284,22 @@ export const OverlayEdit: React.FC = () => {
                   isDisplaySnapDigit={true}
                   snapGap={true}
                   snapDirections={{
-                    'top': true,'right': true,'bottom': true,'left': true, 'center': true, middle: true,
+                    top:    snapEnabled,
+                    right:  snapEnabled,
+                    bottom: snapEnabled,
+                    left:   snapEnabled,
+                    center: snapEnabled,
+                    middle: snapEnabled,
+
                   }}
                   elementSnapDirections={{
-                    'top': true,'right': true,'bottom': true,'left': true, 'center': true, middle: true,
+                    top:    snapEnabled,
+                    right:  snapEnabled,
+                    bottom: snapEnabled,
+                    left:   snapEnabled,
+                    center: snapEnabled,
+                    middle: snapEnabled,
+
                   }}
                   snapDigit={0}
                   draggable={true}
