@@ -32,6 +32,7 @@ const emptyItem: Partial<Overlay> = {
 };
 
 let isPositionChanging = false;
+document.addEventListener('mouseup', () => isPositionChanging = false);
 
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -51,11 +52,6 @@ export const OverlayEdit: React.FC = () => {
   const [frame, setFrame] = React.useState({ translate: [0,0]  });
 
   const [ position, setPosition ] = React.useState([50, 0]);
-
-  React.useEffect(() => {
-    // we need to have mouse up globally
-    document.addEventListener('mouseup', () => isPositionChanging = false);
-  }, []);
 
   React.useEffect(() => {
     if (isPositionChanging && x && y && mouseX && mouseY) {
