@@ -255,8 +255,10 @@ export const OverlayEdit: React.FC = () => {
                   id={o.id.replace(/-/g, '')}
                   key={`${o.id}`}
                   onMouseDown={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+                    if (e.nativeEvent.which !== 2) {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }
                   }}
                   onClick={(e) => {
                     setMoveableId(o.id.replace(/-/g, ''));
@@ -282,7 +284,6 @@ export const OverlayEdit: React.FC = () => {
                     textAlign:       'center',
                     display:         'flex',
                     userSelect:      'none',
-                    margin:          '-1px',
                     cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
                     lineHeight:      `${12}px`,
                     '& small':       { fontSize: `${12}px` },
