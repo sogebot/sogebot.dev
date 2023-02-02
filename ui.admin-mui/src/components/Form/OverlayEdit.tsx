@@ -56,9 +56,6 @@ export const OverlayEdit: React.FC = () => {
   React.useEffect(() => {
     if (isPositionChanging && x && y && mouseX && mouseY) {
       setPosition(pos => {
-        console.log({
-          x, mouseX, diff: x - mouseX,
-        });
         return [pos[0] + ((x - mouseX) / zoom), pos[1] + ((y - mouseY) / zoom)];
       });
     }
@@ -233,6 +230,9 @@ export const OverlayEdit: React.FC = () => {
             <Box id="container"
               onClick={() => setMoveableId(null)}
               onMouseDown={() => isPositionChanging = true}
+              onWheel={(e) => {
+                setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
+              }}
               sx={{
                 backgroundColor: '#343434',
                 width:           '100%',
