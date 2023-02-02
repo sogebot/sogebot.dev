@@ -282,6 +282,7 @@ export const OverlayEdit: React.FC = () => {
                     textAlign:       'center',
                     display:         'flex',
                     userSelect:      'none',
+                    margin:          '-1px',
                     cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
                     lineHeight:      `${12}px`,
                     '& small':       { fontSize: `${12}px` },
