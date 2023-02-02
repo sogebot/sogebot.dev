@@ -1,9 +1,10 @@
-import { mdiResize, mdiTarget } from '@mdi/js';
-import Icon from '@mdi/react';
-import { SettingsTwoTone } from '@mui/icons-material';
+import {
+  BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone,
+  FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
+} from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControlLabel, Unstable_Grid2 as Grid, IconButton, List, ListItemButton, ListItemText, Paper, Stack, Switch,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { validateOrReject } from 'class-validator';
@@ -13,8 +14,10 @@ import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Layers } from './Overlay/Layers';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
+import theme from '../../theme';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 
@@ -36,9 +39,29 @@ export const OverlayEdit: React.FC = () => {
   const [ key, setKey ] = React.useState(Date.now());
 
   const containerRef = React.useRef<HTMLDivElement>();
-  const [ zoom, setZoom ] = React.useState(1);
 
+  const [ zoom, setZoom ] = React.useState(1);
   const [frame, setFrame] = React.useState({ translate: [0,0]  });
+
+  const [ isPositionChanging, setPositionChanging ] = React.useState(false);
+  const [ position, setPosition ] = React.useState([50, 0]);
+
+  React.useEffect(() => {
+    // we need to have mouse up globally
+    document.addEventListener('mouseup', () => setPositionChanging(false));
+  }, []);
+
+  React.useEffect(() => {
+    function fnc (e: any) {
+      setPosition(pos => [pos[0] + e.movementX, pos[1] + e.movementY]);
+    }
+    // we need to have mouse up globally
+    if (isPositionChanging) {
+      document.addEventListener('mousemove', fnc);
+    } else {
+      document.removeEventListener('mousemove', fnc);
+    }
+  }, [isPositionChanging]);
 
   const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
@@ -87,7 +110,7 @@ export const OverlayEdit: React.FC = () => {
     } else {
       setBounds(undefined);
     }
-  }, [moveableId, item, zoom, boundsEnabled]);
+  }, [moveableId, item, boundsEnabled]);
 
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
@@ -134,15 +157,25 @@ export const OverlayEdit: React.FC = () => {
     setSaving(true);
   };
 
-  React.useEffect(() => {
-    if (!loading && containerRef.current) {
-      const zoomHeight = ((containerRef.current.getBoundingClientRect().height) / containerRef.current.scrollHeight);
-      const zoomWidth = ((containerRef.current.getBoundingClientRect().width) / containerRef.current.scrollWidth);
+  const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
+    if (containerRef.current) {
+      if (!isZoomReset) {
+        // we need to reset zoom first
+        setZoom(1);
+        setPosition([50, 0]);
+        setTimeout(() => fitZoomOnScreen(true));
+        return;
+      }
+      const zoomHeight = ((containerRef.current.getBoundingClientRect().height - 40) / containerRef.current.scrollHeight);
+      const zoomWidth = ((containerRef.current.getBoundingClientRect().width - 40) / containerRef.current.scrollWidth);
       setZoom(Math.min(zoomHeight, zoomWidth));
-      setZoomDimensionViewable(Math.min(zoomHeight, zoomWidth));
-      setZoomRemoveButton(Math.min(zoomHeight, zoomWidth));
     }
-  }, [loading, containerRef.current]);
+  }, [containerRef.current]);
+
+  React.useEffect(() => {
+    setZoomDimensionViewable(zoom);
+    setZoomRemoveButton(zoom);
+  }, [ zoom ]);
 
   return(<>
     {loading
@@ -157,97 +190,100 @@ export const OverlayEdit: React.FC = () => {
       { item && <DialogContent sx={{
         p: 0, overflowX: 'hidden',
       }}>
-        <Grid container spacing={2} sx={{ height: 'calc(100% - 10px)' }}>
-          <Grid xs={3}>
-            <Box>
-              <List dense sx={{ p: 0 }}>
-                {item.items.map(o => <ListItemButton
-                  key={o.id}
-                  selected={moveableId === o.id.replace(/-/g, '')}
-                  onClick={() => setMoveableId(o.id.replace(/-/g, ''))}>
-                  <ListItemText primary={<Stack direction='row' alignItems='center' sx={{
-                    textTransform: 'uppercase',
-                    '& small':     { fontSize: '8px !important' },
-                  }}>
-                    <div>
-                      {o.name && o.name.length > 0
-                        ? <>
-                          {o.name} <small>{o.opts.typeId}</small>
-                        </>
-                        : o.opts.typeId}
-                    </div>
-                  </Stack>}
-                  secondary={<small>
-                    <Icon path={mdiResize} size={'12px'} style={{
-                      marginRight: '2px', position: 'relative', top: '2px',
-                    }} />{o.width}x{o.height}
-                    <Icon path={mdiTarget} size={'14px'} style={{
-                      marginLeft: '5px', position: 'relative', top: '2px',
-                    }} />{o.alignX}x{o.alignY}
-                  </small>}/>
-                  <IconButton edge="end"><SettingsTwoTone/></IconButton>
-                </ListItemButton>,
-                )}
-              </List>
+        <Grid container spacing={2} sx={{
+          height: '100%', m: 0,
+        }}>
+          <Grid xs={3} sx={{ my: 0 }}>
+            <Box sx={{ p: 1 }}>
+              <Tooltip title="Snap">
+                <IconButton onClick={() => setSnapEnabled(o => !o)} sx={{ backgroundColor: snapEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderInnerTwoTone/></IconButton>
+              </Tooltip>
+              <Tooltip title="Bounds">
+                <IconButton  onClick={() => setBoundsEnabled(o => !o)} sx={{ backgroundColor: boundsEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderStyleTwoTone/></IconButton>
+              </Tooltip>
+              <Tooltip title="Zoom in">
+                <IconButton onClick={() => setZoom(o => o + 0.05)}><ZoomInTwoTone/></IconButton>
+              </Tooltip>
+              <Tooltip title="Zoom out">
+                <IconButton onClick={() => setZoom(o => o - 0.05)}><ZoomOutTwoTone/></IconButton>
+              </Tooltip>
+              <Tooltip title="Fit screen">
+                <IconButton onClick={() => fitZoomOnScreen()}><FitScreenTwoTone/></IconButton>
+              </Tooltip>
+              <Tooltip title='Reset zoom'>
+                <IconButton onClick={() => {
+                  setZoom(1);
+                  setPosition([50, 0]);
+                }}><CropFreeTwoTone/></IconButton>
+              </Tooltip>
             </Box>
+
+            <Layers
+              items={item.items}
+              moveableId={moveableId}
+              setMoveableId={setMoveableId} onUpdate={(value) => setItem(o => ({
+                ...o, items: value,
+              } as Overlay))}
+            />
           </Grid>
-          <Grid xs>
-            <Box id="container" sx={{
-              width: '100%', height: '100%', position: 'relative',
-            }}  ref={containerRef}>
-              <FormControlLabel
-                value="end"
-                onChange={(_, checked) => setSnapEnabled(checked)}
-                control={<Switch color="primary" checked={snapEnabled} />}
-                label="Snap"
-                labelPlacement="end"
-              />
-
-              <FormControlLabel
-                value="end"
-                onChange={(_, checked) => setBoundsEnabled(checked)}
-                control={<Switch color="primary" checked={boundsEnabled} />}
-                label="Bounds"
-                labelPlacement="end"
-              />
-
+          <Grid xs sx={{
+            pb: 0, height: '100%',
+          }}>
+            <Box id="container"
+              onClick={() => setMoveableId(null)}
+              onMouseDown={() => setPositionChanging(true)}
+              sx={{
+                backgroundColor: '#343434',
+                width:           '100%',
+                height:          '100%',
+                position:        'relative',
+                overflow:        'hidden',
+                cursor:          isPositionChanging ? 'grabbing' : 'grab',
+                p:               5,
+              }}  ref={containerRef}>
               <Paper
-                onClick={() => setMoveableId(null)}
                 sx={{
-                  height:                 `${item.canvas.height}px`,
-                  width:                  `${item.canvas.width}px`,
-                  position:               'absolute',
-                  transformOrigin:        '0 0',
-                  transform:              `scale(${zoom})`,
-                  '.moveable-size-value': { fontSize: `${14/zoom}px !important` },
+                  height:          `${item.canvas.height}px`,
+                  width:           `${item.canvas.width}px`,
+                  position:        'absolute',
+                  border:          `${1/zoom}px dotted white !important`,
+                  transformOrigin: '0 0',
+                  transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
                 }}>
                 {item.items.map(o => <Paper
                   id={o.id.replace(/-/g, '')}
-                  key={o.id}
+                  key={`${o.id}`}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
                   onClick={(e) => {
                     setMoveableId(o.id.replace(/-/g, ''));
                     e.stopPropagation();
                     e.preventDefault();
                   }}
+                  elevation={0}
                   sx={{
                     zIndex:          moveableId === o.id.replace(/-/g, '') ? '2': undefined,
-                    opacity:         moveableId === o.id.replace(/-/g, '') || moveableId == null ? '1': '0.2',
+                    opacity:         moveableId === o.id.replace(/-/g, '') || (moveableId == null && o.isVisible) ? '1': '0.2',
                     position:        'absolute',
                     width:           `${o.width}px`,
                     height:          `${o.height}px`,
-                    backgroundColor: 'transparent',
+                    backgroundColor: '#424242',
+                    border:          `${1 / zoom}px solid #626262 !important`,
                     left:            `${o.alignX}px`,
                     top:             `${o.alignY}px`,
                     fontWeight:      '900',
-                    fontSize:        `${20  / zoom}px`,
+                    fontSize:        `${20}px`,
                     textTransform:   'uppercase',
                     alignItems:      'center',
                     justifyContent:  'center',
                     textAlign:       'center',
                     display:         'flex',
                     userSelect:      'none',
-                    lineHeight:      `${12  / zoom}px`,
-                    '& small':       { fontSize: `${12  / zoom}px` },
+                    cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
+                    lineHeight:      `${12}px`,
+                    '& small':       { fontSize: `${12}px` },
                   }}
                 >
                   <div>
