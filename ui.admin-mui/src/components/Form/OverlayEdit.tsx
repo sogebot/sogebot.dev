@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useMouse, usePreviousImmediate } from 'rooks';
 
 import { Layers } from './Overlay/Layers';
 import { getSocket } from '../../helpers/socket';
@@ -30,6 +31,8 @@ const emptyItem: Partial<Overlay> = {
   items: [],
 };
 
+let isPositionChanging = false;
+
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -38,30 +41,32 @@ export const OverlayEdit: React.FC = () => {
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
   const [ key, setKey ] = React.useState(Date.now());
 
+  const { x, y } = useMouse();
+  const mouseX = usePreviousImmediate(x);
+  const mouseY = usePreviousImmediate(y);
+
   const containerRef = React.useRef<HTMLDivElement>();
 
   const [ zoom, setZoom ] = React.useState(1);
   const [frame, setFrame] = React.useState({ translate: [0,0]  });
 
-  const [ isPositionChanging, setPositionChanging ] = React.useState(false);
   const [ position, setPosition ] = React.useState([50, 0]);
 
   React.useEffect(() => {
     // we need to have mouse up globally
-    document.addEventListener('mouseup', () => setPositionChanging(false));
+    document.addEventListener('mouseup', () => isPositionChanging = false);
   }, []);
 
   React.useEffect(() => {
-    function fnc (e: any) {
-      setPosition(pos => [pos[0] + e.movementX, pos[1] + e.movementY]);
+    if (isPositionChanging && x && y && mouseX && mouseY) {
+      setPosition(pos => {
+        console.log({
+          x, mouseX, diff: x - mouseX,
+        });
+        return [pos[0] + ((x - mouseX) / zoom), pos[1] + ((y - mouseY) / zoom)];
+      });
     }
-    // we need to have mouse up globally
-    if (isPositionChanging) {
-      document.addEventListener('mousemove', fnc);
-    } else {
-      document.removeEventListener('mousemove', fnc);
-    }
-  }, [isPositionChanging]);
+  }, [x, y, mouseY, mouseX, zoom]);
 
   const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
@@ -231,7 +236,7 @@ export const OverlayEdit: React.FC = () => {
           }}>
             <Box id="container"
               onClick={() => setMoveableId(null)}
-              onMouseDown={() => setPositionChanging(true)}
+              onMouseDown={() => isPositionChanging = true}
               sx={{
                 backgroundColor: '#343434',
                 width:           '100%',
