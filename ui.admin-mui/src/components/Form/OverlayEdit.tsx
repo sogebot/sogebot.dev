@@ -224,9 +224,7 @@ export const OverlayEdit: React.FC = () => {
               } as Overlay))}
             />
           </Grid>
-          <Grid xs sx={{
-            pb: 0, height: '100%',
-          }}>
+          <Grid xs sx={{ height: '100%' }}>
             <Box id="container"
               onClick={() => setMoveableId(null)}
               onMouseDown={() => isPositionChanging = true}
