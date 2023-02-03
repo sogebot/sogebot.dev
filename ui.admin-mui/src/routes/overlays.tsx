@@ -5,6 +5,7 @@ import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { CountdownItem } from '../components/Overlay/CountdownItem';
 import { getSocket } from '../helpers/socket';
 
 export default function Overlays() {
@@ -38,8 +39,18 @@ export default function Overlays() {
   }, [ server ]);
 
   return <>
-    <Box sx={{ color: 'black' }}>
-      { !loading && JSON.stringify(overlay) }
-    </Box>
+    { !loading && id && overlay && overlay.items
+      .filter(o => o.isVisible)
+      .map(item => <Box key={item.id} sx={{
+        position: 'absolute',
+        width:    `${item.width}px`,
+        height:   `${item.height}px`,
+        left:     `${item.alignX}px`,
+        top:      `${item.alignY}px`,
+      }}>
+        {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+      </Box>,
+      )
+    }
   </>;
 }

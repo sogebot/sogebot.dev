@@ -39,7 +39,9 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate }) => {
   React.useEffect(() => {
     if (prevTime && !isEqual(time, prevTime)) {
       onUpdate({
-        ...model, currentTime: time.days * DAY + time.hours * HOUR + time.minutes * MINUTE + time.seconds * SECOND,
+        ...model,
+        currentTime: time.days * DAY + time.hours * HOUR + time.minutes * MINUTE + time.seconds * SECOND,
+        time:        time.days * DAY + time.hours * HOUR + time.minutes * MINUTE + time.seconds * SECOND,
       });
     }
   }, [time, prevTime, model]);
@@ -202,7 +204,7 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate }) => {
         <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start', pt: 1,
         }} control={<Switch checked={model.isPersistent} onChange={(_, checked) => onUpdate({
-          ...model, isPersistent: checked,
+          ...model, isPersistent: checked, time: model.currentTime,
         })} />} label={<>
           <Typography>Persistent</Typography>
           <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.isPersistent

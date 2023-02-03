@@ -17,7 +17,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
-import { CountdownItem } from './Overlay/CountdownItem';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { Layers } from './Overlay/Layers';
 import { Settings } from './Overlay/Settings';
@@ -27,6 +26,7 @@ import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
+import { CountdownItem } from '../Overlay/CountdownItem';
 
 const emptyItem: Partial<Overlay> = {
   canvas: {
@@ -177,8 +177,8 @@ export const OverlayEdit: React.FC = () => {
         enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
         return console.error(err);
       }
+      enqueueSnackbar('Saved successfully.', { variant: 'success' });
       if (id !== data.id) {
-        enqueueSnackbar('Saved successfully.', { variant: 'success' });
         navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(sessionStorage.server)}`);
       }
     });
@@ -326,7 +326,7 @@ export const OverlayEdit: React.FC = () => {
                     '& small':       { fontSize: `${12}px` },
                   }}
                 >
-                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts}/>}
+                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
                     position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0,
                   }}>

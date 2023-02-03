@@ -53,7 +53,8 @@
     "socket.io-client": "^4.5.4",
     "typeorm": "^0.3.11",
     "typescript": "latest",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "worker-timers": "^7.0.62"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
