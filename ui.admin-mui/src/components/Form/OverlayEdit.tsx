@@ -7,6 +7,7 @@ import {
   Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import { validateOrReject } from 'class-validator';
 import { merge, set } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -286,23 +287,37 @@ export const OverlayEdit: React.FC = () => {
                     fontWeight:      '900',
                     fontSize:        `${20}px`,
                     textTransform:   'uppercase',
-                    alignItems:      'center',
-                    justifyContent:  'center',
-                    textAlign:       'center',
-                    display:         'flex',
                     userSelect:      'none',
                     cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
                     lineHeight:      `${12}px`,
                     '& small':       { fontSize: `${12}px` },
                   }}
                 >
-                  <div>
+                  {o.opts.typeId === 'countdown' && <Box sx={{
+                    fontSize:       `${o.opts.countdownFont.size}px`,
+                    color:          `${o.opts.countdownFont.color}`,
+                    fontFamily:     o.opts.countdownFont.family,
+                    fontWeight:     o.opts.countdownFont.weight,
+                    textShadow:     [textStrokeGenerator(o.opts.countdownFont.borderPx, o.opts.countdownFont.borderColor), shadowGenerator(o.opts.countdownFont.shadow)].filter(Boolean).join(', '),
+                    width:          '100%',
+                    height:         '100%',
+                    overflow:       'hidden',
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'center',
+                    textAlign:      'center',
+                  }}>
+                    <div>00:00:00.000</div>
+                  </Box>}
+                  <Box sx={{
+                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0,
+                  }}>
                     {o.name && o.name.length > 0
                       ? <>
                         {o.name} <br/><small>{o.opts.typeId}</small>
                       </>
                       : o.opts.typeId}
-                  </div>
+                  </Box>
                 </Paper>)}
 
                 {moveableId && <Moveable
