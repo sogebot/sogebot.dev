@@ -341,15 +341,10 @@ export const RandomizerEdit: React.FC = () => {
     return generatedItems;
   };
 
-  const onDragEndHandler = React.useCallback<OnDragEndResponder>((result, provided) => {
+  const onDragEndHandler = React.useCallback<OnDragEndResponder>((result) => {
     if (!result.destination || !item) {
       return;
     }
-
-    console.log({
-      result, provided,
-    });
-    console.log(item.items);
 
     const destIdx = result.destination?.index;
     const fromIdx = result.source.index;
@@ -358,10 +353,6 @@ export const RandomizerEdit: React.FC = () => {
       item.items[fromIdx],
       ...getChildren(item.items[fromIdx].id),
     ];
-
-    console.log({
-      itemsToMove, destIdx,
-    });
 
     const update = cloneDeep(item);
 

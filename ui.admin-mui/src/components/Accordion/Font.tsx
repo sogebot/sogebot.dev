@@ -4,6 +4,7 @@ import {
   FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
   Tab, Tabs, TextField, Typography,
 } from '@mui/material';
+import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import { MuiColorInput } from 'mui-color-input';
@@ -14,7 +15,13 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useTranslation } from '../../hooks/useTranslation';
 import { isHexColor } from '../../validators';
 
-function loadFont (value: string) {
+const fontsLoaded: string[] = [];
+export function loadFont (value: string) {
+  if (fontsLoaded.includes(value)) {
+    return;
+  }
+  fontsLoaded.push(value);
+
   const head = document.getElementsByTagName('head')[0];
   const style = document.createElement('style');
   style.type = 'text/css';
@@ -25,18 +32,23 @@ function loadFont (value: string) {
   head.appendChild(style);
 }
 
-type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Randomizer['customizationFont'],
+type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
+  model: T,
   open: string,
   onClick: (value: string) => void;
-  onChange: (value: Randomizer['customizationFont']) => void;
+  onChange: (value: T) => void;
+  disableExample?: boolean;
+  label?: string;
+  accordionId?: string;
 };
-export const AccordionFont: React.FC<Props> = (props) => {
-  const accordionId = 'font';
+export const AccordionFont = <T extends Randomizer['customizationFont'] | Countdown['countdownFont']>(props: Props<T>) => {
+  const accordionId = props.accordionId ?? 'font';
   const { open,
     onClick,
     onChange,
     model,
+    disableExample,
+    label,
     ...accordionProps } = props;
   const { translate } = useTranslation();
   const [server] = useLocalStorage('server', 'https://demobot.sogebot.xyz');
@@ -68,7 +80,7 @@ export const AccordionFont: React.FC<Props> = (props) => {
       aria-controls="panel1a-content"
       id="panel1a-header"
     >
-      <Typography>{ translate('registry.alerts.font.setting') }</Typography>
+      <Typography>{ label ?? translate('registry.alerts.font.setting') }</Typography>
     </AccordionSummary>
     <AccordionDetails>
       {fonts.length > 0 && <FormControl fullWidth variant="filled" >
@@ -126,6 +138,20 @@ export const AccordionFont: React.FC<Props> = (props) => {
             ...model, borderPx: newValue as number,
           })}/>
       </Stack>}
+
+      {'color' in model && <Box
+        sx={{ pt: 2 }}>
+        <MuiColorInput
+          label={ translate('registry.alerts.font.color.name') }
+          fullWidth
+          isAlphaHidden
+          format="hex"
+          variant='filled'
+          value={isHexColor(model.color) ? model.color : '#111111'}
+          onChange={(_, value) => onChange({
+            ...model, color: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
+          })} />
+      </Box>}
 
       {model.borderColor !== undefined && <Box
         sx={{ pt: 2 }}>
@@ -286,36 +312,38 @@ export const AccordionFont: React.FC<Props> = (props) => {
         </>}
       </>}
 
-      <Divider sx={{ my: 2 }}/>
-      <TextField
-        fullWidth
-        variant='filled'
-        label="Example text"
-        value={exampleText}
-        onChange={(ev) => setExampleText(ev.currentTarget.value)}
-      />
+      {!disableExample && <>
+        <Divider sx={{ my: 2 }}/>
+        <TextField
+          fullWidth
+          variant='filled'
+          label="Example text"
+          value={exampleText}
+          onChange={(ev) => setExampleText(ev.currentTarget.value)}
+        />
 
-      <Paper
-        elevation={0}
-        sx={{
-          fontSize:        model.size + 'px',
-          backgroundColor: 'transparent',
-          fontWeight:      model.weight,
-          fontFamily:      `'${model.family}'`,
-          textAlign:       'center',
-          textShadow:      [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', '),
-        }}>
-        <Box sx={{
-          lineHeight: (model.size + 15) + 'px',
-          width:      '90%',
-        }}>
-          <div style={{
-            overflow: 'visible !important;', textAlign: 'center',
+        <Paper
+          elevation={0}
+          sx={{
+            fontSize:        model.size + 'px',
+            backgroundColor: 'transparent',
+            fontWeight:      model.weight,
+            fontFamily:      `'${model.family}'`,
+            textAlign:       'center',
+            textShadow:      [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', '),
           }}>
-            { exampleText }
-          </div>
-        </Box>
-      </Paper>
+          <Box sx={{
+            lineHeight: (model.size + 15) + 'px',
+            width:      '90%',
+          }}>
+            <div style={{
+              overflow: 'visible !important;', textAlign: 'center',
+            }}>
+              { exampleText }
+            </div>
+          </Box>
+        </Paper>
+      </>}
     </AccordionDetails>
   </Accordion>;
 };
