@@ -2,8 +2,12 @@ import { AbcTwoTone, HourglassBottomTwoTone } from '@mui/icons-material';
 import { Box, IconButton } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
+import HTMLReactParser from 'html-react-parser';
 import React from 'react';
 
+import {
+  DAY, HOUR, MINUTE, SECOND,
+} from '../../../constants';
 import theme from '../../../theme';
 
 type Props = {
@@ -21,6 +25,29 @@ export const CountdownItem: React.FC<Props> = ({ item }) => {
     }
   }, [ show, item ]);
 
+  const time = React.useMemo(() => {
+    const days = Math.floor(item.currentTime / DAY);
+    const hours = Math.floor((item.currentTime - days * DAY) / HOUR);
+    const minutes = Math.floor((item.currentTime - (days * DAY) - (hours * HOUR)) / MINUTE);
+    const seconds = Math.floor((item.currentTime - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
+    let millis: number | string = Math.floor((item.currentTime - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
+
+    if (millis < 10) {
+      millis = `0${millis}`;
+    }
+
+    let output = '';
+    if (days > 0) {
+      output += `${days}d`;
+    }
+
+    output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    if (item.showMilliseconds) {
+      output += `<small>.${millis}</small>`;
+    }
+    return output;
+  }, [ item ]);
+
   return <>
     <Box sx={{
       fontSize:       `${font.size}px`,
@@ -35,13 +62,11 @@ export const CountdownItem: React.FC<Props> = ({ item }) => {
       alignItems:     'center',
       justifyContent: 'center',
       textAlign:      'center',
+      'small':        { fontSize: `${font.size * 0.65}px !important` },
     }}>
       <div>
         { show === 'time'
-          ? <>
-              00:00:00
-            { item.showMilliseconds && <small>.000</small>}
-          </>
+          ? HTMLReactParser(time)
           : item.messageWhenReachedZero
         }
       </div>

@@ -169,9 +169,20 @@ export const OverlayEdit: React.FC = () => {
     navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
   };
 
-  const handleSave = () => {
+  const handleSave = React.useCallback(() => {
     setSaving(true);
-  };
+    getSocket('/registries/overlays').emit('generic::save', item, (err, data) => {
+      setSaving(false);
+      if (err || !data) {
+        enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
+        return console.error(err);
+      }
+      if (id !== data.id) {
+        enqueueSnackbar('Saved successfully.', { variant: 'success' });
+        navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(localStorage.server)}`);
+      }
+    });
+  }, [id, item, navigate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
     if (containerRef.current) {
