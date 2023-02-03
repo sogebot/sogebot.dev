@@ -1,13 +1,13 @@
 import {
-  BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone,
-  FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
+  BorderInnerTwoTone, BorderStyleTwoTone,
+  CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
+import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { validateOrReject } from 'class-validator';
 import { merge, set } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -15,13 +15,16 @@ import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
+import SimpleBar from 'simplebar-react';
 
+import { CountdownItem } from './Overlay/CountdownItem';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { Layers } from './Overlay/Layers';
 import { Settings } from './Overlay/Settings';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
+import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 
@@ -142,6 +145,18 @@ export const OverlayEdit: React.FC = () => {
 
   React.useEffect(() => {
     if (!loading && item) {
+      // load fonts
+      for (const items of item.items) {
+        const flattenItem = flatten(items);
+        Object.keys(flattenItem).filter(o => o.toLowerCase().includes('font') && o.toLowerCase().includes('family')).forEach((k) => {
+          loadFont(flattenItem[k]);
+        });
+      }
+    }
+  }, [item, loading]);
+
+  React.useEffect(() => {
+    if (!loading && item) {
       const toCheck = new Overlay();
       merge(toCheck, item);
       validateOrReject(toCheck)
@@ -219,20 +234,24 @@ export const OverlayEdit: React.FC = () => {
               </Tooltip>
             </Box>
 
-            <Layers
-              items={item.items}
-              moveableId={moveableId}
-              setMoveableId={setMoveableId} onUpdate={(value) => setItem(o => ({
-                ...o, items: value,
-              } as Overlay))}
-            />
+            <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
+              <Layers
+                items={item.items}
+                moveableId={moveableId}
+                setMoveableId={setMoveableId} onUpdate={(value) => setItem(o => ({
+                  ...o, items: value,
+                } as Overlay))}
+              />
 
-            { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => handleItemChange(path, value)}>
-              {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={() => {
-                console.log('a');
-              }}/>}
-            </Settings>
-            }
+              { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => handleItemChange(path, value)}>
+                <Box sx={{ pt: 3 }}>
+                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                </Box>
+              </Settings>
+              }
+            </SimpleBar>
           </Grid>
           <Grid xs sx={{ height: '100%' }}>
             <Box id="container"
@@ -293,22 +312,7 @@ export const OverlayEdit: React.FC = () => {
                     '& small':       { fontSize: `${12}px` },
                   }}
                 >
-                  {o.opts.typeId === 'countdown' && <Box sx={{
-                    fontSize:       `${o.opts.countdownFont.size}px`,
-                    color:          `${o.opts.countdownFont.color}`,
-                    fontFamily:     o.opts.countdownFont.family,
-                    fontWeight:     o.opts.countdownFont.weight,
-                    textShadow:     [textStrokeGenerator(o.opts.countdownFont.borderPx, o.opts.countdownFont.borderColor), shadowGenerator(o.opts.countdownFont.shadow)].filter(Boolean).join(', '),
-                    width:          '100%',
-                    height:         '100%',
-                    overflow:       'hidden',
-                    display:        'flex',
-                    alignItems:     'center',
-                    justifyContent: 'center',
-                    textAlign:      'center',
-                  }}>
-                    <div>00:00:00.000</div>
-                  </Box>}
+                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts}/>}
                   <Box sx={{
                     position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0,
                   }}>
@@ -317,11 +321,13 @@ export const OverlayEdit: React.FC = () => {
                         {o.name} <br/><small>{o.opts.typeId}</small>
                       </>
                       : o.opts.typeId}
+
                   </Box>
                 </Paper>)}
 
                 {moveableId && <Moveable
                   key={`${moveableId}-${key}-${snapEnabled}`}
+                  aria-type={selectedItem?.opts.typeId}
                   ables={[DimensionViewable, RemoveButton]}
                   props={{
                     dimensionViewable: true, removeButton: true,
