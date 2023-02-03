@@ -51,6 +51,7 @@ export const CountdownItem: React.FC<Props> = ({ item }) => {
   return <>
     <Box sx={{
       fontSize:       `${font.size}px`,
+      lineHeight:     `${font.size}px`,
       color:          `${font.color}`,
       fontFamily:     font.family,
       fontWeight:     font.weight,
@@ -59,9 +60,9 @@ export const CountdownItem: React.FC<Props> = ({ item }) => {
       height:         '100%',
       overflow:       'hidden',
       display:        'flex',
-      alignItems:     'center',
       justifyContent: 'center',
       textAlign:      'center',
+      textTransform:  'none',
       'small':        { fontSize: `${font.size * 0.65}px !important` },
     }}>
       <div>

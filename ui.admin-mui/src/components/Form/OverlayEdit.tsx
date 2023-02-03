@@ -254,7 +254,10 @@ export const OverlayEdit: React.FC = () => {
                 } as Overlay))}
               />
 
-              { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => handleItemChange(path, value)}>
+              { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => {
+                handleItemChange(path, value);
+                refresh();
+              }}>
                 <Box sx={{ pt: 3 }}>
                   {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
@@ -335,7 +338,6 @@ export const OverlayEdit: React.FC = () => {
 
                   </Box>
                 </Paper>)}
-
                 {moveableId && <Moveable
                   key={`${moveableId}-${key}-${snapEnabled}`}
                   aria-type={selectedItem?.opts.typeId}
@@ -354,8 +356,9 @@ export const OverlayEdit: React.FC = () => {
                     }) as any);
                     setMoveableId(null);
                   }}
-                  verticalGuidelines={[item.canvas.height / 4, item.canvas.height / 2, (item.canvas.height / 4) * 3]}
-                  horizontalGuidelines={[item.canvas.width / 4, item.canvas.width / 2, (item.canvas.width / 4) * 3]}
+                  horizontalGuidelines={[item.canvas.height / 4, item.canvas.height / 2, (item.canvas.height / 4) * 3]}
+                  verticalGuidelines={[item.canvas.width / 4, item.canvas.width / 2, (item.canvas.width / 4) * 3]}
+                  isDisplayInnerSnapDigit={true}
                   elementGuidelines={elementGuidelines}
                   snappable={true}
                   snapThreshold={5}
