@@ -47,7 +47,6 @@ import PageSettingsModulesIntegrationsStreamelements from '../../components/Sett
 import PageSettingsModulesIntegrationsStreamlabs from '../../components/Settings/Integrations/streamlabs';
 import PageSettingsModulesIntegrationsTiltify from '../../components/Settings/Integrations/tiltify';
 import PageSettingsModulesIntegrationsTipeeestream from '../../components/Settings/Integrations/tipeeestream';
-import PageSettingsModulesIntegrationsTwitter from '../../components/Settings/Integrations/twitter';
 import PageSettingsModulesServiceGoogle from '../../components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '../../components/Settings/Service/twitch';
 import PageSettingsModulesSystemsAntihateRaid from '../../components/Settings/Systems/antihateraid';
@@ -239,7 +238,6 @@ const PageSettingsModules = () => {
                 <PageSettingsModulesIntegrationsStreamelements onVisible={() => setActiveTab('integrations-streamelements')}/>
                 <PageSettingsModulesIntegrationsStreamlabs onVisible={() => setActiveTab('integrations-streamlabs')}/>
                 <PageSettingsModulesIntegrationsTipeeestream onVisible={() => setActiveTab('integrations-tipeeestream')}/>
-                <PageSettingsModulesIntegrationsTwitter onVisible={() => setActiveTab('integrations-twitter')}/>
               </>
               }
               {type === `games` && <>

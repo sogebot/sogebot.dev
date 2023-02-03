@@ -15,7 +15,9 @@ import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
 
+import { CountdownSettings } from './Overlay/CountdownSettings';
 import { Layers } from './Overlay/Layers';
+import { Settings } from './Overlay/Settings';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
@@ -223,6 +225,13 @@ export const OverlayEdit: React.FC = () => {
                 ...o, items: value,
               } as Overlay))}
             />
+
+            { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => handleItemChange(path, value)}>
+              {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={() => {
+                console.log('a');
+              }}/>}
+            </Settings>
+            }
           </Grid>
           <Grid xs sx={{ height: '100%' }}>
             <Box id="container"
