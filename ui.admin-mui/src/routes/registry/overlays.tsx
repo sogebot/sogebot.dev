@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import {
   FilteringState,
   IntegratedFiltering,
@@ -32,7 +34,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
-import { useLocalstorageState } from 'rooks';
+import { useSessionstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
@@ -46,9 +48,15 @@ import { useFilter } from '../../hooks/useFilter';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
+const generateLinkId = (server: string, id: string) => {
+  return Buffer.from(JSON.stringify({
+    server, id,
+  })).toString('base64');
+};
+
 const PageRegistryOverlays = () => {
   const dispatch = useDispatch();
-  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -97,7 +105,11 @@ const PageRegistryOverlays = () => {
             <EditButton
               href={'/registry/overlays/edit/' + row.id}
             />
-            <IconButton LinkComponent={'a'} href={server + '/overlays/' + row.id} target="_blank"><Link/></IconButton>
+            <IconButton
+              LinkComponent={'a'}
+              href={`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`} target="_blank">
+              <Link/>
+            </IconButton>
             <IconButton onClick={() => copy(row.id)}><ContentPasteTwoTone/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,

@@ -137,8 +137,8 @@ export const ServerSelect: React.FC = () => {
         return;
       }
 
-      if (localStorage.server) {
-        setServerInputValue(JSON.parse(localStorage.server));
+      if (sessionStorage.server) {
+        setServerInputValue(JSON.parse(sessionStorage.server));
       }
       setIsInitial(false);
     }

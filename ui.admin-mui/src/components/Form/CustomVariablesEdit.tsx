@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useLocalstorageState } from 'rooks';
+import { useSessionstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
@@ -65,7 +65,7 @@ import { DAY } from '../../constants';
 /* eslint-enable */
 
 const createInitialItem = async () => {
-  const response = await fetch(`${JSON.parse(localStorage.server)}/assets/custom-variables-code.txt`);
+  const response = await fetch(`${JSON.parse(sessionStorage.server)}/assets/custom-variables-code.txt`);
   return new Variable({
     variableName:  '',
     currentValue:  '',
@@ -83,7 +83,7 @@ const createInitialItem = async () => {
 };
 
 export const CustomVariablesEdit: React.FC = () => {
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -294,7 +294,7 @@ export const CustomVariablesEdit: React.FC = () => {
       getSocket('/core/customvariables').emit('customvariables::list', (err, val) => {
         if (err) {
           enqueueSnackbar('Something went wrong during data loading.');
-          navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
+          navigate(`/registry/customvariables/?server=${JSON.parse(sessionStorage.server)}`);
         } else {
           const itemFromList = val.find(o => o.id === id);
           if (itemFromList) {
@@ -328,7 +328,7 @@ export const CustomVariablesEdit: React.FC = () => {
   }, [item, loading, setErrors, reset]);
 
   const handleClose = () => {
-    navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
+    navigate(`/registry/customvariables/?server=${JSON.parse(sessionStorage.server)}`);
   };
 
   const handleSave = useCallback(() => {
@@ -347,7 +347,7 @@ export const CustomVariablesEdit: React.FC = () => {
           item.id = cid;
           return item;
         });
-        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
+        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(sessionStorage.server)}`;
         window.history.replaceState(null, '', asPath);
       }
       setSaving(false);

@@ -241,7 +241,7 @@ export const RandomizerEdit: React.FC = () => {
   React.useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           console.log(data.data);
           setItem(data.data ?? new Randomizer(emptyItem));
@@ -265,17 +265,17 @@ export const RandomizerEdit: React.FC = () => {
   }, [item, loading, setErrors]);
 
   const handleClose = () => {
-    navigate(`/registry/randomizer?server=${JSON.parse(localStorage.server)}`);
+    navigate(`/registry/randomizer?server=${JSON.parse(sessionStorage.server)}`);
   };
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer`,
+    axios.post(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer`,
       { ...item },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         enqueueSnackbar('Randomizer saved.', { variant: 'success' });
-        navigate(`/registries/randomizer/edit/${data.data.id}?server=${JSON.parse(localStorage.server)}`);
+        navigate(`/registries/randomizer/edit/${data.data.id}?server=${JSON.parse(sessionStorage.server)}`);
       })
       .catch(e => {
         validate(e.response.data.errors);

@@ -68,7 +68,7 @@ const PageCommandsCommands = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: CommandsGroup) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/customcommands/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Commands group ${item.name} deleted successfully. You can still see this group if it is being activelly used by custom commands.`, { variant: 'success' });
         refresh();
@@ -114,14 +114,14 @@ const PageCommandsCommands = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();

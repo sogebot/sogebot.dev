@@ -132,7 +132,7 @@ const PageManageQuotes = () => {
   const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 
   const deleteItem = useCallback((item: Quotes) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Quote ${item.id} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -146,7 +146,7 @@ const PageManageQuotes = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setUsers(data.users);
             setItems(data.data);
@@ -165,7 +165,7 @@ const PageManageQuotes = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

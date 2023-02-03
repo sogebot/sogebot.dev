@@ -68,7 +68,7 @@ const PageCommandsKeyword = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: KeywordGroup) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Keyword group ${item.name} deleted successfully. You can still see this group if it is being activelly used by keywords.`, { variant: 'success' });
         refresh();
@@ -114,14 +114,14 @@ const PageCommandsKeyword = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();

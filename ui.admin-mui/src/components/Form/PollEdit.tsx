@@ -86,7 +86,7 @@ export const PollEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/polls`,
+    axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/polls`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {

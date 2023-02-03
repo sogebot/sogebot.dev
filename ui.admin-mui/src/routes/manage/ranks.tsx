@@ -82,7 +82,7 @@ const PageCommandsKeywords = () => {
   ]);
 
   const deleteItem = useCallback((item: Rank) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Rank ${item.value} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -98,7 +98,7 @@ const PageCommandsKeywords = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -116,7 +116,7 @@ const PageCommandsKeywords = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

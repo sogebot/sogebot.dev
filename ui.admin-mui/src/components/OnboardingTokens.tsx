@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useIntervalWhen, useLocalstorageState } from 'rooks';
+import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
 import { getSocket } from '../helpers/socket';
 import { useSettings } from '../hooks/useSettings';
@@ -17,7 +17,7 @@ export const OnboardingTokens: React.FC = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
   const { connectedToServer } = useSelector((s: any) => s.loader);
   const { settings, refresh } = useSettings('/services/twitch');
 

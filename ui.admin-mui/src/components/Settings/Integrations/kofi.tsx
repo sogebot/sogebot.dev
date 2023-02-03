@@ -49,7 +49,7 @@ const PageSettingsModulesIntegrationsKofi: React.FC<{
         <TextField
           disabled
           variant='filled'
-          value={JSON.parse(localStorage.server) + '/webhooks/kofi'}
+          value={JSON.parse(sessionStorage.server) + '/webhooks/kofi'}
           helperText={parse(translate('integrations.kofi.settings.webhook_url.help'))}
           label={translate('integrations.kofi.settings.webhook_url.title')}
         />

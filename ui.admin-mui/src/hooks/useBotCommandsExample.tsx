@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { useLocalstorageState } from 'rooks';
+import { useSessionstorageState } from 'rooks';
 
 import { Commands } from '../classes/Commands';
 import getAccessToken from '../getAccessToken';
@@ -19,7 +19,7 @@ import { getSocket } from '../helpers/socket';
 export const useBotCommandsExample = (item: Commands | null) => {
   const { user } = useSelector((state: any) => state.user);
   const location = useLocation();
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ loading, setLoading ] = useState(true);
   const [ exampleData, setExampleData ] = useState<(string|{if?: string, message: string, replace: { [x:string]: string }})[][]>([]);

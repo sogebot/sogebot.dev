@@ -5,14 +5,14 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useSessionstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const TwitchOwnAppTokens = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
-  const [server] = useLocalStorage('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     if (!server) {

@@ -79,7 +79,7 @@ export const AliasEdit: React.FC<{
 
   const handleClose = () => {
     setTimeout(() => {
-      navigate(`/commands/alias?server=${JSON.parse(localStorage.server)}`);
+      navigate(`/commands/alias?server=${JSON.parse(sessionStorage.server)}`);
     }, 200);
   };
 
@@ -90,7 +90,7 @@ export const AliasEdit: React.FC<{
         validate(err as any);
       } else {
         enqueueSnackbar('Alias saved.', { variant: 'success' });
-        navigate(`/commands/alias/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
+        navigate(`/commands/alias/edit/${savedItem.id}?server=${JSON.parse(sessionStorage.server)}`);
       }
       setSaving(false);
     });

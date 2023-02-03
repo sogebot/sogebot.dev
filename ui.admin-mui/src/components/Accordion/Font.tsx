@@ -9,9 +9,9 @@ import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
+import { useSessionstorageState } from 'rooks';
 
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useTranslation } from '../../hooks/useTranslation';
 import { isHexColor } from '../../validators';
 
@@ -51,7 +51,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
     label,
     ...accordionProps } = props;
   const { translate } = useTranslation();
-  const [server] = useLocalStorage('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
   const [ fonts, setFonts ] = React.useState<string[]>([]);
   const [ exampleText, setExampleText ] = React.useState('The quick brown fox jumps over the lazy dog');
   const [ shadowTab, setShadowTab ] = React.useState(0);

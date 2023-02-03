@@ -9,8 +9,8 @@ import React, {
 } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocalstorageState } from 'rooks';
 
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { toggleCookieManager } from '../store/loaderSlice';
 
 export default function CookieBar() {
@@ -20,8 +20,8 @@ export default function CookieBar() {
 
   const connected = useMemo(() => connectedToServer && state, [connectedToServer, state]);
 
-  const [ cookieControlConsent, setCookieControlConsent ] = useLocalStorage('cookie_control_consent', 0);
-  const [ cookieControlEnabledCookies, setCookieControlEnabled ] = useLocalStorage('cookie_control_enabled_cookies', ['mandatory', 'functional']);
+  const [ cookieControlConsent, setCookieControlConsent ] = useLocalstorageState('cookie_control_consent', 0);
+  const [ cookieControlEnabledCookies, setCookieControlEnabled ] = useLocalstorageState('cookie_control_enabled_cookies', ['mandatory', 'functional']);
 
   useEffect(() => {
     if (connected) {

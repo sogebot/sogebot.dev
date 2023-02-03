@@ -3,13 +3,13 @@ import {
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useLocalstorageState } from 'rooks';
+import { useSessionstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
 
 const Tiltify = () => {
   const [state, setState] = useState<boolean | null>(null);
-  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     if (server === 'https://demobot.sogebot.xyz') {
@@ -41,7 +41,7 @@ const Tiltify = () => {
       }
     } else {
       location.href = `https://tiltify.soge.workers.dev/authorize?state=${Buffer.from(JSON.stringify({
-        server:   JSON.parse(localStorage.server),
+        server:   JSON.parse(sessionStorage.server),
         referrer: window.location.origin,
         version:  2,
       })).toString('base64')}`;

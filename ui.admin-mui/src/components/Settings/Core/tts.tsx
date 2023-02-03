@@ -31,7 +31,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
   useEffect(() => {
     setLoading(true);
-    axios.get(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`${JSON.parse(sessionStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => setPrivateKeys(response.data.data))
       .finally(refresh);
   }, [ refresh, setLoading ]);

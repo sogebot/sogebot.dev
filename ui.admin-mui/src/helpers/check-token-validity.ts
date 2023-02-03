@@ -12,19 +12,19 @@ const refreshToken = debounce(async () => {
     const validation = await axios.get(`${process.env.isNuxtDev ? 'http://localhost:20000' : window.location.origin}/socket/refresh`, { headers: { 'x-twitch-token': token } });
     console.group('check-token-validity::refreshToken');
     console.debug('refreshToken', {
-      refreshToken: token, validation, 
+      refreshToken: token, validation,
     });
     console.groupEnd();
-    localStorage[`${localStorage.currentServer}::accessToken`] = validation.data.accessToken;
-    localStorage[`${localStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
-    localStorage[`${localStorage.currentServer}::userType`] = validation.data.userType;
+    localStorage[`${sessionStorage.currentServer}::accessToken`] = validation.data.accessToken;
+    localStorage[`${sessionStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
+    localStorage[`${sessionStorage.currentServer}::userType`] = validation.data.userType;
   } catch (e) {
     console.error(e);
-    localStorage.removeItem(`${localStorage.currentServer}::accessToken`);
-    localStorage.removeItem(`${localStorage.currentServer}::refreshToken`);
+    localStorage.removeItem(`${sessionStorage.currentServer}::accessToken`);
+    localStorage.removeItem(`${sessionStorage.currentServer}::refreshToken`);
     localStorage.removeItem('code');
     localStorage.removeItem('clientId');
-    localStorage[`${localStorage.currentServer}::userType`] = 'unauthorized';
+    localStorage[`${sessionStorage.currentServer}::userType`] = 'unauthorized';
     redirectLogin();
   }
 }, 30000, { leading: true });
@@ -39,9 +39,9 @@ const redirectLogin = () => {
 
 export default function accessTokenCheck () {
   setInterval(() => {
-    if (localStorage[`${localStorage.currentServer}::accessToken`]) {
+    if (localStorage[`${sessionStorage.currentServer}::accessToken`]) {
       // we just need to check if token is expired
-      const { exp } = jwt_decode<{exp: number}>(localStorage[`${localStorage.currentServer}::accessToken`]);
+      const { exp } = jwt_decode<{exp: number}>(localStorage[`${sessionStorage.currentServer}::accessToken`]);
       const expirationTime = (exp * 1000) - 60000;
       if (Date.now() >= expirationTime) {
         refreshToken();

@@ -327,7 +327,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       setActions(orderBy(items, 'order', 'asc'));
     });
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         setRandomizers(data.data.map((o: any) => ({
           id: o.id, label: o.name,
