@@ -5,6 +5,7 @@ import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
 import { getSocket } from '../helpers/socket';
 
@@ -49,6 +50,7 @@ export default function Overlays() {
         top:      `${item.alignY}px`,
       }}>
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
       </Box>,
       )
     }

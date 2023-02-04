@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
+import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { Layers } from './Overlay/Layers';
 import { Settings } from './Overlay/Settings';
@@ -26,6 +27,7 @@ import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
+import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 
 const emptyItem: Partial<Overlay> = {
@@ -256,10 +258,13 @@ export const OverlayEdit: React.FC = () => {
 
               { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => {
                 handleItemChange(path, value);
-                refresh();
+                setTimeout(() => refresh(), 100);
               }}>
                 <Box sx={{ pt: 3 }}>
                   {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                 </Box>
@@ -327,8 +332,9 @@ export const OverlayEdit: React.FC = () => {
                   }}
                 >
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
-                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0,
+                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 999,
                   }}>
                     {o.name && o.name.length > 0
                       ? <>

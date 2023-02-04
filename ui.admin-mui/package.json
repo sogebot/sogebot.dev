@@ -51,6 +51,7 @@
     "semver": "^7.3.8",
     "simplebar-react": "^3.2.0",
     "socket.io-client": "^4.5.4",
+    "swiper": "^9.0.2",
     "typeorm": "^0.3.11",
     "typescript": "latest",
     "uuid": "^9.0.0",
