@@ -3,7 +3,7 @@ import { Box, IconButton } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
-import React, { useRef } from 'react';
+import React from 'react';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
 import * as workerTimers from 'worker-timers';
@@ -30,12 +30,8 @@ let lastSave = Date.now();
 export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) => {
   const [ show, setShow ] = React.useState('time');
   const [ model, setModel ] = React.useState(item);
-  const [ width, setWidth ] = React.useState(0);
   const [ isReady, setReady ] = React.useState(false);
-
   const [ threadId ] = React.useState(shortid());
-
-  const widthRef = useRef<HTMLDivElement>();
 
   const enabled = React.useMemo(() => {
     return isReady && (active ?? false) && model.isStartedOnSourceLoad && model.currentTime > 0;
@@ -120,12 +116,6 @@ export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) =>
   };
 
   React.useEffect(() => {
-    if (widthRef.current) {
-      setWidth(widthRef.current.getBoundingClientRect().width);
-    }
-  }, [ item, widthRef.current ]);
-
-  React.useEffect(() => {
     loadFont(model.countdownFont.family);
     loadFont(model.messageFont.family);
 
@@ -190,15 +180,9 @@ export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) =>
 
     output += `<span>`;
     output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-    /* dot needs to be part of span to not frantically move */
-    if (model.showMilliseconds) {
-      output += `<small>.</small>`;
-    }
-
     output += `</span>`;
     if (model.showMilliseconds) {
-      output += `<small>${millis}</small>`;
+      output += `<small>.${millis}</small>`;
     }
     return output;
   }, [ model ]);
@@ -225,24 +209,13 @@ export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) =>
         textAlign: 'right',
       },
     }}>
-      { /* invisible box to determinate width */}
-      <Box
-        ref={widthRef}
-        sx={{
-          visibility: 'hidden',
-          position:   'absolute',
-        }}>
-        <div>
-          <span>55:55:55</span>
-          <small>.55</small>
-        </div>
-      </Box>
 
       <Box sx={{
         height:         'fit-content',
-        width:          show === 'time' ? `${width}px` : '100%',
-        justifyContent: 'space-between',
+        width:          '100%',
         alignItems:     'baseline',
+        textAlign:      'center',
+        justifyContent: 'center',
       }}>
         { show === 'time'
           ? HTMLReactParser(time)
