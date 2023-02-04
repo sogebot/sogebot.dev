@@ -12,12 +12,9 @@ import { getSocket } from '../../helpers/socket';
 
 const TwitchOwnAppTokens = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('currentServer', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
-    if (!server) {
-      return;
-    }
     if (server === 'https://demobot.sogebot.xyz') {
       return;
     }

@@ -24,7 +24,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
   }
 
   if (localStorage.debug) {
-    console.log('debug', {
+    console.log('debug', JSON.stringify({
       stack:         new Error().stack,
       type:          'getSocket',
       namespace,
@@ -32,11 +32,11 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
       currentServer: sessionStorage.currentServer,
       accessToken:   localStorage[`${sessionStorage.currentServer}::accessToken`],
       refreshToken:  localStorage[`${sessionStorage.currentServer}::refreshToken`],
-    });
+    }, undefined, 2));
   }
 
-  let wsUrl = JSON.parse(sessionStorage.server).replace('https', '').replace('http', '');
-  wsUrl = `${(JSON.parse(sessionStorage.server).startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
+  let wsUrl = JSON.parse(sessionStorage.currentServer).replace('https', '').replace('http', '');
+  wsUrl = `${(JSON.parse(sessionStorage.currentServer).startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
 
   const socket = io(wsUrl + (namespace as string), {
     transports: [ 'websocket' ],

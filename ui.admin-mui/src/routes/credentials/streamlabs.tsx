@@ -10,7 +10,7 @@ import { getSocket } from '../../helpers/socket';
 
 const Streamlabs = () => {
   const [state, setState] = useState<boolean | null>(null);
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useSessionstorageState('currentServer', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     if (server === 'https://demobot.sogebot.xyz') {
