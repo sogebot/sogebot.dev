@@ -21,7 +21,6 @@ export default function Overlays() {
     if (base64) {
       const data = JSON.parse(String(Buffer.from(base64, 'base64')));
       sessionStorage.server = JSON.stringify(data.server);
-      sessionStorage.currentServer = data.server;
       setServer(data.server);
       setId(data.id);
     }

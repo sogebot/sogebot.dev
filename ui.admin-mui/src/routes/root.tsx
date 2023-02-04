@@ -89,9 +89,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       validation, headers,
     }));
     console.groupEnd();
-    localStorage[`${sessionStorage.currentServer}::accessToken`] = validation.data.accessToken;
-    localStorage[`${sessionStorage.currentServer}::refreshToken`] = validation.data.refreshToken;
-    localStorage[`${sessionStorage.currentServer}::userType`] = validation.data.userType;
+    localStorage[`${sessionStorage.server}::accessToken`] = validation.data.accessToken;
+    localStorage[`${sessionStorage.server}::refreshToken`] = validation.data.refreshToken;
+    localStorage[`${sessionStorage.server}::userType`] = validation.data.userType;
   } catch(e) {
     dispatch(showLoginWarning());
     dispatch(setMessage('You don\'t have access to this server.'));

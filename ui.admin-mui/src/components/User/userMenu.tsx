@@ -38,12 +38,12 @@ export const UserMenu: React.FC = () => {
     delete localStorage['cached-logged-user'];
     const socket = getSocket('/core/users', true);
     socket.emit('logout', {
-      accessToken:  localStorage.getItem(`${sessionStorage.currentServer}::accessToken`),
-      refreshToken: localStorage.getItem(`${sessionStorage.currentServer}::refreshToken`),
+      accessToken:  localStorage.getItem(`${sessionStorage.server}::accessToken`),
+      refreshToken: localStorage.getItem(`${sessionStorage.server}::refreshToken`),
     });
-    localStorage[`${sessionStorage.currentServer}::accessToken`] = '';
-    localStorage[`${sessionStorage.currentServer}::refreshToken`] = '';
-    localStorage[`${sessionStorage.currentServer}::userType`] = 'unauthorized';
+    localStorage[`${sessionStorage.server}::accessToken`] = '';
+    localStorage[`${sessionStorage.server}::refreshToken`] = '';
+    localStorage[`${sessionStorage.server}::userType`] = 'unauthorized';
     window.location.assign(window.location.origin + '/credentials/login#error=logged+out');
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

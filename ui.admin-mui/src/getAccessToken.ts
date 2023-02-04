@@ -1,3 +1,3 @@
 export default function getAccessToken() {
-  return localStorage[`${sessionStorage.currentServer}::accessToken`];
+  return localStorage[`${sessionStorage.server}::accessToken`];
 }
