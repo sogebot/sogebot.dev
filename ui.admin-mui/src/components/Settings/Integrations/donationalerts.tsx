@@ -60,13 +60,6 @@ const PageSettingsModulesIntegrationsDonationAlerts: React.FC<{
   const authorize = useCallback(() => {
     const popup = window.open('/credentials/donationalerts', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
-      try {
-        if (popup?.window.location.href.includes('status=done')) {
-          popup.close();
-        }
-      } catch {
-        // ignore cross origin error which may happen when donationalerts is authorizing
-      }
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
         refresh();

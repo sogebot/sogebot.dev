@@ -19,27 +19,14 @@ const Google = () => {
     }
     if (window.location.hash || window.location.search) {
       let code = null;
-      let status = null;
       let state = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
         }
-        if (url.startsWith('?status=') || url.startsWith('status=')) {
-          status = url.replace(/\??status=/, '');
-        }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
           state = url.replace(/\??state=/, '');
         }
-      }
-
-      if (code || status) {
-        setProgress(true);
-      }
-
-      if (status) {
-        // do nothing if we are done
-        return;
       }
 
       if (code) {
@@ -53,7 +40,8 @@ const Google = () => {
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
             getSocket('/services/google').emit('google::token', { refreshToken }, () => {
-              location.href = location.href + '&status=done';
+              setProgress(true);
+              setTimeout(() => window.close(), 1000);
               return;
             });
           })

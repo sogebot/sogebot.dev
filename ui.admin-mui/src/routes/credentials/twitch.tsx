@@ -26,7 +26,6 @@ const Twitch = () => {
     if (window.location.hash || window.location.search) {
       let type = null;
       let code = null;
-      let status = null;
       let state = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?type=') || url.startsWith('type=')) {
@@ -34,9 +33,6 @@ const Twitch = () => {
         }
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
-        }
-        if (url.startsWith('?status=') || url.startsWith('status=')) {
-          status = url.replace(/\??status=/, '');
         }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
           state = url.replace(/\??state=/, '');
@@ -48,10 +44,6 @@ const Twitch = () => {
         localStorage.twitchOauthState = type + shortid();
         location.href = `${serviceUrl}?state=${localStorage.twitchOauthState}`;
         return;
-      }
-
-      if (code || status) {
-        setProgress(true);
       }
 
       if (status) {
@@ -77,7 +69,8 @@ const Twitch = () => {
               refreshToken,
               accountType,
             }, () => {
-              location.href = location.href + '&status=done';
+              setProgress(true);
+              setTimeout(() => window.close(), 1000);
               return;
             });
           })

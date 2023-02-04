@@ -18,18 +18,10 @@ const DonationAlerts = () => {
     }
     if (window.location.hash || window.location.search) {
       let code = null;
-      let status = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
         }
-        if (url.startsWith('?status=') || url.startsWith('status=')) {
-          status = url.replace(/\??status=/, '');
-        }
-      }
-
-      if (code || status) {
-        setState(true);
       }
 
       if (status) {
@@ -45,7 +37,8 @@ const DonationAlerts = () => {
             getSocket('/integrations/donationalerts').emit('donationalerts::token', {
               accessToken, refreshToken,
             }, () => {
-              location.href = location.href + '&status=done';
+              setState(true);
+              setTimeout(() => window.close(), 1000);
               return;
             });
           })

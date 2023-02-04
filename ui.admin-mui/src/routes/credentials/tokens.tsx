@@ -25,7 +25,6 @@ const TwitchOwnAppTokens = () => {
     if (window.location.hash || window.location.search) {
       let type = null;
       let code = null;
-      let status = null;
       let state = null;
       let clientId = null;
       let clientSecret = null;
@@ -37,9 +36,6 @@ const TwitchOwnAppTokens = () => {
         }
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
-        }
-        if (url.startsWith('?status=') || url.startsWith('status=')) {
-          status = url.replace(/\??status=/, '');
         }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
           state = url.replace(/\??state=/, '');
@@ -63,15 +59,6 @@ const TwitchOwnAppTokens = () => {
         return;
       }
 
-      if (code || status) {
-        setProgress(true);
-      }
-
-      if (status) {
-        // do nothing if we are done
-        return;
-      }
-
       if (code) {
         if (!state || state !== sessionStorage.twitchOauthState) {
           console.error('Incorrect state');
@@ -92,7 +79,8 @@ const TwitchOwnAppTokens = () => {
               clientId:     sessionStorage.clientId,
               clientSecret: sessionStorage.clientSecret,
             }, () => {
-              location.href = location.href + '&status=done';
+              setProgress(true);
+              setTimeout(() => window.close(), 1000);
               return;
             });
           })

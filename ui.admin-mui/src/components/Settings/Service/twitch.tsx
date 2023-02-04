@@ -112,13 +112,6 @@ const PageSettingsModulesServiceTwitch: React.FC<{
     const url = accountType === 'bot' ? botUrl : broadcasterUrl;
     const popup = window.open(url ?? '/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
-      try {
-        if (popup?.window.location.href.includes('status=done')) {
-          popup.close();
-        }
-      } catch {
-        // ignore cross origin error which may happen when google is authorizing
-      }
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
         setTimeout(() => refresh(), 5000);

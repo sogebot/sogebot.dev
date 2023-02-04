@@ -19,7 +19,6 @@ const Spotify = () => {
       getSocket(`/integrations/spotify`).emit('spotify::state', (_err, spotifyState: any) => {
         let urlState = '';
         let urlCode = '';
-        let status = null;
         for (const url of window.location.search.split('&')) {
           if (url.startsWith('?code=') || url.startsWith('code=')) {
             urlCode = url.replace(/\??code=/, '');
@@ -27,20 +26,12 @@ const Spotify = () => {
           if (url.startsWith('?state=') || url.startsWith('state=')) {
             urlState = url.replace(/\??state=/, '');
           }
-          if (url.startsWith('?status=') || url.startsWith('status=')) {
-            status = url.replace(/\??status=/, '');
-          }
-        }
-
-        if (status) {
-          setState(true);
-          return;
         }
 
         if (urlState === spotifyState) {
           getSocket(`/integrations/spotify`).emit('code', urlCode, () => {
-            location.href = location.href + '&status=done';
             setState(true);
+            setTimeout(() => window.close(), 1000);
           });
         } else {
           setState(false);

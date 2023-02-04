@@ -18,23 +18,10 @@ const Streamlabs = () => {
     }
     if (window.location.hash || window.location.search) {
       let code = null;
-      let status = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');
         }
-        if (url.startsWith('?status=') || url.startsWith('status=')) {
-          status = url.replace(/\??status=/, '');
-        }
-      }
-
-      if (code || status) {
-        setState(true);
-      }
-
-      if (status) {
-        // do nothing if we are done
-        return;
       }
 
       if (code) {
@@ -42,7 +29,8 @@ const Streamlabs = () => {
           .then(({ data }) => {
             const accessToken = data.access_token;
             getSocket('/integrations/streamlabs').emit('token', { accessToken }, () => {
-              location.href = location.href + '&status=done';
+              setState(true);
+              setTimeout(() => window.close(), 1000);
               return;
             });
           })
