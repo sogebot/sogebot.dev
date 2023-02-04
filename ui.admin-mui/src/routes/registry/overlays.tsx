@@ -110,7 +110,7 @@ const PageRegistryOverlays = () => {
               href={`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`} target="_blank">
               <Link/>
             </IconButton>
-            <IconButton onClick={() => copy(row.id)}><ContentPasteTwoTone/></IconButton>
+            <IconButton onClick={() => copy(generateLinkId(server, row.id))}><ContentPasteTwoTone/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
