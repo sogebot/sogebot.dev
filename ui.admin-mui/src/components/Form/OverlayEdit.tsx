@@ -402,7 +402,10 @@ export const OverlayEdit: React.FC = () => {
                       handleItemChange('height', Math.round((e.target as any).offsetHeight));
                       handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
                       handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
-                      e.target.style.transform = `translate(0px, 0px)`;
+                      // reset things
+                      e.target.style.removeProperty('width');
+                      e.target.style.removeProperty('height');
+                      e.target.style.removeProperty('transform');
                       refresh();
                     }
                   }}
