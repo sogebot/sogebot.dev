@@ -334,7 +334,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
-                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 999,
+                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 1,
                   }}>
                     {o.name && o.name.length > 0
                       ? <>
