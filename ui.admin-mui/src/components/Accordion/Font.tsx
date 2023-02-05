@@ -7,6 +7,7 @@ import {
 import { Countdown, Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
+import capitalize from 'lodash/capitalize';
 import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
@@ -99,19 +100,19 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
       </FormControl>}
 
       {'align' in model && <FormControl fullWidth variant="filled" >
-        <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align')}</InputLabel>
+        <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align.name')}</InputLabel>
         <Select
           MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-          label={translate('registry.alerts.font.align')}
+          label={translate('registry.alerts.font.align.name')}
           labelId="registry.alerts.font.align"
           value={model.align}
           onChange={(ev) => onChange({
             ...model, align: ev.target.value as typeof model.align,
           })}
         >
-          <MenuItem value='left' key='left'>Left</MenuItem>
-          <MenuItem value='center' key='center'>Center</MenuItem>
-          <MenuItem value='right' key='right'>Reft</MenuItem>
+          <MenuItem value='left' key='left'>{capitalize(translate('registry.alerts.font.align.left'))}</MenuItem>
+          <MenuItem value='center' key='center'>{capitalize(translate('registry.alerts.font.align.center'))}</MenuItem>
+          <MenuItem value='right' key='right'>{capitalize(translate('registry.alerts.font.align.right'))}</MenuItem>
         </Select>
       </FormControl>}
 
