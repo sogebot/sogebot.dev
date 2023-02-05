@@ -4,7 +4,7 @@ import {
   FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
   Tab, Tabs, TextField, Typography,
 } from '@mui/material';
-import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
+import { Countdown, Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import { MuiColorInput } from 'mui-color-input';
@@ -41,7 +41,7 @@ type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
   label?: string;
   accordionId?: string;
 };
-export const AccordionFont = <T extends Randomizer['customizationFont'] | Countdown['countdownFont']>(props: Props<T>) => {
+export const AccordionFont = <T extends Randomizer['customizationFont'] | Countdown['countdownFont'] | Eventlist['usernameFont']>(props: Props<T>) => {
   const accordionId = props.accordionId ?? 'font';
   const { open,
     onClick,
@@ -87,7 +87,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
         <InputLabel id="registry.alerts.font.name">{translate('registry.alerts.font.name')}</InputLabel>
         <Select
           MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-          label={translate('registry.alerts.voice')}
+          label={translate('registry.alerts.font.name')}
           labelId="registry.alerts.font.name"
           value={model.family}
           onChange={(ev) => onChange({
@@ -95,6 +95,23 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
           })}
         >
           {fonts.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
+        </Select>
+      </FormControl>}
+
+      {'align' in model && <FormControl fullWidth variant="filled" >
+        <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align')}</InputLabel>
+        <Select
+          MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+          label={translate('registry.alerts.font.align')}
+          labelId="registry.alerts.font.align"
+          value={model.align}
+          onChange={(ev) => onChange({
+            ...model, align: ev.target.value as typeof model.align,
+          })}
+        >
+          <MenuItem value='left' key='left'>Left</MenuItem>
+          <MenuItem value='center' key='center'>Center</MenuItem>
+          <MenuItem value='right' key='right'>Reft</MenuItem>
         </Select>
       </FormControl>}
 

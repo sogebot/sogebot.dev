@@ -1,6 +1,6 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionSummary, Stack, TextField, Typography,
+  Accordion, AccordionDetails, AccordionSummary, InputAdornment, Stack, TextField, Typography,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
@@ -41,7 +41,7 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
             fullWidth
             variant="filled"
             value={model.width}
-            InputProps={{ endAdornment: 'px' }}
+            InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
             type="number"
             onChange={(ev) => {
               if (!isNaN(Number(ev.currentTarget.value))) {
@@ -54,7 +54,7 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
             fullWidth
             variant="filled"
             value={model.height}
-            InputProps={{ endAdornment: 'px' }}
+            InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
             type="number"
             onChange={(ev) => {
               if (!isNaN(Number(ev.currentTarget.value))) {
@@ -70,7 +70,7 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
             fullWidth
             variant="filled"
             value={model.alignX}
-            InputProps={{ endAdornment: 'px' }}
+            InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
             type="number"
             onChange={(ev) => {
               if (!isNaN(Number(ev.currentTarget.value))) {
@@ -84,7 +84,7 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
             type="number"
             variant="filled"
             value={model.alignY}
-            InputProps={{ endAdornment: 'px' }}
+            InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
             onChange={(ev) => {
               if (!isNaN(Number(ev.currentTarget.value))) {
                 onUpdate('alignY',  Number(ev.currentTarget.value));
