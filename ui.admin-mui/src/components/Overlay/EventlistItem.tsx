@@ -38,7 +38,7 @@ export const EventlistItem: React.FC<Props> = ({ item, active }) => {
         return console.error(err);
       }
 
-      setEvents(orderBy(data, 'timestamp', item.order).map((o) => {
+      setEvents(orderBy(data, 'timestamp', item.order).filter(o => !o.isHidden).map((o) => {
         const values = JSON.parse(o.values_json);
         if (o.event === 'resub') {
           return {
