@@ -4,7 +4,9 @@ import {
   FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
   Tab, Tabs, TextField, Typography,
 } from '@mui/material';
-import { Countdown, Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
+import {
+  Countdown, Eventlist, Wordcloud,
+} from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
@@ -42,7 +44,10 @@ type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
   label?: string;
   accordionId?: string;
 };
-export const AccordionFont = <T extends Randomizer['customizationFont'] | Countdown['countdownFont'] | Eventlist['usernameFont']>(props: Props<T>) => {
+export const AccordionFont = <T extends Randomizer['customizationFont']
+| Countdown['countdownFont']
+| Wordcloud['wordFont']
+| Eventlist['usernameFont']>(props: Props<T>) => {
   const accordionId = props.accordionId ?? 'font';
   const { open,
     onClick,
@@ -116,7 +121,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
         </Select>
       </FormControl>}
 
-      {model.size !== undefined && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
+      {'size' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
         <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.size.name') }</FormLabel>
         <Slider
           step={1}
@@ -130,7 +135,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
           })}/>
       </Stack>}
 
-      {model.weight !== undefined && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+      {'weight' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
         <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.weight.name') }</FormLabel>
         <Slider
           step={100}
@@ -143,7 +148,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
           })}/>
       </Stack>}
 
-      {model.borderPx !== undefined && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+      {'borderPx' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
         <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.borderPx.name') }</FormLabel>
         <Slider
           step={1}
@@ -171,7 +176,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
           })} />
       </Box>}
 
-      {model.borderColor !== undefined && <Box
+      {'borderColor' in model && <Box
         sx={{ pt: 2 }}>
         <MuiColorInput
           label={ translate('registry.alerts.font.borderColor.name') }
@@ -186,7 +191,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
       </Box>}
       <Divider sx={{ my: 2 }}/>
 
-      {(model.shadow !== undefined && model.shadow !== null) && <>
+      {('shadow' in model && model.shadow !== null) && <>
         <Stack direction='row'>
           <Button
             onClick={() => {
@@ -343,15 +348,17 @@ export const AccordionFont = <T extends Randomizer['customizationFont'] | Countd
         <Paper
           elevation={0}
           sx={{
-            fontSize:        model.size + 'px',
+            fontSize:        'size' in model ? model.size : '14' + 'px',
             backgroundColor: 'transparent',
             fontWeight:      model.weight,
             fontFamily:      `'${model.family}'`,
             textAlign:       'center',
-            textShadow:      [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', '),
+            textShadow:      'borderPx' in model && 'borderColor' in model && 'shadow' in model
+              ? [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', ')
+              : [],
           }}>
           <Box sx={{
-            lineHeight: (model.size + 15) + 'px',
+            lineHeight: (('size' in model ? model.size : 14) + 15) + 'px',
             width:      '90%',
           }}>
             <div style={{

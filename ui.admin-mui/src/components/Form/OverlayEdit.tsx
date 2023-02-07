@@ -23,6 +23,7 @@ import { EventlistSettings } from './Overlay/EventlistSettings';
 import { Layers } from './Overlay/Layers';
 import { Settings } from './Overlay/Settings';
 import { UrlSettings } from './Overlay/UrlSettings';
+import { WordcloudSettings } from './Overlay/WordcloudSettings';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
@@ -33,6 +34,7 @@ import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { UrlItem } from '../Overlay/UrlItem';
+import { WordcloudItem } from '../Overlay/WordcloudItem';
 
 const emptyItem: Partial<Overlay> = {
   canvas: {
@@ -277,6 +279,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                 </Box>
               </Settings>
               }
@@ -345,6 +350,8 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'wordcloud' && <WordcloudItem item={o.opts} groupId={id!} id={o.id}/>}
+
                   <Box sx={{
                     position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 1,
                   }}>

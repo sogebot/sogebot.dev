@@ -39,6 +39,7 @@
     "patch-package": "^6.5.1",
     "react": "latest",
     "react-color": "^2.19.3",
+    "react-d3-cloud": "^1.0.6",
     "react-dom": "latest",
     "react-helmet": "^6.1.0",
     "react-moveable": "^0.46.1",

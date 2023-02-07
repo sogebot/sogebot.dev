@@ -22,9 +22,6 @@ type Props = {
 };
 
 const play = (video: HTMLVideoElement, model: ClipsCarousel, swiper: SwiperRef['swiper']) => {
-  console.log({
-    video, model, swiper,
-  });
   video.currentTime = 0;
   video.volume = model.volume / 100;
   video.play().catch((reason) => {

@@ -10,6 +10,7 @@ import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
+import { WordcloudItem } from '../components/Overlay/WordcloudItem';
 import { getSocket } from '../helpers/socket';
 import { setTranslation } from '../store/loaderSlice';
 
@@ -65,6 +66,7 @@ export default function Overlays() {
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'eventlist' && <EventlistItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'url' && <UrlItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
       </Box>,
       )
     }
