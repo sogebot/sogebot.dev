@@ -110,7 +110,7 @@ const PageRegistryOverlays = () => {
               href={`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`} target="_blank">
               <Link/>
             </IconButton>
-            <IconButton onClick={() => copy(generateLinkId(server, row.id))}><ContentPasteTwoTone/></IconButton>
+            <IconButton onClick={() => copy(`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`)}><ContentPasteTwoTone/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
         ],
@@ -154,7 +154,7 @@ const PageRegistryOverlays = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const copy = useCallback((link: string) => {
-    navigator.clipboard.writeText(`${server}/overlays/${link}`);
+    navigator.clipboard.writeText(`${link}`);
     enqueueSnackbar(HTMLReactParser(`Overlay link &nbsp;<strong>${link}</strong>&nbsp;copied to clipboard.`));
   }, [ enqueueSnackbar, server ]);
 
