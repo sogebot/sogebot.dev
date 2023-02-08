@@ -77,8 +77,9 @@ export const WordcloudItem: React.FC<Props> = ({ item, active }) => {
   }, []);
 
   return <Box sx={{
-    width:  '100%',
-    height: '100%',
+    width:    '100%',
+    height:   '100%',
+    overflow: 'hidden',
   }}>
     <ReactWordcloud data={computedWords} fontSize={fontSize} rotate={rotate} font={item.wordFont.family} fill={item.wordFont.color}  />
   </Box>;
