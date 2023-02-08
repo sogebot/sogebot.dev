@@ -135,23 +135,6 @@ type Configuration = {
   [x:string]: Configuration | string;
 };
 
-const getConfigurationSocket = (resolve: (value: Configuration | PromiseLike<Configuration>) => void, reject: () => void, interval?: NodeJS.Timer) => {
-  getSocket('/core/ui', true).emit('configuration', (err, configuration) => {
-    if (err) {
-      return console.error(err);
-    }
-    console.groupCollapsed('GET=>Configurations');
-    console.debug({ configuration });
-    console.groupEnd();
-    if (configuration) {
-      resolve(configuration);
-    } else {
-      reject();
-    }
-    clearInterval(interval);
-  });
-};
-
 export const getConfiguration = async (): Promise<Configuration> => {
   const response = await axios.get(`${JSON.parse(sessionStorage.server)}/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
   return response.data;
