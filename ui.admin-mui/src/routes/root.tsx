@@ -136,9 +136,13 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   await populateListOf('services');
   await populateListOf('integrations');
 
+  console.log('a');
   checkTokenValidity();
+  console.log('b');
 
   dispatch(setState(true));
+  console.log('c');
+
 };
 
 export default function Root() {

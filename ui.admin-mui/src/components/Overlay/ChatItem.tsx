@@ -248,8 +248,8 @@ export const ChatItem: React.FC<Props> = ({ item, active }) => {
       {orderBy(messages, 'timestamp', item.reverseOrder ? 'desc' :'asc')
         .map(message => <Fade in={message.show} key={message.timestamp} mountOnEnter unmountOnExit>
           <Box sx={{
-            pb:                 0.2,
-            pr:                 1,
+            pb:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0.2,
+            pr:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 1,
             lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
             '.simpleChatImage': {
               position:    'relative',

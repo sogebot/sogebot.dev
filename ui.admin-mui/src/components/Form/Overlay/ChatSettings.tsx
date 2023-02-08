@@ -242,7 +242,7 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
         }}
       />
 
-      <TextField
+      {model.type !== 'niconico' && <TextField
         fullWidth
         variant="filled"
         value={model.customLineHeight}
@@ -265,7 +265,33 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
             });
           }
         }}
-      />
+      />}
+
+      {model.type !== 'niconico' && <TextField
+        fullWidth
+        variant="filled"
+        value={model.customSpaceBetweenMessages}
+        inputProps={{ min: 1 }}
+        type="number"
+        label={'Custom space between messages'}
+        InputProps={{
+          endAdornment: <>
+            <InputAdornment position='end'>px</InputAdornment>
+            <InputAdornment position='end'>
+              <Switch checked={model.useCustomSpaceBetweenMessages} onChange={(_, checked) => onUpdate({
+                ...model, useCustomSpaceBetweenMessages: checked,
+              })}/>
+            </InputAdornment>
+          </>,
+        }}
+        onChange={(ev) => {
+          if (!isNaN(Number(ev.currentTarget.value))) {
+            onUpdate({
+              ...model, customSpaceBetweenMessages: Number(ev.currentTarget.value),
+            });
+          }
+        }}
+      />}
 
       <Box sx={{ py: 2 }}>
         <FormControlLabel sx={{
