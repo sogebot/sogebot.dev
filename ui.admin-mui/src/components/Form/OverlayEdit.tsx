@@ -333,7 +333,7 @@ export const OverlayEdit: React.FC = () => {
                     position:        'absolute',
                     width:           `${o.width}px`,
                     height:          `${o.height}px`,
-                    backgroundColor: '#424242',
+                    backgroundColor: o.opts.typeId === 'url' && o.opts.url.length > 0 ? 'transparent' : '#424242',
                     border:          `${1 / zoom}px solid #626262 !important`,
                     left:            `${o.alignX}px`,
                     top:             `${o.alignY}px`,
