@@ -132,22 +132,29 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
 type Configuration = {
   [x:string]: Configuration | string;
 };
+
+const getConfigurationSocket = (resolve: (value: Configuration | PromiseLike<Configuration>) => void, reject: () => void, interval?: NodeJS.Timer) => {
+  getSocket('/core/ui', true).emit('configuration', (err, configuration) => {
+    if (err) {
+      return console.error(err);
+    }
+    console.groupCollapsed('GET=>Configurations');
+    console.debug({ configuration });
+    console.groupEnd();
+    if (configuration) {
+      resolve(configuration);
+    } else {
+      reject();
+    }
+    clearInterval(interval);
+  });
+};
+
 export const getConfiguration = async (): Promise<Configuration> => {
   return new Promise<Configuration>((resolve, reject) => {
-    getSocket('/core/ui', true).emit('configuration', (err, configuration) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (process.env.IS_DEV) {
-        console.groupCollapsed('GET=>Configuration');
-        console.debug({ configuration });
-        console.groupEnd();
-      }
-      if (configuration) {
-        resolve(configuration);
-      } else {
-        reject();
-      }
-    });
+    getConfigurationSocket(resolve, reject);
+    const interval = setInterval(() => {
+      getConfigurationSocket(resolve, reject, interval);
+    }, 1000);
   });
 };
