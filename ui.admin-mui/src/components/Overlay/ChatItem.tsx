@@ -86,7 +86,13 @@ export const ChatItem: React.FC<Props> = ({ item, active }) => {
     });
 
     getSocket('/overlays/chat', true).on('message', (data) => {
-      setMessages(i => [...i, data as any]);
+      setMessages(i => {
+        if (!i.find(o => o.id === data.id)) {
+          return [...i, data as any];
+        } else {
+          return i;
+        }
+      });
       setPosY(o => ({
         ...o, [data.id]: Math.floor(Math.random() * 90),
       }));
@@ -137,7 +143,7 @@ export const ChatItem: React.FC<Props> = ({ item, active }) => {
         moveNicoNico(id);
       }
     }
-  }, 10000, !active, true);
+  }, 10000, /* !active */ false, true);
 
   useIntervalWhen(() => {
     messages.filter(msg => !msg.show).forEach(msg => {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import type { Quotes } from '@entity/quotes';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
@@ -17,7 +16,7 @@ export default function ListQuotes() {
   const { tag } = useSelector((state: any) => state.quotes);
   const dispatch = useDispatch()
 
-  const [ items, setItems ] = useState<Quotes[]>([])
+  const [ items, setItems ] = useState<any[]>([])
   const [ users, setUsers ] = useState<[string, string][]>([])
   const [ loading, setLoading ] = useState<boolean>(true)
 
@@ -32,7 +31,7 @@ export default function ListQuotes() {
         console.debug('Loaded', { data });
         setItems(data.data);
         setUsers(data.users);
-        dispatch(setTags(Array.from(new Set([...data.data.map((o: Quotes) => o.tags)].flat()))))
+        dispatch(setTags(Array.from(new Set([...data.data.map((o: any) => o.tags)].flat()))))
         setLoading(false);
       });
   }, [dispatch])
@@ -79,7 +78,7 @@ export default function ListQuotes() {
               </CardContent>
 
               <CardActions sx={{ pt:0, px: 2 }}>
-                {row.tags.map((o, idx) => {
+                {row.tags.map((o: any, idx: any) => {
                   const key = `quote-${idx}`;
                   return (
                     <Chip label={o} key={key} color="primary" size='small' variant={tag === o ? "filled" : "outlined"} onClick={() => handleTagClick(o)} />

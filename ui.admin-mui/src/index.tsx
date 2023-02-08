@@ -33,16 +33,15 @@ const router = createBrowserRouter([
 ], { basename: process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : undefined });
 
 root.render(
-  <React.StrictMode>
-    <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
-      <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+  <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
 
-          <RouterProvider router={router}/>
-        </ThemeProvider>
-      </Provider>
-    </SnackbarProvider>
-  </React.StrictMode>,
+        <RouterProvider router={router}/>
+      </ThemeProvider>
+    </Provider>
+  </SnackbarProvider>
+  ,
 );

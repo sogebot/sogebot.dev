@@ -17,7 +17,7 @@ export const UserMenu: React.FC = () => {
     const socket = getSocket('/core/users', true);
 
     return new Promise((resolve) => {
-      socket.emit('viewers::findOne', user.id, (err: any, recvViewer: unknown) => {
+      socket.emit('viewers::findOneBy', user.id, (err: any, recvViewer: unknown) => {
         if (err) {
           return console.error(err);
         }

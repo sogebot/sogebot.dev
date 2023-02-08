@@ -4,12 +4,11 @@ import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
 import { Alert, Backdrop, CircularProgress, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import type { SongRequestInterface } from '@entity/song';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import LinkIcon from '@mui/icons-material/Link';
 
 export default function ListSongRequests() {
-  const [ items, setItems ] = useState<(SongRequestInterface)[]>([])
+  const [ items, setItems ] = useState<(any)[]>([])
   const [ loading, setLoading ] = useState<boolean>(true)
 
   React.useEffect(() => {

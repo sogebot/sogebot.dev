@@ -4,7 +4,6 @@ import Paper from '@mui/material/Paper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { useState } from 'react';
 import { Alert, Backdrop, CircularProgress, Grid, IconButton, Pagination, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
-import type { SongPlaylistInterface } from '@entity/song';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTag } from '../store/playlistSlice';
 import LinkIcon from '@mui/icons-material/Link';
@@ -17,7 +16,7 @@ export default function ListPlaylist() {
   const [ itemsPerPage, setItemsPerPage ] = useState(25)
   const [ count, setCount ] = useState(0)
 
-  const [ items, setItems ] = useState<(SongPlaylistInterface)[]>([])
+  const [ items, setItems ] = useState<(any)[]>([])
   const [ loading, setLoading ] = useState<boolean>(true)
 
   React.useEffect(() => {

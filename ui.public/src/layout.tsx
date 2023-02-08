@@ -14,9 +14,9 @@ import { BrowserView, isMobile, MobileView } from 'react-device-detect';
 import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn'
 import { setUser } from './store/userSlice';
 import { UserMenu } from './components/userMenu';
-import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
 import { setLocale } from '@sogebot/ui-helpers/dayjsHelper';
 import { setConfiguration } from './store/loaderSlice';
+import { getConfiguration, getTranslations } from './socket';
 
 import sogebotLarge from '../public/sogebot_large.png';
 import sogebotSmall from '../public/sogebot_small.png';

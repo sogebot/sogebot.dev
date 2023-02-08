@@ -44,26 +44,28 @@ export const ClipsCarouselItem: React.FC<Props> = ({ item, active }) => {
   }, [active, item]);
 
   React.useEffect(() => {
-    getSocket('/overlays/clipscarousel', true).emit('clips', {
-      customPeriod: model?.customPeriod ?? 31, numOfClips: model?.numOfClips ?? 20,
-    }, (err, data) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      data.clips = data.clips
-        .map((a: any) => ({
-          sort: Math.random(), value: a,
-        }))
-        .sort((a: any, b: any) => a.sort - b.sort)
-        .map((a: any) => a.value);
+    setTimeout(() => {
+      getSocket('/overlays/clipscarousel', true).emit('clips', {
+        customPeriod: model?.customPeriod ?? 31, numOfClips: model?.numOfClips ?? 20,
+      }, (err, data) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        data.clips = data.clips
+          .map((a: any) => ({
+            sort: Math.random(), value: a,
+          }))
+          .sort((a: any, b: any) => a.sort - b.sort)
+          .map((a: any) => a.value);
 
-      if (data.clips.length < 4) {
-        return console.error('At least 4 clips are needed');
-      }
+        if (data.clips.length < 4) {
+          return console.error('At least 4 clips are needed');
+        }
 
-      setClips(data.clips);
-    });
+        setClips(data.clips);
+      });
+    }, 1000);
 
     if (active) {
       console.log(`====== CLIPSCAROUSEL ======`);

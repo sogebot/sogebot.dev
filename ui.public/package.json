@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-public",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "scripts": {
     "dev": "next dev -p 3003",
     "postinstall": "patch-package || (exit 0)",
@@ -10,7 +10,6 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@sogebot/backend": "*",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/server": "latest",
