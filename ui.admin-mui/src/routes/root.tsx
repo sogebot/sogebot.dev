@@ -68,6 +68,10 @@ const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
 const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
 const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
 
+console.group('UI VERSION');
+console.log(process.env.REACT_APP_VERSION);
+console.groupEnd();
+
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
     setTimeout(() => {
