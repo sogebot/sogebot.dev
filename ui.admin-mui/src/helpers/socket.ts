@@ -3,6 +3,8 @@ import axios from 'axios';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
+import getAccessToken from '../getAccessToken';
+
 export const redirectLogin = () => {
   if (window.location.href.includes('popout')) {
     window.location.assign(window.location.origin + '/credentials/login#error=popout+must+be+logged');
@@ -151,10 +153,6 @@ const getConfigurationSocket = (resolve: (value: Configuration | PromiseLike<Con
 };
 
 export const getConfiguration = async (): Promise<Configuration> => {
-  return new Promise<Configuration>((resolve, reject) => {
-    getConfigurationSocket(resolve, reject);
-    const interval = setInterval(() => {
-      getConfigurationSocket(resolve, reject, interval);
-    }, 1000);
-  });
+  const response = await axios.get(`${JSON.parse(sessionStorage.server)}/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+  return response.data;
 };
