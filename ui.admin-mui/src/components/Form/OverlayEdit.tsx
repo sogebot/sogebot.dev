@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
+import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
@@ -30,6 +31,7 @@ import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
+import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
@@ -276,6 +278,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -347,6 +352,7 @@ export const OverlayEdit: React.FC = () => {
                   }}
                 >
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}

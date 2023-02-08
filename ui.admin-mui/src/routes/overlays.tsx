@@ -6,6 +6,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
@@ -62,6 +63,7 @@ export default function Overlays() {
         left:     `${item.alignX}px`,
         top:      `${item.alignY}px`,
       }}>
+        {item.opts.typeId === 'chat' && <ChatItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'eventlist' && <EventlistItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
