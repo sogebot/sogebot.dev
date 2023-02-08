@@ -98,13 +98,16 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     return;
   }
 
+  console.log('Waiting for user data.');
   dispatch(setUser(await isUserLoggedIn()));
 
+  console.log('Populating systems.');
   await populateListOf('core');
   await populateListOf('systems');
   await populateListOf('services');
   await populateListOf('integrations');
 
+  console.log('Dispatching systems.');
   dispatch(setSystem({
     type: 'core', value: cloneDeep(getListOf('core')),
   }));
@@ -118,12 +121,16 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     type: 'integrations', value: cloneDeep(getListOf('integrations')),
   }));
 
+  console.log('Populating configuration.');
   const configuration = await getConfiguration();
+  console.log('Dispatching configuration.');
   dispatch(setConfiguration(configuration));
 
   // translations hydration
+  console.log('Populating translations.');
   await new Promise<void>(resolve => {
     getSocket('/', true).emit('translations', (translations) => {
+      console.log('Dispatching translations.');
       dispatch(setTranslation(translations));
       resolve();
     });
@@ -131,18 +138,11 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 
   setLocale(configuration.lang as string);
 
-  await populateListOf('core');
-  await populateListOf('systems');
-  await populateListOf('services');
-  await populateListOf('integrations');
-
-  console.log('a');
+  console.log('Checking token validity');
   checkTokenValidity();
-  console.log('b');
 
+  console.log('Dispatching bot state OK.');
   dispatch(setState(true));
-  console.log('c');
-
 };
 
 export default function Root() {
