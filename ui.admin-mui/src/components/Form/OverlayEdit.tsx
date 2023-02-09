@@ -4,7 +4,7 @@ import {
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, Tooltip,
+  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, TextField, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
@@ -231,7 +231,9 @@ export const OverlayEdit: React.FC = () => {
         <Grid container spacing={2} sx={{
           height: '100%', m: 0,
         }}>
-          <Grid xs={3} sx={{ my: 0 }}>
+          <Grid xs={3} sx={{
+            my: 0, pr: '0px',
+          }}>
             <Box sx={{ p: 1 }}>
               <Tooltip title="Snap">
                 <IconButton onClick={() => setSnapEnabled(o => !o)} sx={{ backgroundColor: snapEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderInnerTwoTone/></IconButton>
@@ -257,6 +259,17 @@ export const OverlayEdit: React.FC = () => {
             </Box>
 
             <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
+              <TextField
+                sx={{ mb: 0.5 }}
+                label={'Name'}
+                fullWidth
+                value={item.name}
+                onChange={(ev) => {
+                  setItem({
+                    ...item, name: ev.currentTarget.value,
+                  } as Overlay);
+                }}
+              />
               <Canvas model={item.canvas} onUpdate={canvas => setItem(i => ({
                 ...i, canvas,
               } as Overlay ))}/>

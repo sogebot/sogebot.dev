@@ -500,7 +500,7 @@ export const CustomVariablesEdit: React.FC = () => {
                 onChange={value => handleValueChange('evalValue', value || '')}
               />
 
-              <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 30px 0' }}>
+              <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
                 <FormLabel sx={{ width: '170px' }}>{ translate('registry.customvariables.run-script') }</FormLabel>
                 <Slider
                   value={item?.runEvery || 0}

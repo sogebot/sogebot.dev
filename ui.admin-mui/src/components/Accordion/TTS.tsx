@@ -156,7 +156,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           </Select>
         </FormControl>}
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
           <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
           <Slider
             step={0.01}
@@ -170,7 +170,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
             })}/>
         </Stack>
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
           <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
           <Slider
             step={0.01}
@@ -183,7 +183,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
             })}/>
         </Stack>
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 30px 0' }}>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
           <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
           <Slider
             step={service === 0 ? 0.1 : 1}

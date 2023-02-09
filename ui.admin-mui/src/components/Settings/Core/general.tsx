@@ -77,7 +77,7 @@ const PageSettingsModulesCoreGeneral: React.FC<{
             {pointsOptions.map(item => <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem>)}
           </Select>
         </FormControl>
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 60px 0 0' }}>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 60px 0 0' }}>
           <FormLabel sx={{ width: '400px' }}>{translate('core.general.settings.gracefulExitEachXHours.title')}</FormLabel>
           <Slider
             value={settings.graceful_exit.gracefulExitEachXHours[0]}

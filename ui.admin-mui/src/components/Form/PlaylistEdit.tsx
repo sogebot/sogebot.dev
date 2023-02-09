@@ -269,7 +269,7 @@ export const PlaylistEdit: React.FC<{
             />
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 30px 0' }}>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
             <FormLabel sx={{ width: '100px' }}>Trim song</FormLabel>
             <Slider
               marks={marks}

@@ -89,107 +89,103 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
       <Typography>{ label ?? translate('registry.alerts.font.setting') }</Typography>
     </AccordionSummary>
     <AccordionDetails>
-      {fonts.length > 0 && <FormControl fullWidth variant="filled" >
-        <InputLabel id="registry.alerts.font.name">{translate('registry.alerts.font.name')}</InputLabel>
-        <Select
-          MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-          label={translate('registry.alerts.font.name')}
-          labelId="registry.alerts.font.name"
-          value={model.family}
-          onChange={(ev) => onChange({
-            ...model, family: ev.target.value as typeof model.family,
-          })}
-        >
-          {fonts.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
-        </Select>
-      </FormControl>}
+      <Stack spacing={0.5}>
+        {fonts.length > 0 && <FormControl fullWidth variant="filled" >
+          <InputLabel id="registry.alerts.font.name">{translate('registry.alerts.font.name')}</InputLabel>
+          <Select
+            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+            label={translate('registry.alerts.font.name')}
+            labelId="registry.alerts.font.name"
+            value={model.family}
+            onChange={(ev) => onChange({
+              ...model, family: ev.target.value as typeof model.family,
+            })}
+          >
+            {fonts.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
+          </Select>
+        </FormControl>}
 
-      {'align' in model && <FormControl fullWidth variant="filled" >
-        <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align.name')}</InputLabel>
-        <Select
-          MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-          label={translate('registry.alerts.font.align.name')}
-          labelId="registry.alerts.font.align"
-          value={model.align}
-          onChange={(ev) => onChange({
-            ...model, align: ev.target.value as typeof model.align,
-          })}
-        >
-          <MenuItem value='left' key='left'>{capitalize(translate('registry.alerts.font.align.left'))}</MenuItem>
-          <MenuItem value='center' key='center'>{capitalize(translate('registry.alerts.font.align.center'))}</MenuItem>
-          <MenuItem value='right' key='right'>{capitalize(translate('registry.alerts.font.align.right'))}</MenuItem>
-        </Select>
-      </FormControl>}
+        {'align' in model && <FormControl fullWidth variant="filled" >
+          <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align.name')}</InputLabel>
+          <Select
+            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+            label={translate('registry.alerts.font.align.name')}
+            labelId="registry.alerts.font.align"
+            value={model.align}
+            onChange={(ev) => onChange({
+              ...model, align: ev.target.value as typeof model.align,
+            })}
+          >
+            <MenuItem value='left' key='left'>{capitalize(translate('registry.alerts.font.align.left'))}</MenuItem>
+            <MenuItem value='center' key='center'>{capitalize(translate('registry.alerts.font.align.center'))}</MenuItem>
+            <MenuItem value='right' key='right'>{capitalize(translate('registry.alerts.font.align.right'))}</MenuItem>
+          </Select>
+        </FormControl>}
 
-      {'size' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '30px 20px 0px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.size.name') }</FormLabel>
-        <Slider
-          step={1}
-          min={0}
-          max={200}
-          valueLabelFormat={(val) => `${val}px`}
-          valueLabelDisplay="on"
-          value={model.size}
-          onChange={(_, newValue) => onChange({
-            ...model, size: newValue as number,
-          })}/>
-      </Stack>}
-
-      {'weight' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.weight.name') }</FormLabel>
-        <Slider
-          step={100}
-          min={100}
-          max={900}
-          valueLabelDisplay="on"
-          value={model.weight}
-          onChange={(_, newValue) => onChange({
-            ...model, weight: newValue as number,
-          })}/>
-      </Stack>}
-
-      {'borderPx' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
-        <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.borderPx.name') }</FormLabel>
-        <Slider
-          step={1}
-          min={0}
-          max={100}
-          valueLabelFormat={(val) => `${val}px`}
-          valueLabelDisplay="on"
-          value={model.borderPx}
-          onChange={(_, newValue) => onChange({
-            ...model, borderPx: newValue as number,
-          })}/>
-      </Stack>}
-
-      {'color' in model && <Box
-        sx={{ pt: 2 }}>
-        <MuiColorInput
+        {'color' in model && <MuiColorInput
           label={ translate('registry.alerts.font.color.name') }
           fullWidth
           isAlphaHidden
           format="hex"
-          variant='filled'
           value={isHexColor(model.color) ? model.color : '#111111'}
           onChange={(_, value) => onChange({
             ...model, color: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
-          })} />
-      </Box>}
+          })} />}
 
-      {'borderColor' in model && <Box
-        sx={{ pt: 2 }}>
-        <MuiColorInput
+        {'borderColor' in model && <MuiColorInput
           label={ translate('registry.alerts.font.borderColor.name') }
           fullWidth
           isAlphaHidden
           format="hex"
-          variant='filled'
           value={isHexColor(model.borderColor) ? model.borderColor : '#111111'}
           onChange={(_, value) => onChange({
             ...model, borderColor: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
-          })} />
-      </Box>}
-      <Divider sx={{ my: 2 }}/>
+          })} />}
+
+        {'size' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.size.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={200}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.size}
+            onChange={(_, newValue) => onChange({
+              ...model, size: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'weight' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.weight.name') }</FormLabel>
+          <Slider
+            step={100}
+            min={100}
+            max={900}
+            valueLabelDisplay="on"
+            value={model.weight}
+            onChange={(_, newValue) => onChange({
+              ...model, weight: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'borderPx' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.borderPx.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={100}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.borderPx}
+            onChange={(_, newValue) => onChange({
+              ...model, borderPx: newValue as number,
+            })}/>
+        </Stack>}
+        <Divider sx={{
+          my: 2, py: 1,
+        }}/>
+      </Stack>
 
       {('shadow' in model && model.shadow !== null) && <>
         <Stack direction='row'>
@@ -225,7 +221,22 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
         </Stack>
 
         {model.shadow[shadowTab] && <>
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+          <MuiColorInput
+            label={ translate('dialog.font.color') }
+            fullWidth
+            isAlphaHidden
+            format="hex"
+            value={isHexColor(model.shadow[shadowTab].color) ? model.shadow[shadowTab].color : '#111111'}
+            onChange={(_, newValue) => {
+              const shadows = model.shadow;
+              const shadowValue = shadows[shadowTab];
+              shadowValue.color = newValue.hex;
+              onChange({
+                ...model, shadow: [ ...shadows ],
+              });
+            }}/>
+
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowShiftRight') }</FormLabel>
             <Slider
               step={1}
@@ -244,7 +255,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
               }}/>
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowShiftDown') }</FormLabel>
             <Slider
               step={1}
@@ -263,7 +274,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
               }}/>
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowBlur') }</FormLabel>
             <Slider
               step={1}
@@ -281,7 +292,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
               }}/>
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '20px 20px 0px 0' }}>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('dialog.font.shadowOpacity') }</FormLabel>
             <Slider
               step={1}
@@ -300,27 +311,8 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
               }}/>
           </Stack>
 
-          <Box
-            sx={{ pt: 2 }}>
-            <MuiColorInput
-              label={ translate('dialog.font.color') }
-              fullWidth
-              isAlphaHidden
-              format="hex"
-              variant='filled'
-              value={isHexColor(model.shadow[shadowTab].color) ? model.shadow[shadowTab].color : '#111111'}
-              onChange={(_, newValue) => {
-                const shadows = model.shadow;
-                const shadowValue = shadows[shadowTab];
-                shadowValue.color = newValue.hex;
-                onChange({
-                  ...model, shadow: [ ...shadows ],
-                });
-              }}/>
-          </Box>
-
           <Box sx={{
-            my: 2, textAlign: 'center',
+            mt: 2, textAlign: 'center',
           }}>
             <Button
               onClick={() => {
@@ -339,7 +331,6 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
         <Divider sx={{ my: 2 }}/>
         <TextField
           fullWidth
-          variant='filled'
           label="Example text"
           value={exampleText}
           onChange={(ev) => setExampleText(ev.currentTarget.value)}
