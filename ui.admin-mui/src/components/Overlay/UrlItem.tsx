@@ -2,15 +2,9 @@ import { Box } from '@mui/material';
 import { URL } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
-type Props = {
-  item: URL,
-  id: string,
-  groupId: string,
-  /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
-};
+import type { Props } from './ChatItem';
 
-export const UrlItem: React.FC<Props> = ({ item }) => {
+export const UrlItem: React.FC<Props<URL>> = ({ item }) => {
   return <Box sx={{
     width:  '100%',
     height: '100%',

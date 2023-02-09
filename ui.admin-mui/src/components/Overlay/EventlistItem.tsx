@@ -7,18 +7,12 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
+import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 import { loadFont } from '../Accordion/Font';
 
-type Props = {
-  item: Eventlist,
-  id: string,
-  groupId: string,
-  /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
-};
-export const EventlistItem: React.FC<Props> = ({ item, active }) => {
+export const EventlistItem: React.FC<Props<Eventlist>> = ({ item, active }) => {
   const [ events, setEvents ] = React.useState<(EventListInterface & { summary: string; username?: string })[]>([]);
   const { translate } = useTranslation();
   const { configuration } = useSelector((state: any) => state.loader);

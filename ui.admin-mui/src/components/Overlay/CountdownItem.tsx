@@ -10,6 +10,7 @@ import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
 import * as workerTimers from 'worker-timers';
 
+import type { Props } from './ChatItem';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '../../constants';
@@ -18,20 +19,10 @@ import { toBoolean } from '../../helpers/toBoolean';
 import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 
-type Props = {
-  item: Countdown,
-  id: string,
-  groupId: string,
-  /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
-  /** Selected in editation */
-  selected?: boolean,
-};
-
 let lastTimeSync = Date.now();
 let lastSave = Date.now();
 
-export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId, selected }) => {
+export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, groupId, selected }) => {
   const [ show, setShow ] = React.useState('time');
   const [ model, setModel ] = React.useState(item);
   const [ isReady, setReady ] = React.useState(false);

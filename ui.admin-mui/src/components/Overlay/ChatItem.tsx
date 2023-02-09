@@ -15,8 +15,8 @@ import shortid from 'shortid';
 import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
 
-type Props = {
-  item: Chat,
+export type Props<T> = {
+  item: T,
   id: string,
   groupId: string,
   /** Overlay is active, e.g. used in overlay */
@@ -33,7 +33,7 @@ const generateColorFromString = (stringInput: string) => {
   }, 0);
   return `hsl(${stringUniqueHash % 360}, 80%, 60%)`;
 };
-export const ChatItem: React.FC<Props> = ({ item, active, selected }) => {
+export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
   const lang = useSelector((state: any) => state.loader.configuration.lang );
 
   const [ messages, setMessages ] = React.useState<{ id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, badges: {url: string}[] }[]>([]);

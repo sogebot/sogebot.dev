@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
+import { EmotesFireworksItem } from '../components/Overlay/EmotesFireworksItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
 import { WordcloudItem } from '../components/Overlay/WordcloudItem';
@@ -66,6 +67,7 @@ export default function Overlays() {
         {item.opts.typeId === 'chat' && <ChatItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'eventlist' && <EventlistItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'url' && <UrlItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}

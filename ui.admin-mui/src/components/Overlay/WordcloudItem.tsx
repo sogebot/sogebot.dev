@@ -3,16 +3,9 @@ import { Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import ReactWordcloud from 'react-d3-cloud';
 
+import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
-
-type Props = {
-  item: Wordcloud,
-  id: string,
-  groupId: string,
-  /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
-};
 
 const time = {
   seconds: 1000,
@@ -20,7 +13,7 @@ const time = {
   hours:   60 * 60 * 1000,
 } as const;
 
-export const WordcloudItem: React.FC<Props> = ({ item, active }) => {
+export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
   const [ words, setWords ] = React.useState<string[]>(active ? [] : 'Contrary to popular belief Lorem Ipsum is not simply random text It has roots in a piece of classical Latin literature from 45 BC making it over 2000 years old Richard McClintock a Latin professor at Hampden-Sydney College in Virginia looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source Lorem Ipsum comes from sections'.toLowerCase().split(' '));
 
   const computedWords = React.useMemo(() => {
@@ -50,10 +43,6 @@ export const WordcloudItem: React.FC<Props> = ({ item, active }) => {
 
   const fontSize = React.useCallback((word: {text: string, value: number}) => Math.max(20, (word.value / maxValue) * 100), [maxValue]);
   const rotate = React.useCallback(() => Math.round(Math.random() * 360), []);
-
-  React.useEffect(() => {
-    console.log({ computedWords });
-  }, [computedWords]);
 
   React.useEffect(() => {
     loadFont(item.wordFont.family);

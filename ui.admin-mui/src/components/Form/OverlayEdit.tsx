@@ -21,6 +21,7 @@ import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
+import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
 import { Layers } from './Overlay/Layers';
 import { Settings } from './Overlay/Settings';
@@ -35,6 +36,7 @@ import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
+import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
@@ -286,13 +288,16 @@ export const OverlayEdit: React.FC = () => {
                 setTimeout(() => refresh(), 100);
               }}>
                 <Box sx={{ pt: 3 }}>
-                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
                   {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
@@ -370,11 +375,11 @@ export const OverlayEdit: React.FC = () => {
                 >
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'wordcloud' && <WordcloudItem item={o.opts} groupId={id!} id={o.id}/>}
-
                   <Box sx={{
                     position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 1,
                   }}>

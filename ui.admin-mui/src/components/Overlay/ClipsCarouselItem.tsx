@@ -10,16 +10,9 @@ import {
   Swiper, SwiperRef, SwiperSlide,
 } from 'swiper/react';
 
+import type { Props } from './ChatItem';
 import { isVideoSupported } from '../../helpers/isVideoSupported';
 import { getSocket } from '../../helpers/socket';
-
-type Props = {
-  item: ClipsCarousel,
-  id: string,
-  groupId: string,
-  /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
-};
 
 const play = (video: HTMLVideoElement, model: ClipsCarousel, swiper: SwiperRef['swiper']) => {
   video.currentTime = 0;
@@ -33,7 +26,7 @@ const play = (video: HTMLVideoElement, model: ClipsCarousel, swiper: SwiperRef['
   };
 };
 
-export const ClipsCarouselItem: React.FC<Props> = ({ item, active }) => {
+export const ClipsCarouselItem: React.FC<Props<ClipsCarousel>> = ({ item, active }) => {
   const [ model, setModel ] = React.useState(item);
   const [ clips, setClips ] = React.useState<{ id: string, mp4: string }[]>([]);
 
