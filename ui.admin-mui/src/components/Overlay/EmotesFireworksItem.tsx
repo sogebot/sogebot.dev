@@ -136,7 +136,6 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item, se
         position: 'relative',
         overflow: 'hidden',
       }}>
-      { emotes.length }
       { emotes
         .filter(emote => emote.show)
         .map(emote => <img
