@@ -1,5 +1,7 @@
 import { AbcTwoTone, HourglassBottomTwoTone } from '@mui/icons-material';
-import { Box, IconButton } from '@mui/material';
+import {
+  Box, Grow, IconButton,
+} from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
@@ -22,12 +24,14 @@ type Props = {
   groupId: string,
   /** Overlay is active, e.g. used in overlay */
   active?: boolean,
+  /** Selected in editation */
+  selected?: boolean,
 };
 
 let lastTimeSync = Date.now();
 let lastSave = Date.now();
 
-export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) => {
+export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId, selected }) => {
   const [ show, setShow ] = React.useState('time');
   const [ model, setModel ] = React.useState(item);
   const [ isReady, setReady ] = React.useState(false);
@@ -224,11 +228,13 @@ export const CountdownItem: React.FC<Props> = ({ item, active, id, groupId }) =>
       </Box>
     </Box>
 
-    {!active && <Box sx={{
-      position: 'absolute', top: `0px`, fontSize: '10px', textAlign: 'left', left: 0,
-    }}>
-      <IconButton onClick={() => setShow('time')} sx={{ backgroundColor: show === 'time' ? `${theme.palette.primary.main}55` : undefined }} size='small'><HourglassBottomTwoTone/></IconButton>
-      {model.showMessageWhenReachedZero && <IconButton onClick={() => setShow('text')} sx={{ backgroundColor: show === 'text' ? `${theme.palette.primary.main}55` : undefined }}  size='small'><AbcTwoTone/></IconButton>}
-    </Box>}
+    <Grow in={selected} unmountOnExit mountOnEnter>
+      <Box sx={{
+        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
+      }}>
+        <IconButton onClick={() => setShow('time')} sx={{ backgroundColor: show === 'time' ? `${theme.palette.primary.main}55` : undefined }} size='small'><HourglassBottomTwoTone/></IconButton>
+        {model.showMessageWhenReachedZero && <IconButton onClick={() => setShow('text')} sx={{ backgroundColor: show === 'text' ? `${theme.palette.primary.main}55` : undefined }}  size='small'><AbcTwoTone/></IconButton>}
+      </Box>
+    </Grow>
   </>;
 };

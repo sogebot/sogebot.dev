@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
+import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
@@ -256,6 +257,9 @@ export const OverlayEdit: React.FC = () => {
             </Box>
 
             <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
+              <Canvas model={item.canvas} onUpdate={canvas => setItem(i => ({
+                ...i, canvas,
+              } as Overlay ))}/>
               <Layers
                 items={item.items}
                 moveableId={moveableId}
@@ -351,8 +355,8 @@ export const OverlayEdit: React.FC = () => {
                     '& small':       { fontSize: `${12}px` },
                   }}
                 >
-                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
