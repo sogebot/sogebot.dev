@@ -24,6 +24,7 @@ import { CountdownSettings } from './Overlay/CountdownSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
 import { Layers } from './Overlay/Layers';
+import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
@@ -311,6 +312,12 @@ export const OverlayEdit: React.FC = () => {
                   }}/>}
                 </Box>
               </Settings>
+              }
+
+              {
+                selectedItem
+                  && ['countdown'].includes(selectedItem.opts.typeId)
+                  && <RestAPI id={selectedItem.id} opts={selectedItem.opts}/>
               }
             </SimpleBar>
           </Grid>
