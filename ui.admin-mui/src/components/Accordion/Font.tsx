@@ -1,6 +1,6 @@
 import { AddTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Button, Divider,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Box, Button, Divider,
   FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
   Tab, Tabs, TextField, Typography,
 } from '@mui/material';
@@ -8,14 +8,16 @@ import {
   Countdown, Eventlist, Wordcloud,
 } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
-import axios from 'axios';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import capitalize from 'lodash/capitalize';
 import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
-import { useSessionstorageState } from 'rooks';
 
+import fonts from '../../fonts.json';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useTranslation } from '../../hooks/useTranslation';
+import theme from '../../theme';
 import { isHexColor } from '../../validators';
 
 const fontsLoaded: string[] = [];
@@ -57,23 +59,12 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
     label,
     ...accordionProps } = props;
   const { translate } = useTranslation();
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
-  const [ fonts, setFonts ] = React.useState<string[]>([]);
   const [ exampleText, setExampleText ] = React.useState('The quick brown fox jumps over the lazy dog');
   const [ shadowTab, setShadowTab ] = React.useState(0);
 
   const handleClick = () => {
     onClick(open === accordionId ? '' : accordionId);
   };
-
-  React.useEffect(() => {
-    if (server) {
-      axios.get(`${server}/fonts`)
-        .then(({ data }) => {
-          setFonts(data.items.map((o: any) => o.family));
-        });
-    }
-  }, [server]);
 
   React.useEffect(() => {
     loadFont(model.family);
@@ -90,20 +81,39 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
     </AccordionSummary>
     <AccordionDetails>
       <Stack spacing={0.5}>
-        {fonts.length > 0 && <FormControl fullWidth variant="filled" >
-          <InputLabel id="registry.alerts.font.name">{translate('registry.alerts.font.name')}</InputLabel>
-          <Select
-            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-            label={translate('registry.alerts.font.name')}
-            labelId="registry.alerts.font.name"
-            value={model.family}
-            onChange={(ev) => onChange({
-              ...model, family: ev.target.value as typeof model.family,
-            })}
-          >
-            {fonts.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
-          </Select>
-        </FormControl>}
+        {'family' in model && <Autocomplete
+          value={model.family}
+          disableClearable
+          onChange={(ev, value) => onChange({
+            ...model, family: value as typeof model.family,
+          })}
+          disablePortal
+          id="registry.alerts.font.name"
+          options={fonts.items.map(o => o.family)}
+          renderInput={(params) => <TextField {...params} label={translate('registry.alerts.font.name')} />}
+          renderOption={(p, option, { inputValue }) => {
+            const matches = match(option, inputValue, { insideWords: true });
+            const parts = parse(option, matches);
+
+            return (
+              <li {...p}>
+                <div>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                        color:           part.highlight ? 'black' : 'inherit',
+                      }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </div>
+              </li>
+            );
+          }}
+        />}
 
         {'align' in model && <FormControl fullWidth variant="filled" >
           <InputLabel id="registry.alerts.font.align">{translate('registry.alerts.font.align.name')}</InputLabel>

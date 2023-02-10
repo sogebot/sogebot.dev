@@ -202,11 +202,11 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
           sx={{
             position:           'absolute',
             width:              'max-content',
-            'color':            item.font.color,
-            'fontFamily':       item.font.family,
-            'fontWeight':       item.font.weight,
+            color:              item.font.color,
+            fontFamily:         item.font.family,
+            fontWeight:         item.font.weight,
             top:                `${Math.max(1, (posY[message.id] || 0))}%`,
-            'font-size':        (Math.max(16, item.font.size + (fontSize[message.id] || 0))) + 'px',
+            fontSize:           (Math.max(16, item.font.size + (fontSize[message.id] || 0))) + 'px',
             textShadow:         [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
             lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
             marginLeft:         '100%',
@@ -307,8 +307,10 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
                 </Box>)}
               </Box>}
               <Typography component='strong' sx={{
+                fontFamily: item.font.family,
                 pr:         0.5,
                 color:      generateColorFromString(message.displayName),
+                fontWeight: item.font.weight,
                 fontSize:   `${item.font.size}px`,
                 lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
               }}>
