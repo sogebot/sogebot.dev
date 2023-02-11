@@ -35,6 +35,21 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
           value={model.name || ''}
           onChange={(ev) => onUpdate('name', ev.currentTarget.value ?? '')}
         />
+
+        <TextField
+          label={'Rotate'}
+          fullWidth
+          variant="filled"
+          value={model.rotation ?? 0}
+          InputProps={{ endAdornment: <InputAdornment position='end'>deg</InputAdornment> }}
+          type="number"
+          onChange={(ev) => {
+            if (!isNaN(Number(ev.currentTarget.value))) {
+              onUpdate('rotation',  Number(ev.currentTarget.value));
+            }
+          }}
+        />
+
         <Stack direction='row' spacing={0.5}>
           <TextField
             label={'Width'}

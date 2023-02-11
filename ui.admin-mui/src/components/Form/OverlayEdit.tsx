@@ -69,7 +69,9 @@ export const OverlayEdit: React.FC = () => {
   const containerRef = React.useRef<HTMLDivElement>();
 
   const [ zoom, setZoom ] = React.useState(1);
-  const [frame, setFrame] = React.useState({ translate: [0,0]  });
+  const [frame, setFrame] = React.useState({
+    translate: [0,0], rotate: 0,
+  });
 
   const [ position, setPosition ] = React.useState([50, 0]);
 
@@ -84,7 +86,7 @@ export const OverlayEdit: React.FC = () => {
   const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
   });
-  const [boundsEnabled, setBoundsEnabled] = React.useState(true);
+  const [boundsEnabled, setBoundsEnabled] = React.useState(false);
   const [snapEnabled, setSnapEnabled] = React.useState(true);
 
   const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
@@ -378,6 +380,7 @@ export const OverlayEdit: React.FC = () => {
                     cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
                     lineHeight:      `${12}px`,
                     '& small':       { fontSize: `${12}px` },
+                    transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                   }}
                 >
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
@@ -450,6 +453,24 @@ export const OverlayEdit: React.FC = () => {
                   padding={{
                     'left': 0,'top': 0,'right': 0,'bottom': 0,
                   }}
+                  rotationPosition={'top'}
+                  rotatable={true}
+                  throttleRotate={0}
+                  onRotateStart={e => {
+                    e.set(frame.rotate);
+                  }}
+                  onRotate={e => {
+                    frame.rotate =  e.beforeRotate;
+                    e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
+                  }}
+                  onRotateEnd={e => {
+                    if (selectedItem) {
+                      handleItemChange('rotation', frame.rotate);
+                      // reset things
+                      e.target.style.removeProperty('transform');
+                      refresh();
+                    }
+                  }}
                   onResizeEnd={e => {
                     if (selectedItem) {
                       handleItemChange('width', Math.round((e.target as any).offsetWidth));
@@ -473,20 +494,24 @@ export const OverlayEdit: React.FC = () => {
                     frame.translate = beforeTranslate;
                     e.target.style.width = `${e.width}px`;
                     e.target.style.height = `${e.height}px`;
-                    e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+                    e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                   }}
                   onDragEnd={(e) => {
                     if (selectedItem) {
                       handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
                       handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
-                      e.target.style.transform = `translate(0px, 0px)`;
+                      e.target.style.transform = `translate(0px, 0px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                       refresh();
                     }
                   }}
-                  onDragStart={() => setFrame({ translate: [0, 0] })}
+                  onDragStart={() => setFrame(val => ({
+                    translate: [0, 0], rotate: val.rotate,
+                  }))}
                   onDrag={e => {
-                    setFrame({ translate: e.beforeTranslate });
-                    e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px)`;
+                    setFrame(val => ({
+                      translate: e.beforeTranslate, rotate: val.rotate,
+                    }));
+                    e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                   }}
                 />}
               </Paper>

@@ -58,11 +58,12 @@ export default function Overlays() {
     { !loading && id && overlay && overlay.items
       .filter(o => o.isVisible)
       .map(item => <Box key={item.id} sx={{
-        position: 'absolute',
-        width:    `${item.width}px`,
-        height:   `${item.height}px`,
-        left:     `${item.alignX}px`,
-        top:      `${item.alignY}px`,
+        position:  'absolute',
+        width:     `${item.width}px`,
+        height:    `${item.height}px`,
+        left:      `${item.alignX}px`,
+        top:       `${item.alignY}px`,
+        transform: `rotate(${item.rotation ?? 0}deg)`,
       }}>
         {item.opts.typeId === 'chat' && <ChatItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
