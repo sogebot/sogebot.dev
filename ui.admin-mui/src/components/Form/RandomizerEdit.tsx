@@ -35,19 +35,36 @@ import { AccordionPosition } from '../Accordion/Position';
 import { AccordionTTS } from '../Accordion/TTS';
 
 const emptyItem: Partial<Randomizer> = {
+  name:           '',
+  command:        '',
+  items:          [],
+  createdAt:      new Date().toISOString(),
+  permissionId:   defaultPermissions.CASTERS,
+  isShown:        false,
+  shouldPlayTick: false,
+  tickVolume:     1,
+  type:           'simple',
+  widgetOrder:    -1,
+  tts:            {
+    enabled: false,
+    voice:   '',
+    pitch:   1,
+    volume:  0.5,
+    rate:    1,
+  },
   position: {
     x:       50,
     y:       50,
     anchorX: 'middle',
     anchorY: 'middle',
   },
-  items: [],
-  tts:   {
-    enabled: false,
-    pitch:   1,
-    rate:    1,
-    voice:   '',
-    volume:  0.5,
+  customizationFont: {
+    family:      'PT Sans',
+    weight:      500,
+    size:        16,
+    borderColor: '#000000',
+    borderPx:    1,
+    shadow:      [],
   },
 };
 
@@ -275,7 +292,7 @@ export const RandomizerEdit: React.FC = () => {
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         enqueueSnackbar('Randomizer saved.', { variant: 'success' });
-        navigate(`/registries/randomizer/edit/${data.data.id}?server=${JSON.parse(sessionStorage.server)}`);
+        navigate(`/registry/randomizer/edit/${data.data.id}?server=${JSON.parse(sessionStorage.server)}`);
       })
       .catch(e => {
         validate(e.response.data.errors);
