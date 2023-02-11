@@ -150,6 +150,7 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
         <Typography variant="body2">{err}</Typography>
       </Stack>), { variant: 'error' });
     } else {
+      console.debug({ err });
       console.log(err.map(o => o.property));
       setDirty(err.map(o => o.property));
       setErrors(err);
