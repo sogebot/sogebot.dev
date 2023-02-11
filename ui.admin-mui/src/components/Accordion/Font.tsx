@@ -132,7 +132,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
           </Select>
         </FormControl>}
 
-        {'color' in model && <MuiColorInput
+        {'color' in model && model.color !== null && <MuiColorInput
           label={ translate('registry.alerts.font.color.name') }
           fullWidth
           isAlphaHidden
