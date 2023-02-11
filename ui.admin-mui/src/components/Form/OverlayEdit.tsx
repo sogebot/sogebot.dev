@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
 import { validateOrReject } from 'class-validator';
 import { merge, set } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -15,6 +16,7 @@ import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMouse, usePreviousImmediate } from 'rooks';
+import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
 import { Canvas } from './Overlay/Canvas';
@@ -284,6 +286,30 @@ export const OverlayEdit: React.FC = () => {
                 setMoveableId={setMoveableId} onUpdate={(value) => setItem(o => ({
                   ...o, items: value,
                 } as Overlay))}
+                onAdd={(typeId) => {
+                  setItem(o => {
+                    const itemId = shortid();
+                    const newItem = {
+                      id:        itemId,
+                      alignX:    0,
+                      alignY:    0,
+                      height:    200,
+                      isVisible: true,
+                      name:      '',
+                      rotation:  0,
+                      width:     200,
+                      opts:      setDefaultOpts({}, typeId),
+                    } as Overlay['items'][number];
+
+                    setTimeout(() => {
+                      setMoveableId(itemId);
+                    }, 10);
+
+                    return {
+                      ...o, items: [...o.items, newItem],
+                    } as Overlay;
+                  });
+                }}
               />
 
               { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => {
