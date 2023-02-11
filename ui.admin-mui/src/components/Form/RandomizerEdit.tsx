@@ -491,11 +491,13 @@ export const RandomizerEdit: React.FC = () => {
                   <Typography>{ translate('registry.randomizer.form.probability') }</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {(item.items || []).length > 0 && Array.from(new Set(item.items.map(o => <div>
-                    {o.name}
-                    <strong style={{ paddingLeft: '5px' }}>{ Number((generateItems(item.items).filter(b => b.name === o.name).length / generateItems(item.items).length) * 100).toFixed(2) }%</strong>
-                  </div>,
-                  )))}
+                  {(item.items || []).length === 0
+                    ? translate('registry.randomizer.form.optionsAreEmpty')
+                    :  Array.from(new Set(item.items.map(o => <div>
+                      {o.name}
+                      <strong style={{ paddingLeft: '5px' }}>{ Number((generateItems(item.items).filter(b => b.name === o.name).length / generateItems(item.items).length) * 100).toFixed(2) }%</strong>
+                    </div>,
+                    )))}
                 </AccordionDetails>
               </Accordion>
 
