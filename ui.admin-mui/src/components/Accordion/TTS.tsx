@@ -1,10 +1,12 @@
 import { ExpandMoreTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, FormControl, FormLabel, IconButton, InputLabel, Link, MenuItem, Paper, Select, Slider, Stack, Switch, Typography,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, FormLabel, IconButton, Link, Paper, Slider, Stack, Switch, Typography,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { AlertInterface, CommonSettingsInterface } from '@sogebot/backend/dest/database/entity/alert';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
@@ -70,12 +72,21 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   };
 
   React.useEffect(() => {
-    if (open === 'tts') {
-      if (service === 0) {
-        getVoicesFromResponsiveVoice();
+    console.log({ service });
+    if (service === 0) {
+      getVoicesFromResponsiveVoice();
+      if (model.voice === '') {
+        onChange({
+          ...model, voice: 'English Female',
+        });
       }
-      if (service === 1) {
-        setVoices(configuration.core.tts.googleVoices);
+    }
+    if (service === 1) {
+      setVoices(configuration.core.tts.googleVoices);
+      if (model.voice === '') {
+        onChange({
+          ...model, voice: 'en-US-Standard-A',
+        });
       }
     }
   }, [open, service, configuration]);
@@ -96,6 +107,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
               getSocket('/core/tts').emit('google::speak', {
                 rate: model.rate, pitch: model.pitch, volume: model.volume, voice: model.voice, text: text,
               }, (err, b64mp3) => {
+                console.log({ b64mp3 });
                 if (err) {
                   console.error(err);
                 }
@@ -141,20 +153,39 @@ export const AccordionTTS: React.FC<Props> = (props) => {
         </Paper>}
       </AccordionSummary>
       <AccordionDetails>
-        {model.voice !== undefined && <FormControl fullWidth variant="filled" >
-          <InputLabel id="type-select-label">{translate('registry.alerts.voice')}</InputLabel>
-          <Select
-            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-            label={translate('registry.alerts.voice')}
-            labelId="type-select-label"
-            value={model.voice}
-            onChange={(ev) => onChange({
-              ...model, voice: ev.target.value as typeof model.voice,
-            })}
-          >
-            {voices.map(o => <MenuItem value={o} key={o}>{o}</MenuItem>)}
-          </Select>
-        </FormControl>}
+        {model.voice !== undefined && <Autocomplete
+          value={model.voice}
+          disableClearable
+          onChange={(ev, value) => onChange({
+            ...model, voice: value as typeof model.voice,
+          })}
+          disablePortal
+          id="registry.alerts.voice"
+          options={voices}
+          renderInput={(params) => <TextField {...params} label={translate('registry.alerts.voice')} />}
+          renderOption={(p, option, { inputValue }) => {
+            const matches = match(option, inputValue, { insideWords: true });
+            const parts = parse(option, matches);
+
+            return (
+              <li {...p}>
+                <div>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                        color:           part.highlight ? 'black' : 'inherit',
+                      }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </div>
+              </li>
+            );
+          }}
+        />}
 
         <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
           <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
