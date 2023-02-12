@@ -34,7 +34,7 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active }) => {
         }
       }
     });
-  }, 2000, active, true);
+  }, 2000, active && (item.html.includes('$_') || item.javascript.includes('$_')), true);
 
   React.useEffect(() => {
     if (active) {
@@ -45,6 +45,10 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active }) => {
       console.groupEnd();
       // eslint-disable-next-line no-eval
       eval(item.javascript + ';if (typeof onLoad === "function") { onLoad(); }');
+
+      if (item.html.includes('$_')) {
+        setText(item.html);
+      }
     }
   }, [active]);
 
