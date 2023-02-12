@@ -25,6 +25,7 @@ import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
+import { HTMLSettings } from './Overlay/HTMLSettings';
 import { Layers } from './Overlay/Layers';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
@@ -41,6 +42,7 @@ import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
+import { HTMLItem } from '../Overlay/HTMLItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
@@ -329,6 +331,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -414,6 +419,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'html' && <HTMLItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'wordcloud' && <WordcloudItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
