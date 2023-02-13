@@ -23,6 +23,7 @@ import { DashboardWidgetAction } from '../components/Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../components/Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../components/Dashboard/Widget/Twitch';
 import DevelopmentAlert from '../components/DevelopmentAlert';
+import { LoginWarning } from '../components/LoginWarning';
 import NavDrawer from '../components/NavDrawer/navDrawer';
 import { OnboardingTokens } from '../components/OnboardingTokens';
 import { ServerRouterQueryParam } from '../components/ServerRouterQueryParam';
@@ -178,6 +179,7 @@ export default function Root() {
   }, [ element, dispatch, throttledFunction ]);
   return <>
     <ServerSelect/>
+    <LoginWarning/>
     <CookieBar/>
     <ServerRouterQueryParam/>
     <DevelopmentAlert/>

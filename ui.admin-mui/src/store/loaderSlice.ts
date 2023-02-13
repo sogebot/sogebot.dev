@@ -109,6 +109,7 @@ export const loaderSlice = createSlice({
       console.debug('setConnectedToServer');
     },
     showLoginWarning: (state: any) => {
+      console.debug(`showLoginWarning`, true);
       state.showLoginWarning = true;
     },
     toggleCookieManager: (state: { showCookieManager: any }, action: { payload: boolean })=> {
