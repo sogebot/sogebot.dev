@@ -8,14 +8,12 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 )
 
-type Plugin struct {
-	*PluginStripped
-	Plugin string `json:"plugin" validate:"required"`
-}
+func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
+	vars := mux.Vars(r)
 
-func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/x-www-form-urlencoded" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -25,20 +23,42 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 
 	t := time.Now()
 
-	plugin := Plugin{
-		PluginStripped: &PluginStripped{
-			Name:           r.FormValue("name"),
+	var (
+		id          string
+		name        string
+		version     int
+		publisherId string
+	)
+	err := db.QueryRow(`
+		SELECT "id", "name", "version", "publisherId" FROM "overlay" WHERE "id"=$1
+	`, vars["id"]).Scan(&id, &name, &version, &publisherId)
+	if err != nil || err == sql.ErrNoRows {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "404 - Overlay not found")
+		return
+	}
+	if publisherId != r.Header.Get("userId") {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, "401 - Unauthorized")
+		return
+	}
+
+	overlay := Overlay{
+		OverlayStripped: &OverlayStripped{
+			Id:             id,
+			Name:           name, // name is not changeable
 			Description:    r.FormValue("description"),
 			PublisherId:    r.Header.Get("userId"),
 			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        1,
+			Version:        version + 1,
 			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []PluginVote{},
+			Votes:          []OverlayVote{},
 		},
-		Plugin: r.FormValue("plugin"),
+		Overlay: r.FormValue("overlay"),
 	}
 
-	err := validate.Struct(plugin)
+	err = validate.Struct(overlay)
 	if err != nil {
 		var errors []error
 		for _, err := range err.(validator.ValidationErrors) {
@@ -61,21 +81,21 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		return
 	}
 
-	err = db.QueryRow(`
-		INSERT INTO "plugin" ("name", "description", "publisherId", "publishedAt", "plugin", "version", "compatibleWith")
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		RETURNING "id"`,
-		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, plugin.Version, plugin.CompatibleWith,
-	).Scan(&plugin.Id)
+	_, err = db.Exec(`
+		UPDATE "overlay"
+			SET "name"=$1, "description"=$2, "publisherId"=$3, "publishedAt"=$4, "overlay"=$5, "version"=$6, "compatibleWith"=$7
+		WHERE "id"=$8`,
+		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Overlay, overlay.Version, overlay.CompatibleWith, overlay.Id,
+	)
 
-	if err != nil || err == sql.ErrNoRows {
+	if err != nil {
 		fmt.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "500 - Internal server error")
 		return
 	}
 
-	if f, err := json.Marshal(plugin); err != nil {
+	if f, err := json.Marshal(overlay); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Print(err)
 		fmt.Fprint(w, "500 - Internal server error")

@@ -10,12 +10,18 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Plugin struct {
-	*PluginStripped
-	Plugin string `json:"plugin" validate:"required"`
+type Overlay struct {
+	*OverlayStripped
+	Overlay string `json:"overlay" validate:"required"`
 }
 
-func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
+type error struct {
+	Path  string `json:"path"`
+	Error string `json:"error"`
+	Param string `json:"param"`
+}
+
+func PostOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/x-www-form-urlencoded" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -25,20 +31,20 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 
 	t := time.Now()
 
-	plugin := Plugin{
-		PluginStripped: &PluginStripped{
+	overlay := Overlay{
+		OverlayStripped: &OverlayStripped{
 			Name:           r.FormValue("name"),
 			Description:    r.FormValue("description"),
 			PublisherId:    r.Header.Get("userId"),
 			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
 			Version:        1,
 			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []PluginVote{},
+			Votes:          []OverlayVote{},
 		},
-		Plugin: r.FormValue("plugin"),
+		Overlay: r.FormValue("overlay"),
 	}
 
-	err := validate.Struct(plugin)
+	err := validate.Struct(overlay)
 	if err != nil {
 		var errors []error
 		for _, err := range err.(validator.ValidationErrors) {
@@ -62,11 +68,11 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 	}
 
 	err = db.QueryRow(`
-		INSERT INTO "plugin" ("name", "description", "publisherId", "publishedAt", "plugin", "version", "compatibleWith")
+		INSERT INTO "overlay" ("name", "description", "publisherId", "publishedAt", "overlay", "version", "compatibleWith")
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING "id"`,
-		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, plugin.Version, plugin.CompatibleWith,
-	).Scan(&plugin.Id)
+		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Overlay, overlay.Version, overlay.CompatibleWith,
+	).Scan(&overlay.Id)
 
 	if err != nil || err == sql.ErrNoRows {
 		fmt.Print(err)
@@ -75,7 +81,7 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		return
 	}
 
-	if f, err := json.Marshal(plugin); err != nil {
+	if f, err := json.Marshal(overlay); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Print(err)
 		fmt.Fprint(w, "500 - Internal server error")

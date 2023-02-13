@@ -4,18 +4,17 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 )
 
-type Plugin struct {
-	*PluginStripped
-	Plugin string `json:"plugin" validate:"required"`
-}
+func PostOverlayVote(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
+	vars := mux.Vars(r)
 
-func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
 	headerContentTtype := r.Header.Get("Content-Type")
 	if headerContentTtype != "application/x-www-form-urlencoded" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -23,22 +22,20 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 	}
 	r.ParseForm()
 
-	t := time.Now()
-
-	plugin := Plugin{
-		PluginStripped: &PluginStripped{
-			Name:           r.FormValue("name"),
-			Description:    r.FormValue("description"),
-			PublisherId:    r.Header.Get("userId"),
-			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        1,
-			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []PluginVote{},
-		},
-		Plugin: r.FormValue("plugin"),
+	voteInteger, err := strconv.Atoi(r.FormValue("vote"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Print(err)
+		fmt.Fprint(w, "500 - Internal server error")
+		return
 	}
 
-	err := validate.Struct(plugin)
+	overlayVote := OverlayVote{
+		Vote:   voteInteger,
+		UserId: r.Header.Get("userId"),
+	}
+
+	err = validate.Struct(overlayVote)
 	if err != nil {
 		var errors []error
 		for _, err := range err.(validator.ValidationErrors) {
@@ -61,12 +58,27 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		return
 	}
 
-	err = db.QueryRow(`
-		INSERT INTO "plugin" ("name", "description", "publisherId", "publishedAt", "plugin", "version", "compatibleWith")
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = tx.Exec(`DELETE FROM "overlay_vote" WHERE "userId"=$1 AND "overlayId"=$2`, overlayVote.UserId, vars["id"])
+	if err != nil {
+		fmt.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 - Internal server error")
+		return
+	}
+
+	err = tx.QueryRow(`
+		INSERT INTO "overlay_vote" ("userId", "vote", "overlayId")
+		VALUES ($1, $2, $3)
 		RETURNING "id"`,
-		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, plugin.Version, plugin.CompatibleWith,
-	).Scan(&plugin.Id)
+		overlayVote.UserId, overlayVote.Vote, vars["id"],
+	).Scan(&overlayVote.Id)
+
+	tx.Commit()
 
 	if err != nil || err == sql.ErrNoRows {
 		fmt.Print(err)
@@ -75,7 +87,7 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		return
 	}
 
-	if f, err := json.Marshal(plugin); err != nil {
+	if f, err := json.Marshal(overlayVote); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Print(err)
 		fmt.Fprint(w, "500 - Internal server error")

@@ -90,6 +90,31 @@ func main() {
 		routes.DeletePlugin(w, r, db)
 	}).Methods(http.MethodDelete)
 
+	// OVERLAYS
+	router.HandleFunc("/overlays", func(w http.ResponseWriter, r *http.Request) {
+		routes.GetOverlays(w, r, db)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/overlays", func(w http.ResponseWriter, r *http.Request) {
+		routes.PostOverlay(w, r, db, validate)
+	}).Methods(http.MethodPost)
+
+	router.HandleFunc("/overlays/{id}/votes", func(w http.ResponseWriter, r *http.Request) {
+		routes.PostOverlayVote(w, r, db, validate)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/overlays/{id}/votes", func(w http.ResponseWriter, r *http.Request) {
+		routes.DeleteOverlayVote(w, r, db)
+	}).Methods(http.MethodDelete)
+
+	router.HandleFunc("/overlays/{id}", func(w http.ResponseWriter, r *http.Request) {
+		routes.GetOverlay(w, r, db)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/overlays/{id}", func(w http.ResponseWriter, r *http.Request) {
+		routes.PutOverlay(w, r, db, validate)
+	}).Methods(http.MethodPut)
+	router.HandleFunc("/overlays/{id}", func(w http.ResponseWriter, r *http.Request) {
+		routes.DeleteOverlay(w, r, db)
+	}).Methods(http.MethodDelete)
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000"},
 		AllowCredentials: true,
