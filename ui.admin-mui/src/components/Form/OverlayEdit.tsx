@@ -42,6 +42,7 @@ import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
+import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
@@ -265,6 +266,7 @@ export const OverlayEdit: React.FC = () => {
                   setPosition([50, 0]);
                 }}><CropFreeTwoTone/></IconButton>
               </Tooltip>
+              <ExportDialog model={item}/>
             </Box>
 
             <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
