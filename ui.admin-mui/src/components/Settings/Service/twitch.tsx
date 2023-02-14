@@ -66,7 +66,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const redirectUri = useMemo(() => {
-    return `${window.location.origin}/credentials/oauth/tokens`;
+    return `${process.env.PUBLIC_URL ? window.location.origin + '/' : process.env.PUBLIC_URL}credentials/oauth/tokens`;
   }, []);
 
   const botUrl = useMemo(() => {

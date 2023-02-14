@@ -61,7 +61,7 @@ export const OnboardingTokens: React.FC = () => {
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
-    const popup = window.open('/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open((process.env.PUBLIC_URL ?? '/') + 'credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
