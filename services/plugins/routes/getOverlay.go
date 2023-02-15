@@ -34,17 +34,18 @@ func GetOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		description    string
 		publisherId    string
 		publishedAt    string
-		overlay        string
+		items          string
+		data           string
 		version        int
 		importedCount  int
 		compatibleWith string
 		votesJSON      string
 		/* data string - images etc.*/
 
-		data Overlay
+		overlay Overlay
 	)
 
-	err = row.Scan(&id, &name, &description, &publisherId, &publishedAt, &version, &overlay, &importedCount, &compatibleWith, &votesJSON)
+	err = row.Scan(&id, &name, &description, &publisherId, &publishedAt, &version, &items, &data, &importedCount, &compatibleWith, &votesJSON)
 	if err != nil || err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, "404 - Overlay not found")
@@ -53,14 +54,15 @@ func GetOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		votes := []OverlayVote{}
 		json.Unmarshal([]byte(votesJSON), &votes)
 
-		data = Overlay{
+		overlay = Overlay{
 			OverlayStripped: &OverlayStripped{
 				Id: id, Name: name, Description: description, PublisherId: publisherId, PublishedAt: publishedAt, Version: version, ImportedCount: importedCount, CompatibleWith: compatibleWith, Votes: votes,
 			},
-			Overlay: overlay,
+			Items: items,
+			Data:  data,
 		}
 
-		if f, err := json.Marshal(data); err != nil {
+		if f, err := json.Marshal(overlay); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Print(err)
 			fmt.Fprint(w, "500 - Internal server error")

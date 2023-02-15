@@ -12,7 +12,9 @@ import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
 import { GalleryInterface } from '@sogebot/backend/src/database/entity/gallery';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useSessionstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
@@ -22,6 +24,8 @@ type Props = {
 };
 
 export const ExportDialog: React.FC<Props> = ({ model }) => {
+  const { currentVersion } = useSelector((s: any) => s.loader);
+  const { enqueueSnackbar } = useSnackbar();
   const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
   const [ loading, setLoading ] = React.useState(false);
   const [ saving, setSaving ] = React.useState(false);
@@ -76,12 +80,17 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   const save = React.useCallback(async () => {
     setSaving(true);
     const toSave = {
-      name, description, items: itemsToExport, data: {},
+      name,
+      description,
+      items:          itemsToExport,
+      data:           {},
+      compatibleWith: currentVersion.split('-')[0],
     } as {
       name: string;
       description: string,
       items: typeof model.items,
       data: Record<string, string>
+      compatibleWith: string,
     };
 
     // load images
@@ -91,8 +100,24 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     }
 
     console.log({ toSave });
+    try {
+      await axios.post('http://localhost:3000/overlays', {
+        ...toSave,
+        items: JSON.stringify(toSave.items),
+        data:  JSON.stringify(toSave.data),
+      }, {
+        headers: {
+          authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
+        },
+      });
+      enqueueSnackbar('New remote overlay was created on registry server.');
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
+    }
     setSaving(false);
-  }, [name, description, itemsToExport, gallery]);
+
+  }, [name, description, itemsToExport, gallery, enqueueSnackbar]);
 
   React.useEffect(() => {
     setName(model.name);

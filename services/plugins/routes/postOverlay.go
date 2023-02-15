@@ -12,7 +12,8 @@ import (
 
 type Overlay struct {
 	*OverlayStripped
-	Overlay string `json:"overlay" validate:"required"`
+	Data  string `json:"data" validate:"required"`
+	Items string `json:"items" validate:"required"`
 }
 
 type error struct {
@@ -22,29 +23,27 @@ type error struct {
 }
 
 func PostOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/x-www-form-urlencoded" {
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	r.ParseForm()
 
-	t := time.Now()
+	var overlay Overlay
 
-	overlay := Overlay{
-		OverlayStripped: &OverlayStripped{
-			Name:           r.FormValue("name"),
-			Description:    r.FormValue("description"),
-			PublisherId:    r.Header.Get("userId"),
-			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        1,
-			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []OverlayVote{},
-		},
-		Overlay: r.FormValue("overlay"),
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&overlay)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	err := validate.Struct(overlay)
+	t := time.Now()
+	overlay.PublishedAt = t.Format("2006-01-02T15:04:05.999Z")
+	overlay.PublisherId = r.Header.Get("userId")
+
+	err = validate.Struct(overlay)
 	if err != nil {
 		var errors []error
 		for _, err := range err.(validator.ValidationErrors) {
@@ -68,10 +67,10 @@ func PostOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *v
 	}
 
 	err = db.QueryRow(`
-		INSERT INTO "overlay" ("name", "description", "publisherId", "publishedAt", "overlay", "version", "compatibleWith")
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		RETURNING "id"`,
-		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Overlay, overlay.Version, overlay.CompatibleWith,
+			INSERT INTO "overlay" ("name", "description", "publisherId", "publishedAt", "data", "items", "version", "compatibleWith", "importedCount")
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0)
+			RETURNING "id"`,
+		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Data, overlay.Items, 1, overlay.CompatibleWith,
 	).Scan(&overlay.Id)
 
 	if err != nil || err == sql.ErrNoRows {

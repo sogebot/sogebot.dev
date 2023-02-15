@@ -116,7 +116,7 @@ func main() {
 	}).Methods(http.MethodDelete)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000"},
+		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000", "http://localhost:3001"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "content-type"},
 	})

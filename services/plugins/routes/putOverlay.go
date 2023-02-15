@@ -55,7 +55,8 @@ func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 			CompatibleWith: r.FormValue("compatibleWith"),
 			Votes:          []OverlayVote{},
 		},
-		Overlay: r.FormValue("overlay"),
+		Items: r.FormValue("items"),
+		Data:  r.FormValue("data"),
 	}
 
 	err = validate.Struct(overlay)
@@ -83,9 +84,9 @@ func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 
 	_, err = db.Exec(`
 		UPDATE "overlay"
-			SET "name"=$1, "description"=$2, "publisherId"=$3, "publishedAt"=$4, "overlay"=$5, "version"=$6, "compatibleWith"=$7
+			SET "name"=$1, "description"=$2, "publisherId"=$3, "publishedAt"=$4, "items"=$5, "data"=$6, "version"=$7, "compatibleWith"=$8
 		WHERE "id"=$8`,
-		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Overlay, overlay.Version, overlay.CompatibleWith, overlay.Id,
+		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Items, overlay.Data, overlay.Version, overlay.CompatibleWith, overlay.Id,
 	)
 
 	if err != nil {
