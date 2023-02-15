@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress,  DialogContent, Divider, Fade, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField,
+  Box, Button, Collapse,  DialogContent, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField,
 } from '@mui/material';
 import { Rank } from '@sogebot/backend/dest/database/entity/rank';
 import axios from 'axios';
@@ -86,15 +86,8 @@ export const RankEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -137,7 +130,7 @@ export const RankEdit: React.FC<{
           </FormControl>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
@@ -145,7 +138,7 @@ export const RankEdit: React.FC<{
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

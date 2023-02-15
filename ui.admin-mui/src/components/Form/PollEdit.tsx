@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography,
+  Box, Button, Collapse, DialogContent, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { Poll } from '@sogebot/backend/dest/database/entity/poll';
@@ -100,15 +100,8 @@ export const PollEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -154,7 +147,7 @@ export const PollEdit: React.FC<{
           {propsError('options').helperText && <Typography color={red[500]} sx={{ marginLeft: 2 }}>{propsError('options').helperText}</Typography>}
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
@@ -162,7 +155,7 @@ export const PollEdit: React.FC<{
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

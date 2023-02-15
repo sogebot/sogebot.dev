@@ -1,8 +1,8 @@
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider,
-  Grid,
+  Box, Button, Collapse, DialogContent, Divider, Grid,
+  LinearProgress,
   TextField,
 } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
@@ -134,42 +134,35 @@ export const OBSWebsocketEdit: React.FC<{
   }, [ item, onSave, enqueueSnackbar ]);
 
   return(<>
-    {loading
-      ? <Box
-        sx={{
-          height: '100%', display: 'flex',
-        }}
-        alignItems='center'
-        alignSelf="center"
-      ><CircularProgress color="inherit" /></Box>
-      : <>
-        <DialogContent sx={{ overflowX: 'hidden' }}>
-          <Box
-            component="form"
-            sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              fullWidth
-              variant="filled"
-              required
-              value={item?.name || ''}
-              label={translate('name')}
-              onChange={(event) => handleValueChange('name', event.target.value)}
-            />
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
+      <DialogContent sx={{ overflowX: 'hidden' }}>
+        <Box
+          component="form"
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            required
+            value={item?.name || ''}
+            label={translate('name')}
+            onChange={(event) => handleValueChange('name', event.target.value)}
+          />
 
-            <Editor
-              height="78vh"
-              width={`100%`}
-              language={'javascript'}
-              defaultValue={item?.code || ''}
-              theme='vs-dark'
-              onChange={value => handleValueChange('code', value || '')}
-            />
-          </Box>
-        </DialogContent>
-      </>}
+          <Editor
+            height="78vh"
+            width={`100%`}
+            language={'javascript'}
+            defaultValue={item?.code || ''}
+            theme='vs-dark'
+            onChange={value => handleValueChange('code', value || '')}
+          />
+        </Box>
+      </DialogContent>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       {!loading ? <>

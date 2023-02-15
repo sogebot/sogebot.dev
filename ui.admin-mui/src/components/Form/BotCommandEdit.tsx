@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField,
+  Box, Button, Collapse, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField,
 } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { validateOrReject } from 'class-validator';
@@ -106,15 +106,8 @@ export const BotCommandEdit: React.FC<{
   }, [item, enqueueSnackbar, navigate, handleBotCommandSpecificSettingsSave]);
 
   return(<>
-    {(loading)
-      && <Grid
-        sx={{ py: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    {!loading && <Fade in={true}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -172,8 +165,7 @@ export const BotCommandEdit: React.FC<{
           {examples}
         </Box>
       </DialogContent>
-
-    </Fade>}
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
@@ -181,7 +173,7 @@ export const BotCommandEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

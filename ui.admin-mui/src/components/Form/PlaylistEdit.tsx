@@ -1,6 +1,6 @@
 import { Autocomplete, LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Chip, CircularProgress, DialogContent, Divider, Fade, FormLabel, Grid, Slider, Stack,
+  Box, Button, Chip, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack,
 } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -150,15 +150,8 @@ export const PlaylistEdit: React.FC<{
   }, [item]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -284,7 +277,7 @@ export const PlaylistEdit: React.FC<{
           </Stack>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
@@ -292,7 +285,7 @@ export const PlaylistEdit: React.FC<{
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

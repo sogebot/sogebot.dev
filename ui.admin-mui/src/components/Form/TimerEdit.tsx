@@ -6,7 +6,7 @@ import {
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Checkbox, CircularProgress, DialogContent, Divider, Fade, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Stack, TextField,
+  Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField,
 } from '@mui/material';
 import { Timer, TimerResponse } from '@sogebot/backend/dest/database/entity/timer';
 import axios from 'axios';
@@ -183,15 +183,8 @@ export const TimerEdit: React.FC<{
   }, [ item ]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -293,19 +286,19 @@ export const TimerEdit: React.FC<{
           </DragDropContext>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
-          <Button onClick={addResponse}  sx={{ width: 200 }}>
+          <Button onClick={addResponse} disabled={loading} sx={{ width: 200 }}>
             { translate('systems.customcommands.addResponse') }
           </Button>
         </Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

@@ -9,7 +9,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box, Button, Card, CircularProgress, DialogContent, Divider, Fade, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography,
+  Box, Button, Card, Collapse, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -394,15 +394,8 @@ export const RandomizerEdit: React.FC = () => {
   }, [ item.items ]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       { item && <DialogContent>
         <Grid container spacing={1}>
           <Grid lg={6} md={12}>
@@ -594,7 +587,7 @@ export const RandomizerEdit: React.FC = () => {
           </Grid>
         </Grid>
       </DialogContent>}
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
@@ -602,7 +595,7 @@ export const RandomizerEdit: React.FC = () => {
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

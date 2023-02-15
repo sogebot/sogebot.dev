@@ -4,7 +4,7 @@ import {
 import { DeleteTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Stack, TextField,
+  Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField,
 } from '@mui/material';
 import {
   Keyword, KeywordGroup, KeywordResponses,
@@ -179,15 +179,8 @@ export const KeywordEdit: React.FC<{
   }, [ item ]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -284,19 +277,19 @@ export const KeywordEdit: React.FC<{
           </DragDropContext>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
-          <Button onClick={addResponse}  sx={{ width: 200 }}>
+          <Button onClick={addResponse} disabled={loading} sx={{ width: 200 }}>
             { translate('systems.customcommands.addResponse') }
           </Button>
         </Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

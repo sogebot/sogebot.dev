@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Checkbox, CircularProgress, DialogContent, Divider, Fade, FormControlLabel, FormGroup, FormHelperText, Grid, TextField,
+  Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField,
 } from '@mui/material';
 import { Price } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
@@ -86,15 +86,8 @@ export const PriceEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -170,7 +163,7 @@ export const PriceEdit: React.FC<{
           </Grid>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
@@ -178,7 +171,7 @@ export const PriceEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

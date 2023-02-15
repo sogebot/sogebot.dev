@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Grid, Grow, InputAdornment, Stack,
+  Box, Button, Collapse, DialogContent, Divider, Grid, Grow, InputAdornment, LinearProgress, Stack,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
@@ -60,15 +60,8 @@ export const TranslationsEdit: React.FC<{
   }, [item, enqueueSnackbar, navigate]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -95,7 +88,7 @@ export const TranslationsEdit: React.FC<{
           </Stack>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>

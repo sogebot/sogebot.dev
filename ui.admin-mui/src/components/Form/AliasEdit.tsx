@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Checkbox, CircularProgress, createFilterOptions, DialogContent, Divider, Fade, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, Select, TextField,
+  Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField,
 } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -97,15 +97,8 @@ export const AliasEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -211,7 +204,7 @@ export const AliasEdit: React.FC<{
           </Grid>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
@@ -219,7 +212,7 @@ export const AliasEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

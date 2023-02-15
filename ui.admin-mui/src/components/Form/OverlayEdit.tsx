@@ -4,7 +4,7 @@ import {
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, Paper, TextField, Tooltip,
+  Box, Button, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
@@ -226,15 +226,13 @@ export const OverlayEdit: React.FC = () => {
   }, [ zoom ]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <>
+      <LinearProgress />
+      <DialogContent sx={{
+        p: 0, overflowX: 'hidden',
+      }}/>
+    </>}
+    <Fade in={!loading} mountOnEnter unmountOnExit>
       { item && <DialogContent sx={{
         p: 0, overflowX: 'hidden',
       }}>
@@ -561,7 +559,7 @@ export const OverlayEdit: React.FC = () => {
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

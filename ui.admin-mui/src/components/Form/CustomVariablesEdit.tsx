@@ -7,8 +7,8 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Alert, Box, Button, Checkbox, CircularProgress, DialogContent, Divider, FormControl,
-  FormLabel, Grid, IconButton, InputAdornment, InputLabel, Link, MenuItem, Paper, Radio,
+  Alert, Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormLabel,
+  Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio,
   Select, Slider, Stack, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography,
 
@@ -355,213 +355,206 @@ export const CustomVariablesEdit: React.FC = () => {
   }, [ item, enqueueSnackbar, validate ]);
 
   return(<>
-    {loading
-      ? <Box
-        sx={{
-          height: '100%', display: 'flex',
-        }}
-        alignItems='center'
-        alignSelf="center"
-      ><CircularProgress color="inherit" /></Box>
-      : <>
-        <DialogContent sx={{ overflowX: 'hidden' }}>
-          { page === 0 && <Box
-            component="form"
-            sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-            noValidate
-            autoComplete="off"
-          >
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
+      <DialogContent sx={{ overflowX: 'hidden' }}>
+        { page === 0 && <Box
+          component="form"
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            fullWidth
+            {...propsError('variableName')}
+            variant="filled"
+            required
+            value={item?.variableName || ''}
+            label={translate('properties.variableName')}
+            onChange={(event) => handleValueChange('variableName', event.target.value)}
+          />
+
+          <Grid container columnSpacing={1}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                {...propsError('description')}
+                variant="filled"
+                value={item?.description || ''}
+                label={translate('description')}
+                onChange={(event) => handleValueChange('description', event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="filled" >
+                <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+                <Select
+                  label={translate('permissions')}
+                  labelId="permission-select-label"
+                  onChange={(event) => handleValueChange('permission', event.target.value)}
+                  value={item?.permission || defaultPermissions.VIEWERS}
+                >
+                  {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Stack direction='row' spacing={4} alignItems='center' sx={{ py: 0.5 }}>
+            <FormLabel>{ translate('type') }</FormLabel>
+            <ToggleButtonGroup
+              color='primary'
+              value={item?.type || 'text'}
+              sx={{ width: '100%' }}
+              exclusive
+              onChange={(_, val) => val && handleValueChange('type', val)}
+              aria-label="text alignment"
+            >
+              <ToggleButton value="text" aria-label="text" sx={{ width: '100%' }} title='Text'>
+                <Stack alignItems='center'>
+                  <Icon style={{ width: '40px' }} size={'40px'} path={mdiAlphabeticalVariant} color='white'/>
+                </Stack>
+              </ToggleButton>
+              <ToggleButton value="number" aria-label="number" sx={{ width: '100%' }}  title='Number'>
+                <Stack alignItems='center'>
+                  <Icon style={{ width: '40px' }} size={'40px'} path={mdiNumeric} color='white'/>
+                </Stack>
+              </ToggleButton>
+              <ToggleButton value="options" aria-label="options" sx={{ width: '100%' }} title='Options'>
+                <Stack alignItems='center'>
+                  <Icon style={{ width: '40px' }} size={'40px'} path={mdiCodeBrackets} color='white'/>
+                </Stack>
+              </ToggleButton>
+              <ToggleButton value="eval" aria-label="eval" sx={{ width: '100%' }} title='Script'>
+                <Stack alignItems='center'>
+                  <Icon style={{ width: '40px' }} size={'40px'} path={mdiCodeJson} color='white'/>
+                </Stack>
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Stack>
+
+          {(item?.type !== 'options') && <TextField
+            fullWidth
+            {...propsError('currentValue')}
+            variant="filled"
+            type={item?.type === 'number' ? 'number' : 'text'}
+            value={item?.currentValue || ''}
+            disabled={item?.type === 'eval'}
+            label={translate('registry.customvariables.currentValue.name')}
+            onChange={(event) => handleValueChange('currentValue', event.target.value)}
+          />}
+
+          { item?.type === 'options' && <Box sx={{ pt: 2 }}>
+            <FormLabel sx={{ pt: 2 }}>{ translate('registry.customvariables.usableOptions.name') }</FormLabel>
             <TextField
               fullWidth
-              {...propsError('variableName')}
+              hiddenLabel
               variant="filled"
-              required
-              value={item?.variableName || ''}
-              label={translate('properties.variableName')}
-              onChange={(event) => handleValueChange('variableName', event.target.value)}
+              value={addUsableOptionValue}
+              onChange={(event) => setAddUsableOptionValue(event.target.value)}
+              onKeyDown={ev => ev.key==='Enter' && addUsableOption()}
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>
+                  <IconButton disabled={addUsableOptionValue.trim().length === 0} onClick={addUsableOption}><AddTwoTone/></IconButton>
+                </InputAdornment>,
+              }}
             />
 
-            <Grid container columnSpacing={1}>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  {...propsError('description')}
-                  variant="filled"
-                  value={item?.description || ''}
-                  label={translate('description')}
-                  onChange={(event) => handleValueChange('description', event.target.value)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth variant="filled" >
-                  <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
-                  <Select
-                    label={translate('permissions')}
-                    labelId="permission-select-label"
-                    onChange={(event) => handleValueChange('permission', event.target.value)}
-                    value={item?.permission || defaultPermissions.VIEWERS}
-                  >
-                    {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            <Stack direction='row' spacing={4} alignItems='center' sx={{ py: 0.5 }}>
-              <FormLabel>{ translate('type') }</FormLabel>
-              <ToggleButtonGroup
-                color='primary'
-                value={item?.type || 'text'}
-                sx={{ width: '100%' }}
-                exclusive
-                onChange={(_, val) => val && handleValueChange('type', val)}
-                aria-label="text alignment"
-              >
-                <ToggleButton value="text" aria-label="text" sx={{ width: '100%' }} title='Text'>
-                  <Stack alignItems='center'>
-                    <Icon style={{ width: '40px' }} size={'40px'} path={mdiAlphabeticalVariant} color='white'/>
-                  </Stack>
-                </ToggleButton>
-                <ToggleButton value="number" aria-label="number" sx={{ width: '100%' }}  title='Number'>
-                  <Stack alignItems='center'>
-                    <Icon style={{ width: '40px' }} size={'40px'} path={mdiNumeric} color='white'/>
-                  </Stack>
-                </ToggleButton>
-                <ToggleButton value="options" aria-label="options" sx={{ width: '100%' }} title='Options'>
-                  <Stack alignItems='center'>
-                    <Icon style={{ width: '40px' }} size={'40px'} path={mdiCodeBrackets} color='white'/>
-                  </Stack>
-                </ToggleButton>
-                <ToggleButton value="eval" aria-label="eval" sx={{ width: '100%' }} title='Script'>
-                  <Stack alignItems='center'>
-                    <Icon style={{ width: '40px' }} size={'40px'} path={mdiCodeJson} color='white'/>
-                  </Stack>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Stack>
-
-            {(item?.type !== 'options') && <TextField
-              fullWidth
-              {...propsError('currentValue')}
-              variant="filled"
-              type={item?.type === 'number' ? 'number' : 'text'}
-              value={item?.currentValue || ''}
-              disabled={item?.type === 'eval'}
-              label={translate('registry.customvariables.currentValue.name')}
-              onChange={(event) => handleValueChange('currentValue', event.target.value)}
-            />}
-
-            { item?.type === 'options' && <Box sx={{ pt: 2 }}>
-              <FormLabel sx={{ pt: 2 }}>{ translate('registry.customvariables.usableOptions.name') }</FormLabel>
+            { item.usableOptions.map((option, idx) =>
               <TextField
+                key={idx}
                 fullWidth
                 hiddenLabel
                 variant="filled"
-                value={addUsableOptionValue}
-                onChange={(event) => setAddUsableOptionValue(event.target.value)}
-                onKeyDown={ev => ev.key==='Enter' && addUsableOption()}
+                value={option}
+                onChange={(event) => updateUsableOption(idx, event.target.value)}
                 InputProps={{
+                  startAdornment: <InputAdornment position='start'>
+                    <Radio
+                      checked={item.currentValue === option}
+                      onChange={event => handleValueChange('currentValue', event.target.value)}
+                      value={option}
+                    />
+                  </InputAdornment>,
                   endAdornment: <InputAdornment position='end'>
-                    <IconButton disabled={addUsableOptionValue.trim().length === 0} onClick={addUsableOption}><AddTwoTone/></IconButton>
+                    <IconButton onClick={() => removeUsableOption(option)}><DeleteTwoTone/></IconButton>
                   </InputAdornment>,
                 }}
-              />
-
-              { item.usableOptions.map((option, idx) =>
-                <TextField
-                  key={idx}
-                  fullWidth
-                  hiddenLabel
-                  variant="filled"
-                  value={option}
-                  onChange={(event) => updateUsableOption(idx, event.target.value)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>
-                      <Radio
-                        checked={item.currentValue === option}
-                        onChange={event => handleValueChange('currentValue', event.target.value)}
-                        value={option}
-                      />
-                    </InputAdornment>,
-                    endAdornment: <InputAdornment position='end'>
-                      <IconButton onClick={() => removeUsableOption(option)}><DeleteTwoTone/></IconButton>
-                    </InputAdornment>,
-                  }}
-                />)}
-            </Box>}
-
-            {item?.type === 'eval' && <>
-              <Editor
-                height="44vh"
-                width={`100%`}
-                language={'javascript'}
-                defaultValue={item?.evalValue || ''}
-                theme='vs-dark'
-                onChange={value => handleValueChange('evalValue', value || '')}
-              />
-
-              <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
-                <FormLabel sx={{ width: '170px' }}>{ translate('registry.customvariables.run-script') }</FormLabel>
-                <Slider
-                  value={item?.runEvery || 0}
-                  max={7 * DAY}
-                  step={30000}
-                  valueLabelDisplay="on"
-                  valueLabelFormat={(value) => {
-                    if (value === 0) {
-                      return translate('registry.customvariables.runEvery.isUsed');
-                    }
-                    return humanizeDuration(value, { language: configuration.lang });
-                  }}
-                  size='small'
-                  onChange={(event, newValue) => handleValueChange('runEvery', Number(newValue))}
-                />
-              </Stack>
-            </>}
-          </Box> }
-
-          { page === 1 && <Box>
-            <Typography variant='h5' sx={{ pb: 2 }}>Configure REST Access</Typography>
-            {(item?.urls ?? []).length === 0
-              ? <Alert severity='info' variant='filled' action={
-                <IconButton onClick={addURLOption} size='small'><AddTwoTone/></IconButton>
-              }>No URLs were created yet.</Alert>
-              : <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>URL</TableCell>
-                      <TableCell align="center">POST</TableCell>
-                      <TableCell align="center">GET</TableCell>
-                      <TableCell align="center">{translate('registry.customvariables.response.show')}</TableCell>
-                      <TableCell align="center"></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {item?.urls.map((row, idx) => (
-                      <TableRow
-                        key={row.id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          <Link href={`${server}/customvariables/${row.id}`}>
-                            /customvariables/{ row.id }
-                          </Link>
-                        </TableCell>
-                        <TableCell align="center"><Checkbox checked={row.POST} onChange={(_, checked) => changeURLCheckbox(idx, 'POST', checked)}/></TableCell>
-                        <TableCell align="center"><Checkbox checked={row.GET} onChange={(_, checked) => changeURLCheckbox(idx, 'GET', checked)}/></TableCell>
-                        <TableCell align="center"><Checkbox checked={row.showResponse}onChange={(_, checked) => changeURLCheckbox(idx, 'showResponse', checked)}/></TableCell>
-                        <TableCell align="right">
-                          <IconButton onClick={() => removeURLOption(row.id)}><DeleteTwoTone/></IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>}
+              />)}
           </Box>}
-        </DialogContent>
-      </>}
+
+          {item?.type === 'eval' && <>
+            <Editor
+              height="44vh"
+              width={`100%`}
+              language={'javascript'}
+              defaultValue={item?.evalValue || ''}
+              theme='vs-dark'
+              onChange={value => handleValueChange('evalValue', value || '')}
+            />
+
+            <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
+              <FormLabel sx={{ width: '170px' }}>{ translate('registry.customvariables.run-script') }</FormLabel>
+              <Slider
+                value={item?.runEvery || 0}
+                max={7 * DAY}
+                step={30000}
+                valueLabelDisplay="on"
+                valueLabelFormat={(value) => {
+                  if (value === 0) {
+                    return translate('registry.customvariables.runEvery.isUsed');
+                  }
+                  return humanizeDuration(value, { language: configuration.lang });
+                }}
+                size='small'
+                onChange={(event, newValue) => handleValueChange('runEvery', Number(newValue))}
+              />
+            </Stack>
+          </>}
+        </Box> }
+
+        { page === 1 && <Box>
+          <Typography variant='h5' sx={{ pb: 2 }}>Configure REST Access</Typography>
+          {(item?.urls ?? []).length === 0
+            ? <Alert severity='info' variant='filled' action={
+              <IconButton onClick={addURLOption} size='small'><AddTwoTone/></IconButton>
+            }>No URLs were created yet.</Alert>
+            : <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>URL</TableCell>
+                    <TableCell align="center">POST</TableCell>
+                    <TableCell align="center">GET</TableCell>
+                    <TableCell align="center">{translate('registry.customvariables.response.show')}</TableCell>
+                    <TableCell align="center"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {item?.urls.map((row, idx) => (
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <Link href={`${server}/customvariables/${row.id}`}>
+                            /customvariables/{ row.id }
+                        </Link>
+                      </TableCell>
+                      <TableCell align="center"><Checkbox checked={row.POST} onChange={(_, checked) => changeURLCheckbox(idx, 'POST', checked)}/></TableCell>
+                      <TableCell align="center"><Checkbox checked={row.GET} onChange={(_, checked) => changeURLCheckbox(idx, 'GET', checked)}/></TableCell>
+                      <TableCell align="center"><Checkbox checked={row.showResponse}onChange={(_, checked) => changeURLCheckbox(idx, 'showResponse', checked)}/></TableCell>
+                      <TableCell align="right">
+                        <IconButton onClick={() => removeURLOption(row.id)}><DeleteTwoTone/></IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>}
+        </Box>}
+      </DialogContent>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       {!loading ? <>
@@ -582,7 +575,7 @@ export const CustomVariablesEdit: React.FC = () => {
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
           </Grid>
           <Grid item>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Grid>
         </Grid>
       </>

@@ -1,7 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import {
   Autocomplete,
-  Box, Button, CircularProgress,  DialogContent, Divider, Fade, FormLabel, Grid, Slider, Stack, TextField, Typography,
+  Box, Button, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack, TextField, Typography,
 } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
@@ -199,15 +199,8 @@ export const HLTBEdit: React.FC<{
   }, [inputValue, cachedSearch]);
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!loading}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <DialogContent>
         <Box
           component="form"
@@ -260,7 +253,7 @@ export const HLTBEdit: React.FC<{
           </Stack>
         </Box>
       </DialogContent>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
@@ -268,7 +261,7 @@ export const HLTBEdit: React.FC<{
         <Grid item>
           <Stack spacing={1} direction='row'>
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

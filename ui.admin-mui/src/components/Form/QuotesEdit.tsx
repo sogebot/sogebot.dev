@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, Chip, CircularProgress, DialogContent, Divider, Fade, Grid, TextField,
+  Box, Button, Chip, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField,
 } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { Quotes } from '@sogebot/backend/dest/database/entity/quotes';
@@ -103,84 +103,77 @@ export const QuotesEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      ? <Grid
-        sx={{ p: 5 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>
-      : <Fade in={!loading}>
-        <DialogContent>
-          <Box
-            component="form"
-            sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-            noValidate
-            autoComplete="off"
-          >
-            <TextField
-              fullWidth
-              {...propsError('name')}
-              variant="filled"
-              value={item?.quote || ''}
-              required
-              multiline
-              onKeyPress={(e) => {
-                e.key === 'Enter' && e.preventDefault();
-              }}
-              label={capitalize(translate('systems.quotes.quote.name'))}
-              onChange={(event) => handleValueChange('quote', event.target.value)}
-            />
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
+      <DialogContent>
+        <Box
+          component="form"
+          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            fullWidth
+            {...propsError('name')}
+            variant="filled"
+            value={item?.quote || ''}
+            required
+            multiline
+            onKeyPress={(e) => {
+              e.key === 'Enter' && e.preventDefault();
+            }}
+            label={capitalize(translate('systems.quotes.quote.name'))}
+            onChange={(event) => handleValueChange('quote', event.target.value)}
+          />
 
-            <TextField
-              fullWidth
-              {...propsError('name')}
-              variant="filled"
-              value={quotedByUserName}
-              disabled
-              label={capitalize(translate('systems.quotes.by.name'))}
-            />
+          <TextField
+            fullWidth
+            {...propsError('name')}
+            variant="filled"
+            value={quotedByUserName}
+            disabled
+            label={capitalize(translate('systems.quotes.by.name'))}
+          />
 
-            <Autocomplete
-              fullWidth
-              freeSolo
-              value={item.tags}
-              options={currentTags}
-              multiple
-              renderTags={(value: readonly string[], getTagProps) =>
-                value.map((option: string, index: number) => (
-                  <Chip size='small' color="primary" label={option} {...getTagProps({ index })} key={option} />
-                ))
+          <Autocomplete
+            fullWidth
+            freeSolo
+            value={item.tags}
+            options={currentTags}
+            multiple
+            renderTags={(value: readonly string[], getTagProps) =>
+              value.map((option: string, index: number) => (
+                <Chip size='small' color="primary" label={option} {...getTagProps({ index })} key={option} />
+              ))
+            }
+            onChange={(event, newValue) => {
+              handleValueChange('tags', newValue);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                variant="filled"
+                label={translate('systems.quotes.tags.name')}
+                placeholder='Start typing to add tag'
+              />
+            )}
+            filterOptions={(opts, params) => {
+              const filtered = filter(opts, params);
+
+              const { inputValue: iv } = params;
+              // Suggest the creation of a new value
+              const isExisting = opts.some((option) => iv === option);
+              if (iv !== '' && !isExisting) {
+                filtered.push(iv);
               }
-              onChange={(event, newValue) => {
-                handleValueChange('tags', newValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  variant="filled"
-                  label={translate('systems.quotes.tags.name')}
-                  placeholder='Start typing to add tag'
-                />
-              )}
-              filterOptions={(opts, params) => {
-                const filtered = filter(opts, params);
 
-                const { inputValue: iv } = params;
-                // Suggest the creation of a new value
-                const isExisting = opts.some((option) => iv === option);
-                if (iv !== '' && !isExisting) {
-                  filtered.push(iv);
-                }
-
-                return filtered;
-              }}
-            />
-          </Box>
-        </DialogContent>
-      </Fade>}
+              return filtered;
+            }}
+          />
+        </Box>
+      </DialogContent>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
@@ -188,7 +181,7 @@ export const QuotesEdit: React.FC<{
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </Box>

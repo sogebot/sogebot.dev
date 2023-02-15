@@ -1,14 +1,17 @@
 import { PublishTwoTone } from '@mui/icons-material';
 import {
+  LoadingButton,
   TabContext, TabList, TabPanel,
 } from '@mui/lab';
 import {
-  Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel,
-  FormGroup, FormLabel, IconButton, Stack, Tab, TextField, Tooltip, Typography,
+  Alert,
+  Box, Button, Checkbox, Dialog , DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup,
+  FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
 import { GalleryInterface } from '@sogebot/backend/src/database/entity/gallery';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
 
@@ -20,15 +23,32 @@ type Props = {
 
 export const ExportDialog: React.FC<Props> = ({ model }) => {
   const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [ loading, setLoading ] = React.useState(false);
+  const [ saving, setSaving ] = React.useState(false);
   const [ open, setOpen ] = React.useState(false);
   const [ tab, setTab ] = React.useState('new');
   const [ name, setName ] = React.useState(model.name);
   const [ description, setDescription ] = React.useState('');
+  const [ itemsToExport, setItemsToExport ] = React.useState<typeof model.items>(model.items);
+
+  React.useEffect(() => {
+    setItemsToExport(model.items);
+  }, [model.items]);
 
   const [ gallery, setGallery ] = React.useState<string[]>([]);
 
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
   React.useEffect(() => {
     setGallery([]);
+    setLoading(true);
 
     new Promise<GalleryInterface[]>((resolve, reject) => getSocket('/overlays/gallery').emit('generic::getAll', (err, data) => {
       if (err) {
@@ -39,7 +59,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     })).then((galleryItems) => {
       if (open) {
         // go through items and process all gallery, currently we can have gallery items only in html
-        for (const item of model.items.filter(o => o.opts.typeId === 'html')) {
+        for (const item of itemsToExport.filter(o => o.opts.typeId === 'html')) {
           for (const gItem of galleryItems) {
             const url = `${server}/gallery/${gItem.id}`;
             const opts = (item.opts as HTML);
@@ -49,8 +69,30 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
           }
         }
       }
+      setLoading(false);
     });
-  }, [open, server]);
+  }, [open, server, itemsToExport]);
+
+  const save = React.useCallback(async () => {
+    setSaving(true);
+    const toSave = {
+      name, description, items: itemsToExport, data: {},
+    } as {
+      name: string;
+      description: string,
+      items: typeof model.items,
+      data: Record<string, string>
+    };
+
+    // load images
+    for (const item of gallery) {
+      const image = await axios.get(item, { responseType: 'arraybuffer' });
+      toSave.data[item] = Buffer.from(image.data, 'binary').toString('base64');
+    }
+
+    console.log({ toSave });
+    setSaving(false);
+  }, [name, description, itemsToExport, gallery]);
 
   React.useEffect(() => {
     setName(model.name);
@@ -68,6 +110,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       style={{ pointerEvents: 'none' }}
       PaperProps={{ style: { pointerEvents: 'auto' } }}
     >
+      {loading && <LinearProgress />}
       <DialogTitle>
       Export Overlay
       </DialogTitle>
@@ -93,7 +136,15 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
           <FormGroup>
             { model.items.map(o =>  <FormControlLabel
               key={o.id}
-              control={<Checkbox defaultChecked />}
+              onChange={(_ev, checked) => {
+                if (!checked) {
+                  setItemsToExport(it => it.filter(x => x.id !== o.id));
+                } else {
+                  // we need to add items in correct order (redoing from model.items)
+                  setItemsToExport([...model.items.filter(m => itemsToExport.map(i => i.id).includes(m.id) || m.id === o.id)]);
+                }
+              }}
+              control={<Checkbox checked={!!itemsToExport.find(it => it.id === o.id)} />}
               label={<Typography>
                 {o.name && o.name.length > 0
                   ? <>
@@ -105,15 +156,40 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
 
         <Box sx={{ pt: 2 }}>
           <FormLabel>Export gallery</FormLabel>
+          {anchorEl?.dataset.url && <Popover
+            id="mouse-over-popover"
+            sx={{ pointerEvents: 'none' }}
+            open={true}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical:   'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical:   'bottom',
+              horizontal: 'right',
+            }}
+            onClose={handlePopoverClose}
+            disableRestoreFocus
+          >
+            <img src={anchorEl.dataset.url} style={{ maxWidth: '100px' }}/>
+          </Popover>}
           <FormGroup>
-            { gallery.map((o, idx) =>  <FormControlLabel
-              key={idx}
-              control={<Checkbox defaultChecked />}
-              label={<Typography>{o}</Typography>} /> )}
+            { gallery.map((o, idx) =>
+              <Typography
+                sx={{ py: 1 }}
+                key={idx}
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+                data-url={o}
+              >{o}</Typography>)}
           </FormGroup>
+
+          <Alert sx={{ mt: 1 }} severity='info'>If export layer contains gallery items, they are added automatically into export.</Alert>
         </Box>
       </DialogContent>
       <DialogActions>
+        <LoadingButton onClick={save} disabled={loading} loading={saving}>Save on remote</LoadingButton>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>

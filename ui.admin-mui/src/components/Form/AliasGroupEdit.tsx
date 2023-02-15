@@ -1,7 +1,7 @@
 import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Box, Button, CircularProgress, DialogContent, DialogTitle, Divider, Fade, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField,
+  Box, Button, Collapse, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField,
 } from '@mui/material';
 import { AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import { capitalize, cloneDeep } from 'lodash';
@@ -88,15 +88,8 @@ export const AliasGroupEdit: React.FC<{
   };
 
   return(<>
-    {loading
-      && <Grid
-        sx={{ pt: 10 }}
-        container
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-      ><CircularProgress color="inherit" /></Grid>}
-    <Fade in={!(loading)}>
+    {loading && <LinearProgress />}
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
       <Box>
         <DialogTitle>{group?.name}</DialogTitle>
         <DialogContent>
@@ -142,7 +135,7 @@ export const AliasGroupEdit: React.FC<{
 
         </DialogContent>
       </Box>
-    </Fade>
+    </Collapse>
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'}spacing={1}>
