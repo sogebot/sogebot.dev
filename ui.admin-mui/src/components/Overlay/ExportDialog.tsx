@@ -99,9 +99,8 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       toSave.data[item] = Buffer.from(image.data, 'binary').toString('base64');
     }
 
-    console.log({ toSave });
     try {
-      await axios.post('http://localhost:3000/overlays', {
+      await axios.post('https://registry.sogebot.xyz/overlays', {
         ...toSave,
         items: JSON.stringify(toSave.items),
         data:  JSON.stringify(toSave.data),
