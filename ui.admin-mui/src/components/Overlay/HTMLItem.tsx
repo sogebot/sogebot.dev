@@ -50,7 +50,7 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active }) => {
     if (!item.html.includes('$_')) {
       setText(item.html);
     }
-  }, [active]);
+  }, [active, item]);
 
   return <Box sx={{
     width:         '100%',
