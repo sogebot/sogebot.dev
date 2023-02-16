@@ -14,14 +14,11 @@ import (
 func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
 	vars := mux.Vars(r)
 
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/x-www-form-urlencoded" {
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	r.ParseForm()
-
-	t := time.Now()
 
 	var (
 		id          string
@@ -44,20 +41,19 @@ func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		return
 	}
 
-	overlay := Overlay{
-		OverlayStripped: &OverlayStripped{
-			Id:             id,
-			Name:           name, // name is not changeable
-			Description:    r.FormValue("description"),
-			PublisherId:    r.Header.Get("userId"),
-			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        version + 1,
-			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []OverlayVote{},
-		},
-		Items: r.FormValue("items"),
-		Data:  r.FormValue("data"),
+	var overlay Overlay
+
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err = json.NewDecoder(r.Body).Decode(&overlay)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
+
+	t := time.Now()
+	overlay.PublishedAt = t.Format("2006-01-02T15:04:05.999Z")
+	overlay.PublisherId = r.Header.Get("userId")
 
 	err = validate.Struct(overlay)
 	if err != nil {
@@ -85,8 +81,8 @@ func PutOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 	_, err = db.Exec(`
 		UPDATE "overlay"
 			SET "name"=$1, "description"=$2, "publisherId"=$3, "publishedAt"=$4, "items"=$5, "data"=$6, "version"=$7, "compatibleWith"=$8
-		WHERE "id"=$8`,
-		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Items, overlay.Data, overlay.Version, overlay.CompatibleWith, overlay.Id,
+		WHERE "id"=$9`,
+		overlay.Name, overlay.Description, overlay.PublisherId, overlay.PublishedAt, overlay.Items, overlay.Data, version+1, overlay.CompatibleWith, id,
 	)
 
 	if err != nil {

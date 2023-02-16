@@ -118,7 +118,8 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"https://dash.sogebot.xyz", "http://localhost:3000", "http://localhost:3001"},
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization", "content-type"},
+		AllowedMethods:   []string{"HEAD", "POST", "GET", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Authorization", "content-type", "Access-Control-Allow-Origin"},
 	})
 	handler := c.Handler(router)
 	log.Fatal(http.ListenAndServe(":3000", handler))

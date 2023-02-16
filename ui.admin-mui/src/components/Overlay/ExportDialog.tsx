@@ -24,10 +24,13 @@ import type { Overlay as RemoteOverlay } from '../../../../services/plugins/expo
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import theme from '../../theme';
+import { required } from '../../validators';
 
 type Props = {
   model: Overlay
 };
+
+const endpoint = 'https://registry.sogebot.xyz';
 
 export const ExportDialog: React.FC<Props> = ({ model }) => {
   const { currentVersion } = useSelector((s: any) => s.loader);
@@ -55,10 +58,12 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [model.items]);
 
   React.useEffect(() => {
-    if (tab === 'update') {
-      axios.get<RemoteOverlay[]>('https://registry.sogebot.xyz/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
+    if (tab === 'update' || open) {
+      axios.get<RemoteOverlay[]>(endpoint + '/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
+    } else {
+      setRemoteOverlay(undefined);
     }
-  }, [ tab ]);
+  }, [ tab, open ]);
 
   const [ gallery, setGallery ] = React.useState<string[]>([]);
 
@@ -121,16 +126,31 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     }
 
     try {
-      await axios.post('https://registry.sogebot.xyz/overlays', {
-        ...toSave,
-        items: JSON.stringify(toSave.items),
-        data:  JSON.stringify(toSave.data),
-      }, {
-        headers: {
-          authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
-        },
-      });
-      enqueueSnackbar('New remote overlay was created on registry server.');
+      if (tab === 'new') {
+        await axios.post(endpoint + '/overlays', {
+          ...toSave,
+          items: JSON.stringify(toSave.items),
+          data:  JSON.stringify(toSave.data),
+        }, {
+          headers: {
+            authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
+          },
+        });
+        enqueueSnackbar('New remote overlay was created on registry server.');
+      } else {
+        if (remoteOverlay) {
+          await axios.put(endpoint + '/overlays/' + remoteOverlay.id, {
+            ...toSave,
+            items: JSON.stringify(toSave.items),
+            data:  JSON.stringify(toSave.data),
+          }, {
+            headers: {
+              authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
+            },
+          });
+          enqueueSnackbar('Remote overlay was updated on registry server.');
+        }
+      }
       setOpen(false);
     } catch (e) {
       console.error(e);
@@ -138,10 +158,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     setSaving(false);
 
   }, [name, description, itemsToExport, gallery, enqueueSnackbar]);
-
-  React.useEffect(() => {
-    setName(model.name);
-  }, [ model.name ]);
 
   return <>
     <Tooltip title="Export">
@@ -169,15 +185,15 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
               <Tab label="Update existing overlay" value="update" />
             </TabList>
           </Box>
-          <TabPanel value="new"><Stack spacing={0.5}>
-            <TextField label="Name" fullWidth value={name} onChange={(ev) => setName(ev.currentTarget.value)}/>
-            <TextField label="Description" multiline fullWidth value={description} onChange={(ev) => setDescription(ev.currentTarget.value)}/>
-          </Stack></TabPanel>
           <TabPanel value="update">
             <Autocomplete
               value={remoteOverlay}
               disableClearable
-              onChange={(ev, value) => setRemoteOverlay(value)}
+              onChange={(ev, value) => {
+                setRemoteOverlay(value);
+                setName(value.name);
+                setDescription(value.description);
+              }}
               disablePortal
               id="overlay.update.selector"
               options={remoteOverlays ?? []}
@@ -238,6 +254,29 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
           </TabPanel>
         </TabContext>
 
+        <Stack spacing={0.5} sx={{
+          pt: tab ==='new' ? 3 : 0, px: 3,
+        }}>
+          <TextField
+            label="Name"
+            fullWidth
+            required
+            value={name}
+            onChange={(ev) => setName(ev.currentTarget.value)}
+            error={typeof required(name) === 'string'}
+            helperText={typeof required(name) !== 'string' ? undefined : required(name)}
+          />
+          <TextField
+            label="Description"
+            multiline
+            fullWidth
+            value={description}
+            onChange={(ev) => setDescription(ev.currentTarget.value)}
+            error={typeof required(description) === 'string'}
+            helperText={typeof required(description) !== 'string' ? undefined : required(description)}
+            required/>
+        </Stack>
+
         <Box sx={{ pt: 2 }}>
           <FormLabel>Export layers</FormLabel>
           <FormGroup>
@@ -296,7 +335,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <LoadingButton onClick={save} disabled={loading} loading={saving}>Save on remote</LoadingButton>
+        <LoadingButton onClick={save} disabled={loading || (tab === 'update' && !remoteOverlay)} loading={saving}>Save on remote</LoadingButton>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>
