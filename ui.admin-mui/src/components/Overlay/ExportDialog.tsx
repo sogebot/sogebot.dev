@@ -5,19 +5,25 @@ import {
 } from '@mui/lab';
 import {
   Alert,
-  Box, Button, Checkbox, Dialog , DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup,
+  Autocomplete, Box,
+  Button, Checkbox, Chip, Dialog , DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup,
   FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
 import { GalleryInterface } from '@sogebot/backend/src/database/entity/gallery';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useSessionstorageState } from 'rooks';
 
+import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
+import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import theme from '../../theme';
 
 type Props = {
   model: Overlay
@@ -27,17 +33,32 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   const { currentVersion } = useSelector((s: any) => s.loader);
   const { enqueueSnackbar } = useSnackbar();
   const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+
   const [ loading, setLoading ] = React.useState(false);
   const [ saving, setSaving ] = React.useState(false);
   const [ open, setOpen ] = React.useState(false);
+
   const [ tab, setTab ] = React.useState('new');
   const [ name, setName ] = React.useState(model.name);
   const [ description, setDescription ] = React.useState('');
   const [ itemsToExport, setItemsToExport ] = React.useState<typeof model.items>(model.items);
 
+  const [ remoteOverlay, setRemoteOverlay ] = React.useState<undefined | RemoteOverlay>(undefined);
+  const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
+
+  const getUserId = () => {
+    return JSON.parse(localStorage['cached-logged-user']).id;
+  };
+
   React.useEffect(() => {
     setItemsToExport(model.items);
   }, [model.items]);
+
+  React.useEffect(() => {
+    if (tab === 'update') {
+      axios.get<RemoteOverlay[]>('https://registry.sogebot.xyz/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
+    }
+  }, [ tab ]);
 
   const [ gallery, setGallery ] = React.useState<string[]>([]);
 
@@ -152,7 +173,69 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
             <TextField label="Name" fullWidth value={name} onChange={(ev) => setName(ev.currentTarget.value)}/>
             <TextField label="Description" multiline fullWidth value={description} onChange={(ev) => setDescription(ev.currentTarget.value)}/>
           </Stack></TabPanel>
-          <TabPanel value="update">Item Two</TabPanel>
+          <TabPanel value="update">
+            <Autocomplete
+              value={remoteOverlay}
+              disableClearable
+              onChange={(ev, value) => setRemoteOverlay(value)}
+              disablePortal
+              id="overlay.update.selector"
+              options={remoteOverlays ?? []}
+              filterOptions={(options, state) => {
+                if (state.inputValue.trim().length === 0) {
+                  return options;
+                }
+                return options.filter(o => o.name.toLowerCase().includes(state.inputValue.toLowerCase()) || o.description.toLowerCase().includes(state.inputValue.toLowerCase()));
+              }}
+              getOptionLabel={(option) => option.name}
+              renderInput={(params) => <TextField {...params} label="Overlay" />}
+              renderOption={(p, option, { inputValue }) => {
+                const matches = match(option.name, inputValue, { insideWords: true });
+                const parts = parse(option.name, matches);
+
+                const matches2 = match(option.description, inputValue, { insideWords: true });
+                const parts2 = parse(option.description, matches2);
+
+                return (
+                  <li {...p}>
+                    <Stack spacing={0.1}>
+                      <Typography>
+                        {parts.map((part, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                              color:           part.highlight ? 'black' : 'inherit',
+                            }}
+                          >
+                            {part.text}
+                          </span>
+                        ))}
+                      </Typography>
+                      {option.description.trim().length > 0 && <Typography variant={'body2'}>
+                        {parts2.map((part, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                              color:           part.highlight ? 'black' : 'inherit',
+                            }}
+                          >
+                            {part.text}
+                          </span>
+                        ))}
+                      </Typography>}
+                      <Stack direction='row' spacing={2}>
+                        <Chip size='small' label={<Typography variant='caption'>v{option.version}</Typography>}/>
+                        <Typography variant='caption' sx={{ transform: 'translateY(3px)' }}>{dayjs(option.publishedAt).format('LLLL')}</Typography>
+                      </Stack>
+                    </Stack>
+                  </li>
+                );
+              }}
+            />
+            { !remoteOverlays && <LinearProgress/> }
+          </TabPanel>
         </TabContext>
 
         <Box sx={{ pt: 2 }}>
