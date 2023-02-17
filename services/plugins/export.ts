@@ -79,7 +79,8 @@ export class Overlay {
     importedCount: number;
     compatibleWith: string;
     votes: OverlayVote[];
-    overlay: string;
+    data: string;
+    items: string;
 
     constructor(source: any = {}) {
         if ('string' === typeof source) source = JSON.parse(source);
@@ -92,7 +93,8 @@ export class Overlay {
         this.importedCount = source["importedCount"];
         this.compatibleWith = source["compatibleWith"];
         this.votes = this.convertValues(source["votes"], OverlayVote);
-        this.overlay = source["overlay"];
+        this.data = source["data"];
+        this.items = source["items"];
     }
 
 	convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -20,6 +20,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useSessionstorageState } from 'rooks';
+import shortid from 'shortid';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -142,13 +143,24 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     if (!isValid) {
       return;
     }
-    
+
     setSaving(true);
 
     // load images
+    const obfuscateItemServer = shortid();
     for (const item of gallery) {
-      const image = await axios.get(item, { responseType: 'arraybuffer' });
-      toSave.data[item] = Buffer.from(image.data, 'binary').toString('base64');
+      const response = await axios.get(item, { responseType: 'arraybuffer' });
+      toSave.data[item.replace(server, obfuscateItemServer)] = `data:${response.headers['content-type'].toLowerCase()};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
+    }
+    console.log({ toSave });
+
+    // obfuscate current server
+    for (const item of toSave.items) {
+      if (item.opts.typeId === 'html') {
+        item.opts.html = item.opts.html.replaceAll(server, obfuscateItemServer);
+        item.opts.css = item.opts.css.replaceAll(server, obfuscateItemServer);
+        item.opts.javascript = item.opts.javascript.replaceAll(server, obfuscateItemServer);
+      }
     }
 
     try {
@@ -269,7 +281,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
                       </Typography>}
                       <Stack direction='row' spacing={2}>
                         <Chip size='small' label={<Typography variant='caption'>v{option.version}</Typography>}/>
-                        <Typography variant='caption' sx={{ transform: 'translateY(3px)' }}>{dayjs(option.publishedAt).format('LLLL')}</Typography>
+                        <Typography variant='caption' sx={{ transform: 'translateY(3px)' }}>{dayjs(option.publishedAt).format('LL LTS')}</Typography>
                       </Stack>
                     </Stack>
                   </li>

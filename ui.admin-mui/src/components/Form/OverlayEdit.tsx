@@ -43,6 +43,7 @@ import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
+import { ImportDialog } from '../Overlay/ImportDialog';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
@@ -260,6 +261,12 @@ export const OverlayEdit: React.FC = () => {
                 }}><CropFreeTwoTone/></IconButton>
               </Tooltip>
               <ExportDialog model={item}/>
+              <ImportDialog onImport={(items) => setItem(it => ({
+                ...it,
+                items: [
+                  ...it.items, ...items,
+                ],
+              }) as Overlay)}/>
             </Box>
 
             <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>

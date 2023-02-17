@@ -20,7 +20,7 @@ func GetOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	row := db.QueryRow(`
-		SELECT   P.*, COALESCE(json_agg(C) FILTER (WHERE C."userId" IS NOT NULL), '[]') AS votes
+		SELECT   P."id", P."name", P."description", P."publisherId", P."publishedAt", P."version", P."items", P."data", P."importedCount", P."compatibleWith", COALESCE(json_agg(C) FILTER (WHERE C."userId" IS NOT NULL), '[]') AS votes
 			FROM        "overlay" P
 			LEFT JOIN  "overlay_vote"  C
 			ON      C."overlayId" = P."id"
@@ -40,15 +40,18 @@ func GetOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		importedCount  int
 		compatibleWith string
 		votesJSON      string
-		/* data string - images etc.*/
-
-		overlay Overlay
+		overlay        Overlay
 	)
 
 	err = row.Scan(&id, &name, &description, &publisherId, &publishedAt, &version, &items, &data, &importedCount, &compatibleWith, &votesJSON)
 	if err != nil || err == sql.ErrNoRows {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, "404 - Overlay not found")
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "404 - Overlay not found")
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 - Internal ServerError, "+err.Error())
+		}
 	} else {
 		// unmarshal votes
 		votes := []OverlayVote{}
