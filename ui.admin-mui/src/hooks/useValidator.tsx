@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material';
-import { ValidationError } from 'class-validator';
-import { isEqual } from 'lodash';
+import { validateOrReject , ValidationError } from 'class-validator';
+import { isEqual, merge } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, {
@@ -11,6 +11,7 @@ import { useTranslation } from './useTranslation';
 
 type Props = {
   translations?: Record<string, string>
+  /** Values needs to be changed to trigger errors  */
   mustBeDirty?: boolean,
 };
 
@@ -142,7 +143,29 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
     }
   }, [ dirty, errorsPerAttribute, props.mustBeDirty ]);
 
-  const validate = useCallback((err: typeof errors) => {
+  // TODO: fix typings
+  /**
+   * Validate values defined by class validator
+   */
+  const validate = useCallback(async (classValidator: any, values: any, dirtifyValues?: boolean) => {
+    const toCheck = new classValidator();
+    merge(toCheck, values);
+
+    if (dirtifyValues) {
+      setDirty(v => [...v, ...Object.keys(values)]);
+    }
+
+    try {
+      await validateOrReject(toCheck);
+      setErrors(null);
+      return true;
+    } catch (e) {
+      setErrors(e as any);
+      return false;
+    }
+  }, [setErrors]);
+
+  const showErrors = useCallback((err: typeof errors) => {
     console.error('Errors during validation', { err });
 
     if (typeof err === 'string') {
@@ -162,6 +185,6 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
   }, [errorsList, setDirty, enqueueSnackbar, translate]);
 
   return {
-    propsError, reset, setErrors, errorsList, validate, haveErrors,
+    propsError, reset, setErrors, errorsList, validate, showErrors, haveErrors,
   };
 };

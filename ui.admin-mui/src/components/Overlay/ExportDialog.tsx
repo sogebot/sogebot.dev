@@ -15,6 +15,7 @@ import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
+import { IsNotEmpty, MinLength } from 'class-validator';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -23,12 +24,22 @@ import { useSessionstorageState } from 'rooks';
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
-import { required } from '../../validators';
 
 type Props = {
   model: Overlay
 };
+
+class RemoteOverlayValidator {
+  @IsNotEmpty()
+  @MinLength(2)
+    name: string;
+
+  @MinLength(2)
+  @IsNotEmpty()
+    description: string;
+}
 
 const endpoint = 'https://registry.sogebot.xyz';
 
@@ -49,6 +60,8 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   const [ remoteOverlay, setRemoteOverlay ] = React.useState<undefined | RemoteOverlay>(undefined);
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
 
+  const { reset, haveErrors, validate, propsError } = useValidator();
+
   const getUserId = () => {
     return JSON.parse(localStorage['cached-logged-user']).id;
   };
@@ -58,6 +71,13 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [model.items]);
 
   React.useEffect(() => {
+    validate(RemoteOverlayValidator, {
+      name, description,
+    });
+  }, [name, description]);
+
+  React.useEffect(() => {
+    reset();
     if (tab === 'update' || open) {
       axios.get<RemoteOverlay[]>(endpoint + '/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
     } else {
@@ -104,7 +124,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [open, server, itemsToExport]);
 
   const save = React.useCallback(async () => {
-    setSaving(true);
     const toSave = {
       name,
       description,
@@ -118,6 +137,13 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       data: Record<string, string>
       compatibleWith: string,
     };
+
+    const isValid = await validate(RemoteOverlayValidator, toSave, true);
+    if (!isValid) {
+      return;
+    }
+    
+    setSaving(true);
 
     // load images
     for (const item of gallery) {
@@ -263,8 +289,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
             required
             value={name}
             onChange={(ev) => setName(ev.currentTarget.value)}
-            error={typeof required(name) === 'string'}
-            helperText={typeof required(name) !== 'string' ? undefined : required(name)}
+            {...propsError('name')}
           />
           <TextField
             label="Description"
@@ -272,9 +297,9 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
             fullWidth
             value={description}
             onChange={(ev) => setDescription(ev.currentTarget.value)}
-            error={typeof required(description) === 'string'}
-            helperText={typeof required(description) !== 'string' ? undefined : required(description)}
-            required/>
+            required
+            {...propsError('description')}
+          />
         </Stack>
 
         <Box sx={{ pt: 2 }}>
@@ -335,7 +360,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <LoadingButton onClick={save} disabled={loading || (tab === 'update' && !remoteOverlay)} loading={saving}>Save on remote</LoadingButton>
+        <LoadingButton onClick={save} disabled={loading || (tab === 'update' && !remoteOverlay) || haveErrors} loading={saving}>Save on remote</LoadingButton>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>

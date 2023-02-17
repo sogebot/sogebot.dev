@@ -4,10 +4,7 @@ import {
 } from '@mui/material';
 import { Price } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
-import {
-  capitalize, cloneDeep, merge,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,7 +30,7 @@ export const PriceEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = <T extends keyof Price>(key: T, value: Price[T]) => {
     if (!item) {
@@ -58,13 +55,9 @@ export const PriceEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Price();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Price, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/commands/price');
@@ -80,7 +73,7 @@ export const PriceEdit: React.FC<{
         navigate(`/commands/price/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

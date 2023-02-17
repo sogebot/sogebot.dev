@@ -10,11 +10,9 @@ import {
 } from '@mui/material';
 import { Timer, TimerResponse } from '@sogebot/backend/dest/database/entity/timer';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
   capitalize,
   cloneDeep,
-  merge,
   orderBy,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -43,7 +41,7 @@ export const TimerEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof Timer>(key: T, value: Timer[T]) => {
     if (!item) {
@@ -68,14 +66,9 @@ export const TimerEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Timer();
-      merge(toCheck, item);
-      console.log('Validating', toCheck);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Timer, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/manage/timers');
@@ -91,7 +84,7 @@ export const TimerEdit: React.FC<{
         navigate(`/manage/timers/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

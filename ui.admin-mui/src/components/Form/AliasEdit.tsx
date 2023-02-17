@@ -4,10 +4,7 @@ import {
 } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { validateOrReject } from 'class-validator';
-import {
-  capitalize, cloneDeep, merge,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -40,7 +37,7 @@ export const AliasEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator();
 
   const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
     if (!alias) {
@@ -69,13 +66,9 @@ export const AliasEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && alias) {
-      const toCheck = new Alias();
-      merge(toCheck, alias);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Alias, alias);
     }
-  }, [alias, loading, setErrors]);
+  }, [alias, loading, validate]);
 
   const handleClose = () => {
     setTimeout(() => {
@@ -87,7 +80,7 @@ export const AliasEdit: React.FC<{
     setSaving(true);
     getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
       if (err) {
-        validate(err as any);
+        showErrors(err as any);
       } else {
         enqueueSnackbar('Alias saved.', { variant: 'success' });
         navigate(`/commands/alias/edit/${savedItem.id}?server=${JSON.parse(sessionStorage.server)}`);

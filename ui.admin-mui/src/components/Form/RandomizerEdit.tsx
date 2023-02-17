@@ -14,9 +14,8 @@ import {
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
-  cloneDeep, debounce, isEqual, merge, orderBy,
+  cloneDeep, debounce, isEqual, orderBy,
 } from 'lodash';
 import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
@@ -180,7 +179,7 @@ export const RandomizerEdit: React.FC = () => {
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const [ emptyItemToAdd, setEmptyItemToAdd ] = React.useState<Randomizer['items'][number]>({
     id:              v4(),
@@ -273,13 +272,9 @@ export const RandomizerEdit: React.FC = () => {
 
   React.useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Randomizer();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Randomizer, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate(`/registry/randomizer?server=${JSON.parse(sessionStorage.server)}`);
@@ -295,7 +290,7 @@ export const RandomizerEdit: React.FC = () => {
         navigate(`/registry/randomizer/edit/${data.data.id}?server=${JSON.parse(sessionStorage.server)}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

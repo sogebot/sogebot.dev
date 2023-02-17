@@ -7,8 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
-import { validateOrReject } from 'class-validator';
-import { cloneDeep, merge } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo,
@@ -31,7 +30,7 @@ export const PlaylistEdit: React.FC<{
   const [ item, setItem ] = useState<SongPlaylist>(new SongPlaylist({ tags: [] }));
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, setErrors, haveErrors } = useValidator();
+  const { reset, setErrors, haveErrors, validate } = useValidator();
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
@@ -75,12 +74,7 @@ export const PlaylistEdit: React.FC<{
 
   useEffect(() => {
     if (item) {
-      const toCheck = new SongPlaylist();
-      merge(toCheck, item);
-      console.log('Validating', toCheck);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(SongPlaylist, item);
     }
   }, [item, setErrors]);
 

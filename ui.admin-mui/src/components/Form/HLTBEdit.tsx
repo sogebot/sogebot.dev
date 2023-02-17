@@ -5,11 +5,9 @@ import {
 } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
   capitalize,
   cloneDeep,
-  merge,
 } from 'lodash';
 import debounce from 'lodash/debounce';
 import { useSnackbar } from 'notistack';
@@ -40,7 +38,7 @@ export const HLTBEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof HowLongToBeatGame>(key: T, value: HowLongToBeatGame[T]) => {
     if (!item) {
@@ -77,14 +75,9 @@ export const HLTBEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new HowLongToBeatGame();
-      merge(toCheck, item);
-      console.log('Validating', toCheck);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(HowLongToBeatGame, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/manage/howlongtobeat');
@@ -100,7 +93,7 @@ export const HLTBEdit: React.FC<{
         navigate(`/manage/howlongtobeat/`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

@@ -91,7 +91,7 @@ export const CustomVariablesEdit: React.FC = () => {
   const { permissions } = usePermissions();
   const { configuration } = useSelector((state: any) => state.loader);
   const { translate } = useTranslation();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator({
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({
     mustBeDirty: true, translations: { variableName: translate('name') },
   });
   const [ page, setPage ] = useState(0);
@@ -317,15 +317,12 @@ export const CustomVariablesEdit: React.FC = () => {
 
   useEffect(() => {
     if (!loading && item) {
-      new Variable({ ...item })
-        .validate()
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Variable, item);
     }
     if (loading) {
       reset();
     }
-  }, [item, loading, setErrors, reset]);
+  }, [item, loading, validate, reset]);
 
   const handleClose = () => {
     navigate(`/registry/customvariables/?server=${JSON.parse(sessionStorage.server)}`);
@@ -338,7 +335,7 @@ export const CustomVariablesEdit: React.FC = () => {
     setSaving(true);
     getSocket('/core/customvariables').emit('customvariables::save', item, (err, cid) => {
       if (err || !cid) {
-        validate(err as any);
+        showErrors(err as any);
       } else {
         enqueueSnackbar('Custom variable saved.', { variant: 'success' });
 

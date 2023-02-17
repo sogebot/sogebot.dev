@@ -4,11 +4,9 @@ import {
 } from '@mui/material';
 import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
   capitalize,
   cloneDeep,
-  merge,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
@@ -45,7 +43,7 @@ export const CooldownEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const [ time, setTime ] = useState({
     days: 0, hours: 0, minutes: 5, seconds: 0,
@@ -152,13 +150,9 @@ export const CooldownEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Cooldown();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Cooldown, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/commands/cooldowns');
@@ -174,7 +168,7 @@ export const CooldownEdit: React.FC<{
         navigate(`/commands/cooldowns/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

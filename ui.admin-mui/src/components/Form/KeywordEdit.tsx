@@ -11,10 +11,7 @@ import {
 } from '@sogebot/backend/dest/database/entity/keyword';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
-import {
-  cloneDeep, merge, orderBy,
-} from 'lodash';
+import { cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect,
@@ -46,7 +43,7 @@ export const KeywordEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = <T extends keyof Keyword>(key: T, value: Keyword[T]) => {
     if (!item) {
@@ -96,13 +93,9 @@ export const KeywordEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Keyword();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Keyword, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/commands/keywords');
@@ -118,7 +111,7 @@ export const KeywordEdit: React.FC<{
         navigate(`/commands/keywords/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

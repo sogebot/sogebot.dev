@@ -11,10 +11,9 @@ import {
 import { Commands, CommandsGroup } from '@sogebot/backend/dest/database/entity/commands';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
   capitalize,
-  cloneDeep, merge, orderBy,
+  cloneDeep, orderBy,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
@@ -52,7 +51,7 @@ export const CommandsEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
@@ -104,13 +103,9 @@ export const CommandsEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Commands();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Commands, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/commands/customcommands');
@@ -128,7 +123,7 @@ export const CommandsEdit: React.FC<{
         navigate(`/commands/customcommands/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

@@ -4,10 +4,7 @@ import {
 } from '@mui/material';
 import { Rank } from '@sogebot/backend/dest/database/entity/rank';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
-import {
-  capitalize, cloneDeep, merge,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect , useState,
@@ -32,7 +29,7 @@ export const RankEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const handleValueChange = useCallback(<T extends keyof Rank>(key: T, value: Rank[T]) => {
     if (!item) {
@@ -57,14 +54,9 @@ export const RankEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Rank();
-      merge(toCheck, item);
-      console.log('Validating', toCheck);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Rank, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/manage/ranks');
@@ -80,7 +72,7 @@ export const RankEdit: React.FC<{
         navigate(`/manage/ranks/edit/${response.data.data.id}`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

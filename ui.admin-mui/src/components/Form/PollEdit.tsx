@@ -5,11 +5,9 @@ import {
 import { red } from '@mui/material/colors';
 import { Poll } from '@sogebot/backend/dest/database/entity/poll';
 import axios from 'axios';
-import { validateOrReject } from 'class-validator';
 import {
   capitalize,
   cloneDeep,
-  merge,
 } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
@@ -31,7 +29,7 @@ export const PollEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
 
   const [ options, setOptions ] = useState(['', '', '', '', '']);
 
@@ -71,14 +69,9 @@ export const PollEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Poll();
-      merge(toCheck, item);
-      console.log('Validating', toCheck);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Poll, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/manage/polls');
@@ -94,7 +87,7 @@ export const PollEdit: React.FC<{
         navigate(`/manage/polls/`);
       })
       .catch(e => {
-        validate(e.response.data.errors);
+        showErrors(e.response.data.errors);
       })
       .finally(() => setSaving(false));
   };

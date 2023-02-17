@@ -3,8 +3,7 @@ import {
   Box, Button, Collapse, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField,
 } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { validateOrReject } from 'class-validator';
-import { cloneDeep, merge } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback,
@@ -37,7 +36,7 @@ export const BotCommandEdit: React.FC<{
 
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, setErrors, haveErrors } = useValidator();
+  const { propsError, reset, validate, haveErrors } = useValidator();
 
   const handleValueChange = <T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
@@ -79,13 +78,9 @@ export const BotCommandEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Commands();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Commands, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate('/commands/botcommands');

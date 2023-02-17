@@ -9,8 +9,7 @@ import {
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
-import { validateOrReject } from 'class-validator';
-import { merge, set } from 'lodash';
+import { set } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
@@ -140,7 +139,7 @@ export const OverlayEdit: React.FC = () => {
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, setErrors, haveErrors } = useValidator();
+  const { reset, haveErrors, validate } = useValidator();
 
   React.useEffect(() => {
     if (id) {
@@ -178,13 +177,9 @@ export const OverlayEdit: React.FC = () => {
 
   React.useEffect(() => {
     if (!loading && item) {
-      const toCheck = new Overlay();
-      merge(toCheck, item);
-      validateOrReject(toCheck)
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate(Overlay, item);
     }
-  }, [item, loading, setErrors]);
+  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate(`/registry/overlays?server=${JSON.parse(sessionStorage.server)}`);
