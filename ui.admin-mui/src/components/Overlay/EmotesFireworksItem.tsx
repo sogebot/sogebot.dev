@@ -109,7 +109,7 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item, se
   }, 100, true, true);
 
   React.useEffect(() => {
-    console.log('====== EMOTES FIREWORKS ======');
+    console.log(`====== EMOTES FIREWORKS ${containerId} ======`);
     listener();
   }, []);
 

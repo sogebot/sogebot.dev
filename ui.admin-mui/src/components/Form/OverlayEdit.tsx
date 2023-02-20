@@ -23,6 +23,7 @@ import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
+import { EmotesSettings } from './Overlay/EmotesSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
 import { HTMLSettings } from './Overlay/HTMLSettings';
 import { Layers } from './Overlay/Layers';
@@ -40,6 +41,7 @@ import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
+import { EmotesItem } from '../Overlay/EmotesItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
@@ -333,6 +335,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -419,6 +424,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'emotes' && <EmotesItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'html' && <HTMLItem item={o.opts} groupId={id!} id={o.id}/>}
