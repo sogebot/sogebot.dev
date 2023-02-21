@@ -185,7 +185,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      maxWidth='sm'
+      maxWidth='md'
       fullWidth
       PaperProps={{ sx: { height: '100% !important' } }}
     >

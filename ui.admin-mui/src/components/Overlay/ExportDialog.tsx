@@ -1,4 +1,4 @@
-import { PublishTwoTone } from '@mui/icons-material';
+import { ShareTwoTone } from '@mui/icons-material';
 import {
   LoadingButton,
   TabContext, TabList, TabPanel,
@@ -124,6 +124,18 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     });
   }, [open, server, itemsToExport]);
 
+  const remove = React.useCallback(async () => {
+    if (remoteOverlay) {
+      await axios.delete(endpoint + '/overlays/' + remoteOverlay.id, {
+        headers: {
+          authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
+        },
+      });
+      enqueueSnackbar('Remote overlay was DELETED from registry server.');
+    }
+    setOpen(false);
+  }, [enqueueSnackbar, remoteOverlay]);
+
   const save = React.useCallback(async () => {
     const toSave = {
       name,
@@ -152,7 +164,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       const response = await axios.get(item, { responseType: 'arraybuffer' });
       toSave.data[item.replace(server, obfuscateItemServer)] = `data:${response.headers['content-type'].toLowerCase()};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
     }
-    console.log({ toSave });
 
     // obfuscate current server
     for (const item of toSave.items) {
@@ -198,16 +209,15 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [name, description, itemsToExport, gallery, enqueueSnackbar]);
 
   return <>
-    <Tooltip title="Export">
-      <IconButton onClick={() => setOpen(true)}><PublishTwoTone/></IconButton>
+    <Tooltip title="Export & Manage remote overlays">
+      <IconButton onClick={() => setOpen(true)}><ShareTwoTone/></IconButton>
     </Tooltip>
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      maxWidth='sm'
+      maxWidth='md'
       fullWidth
-      style={{ pointerEvents: 'none' }}
-      PaperProps={{ style: { pointerEvents: 'auto' } }}
+      PaperProps={{ sx: { height: '100% !important' } }}
     >
       {loading && <LinearProgress />}
       <DialogTitle>
@@ -221,6 +231,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
             <TabList onChange={(ev, newValue) => setTab(newValue)}>
               <Tab label="New overlay" value="new" />
               <Tab label="Update existing overlay" value="update" />
+              <Tab label="Remove existing overlay" value="remove" />
             </TabList>
           </Box>
           <TabPanel value="update">
@@ -290,89 +301,160 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
             />
             { !remoteOverlays && <LinearProgress/> }
           </TabPanel>
+          <TabPanel value="remove">
+            <Autocomplete
+              value={remoteOverlay}
+              disableClearable
+              onChange={(ev, value) => {
+                setRemoteOverlay(value);
+                setName(value.name);
+                setDescription(value.description);
+              }}
+              disablePortal
+              id="overlay.update.selector"
+              options={remoteOverlays ?? []}
+              filterOptions={(options, state) => {
+                if (state.inputValue.trim().length === 0) {
+                  return options;
+                }
+                return options.filter(o => o.name.toLowerCase().includes(state.inputValue.toLowerCase()) || o.description.toLowerCase().includes(state.inputValue.toLowerCase()));
+              }}
+              getOptionLabel={(option) => option.name}
+              renderInput={(params) => <TextField {...params} label="Overlay" />}
+              renderOption={(p, option, { inputValue }) => {
+                const matches = match(option.name, inputValue, { insideWords: true });
+                const parts = parse(option.name, matches);
+
+                const matches2 = match(option.description, inputValue, { insideWords: true });
+                const parts2 = parse(option.description, matches2);
+
+                return (
+                  <li {...p}>
+                    <Stack spacing={0.1}>
+                      <Typography>
+                        {parts.map((part, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                              color:           part.highlight ? 'black' : 'inherit',
+                            }}
+                          >
+                            {part.text}
+                          </span>
+                        ))}
+                      </Typography>
+                      {option.description.trim().length > 0 && <Typography variant={'body2'}>
+                        {parts2.map((part, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                              color:           part.highlight ? 'black' : 'inherit',
+                            }}
+                          >
+                            {part.text}
+                          </span>
+                        ))}
+                      </Typography>}
+                      <Stack direction='row' spacing={2}>
+                        <Chip size='small' label={<Typography variant='caption'>v{option.version}</Typography>}/>
+                        <Typography variant='caption' sx={{ transform: 'translateY(3px)' }}>{dayjs(option.publishedAt).format('LL LTS')}</Typography>
+                      </Stack>
+                    </Stack>
+                  </li>
+                );
+              }}
+            />
+            { !remoteOverlays && <LinearProgress/> }
+          </TabPanel>
         </TabContext>
 
-        <Stack spacing={0.5} sx={{
-          pt: tab ==='new' ? 3 : 0, px: 3,
-        }}>
-          <TextField
-            label="Name"
-            fullWidth
-            required
-            value={name}
-            onChange={(ev) => setName(ev.currentTarget.value)}
-            {...propsError('name')}
-          />
-          <TextField
-            label="Description"
-            multiline
-            fullWidth
-            value={description}
-            onChange={(ev) => setDescription(ev.currentTarget.value)}
-            required
-            {...propsError('description')}
-          />
-        </Stack>
+        { tab !== 'remove' && <>
+          <Stack spacing={0.5} sx={{
+            pt: tab ==='new' ? 3 : 0, px: 3,
+          }}>
+            <TextField
+              label="Name"
+              fullWidth
+              required
+              value={name}
+              onChange={(ev) => setName(ev.currentTarget.value)}
+              {...propsError('name')}
+            />
+            <TextField
+              label="Description"
+              multiline
+              fullWidth
+              value={description}
+              onChange={(ev) => setDescription(ev.currentTarget.value)}
+              required
+              {...propsError('description')}
+            />
+          </Stack>
 
-        <Box sx={{ pt: 2 }}>
-          <FormLabel>Export layers</FormLabel>
-          <FormGroup>
-            { model.items.map(o =>  <FormControlLabel
-              key={o.id}
-              onChange={(_ev, checked) => {
-                if (!checked) {
-                  setItemsToExport(it => it.filter(x => x.id !== o.id));
-                } else {
+          <Box sx={{ pt: 2 }}>
+            <FormLabel>Export layers</FormLabel>
+            <FormGroup>
+              { model.items.map(o =>  <FormControlLabel
+                key={o.id}
+                onChange={(_ev, checked) => {
+                  if (!checked) {
+                    setItemsToExport(it => it.filter(x => x.id !== o.id));
+                  } else {
                   // we need to add items in correct order (redoing from model.items)
-                  setItemsToExport([...model.items.filter(m => itemsToExport.map(i => i.id).includes(m.id) || m.id === o.id)]);
-                }
+                    setItemsToExport([...model.items.filter(m => itemsToExport.map(i => i.id).includes(m.id) || m.id === o.id)]);
+                  }
+                }}
+                control={<Checkbox checked={!!itemsToExport.find(it => it.id === o.id)} />}
+                label={<Typography>
+                  {o.name && o.name.length > 0
+                    ? <>
+                      {o.name} <br/><small>{o.opts.typeId}</small>
+                    </>
+                    : o.opts.typeId}</Typography>} /> )}
+            </FormGroup>
+          </Box>
+
+          <Box sx={{ pt: 2 }}>
+            <FormLabel>Export gallery</FormLabel>
+            {anchorEl?.dataset.url && <Popover
+              id="mouse-over-popover"
+              sx={{ pointerEvents: 'none' }}
+              open={true}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical:   'bottom',
+                horizontal: 'right',
               }}
-              control={<Checkbox checked={!!itemsToExport.find(it => it.id === o.id)} />}
-              label={<Typography>
-                {o.name && o.name.length > 0
-                  ? <>
-                    {o.name} <br/><small>{o.opts.typeId}</small>
-                  </>
-                  : o.opts.typeId}</Typography>} /> )}
-          </FormGroup>
-        </Box>
+              transformOrigin={{
+                vertical:   'bottom',
+                horizontal: 'right',
+              }}
+              onClose={handlePopoverClose}
+              disableRestoreFocus
+            >
+              <img src={anchorEl.dataset.url} style={{ maxWidth: '100px' }}/>
+            </Popover>}
+            <FormGroup>
+              { gallery.map((o, idx) =>
+                <Typography
+                  sx={{ py: 1 }}
+                  key={idx}
+                  onMouseEnter={handlePopoverOpen}
+                  onMouseLeave={handlePopoverClose}
+                  data-url={o}
+                >{o}</Typography>)}
+            </FormGroup>
 
-        <Box sx={{ pt: 2 }}>
-          <FormLabel>Export gallery</FormLabel>
-          {anchorEl?.dataset.url && <Popover
-            id="mouse-over-popover"
-            sx={{ pointerEvents: 'none' }}
-            open={true}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical:   'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical:   'bottom',
-              horizontal: 'right',
-            }}
-            onClose={handlePopoverClose}
-            disableRestoreFocus
-          >
-            <img src={anchorEl.dataset.url} style={{ maxWidth: '100px' }}/>
-          </Popover>}
-          <FormGroup>
-            { gallery.map((o, idx) =>
-              <Typography
-                sx={{ py: 1 }}
-                key={idx}
-                onMouseEnter={handlePopoverOpen}
-                onMouseLeave={handlePopoverClose}
-                data-url={o}
-              >{o}</Typography>)}
-          </FormGroup>
-
-          <Alert sx={{ mt: 1 }} severity='info'>If export layer contains gallery items, they are added automatically into export.</Alert>
-        </Box>
+            <Alert sx={{ mt: 1 }} severity='info'>If export layer contains gallery items, they are added automatically into export.</Alert>
+          </Box>
+        </>}
       </DialogContent>
       <DialogActions>
-        <LoadingButton onClick={save} disabled={loading || (tab === 'update' && !remoteOverlay) || haveErrors} loading={saving}>Save on remote</LoadingButton>
+        <LoadingButton onClick={() => tab === 'remove' ? remove() : save()} disabled={loading || ((tab === 'update' || tab === 'remove') && !remoteOverlay) || haveErrors} loading={saving}>
+          { tab  === 'remove' ? 'Remove from remote' : 'Save on remote' }
+        </LoadingButton>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>
