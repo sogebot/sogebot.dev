@@ -43,11 +43,6 @@ const Twitch = () => {
         return;
       }
 
-      if (status) {
-        // do nothing if we are done
-        return;
-      }
-
       if (code) {
         if (!state || state !== localStorage.twitchOauthState) {
           console.error('Incorrect state');

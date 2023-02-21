@@ -24,11 +24,6 @@ const DonationAlerts = () => {
         }
       }
 
-      if (status) {
-        // do nothing if we are done
-        return;
-      }
-
       if (code) {
         axios.get('https://credentials.sogebot.xyz/donationalerts/?code=' + code)
           .then(({ data }) => {
