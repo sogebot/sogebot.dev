@@ -1,14 +1,18 @@
 import {
-  DownloadTwoTone, ThumbDown, ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
+  DownloadTwoTone, ExpandLessTwoTone, ExpandMoreTwoTone, ThumbDown,
+  ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
 } from '@mui/icons-material';
 import {
+  Box,
   Button, Card, CardActions, CardContent, Chip, CircularProgress, Dialog , DialogActions, DialogContent, DialogTitle,
-  IconButton, LinearProgress, Stack, TextField, Tooltip, Typography,
+  FormControl,
+  IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
+import { chunk, orderBy } from 'lodash';
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
 import shortid from 'shortid';
@@ -26,15 +30,41 @@ const endpoint = 'https://registry.sogebot.xyz';
 
 export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ open, setOpen ] = React.useState(false);
+  const [ page, setPage ] = React.useState(1);
+  const [ order, setOrder ] = React.useState('votes');
+  const [ orderAsc, setOrderAsc ] = React.useState(false);
+  const [ search, setSearch ] = React.useState('');
   const [ loading, setLoading ] = React.useState(false);
   const [ importing, setImporting ] = React.useState<string[]>([]);
   const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
 
+  const [, startTransition] = React.useTransition();
+
+  const filteredRemoteOverlays = React.useMemo(() => {
+    return orderBy(remoteOverlays?.filter(o =>
+      o.name.toLowerCase().includes(search.toLowerCase())
+      || o.description.toLowerCase().includes(search.toLowerCase()),
+    ), order, orderAsc ? 'asc' : 'desc');
+  }, [search, remoteOverlays, order, orderAsc]);
+  const pagedRemoteOverlays = React.useMemo(() => {
+    return chunk(filteredRemoteOverlays, 5)[page - 1];
+  }, [page, filteredRemoteOverlays]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [filteredRemoteOverlays]);
+
   React.useEffect(() => {
     if (open) {
-      setLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSearch('');
+        setOrder('votes');
+        setOrderAsc(false);
+        setLoading(true);
+      });
       axios.get<RemoteOverlay[]>(endpoint + '/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } })
         .then(res => setRemoteOverlays(res.data))
         .finally(() => setLoading(false));
@@ -194,8 +224,30 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       Import Overlay
       </DialogTitle>
       <DialogContent>
-        <TextField label="Search (TBD)" fullWidth/>
-        { remoteOverlays?.map(o => <Card sx={{ my: 0.25 }} key={o.id}>
+        <Stack direction='row' spacing={0.5}>
+          <Box sx={{ flexGrow: 1 }}>
+            <TextField label="Search" fullWidth onChange={(ev) => setSearch(ev.currentTarget.value ?? '')}/>
+          </Box>
+          <FormControl>
+            <InputLabel id="type-select-label">Order</InputLabel>
+            <Select
+              label="Order"
+              labelId="type-select-label"
+              value={order}
+              onChange={(ev) => setOrder(ev.target.value)}
+            >
+              <MenuItem value='votes'>Votes</MenuItem>
+              <MenuItem value='publishedAt'>Creation date</MenuItem>
+              <MenuItem value='importedCount'>Downloads</MenuItem>
+            </Select>
+          </FormControl>
+          <Box>
+            <Button variant='contained' color='dark' sx={{ height: '100%' }} onClick={() => setOrderAsc(!orderAsc)}>
+              {!orderAsc ? <ExpandMoreTwoTone/> : <ExpandLessTwoTone/>}
+            </Button>
+          </Box>
+        </Stack>
+        { pagedRemoteOverlays?.map(o => <Card sx={{ my: 0.25 }} key={o.id}>
           <CardContent sx={{ pb: 0 }}>
             <Typography color="text.secondary" variant='h6' sx={{ pb: 1 }}>
               {o.name}
@@ -248,6 +300,11 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
         </Card>)}
       </DialogContent>
       <DialogActions>
+        <Box sx={{
+          flexGrow: 1, justifyContent: 'center', display: 'flex',
+        }}>
+          <Pagination count={Math.ceil((filteredRemoteOverlays ?? []).length / 5) || 1} page={page} onChange={(_ev, val) => setPage(val)}/>
+        </Box>
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>

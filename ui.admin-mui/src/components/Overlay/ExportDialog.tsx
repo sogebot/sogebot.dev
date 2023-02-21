@@ -79,7 +79,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
 
   React.useEffect(() => {
     reset();
-    if (tab === 'update' || open) {
+    if (tab === 'update' || tab === 'remove' || open) {
       axios.get<RemoteOverlay[]>(endpoint + '/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
     } else {
       setRemoteOverlay(undefined);
@@ -131,9 +131,10 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
           authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
         },
       });
+      axios.get<RemoteOverlay[]>(endpoint + '/overlays', { headers: { authorization: `Bearer ${localStorage.code}` } }).then(res => setRemoteOverlays(res.data.filter(o => o.publisherId === getUserId())));
       enqueueSnackbar('Remote overlay was DELETED from registry server.');
+      setRemoteOverlay(undefined);
     }
-    setOpen(false);
   }, [enqueueSnackbar, remoteOverlay]);
 
   const save = React.useCallback(async () => {
