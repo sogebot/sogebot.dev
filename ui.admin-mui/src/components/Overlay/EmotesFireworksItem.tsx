@@ -9,11 +9,13 @@ import {
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
+import { v4 } from 'uuid';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
 let model: EmotesFireworks;
+const ids: string[] = [];
 
 export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item, selected }) => {
   const [ containerId ] = React.useState(`emotes-fireworks-` + shortid());
@@ -28,6 +30,15 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item, se
   }, [ item ]);
 
   const firework = React.useCallback((opts: any) => {
+    opts.id ??= v4();
+    if (ids.includes(opts.id)) {
+      return;
+    }
+    ids.push(opts.id);
+    if (ids.length > 5) {
+      ids.shift();
+    }
+
     const container = document.getElementById(containerId);
     for (let i = 0; i < model.numOfExplosions; i++) {
       const commonTop = random(10, container!.offsetHeight - 10);

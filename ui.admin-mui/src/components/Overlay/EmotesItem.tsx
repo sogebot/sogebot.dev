@@ -13,6 +13,7 @@ import { getSocket } from '../../helpers/socket';
 
 let model: Emotes;
 const maxEmoteGuard = new Map<string, number>();
+const ids: string[] = [];
 
 export const EmotesItem: React.FC<Props<Emotes>> = ({ item, selected }) => {
   const [ containerId ] = React.useState(`emotes-` + shortid());
@@ -70,6 +71,14 @@ export const EmotesItem: React.FC<Props<Emotes>> = ({ item, selected }) => {
   };
 
   const prepareEmote = React.useCallback((opts: any) => {
+    if (ids.includes(opts.id)) {
+      return;
+    }
+    ids.push(opts.id);
+    if (ids.length > 5) {
+      ids.shift();
+    }
+
     const guard = maxEmoteGuard.get(opts.id) ?? 0;
     if (guard === -1 || guard >= model.maxEmotesPerMessage) {
       if (guard !== -1) {
