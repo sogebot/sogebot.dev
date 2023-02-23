@@ -29,6 +29,7 @@ import { HTMLSettings } from './Overlay/HTMLSettings';
 import { Layers } from './Overlay/Layers';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
+import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
 import { getSocket } from '../../helpers/socket';
@@ -46,6 +47,7 @@ import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
+import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
@@ -341,6 +343,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -423,6 +428,7 @@ export const OverlayEdit: React.FC = () => {
                 >
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotes' && <EmotesItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}

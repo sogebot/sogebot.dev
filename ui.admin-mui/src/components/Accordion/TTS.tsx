@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { AlertInterface, CommonSettingsInterface } from '@sogebot/backend/dest/database/entity/alert';
+import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -21,11 +22,13 @@ declare global {
   }
 }
 
+type model = Randomizer['tts'] | TTS;
+
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Randomizer['tts'],
+  model: model,
   open: string,
   onClick: (value: string) => void;
-  onChange: (value: Randomizer['tts']) => void;
+  onChange: (value: any) => void;
 };
 
 function isGlobal (value: Partial<CommonSettingsInterface['tts']> | Required<AlertInterface['tts']>): value is Required<AlertInterface['tts']> {
@@ -72,7 +75,6 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   };
 
   React.useEffect(() => {
-    console.log({ service });
     if (service === 0) {
       getVoicesFromResponsiveVoice();
       if (model.voice === '') {
@@ -135,7 +137,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
         id="panel1a-header"
       >
         {isConfigured && <>
-          {model.enabled !== undefined && <Switch
+          {'enabled' in model && <Switch
             size='small'
             sx={{ mr: 1 }}
             checked={model.enabled}
