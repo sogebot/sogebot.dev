@@ -101,6 +101,5 @@ export const TTSItem: React.FC<Props<TTS>> = ({ item }) => {
     <Helmet>
       {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
     </Helmet>
-    {JSON.stringify({ responsiveVoiceKey })}
   </>;
 };
