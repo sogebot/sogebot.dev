@@ -47,6 +47,7 @@ import { EmotesItem } from '../Overlay/EmotesItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
+import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
 import { PollsItem } from '../Overlay/PollsItem';
 import { TTSItem } from '../Overlay/TTSItem';
@@ -440,6 +441,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'html' && <HTMLItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'hypetrain' && <HypeTrainItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'wordcloud' && <WordcloudItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
@@ -499,6 +501,7 @@ export const OverlayEdit: React.FC = () => {
                   }}
                   snapDigit={0}
                   draggable={true}
+                  checkInput
                   throttleDrag={0}
                   startDragRotate={0}
                   throttleDragRotate={0}
@@ -556,10 +559,19 @@ export const OverlayEdit: React.FC = () => {
                       refresh();
                     }
                   }}
-                  onDragStart={() => setFrame(val => ({
-                    translate: [0, 0], rotate: val.rotate,
-                  }))}
+                  onDragStart={(e) => {
+                    if (e.clientY < e.target.getBoundingClientRect().top) {
+                      // disable drag if clicking outside of the box
+                      // checking currently only top side of moveable
+                      e.stopDrag();
+                      return;
+                    }
+                    setFrame(val => ({
+                      translate: [0, 0], rotate: val.rotate,
+                    }));
+                  }}
                   onDrag={e => {
+                    console.log({ e });
                     setFrame(val => ({
                       translate: e.beforeTranslate, rotate: val.rotate,
                     }));

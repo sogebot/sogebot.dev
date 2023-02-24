@@ -13,6 +13,7 @@ import { EmotesFireworksItem } from '../components/Overlay/EmotesFireworksItem';
 import { EmotesItem } from '../components/Overlay/EmotesItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { HTMLItem } from '../components/Overlay/HTMLItem';
+import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
 import { TTSItem } from '../components/Overlay/TTSItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
