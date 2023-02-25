@@ -33,15 +33,17 @@ const shake = keyframes`
 }
 `;
 
+const ids: string[] = [];
+
 export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) => {
   getSocket('/services/twitch', true);
 
   const boxRef = useRef<Element>();
   const [id] = React.useState(v4());
-  const [ posX, setPosX ] = React.useState(!active ? 0 : 999999999);
   const [ running, setRunning ] = React.useState(false);
-  const [ events, setEvents ] = React.useState<{ level: number, goal: number, total: number}[]>([]);
-  const [ subs, setSubs ] = React.useState<{username: string; thumbnailUrl: string}[]>(!active ? [
+  const [ cooldown, setCooldown ] = React.useState(Date.now());
+  const [ events, setEvents ] = React.useState<{ id: string, level: number, goal: number, total: number}[]>([]);
+  const [ subs, setSubs ] = React.useState<{username: string; thumbnailUrl: string}[]>(active ? [
     {
       username: 'test1', thumbnailUrl: 'https://i.pravatar.cc/300',
     },
@@ -57,15 +59,18 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   ]: []);
   const [ level, setLevel ] = React.useState(0);
 
-  const runTrain = React.useCallback((data: { level: number, goal: number, total: number}, path?: number) => {
+  const runTrain = React.useCallback((data: { level: number, goal: number, total: number}, path?: number, duration?: number) => {
+    setCooldown(Date.now());
+
+    const widthWithTrain = boxRef.current!.clientWidth + (document.getElementById(`train-${id}`)?.getBoundingClientRect().width ?? 0) + 30;
     if (!path) {
-      path = ((boxRef.current!.clientWidth + 100) / data.goal) * data.total;
+      path = widthWithTrain - (widthWithTrain / data.goal) * data.total;
     }
     return new Promise((resolve) => {
       setTimeout(() => {
         gsap.to(document.getElementById(`train-${id}`),
           {
-            duration:   2,
+            duration:   duration ?? (boxRef.current!.clientWidth + (path ?? 0)) / 700,
             x:          path,
             roundProps: 'value',
             onComplete: () => {
@@ -82,32 +87,48 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   const process = async (data: typeof events[number]) => {
     setRunning(true);
 
+    if (level === 0 || data.level < level) {
+      // reset left
+      document.getElementById(`train-${id}`)!.style.transform = `translateX(${(boxRef.current!.clientWidth + 50)}px)`;
+    }
+
     if (data.level === level || data.level === 1) {
       await runTrain(data);
     } else {
       // move train outside and spawn new
       // get width of train 210px * number of elements
-      const width = document.getElementById(`train-${id}`)?.getBoundingClientRect().width ?? 0;
-      const path = (boxRef.current!.clientWidth - (boxRef.current!.clientWidth / data.goal) * data.total) - (width * 1.5);
-      await runTrain(data, path + 300);
+      const width = (document.getElementById(`train-${id}`)?.getBoundingClientRect().width ?? 0) + 50;
+      await runTrain(data, -width);
       // reset left
-      setPosX(!active ? 0 : boxRef.current!.clientWidth + 100);
+      await runTrain(data, (boxRef.current!.clientWidth + 50),0);
       // continue as usual
       await runTrain(data);
     }
     setLevel(data.level);
     setRunning(false);
-
   };
 
   React.useEffect(() => {
     console.log('=========== HYPETRAIN ==========');
+
+    if (active) {
+      // move train outside
+      document.getElementById(`train-${id}`)!.style.transform = `translateX(${(boxRef.current!.clientWidth + 50)}px)`;
+    }
 
     getSocket('/services/twitch', true).on('hypetrain-end', () => {
       setSubs([]);
     });
 
     getSocket('/services/twitch', true).on('hypetrain-update', (data) => {
+      if (ids.includes(data.id)) {
+        return;
+      }
+      ids.push(data.id);
+      if (ids.length > 5) {
+        ids.shift();
+      }
+
       // process subs first
       for (const username of Object.keys(data.subs)) {
         setSubs((s) => {
@@ -122,14 +143,30 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
       }
       setEvents(ev => [...ev, data]);
     });
-  }, []);
+  }, [active, id]);
 
-  useIntervalWhen(() => {
-    if (running && events.length > 0) {
+  useIntervalWhen(async () => {
+    if (!running && events.length > 0) {
       setEvents((ev) => {
         process((ev.shift()) as typeof events[number]);
         return ev;
       });
+    }
+
+    // force train to dissapear if no events are coming for long time
+    if (Date.now() - cooldown > 30000) {
+      setCooldown(Date.now());
+      console.debug('Cleanup train');
+
+      // get width of train 210px * number of elements
+      const width = (document.getElementById(`train-${id}`)?.getBoundingClientRect().width ?? 0) + 50;
+      const data = {
+        level: 0, goal: 0, total: 0,
+      };
+      runTrain(data, -width)
+        .then(() => {
+          runTrain(data, (boxRef.current!.clientWidth + 50),0);
+        });
     }
   }, 1000, true, true);
 
@@ -139,13 +176,12 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
     }}>
       <Stack direction='row'
         id={`train-${id}`}
-        key={String(running)}
         sx={{
           width:     'fit-content',
           position:  'relative',
-          transform: `translateX(${posX}px)`,
           my:        0.5,
           mt:        4,
+          transform: 'translateX(999999px)',
           opacity:   running || active || selected ? 1 : 0.1,
         }}>
         <Box sx={{
