@@ -14,7 +14,7 @@ import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { chunk, orderBy } from 'lodash';
 import React from 'react';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
@@ -36,7 +36,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ search, setSearch ] = React.useState('');
   const [ loading, setLoading ] = React.useState(false);
   const [ importing, setImporting ] = React.useState<string[]>([]);
-  const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
 

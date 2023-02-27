@@ -19,7 +19,7 @@ import { IsNotEmpty, MinLength } from 'class-validator';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
@@ -47,7 +47,7 @@ const endpoint = 'https://registry.sogebot.xyz';
 export const ExportDialog: React.FC<Props> = ({ model }) => {
   const { currentVersion } = useSelector((s: any) => s.loader);
   const { enqueueSnackbar } = useSnackbar();
-  const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ loading, setLoading ] = React.useState(false);
   const [ saving, setSaving ] = React.useState(false);

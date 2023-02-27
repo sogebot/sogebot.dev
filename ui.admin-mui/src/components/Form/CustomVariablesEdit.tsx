@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
@@ -83,7 +83,7 @@ const createInitialItem = async () => {
 };
 
 export const CustomVariablesEdit: React.FC = () => {
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const navigate = useNavigate();
   const { id } = useParams();

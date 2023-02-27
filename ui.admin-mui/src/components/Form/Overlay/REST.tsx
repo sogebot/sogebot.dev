@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 
 type Props = {
   id: string;
@@ -13,7 +13,7 @@ type Props = {
 
 export const RestAPI: React.FC<Props> = ({ id, opts }) => {
   const [ open, setOpen ] = React.useState(false);
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   return <Accordion expanded={open}>
     <AccordionSummary

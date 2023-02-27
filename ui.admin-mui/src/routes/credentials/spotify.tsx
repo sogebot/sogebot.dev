@@ -3,13 +3,13 @@ import {
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
 
 const Spotify = () => {
   const [state, setState] = useState<boolean | null>(null);
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     if (server === 'https://demobot.sogebot.xyz') {

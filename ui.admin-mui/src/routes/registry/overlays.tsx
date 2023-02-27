@@ -34,7 +34,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
-import { useSessionstorageState } from 'rooks';
+import { useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
@@ -56,7 +56,7 @@ const generateLinkId = (server: string, id: string) => {
 
 const PageRegistryOverlays = () => {
   const dispatch = useDispatch();
-  const [ server ] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();

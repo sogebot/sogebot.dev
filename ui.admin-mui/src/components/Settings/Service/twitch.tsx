@@ -26,7 +26,7 @@ import React, {
   useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useRefElement, useSessionstorageState } from 'rooks';
+import { useLocalstorageState, useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
 import { useSettings } from '../../../hooks/useSettings';
@@ -44,7 +44,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/twitch');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [server] = useSessionstorageState('server', 'https://demobot.sogebot.xyz');
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     refresh();
