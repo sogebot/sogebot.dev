@@ -43,7 +43,7 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   const [ running, setRunning ] = React.useState(false);
   const [ cooldown, setCooldown ] = React.useState(Date.now());
   const [ events, setEvents ] = React.useState<{ id: string, level: number, goal: number, total: number}[]>([]);
-  const [ subs, setSubs ] = React.useState<{username: string; thumbnailUrl: string}[]>(active ? [
+  const [ subs, setSubs ] = React.useState<{username: string; thumbnailUrl: string}[]>(!active ? [
     {
       username: 'test1', thumbnailUrl: 'https://i.pravatar.cc/300',
     },
@@ -154,7 +154,7 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
     }
 
     // force train to dissapear if no events are coming for long time
-    if (Date.now() - cooldown > 30000) {
+    if (Date.now() - cooldown > 30000 && level !== 0) {
       setCooldown(Date.now());
       console.debug('Cleanup train');
 
