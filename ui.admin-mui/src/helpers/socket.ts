@@ -31,19 +31,19 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
       type:         'getSocket',
       namespace,
       continueOnUnauthorized,
-      server:       sessionStorage.server,
-      accessToken:  localStorage[`${sessionStorage.server}::accessToken`],
-      refreshToken: localStorage[`${sessionStorage.server}::refreshToken`],
+      server:       localStorage.server,
+      accessToken:  localStorage[`${localStorage.server}::accessToken`],
+      refreshToken: localStorage[`${localStorage.server}::refreshToken`],
     }, undefined, 2));
   }
 
-  let wsUrl = JSON.parse(sessionStorage.server).replace('https', '').replace('http', '');
-  wsUrl = `${(JSON.parse(sessionStorage.server).startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
+  let wsUrl = JSON.parse(localStorage.server).replace('https', '').replace('http', '');
+  wsUrl = `${(JSON.parse(localStorage.server).startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
 
   const socket = io(wsUrl + (namespace as string), {
     transports: [ 'websocket' ],
     auth:       (cb: (data: { token: string | null}) => void) => {
-      cb({ token: localStorage.getItem(`${sessionStorage.server}::accessToken`) });
+      cb({ token: localStorage.getItem(`${localStorage.server}::accessToken`) });
     },
   }) as Socket;
 
@@ -62,7 +62,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     if (!error.message.includes('malformed')
       && (error.message.includes('jwt expired') || (error.message.includes('JsonWebTokenError')))) {
       console.debug('Using refresh token to obtain new access token');
-      const refreshToken = localStorage[`${sessionStorage.server}::refreshToken`];
+      const refreshToken = localStorage[`${localStorage.server}::refreshToken`];
       if (refreshToken === '' || refreshToken === null) {
         // no refresh token -> unauthorize or force relogin
         localStorage.userType = 'unauthorized';
@@ -77,20 +77,20 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
             validation, refreshToken,
           });
           console.groupEnd();
-          localStorage[`${sessionStorage.server}::accessToken`] = validation.data.accessToken;
-          localStorage[`${sessionStorage.server}::refreshToken`] = validation.data.refreshToken;
-          localStorage[`${sessionStorage.server}::userType`] = validation.data.userType;
+          localStorage[`${localStorage.server}::accessToken`] = validation.data.accessToken;
+          localStorage[`${localStorage.server}::refreshToken`] = validation.data.refreshToken;
+          localStorage[`${localStorage.server}::userType`] = validation.data.userType;
           // reconnect
           socket.disconnect();
           console.debug('Reconnecting with new token');
           socket.connect();
         }).catch((e) => {
           console.error(e);
-          localStorage.removeItem(`${sessionStorage.server}::accessToken`);
-          localStorage.removeItem(`${sessionStorage.server}::refreshToken`);
+          localStorage.removeItem(`${localStorage.server}::accessToken`);
+          localStorage.removeItem(`${localStorage.server}::refreshToken`);
           localStorage.removeItem('code');
           localStorage.removeItem('clientId');
-          localStorage[`${sessionStorage.server}::userType`] = 'unauthorized';
+          localStorage[`${localStorage.server}::userType`] = 'unauthorized';
           if (continueOnUnauthorized) {
             location.reload();
           } else {
@@ -107,7 +107,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
       } else {
         localStorage.userType = 'unauthorized';
         if (error.message.includes('malformed')) {
-          localStorage[`${sessionStorage.server}::accessToken`] = '';
+          localStorage[`${localStorage.server}::accessToken`] = '';
           location.reload();
         }
       }
@@ -116,11 +116,11 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
   socket.on('forceDisconnect', () => {
     if (localStorage.getItem('userType') === 'viewer' || localStorage.getItem('userType') === 'admin') {
       console.debug('Forced disconnection from bot socket.');
-      localStorage.removeItem(`${sessionStorage.server}::accessToken`);
-      localStorage.removeItem(`${sessionStorage.server}::refreshToken`);
+      localStorage.removeItem(`${localStorage.server}::accessToken`);
+      localStorage.removeItem(`${localStorage.server}::refreshToken`);
       localStorage.removeItem('code');
       localStorage.removeItem('clientId');
-      localStorage[`${sessionStorage.server}::userType`] = 'unauthorized';
+      localStorage[`${localStorage.server}::userType`] = 'unauthorized';
       if (continueOnUnauthorized) {
         location.reload();
       } else {
@@ -136,6 +136,6 @@ type Configuration = {
 };
 
 export const getConfiguration = async (): Promise<Configuration> => {
-  const response = await axios.get(`${JSON.parse(sessionStorage.server)}/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+  const response = await axios.get(`${JSON.parse(localStorage.server)}/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
   return response.data;
 };

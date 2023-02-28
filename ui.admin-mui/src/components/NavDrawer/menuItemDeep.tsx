@@ -128,7 +128,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
             );
           }
           return (
-            <Link to={`/${item.id}?server=${JSON.parse(sessionStorage.server)}`}  key={item.id} style={{
+            <Link to={`/${item.id}?server=${JSON.parse(localStorage.server)}`}  key={item.id} style={{
               textDecoration: 'none', color: 'white',
             }}>
               <MenuItem selected={isItemActive(item)} sx={{
@@ -154,7 +154,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
           horizontal: 'left',
         }}
       >
-        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(sessionStorage.server)}`} key={item} style={{
+        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
           textDecoration: 'none', color: 'white',
         }}>
           <MenuItem sx={{ fontSize: '14px' }}

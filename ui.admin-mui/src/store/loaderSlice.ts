@@ -100,8 +100,8 @@ export const loaderSlice = createSlice({
     setServer: (state: { server: any }, action: { payload: any }) => {
       console.debug(`setServer`, action.payload);
       state.server = action.payload;
-      sessionStorage.serverUrl = state.server;
-      sessionStorage.serverHistory = JSON.stringify([state.server, ...JSON.parse(localStorage.serverHistory ?? '["http://localhost:20000"]')]);
+      localStorage.serverUrl = state.server;
+      localStorage.serverHistory = JSON.stringify([state.server, ...JSON.parse(localStorage.serverHistory ?? '["http://localhost:20000"]')]);
     },
     setConnectedToServer: (state: { connectedToServer: any, server: any }) => {
       sessionStorage.connectedToServer = true;

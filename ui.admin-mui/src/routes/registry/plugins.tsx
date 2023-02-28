@@ -113,7 +113,7 @@ const PageRegistryPlugins = () => {
   }, []);
 
   const deleteItem = useCallback((item: Plugin) => {
-    axios.delete(`${JSON.parse(sessionStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
         refresh();
@@ -154,7 +154,7 @@ const PageRegistryPlugins = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/registry/plugins`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${JSON.parse(localStorage.server)}/api/registry/plugins`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -181,7 +181,7 @@ const PageRegistryPlugins = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(sessionStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

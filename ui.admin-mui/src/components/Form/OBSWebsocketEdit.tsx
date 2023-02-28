@@ -18,7 +18,7 @@ import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const createInitialItem = async () => {
-  const response = await fetch(`${JSON.parse(sessionStorage.server)}/assets/obswebsocket-code.txt`);
+  const response = await fetch(`${JSON.parse(localStorage.server)}/assets/obswebsocket-code.txt`);
   return new OBSWebsocket({
     id:   shortid(),
     name: '',
@@ -95,7 +95,7 @@ export const OBSWebsocketEdit: React.FC<{
       getSocket('/').emit('integration::obswebsocket::generic::getOne', id, (err, data: any) => {
         if (err) {
           enqueueSnackbar('Something went wrong during data loading.');
-          navigate(`/registry/obswebsocket/?server=${JSON.parse(sessionStorage.server)}`);
+          navigate(`/registry/obswebsocket/?server=${JSON.parse(localStorage.server)}`);
         } else {
           setItem(data);
           setLoading(false);
@@ -109,7 +109,7 @@ export const OBSWebsocketEdit: React.FC<{
   }, [navigate, id, enqueueSnackbar]);
 
   const handleClose = () => {
-    navigate(`/registry/obswebsocket/?server=${JSON.parse(sessionStorage.server)}`);
+    navigate(`/registry/obswebsocket/?server=${JSON.parse(localStorage.server)}`);
   };
 
   const handleSave = useCallback(() => {
@@ -124,7 +124,7 @@ export const OBSWebsocketEdit: React.FC<{
         item.id = cid;
         return item;
       });
-      const asPath = `/registry/obswebsocket/edit/${cid}?server=${JSON.parse(sessionStorage.server)}`;
+      const asPath = `/registry/obswebsocket/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
       window.history.replaceState(null, '', asPath);
       if (onSave) {
         onSave();

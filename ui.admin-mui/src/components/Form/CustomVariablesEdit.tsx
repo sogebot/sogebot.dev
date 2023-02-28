@@ -65,7 +65,7 @@ import { DAY } from '../../constants';
 /* eslint-enable */
 
 const createInitialItem = async () => {
-  const response = await fetch(`${JSON.parse(sessionStorage.server)}/assets/custom-variables-code.txt`);
+  const response = await fetch(`${JSON.parse(localStorage.server)}/assets/custom-variables-code.txt`);
   return new Variable({
     variableName:  '',
     currentValue:  '',
@@ -294,7 +294,7 @@ export const CustomVariablesEdit: React.FC = () => {
       getSocket('/core/customvariables').emit('customvariables::list', (err, val) => {
         if (err) {
           enqueueSnackbar('Something went wrong during data loading.');
-          navigate(`/registry/customvariables/?server=${JSON.parse(sessionStorage.server)}`);
+          navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
         } else {
           const itemFromList = val.find(o => o.id === id);
           if (itemFromList) {
@@ -325,7 +325,7 @@ export const CustomVariablesEdit: React.FC = () => {
   }, [item, loading, validate, reset]);
 
   const handleClose = () => {
-    navigate(`/registry/customvariables/?server=${JSON.parse(sessionStorage.server)}`);
+    navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
   };
 
   const handleSave = useCallback(() => {
@@ -344,7 +344,7 @@ export const CustomVariablesEdit: React.FC = () => {
           item.id = cid;
           return item;
         });
-        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(sessionStorage.server)}`;
+        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
         window.history.replaceState(null, '', asPath);
       }
       setSaving(false);

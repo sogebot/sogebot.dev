@@ -78,7 +78,7 @@ const PageSettingsModules = () => {
       behavior: 'smooth',
       block:    'start',
     });
-    history.pushState({}, '', `/settings/modules/${type}/${idScroll}?server=${JSON.parse(sessionStorage.server)}`);
+    history.pushState({}, '', `/settings/modules/${type}/${idScroll}?server=${JSON.parse(localStorage.server)}`);
   }, [ type ]);
 
   useEffect(() => {

@@ -28,6 +28,7 @@ import NavDrawer from '../components/NavDrawer/navDrawer';
 import { OnboardingTokens } from '../components/OnboardingTokens';
 import { ServerRouterQueryParam } from '../components/ServerRouterQueryParam';
 import { ServerSelect } from '../components/ServerSelect';
+import { Version } from '../components/Version';
 import checkTokenValidity from '../helpers/check-token-validity';
 import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
@@ -70,10 +71,6 @@ const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
 const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
 const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
 
-console.group('UI VERSION');
-console.log(process.env.REACT_APP_VERSION);
-console.groupEnd();
-
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
     setTimeout(() => {
@@ -89,15 +86,15 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       'x-twitch-token':  localStorage.code,
       'x-twitch-userid': localStorage.userId,
     };
-    const validation = await axios.get(`${sessionStorage.serverUrl}/socket/validate`, { headers });
+    const validation = await axios.get(`${localStorage.serverUrl}/socket/validate`, { headers });
     console.group('isUserLoggedIn::bot::validation');
     console.debug(JSON.stringify({
       validation, headers,
     }));
     console.groupEnd();
-    localStorage[`${sessionStorage.server}::accessToken`] = validation.data.accessToken;
-    localStorage[`${sessionStorage.server}::refreshToken`] = validation.data.refreshToken;
-    localStorage[`${sessionStorage.server}::userType`] = validation.data.userType;
+    localStorage[`${localStorage.server}::accessToken`] = validation.data.accessToken;
+    localStorage[`${localStorage.server}::refreshToken`] = validation.data.refreshToken;
+    localStorage[`${localStorage.server}::userType`] = validation.data.userType;
   } catch(e) {
     dispatch(showLoginWarning());
     dispatch(setMessage('You don\'t have access to this server.'));
@@ -179,6 +176,7 @@ export default function Root() {
   }, [ element, dispatch, throttledFunction ]);
   return <>
     <ServerSelect/>
+    <Version/>
     <LoginWarning/>
     <CookieBar/>
     <ServerRouterQueryParam/>

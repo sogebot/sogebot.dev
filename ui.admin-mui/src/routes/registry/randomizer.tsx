@@ -68,7 +68,7 @@ const PageRegistryRandomizer = () => {
   const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -85,7 +85,7 @@ const PageRegistryRandomizer = () => {
     })) as Randomizer[],
     );
 
-    axios.post(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer/${item.isShown ? `${item.id}/show` : 'hide'}`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${item.isShown ? `${item.id}/show` : 'hide'}`,
       null,
       { headers: { authorization: `Bearer ${getAccessToken()}` } },
     )
@@ -95,7 +95,7 @@ const PageRegistryRandomizer = () => {
   }, [ enqueueSnackbar ]);
 
   const trigger = useCallback((item: Randomizer) => {
-    axios.post(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer/${item.id}/spin`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${item.id}/spin`,
       null,
       { headers: { authorization: `Bearer ${getAccessToken()}` } },
     )
@@ -113,7 +113,7 @@ const PageRegistryRandomizer = () => {
       command: `!${Math.random().toString(36).substr(2, 5)}`,
     };
 
-    axios.post(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer`,
       clonedItem,
       { headers: { authorization: `Bearer ${getAccessToken()}` } },
     )
@@ -183,7 +183,7 @@ const PageRegistryRandomizer = () => {
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Randomizer) => {
-    axios.delete(`${JSON.parse(sessionStorage.server)}/api/registries/randomizer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -203,7 +203,7 @@ const PageRegistryRandomizer = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }

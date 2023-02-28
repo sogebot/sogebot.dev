@@ -85,7 +85,7 @@ export const HLTBEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/hltb/${item.id}`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {

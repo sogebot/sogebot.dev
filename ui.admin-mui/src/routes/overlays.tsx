@@ -35,7 +35,7 @@ export default function Overlays() {
   React.useEffect(() => {
     if (base64) {
       const data = JSON.parse(String(Buffer.from(base64, 'base64')));
-      sessionStorage.server = JSON.stringify(data.server);
+      localStorage.server = JSON.stringify(data.server);
       setServer(data.server);
       setId(data.id);
     }

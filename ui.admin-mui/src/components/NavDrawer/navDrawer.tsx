@@ -36,7 +36,7 @@ const LinkedListItem = function (props: LinkedListItemProps) {
   const isActive = location.pathname?.split('?')[0] === props.path;
 
   return (
-    <Link to={`${props.path}?server=${JSON.parse(sessionStorage.server)}`} style={{
+    <Link to={`${props.path}?server=${JSON.parse(localStorage.server)}`} style={{
       textDecoration: 'none', color: 'white',
     }}>
       <MuiListItemButton

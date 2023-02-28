@@ -158,7 +158,7 @@ export const OverlayEdit: React.FC = () => {
         }
         if (!data) {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
-          navigate(`/registry/overlays?server=${JSON.parse(sessionStorage.server)}`);
+          navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
         } else {
           setItem(data);
           setLoading(false);
@@ -190,7 +190,7 @@ export const OverlayEdit: React.FC = () => {
   }, [item, loading, validate]);
 
   const handleClose = () => {
-    navigate(`/registry/overlays?server=${JSON.parse(sessionStorage.server)}`);
+    navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
   };
 
   const handleSave = React.useCallback(() => {
@@ -203,7 +203,7 @@ export const OverlayEdit: React.FC = () => {
       }
       enqueueSnackbar('Saved successfully.', { variant: 'success' });
       if (id !== data.id) {
-        navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(sessionStorage.server)}`);
+        navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(localStorage.server)}`);
       }
     });
   }, [id, item, navigate]);

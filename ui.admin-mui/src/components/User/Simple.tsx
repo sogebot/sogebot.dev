@@ -12,12 +12,12 @@ export const UserSimple: React.FC = () => {
     delete localStorage['cached-logged-user'];
     const socket = getSocket('/core/users', true);
     socket.emit('logout', {
-      accessToken:  localStorage.getItem(`${sessionStorage.server}::accessToken`),
-      refreshToken: localStorage.getItem(`${sessionStorage.server}::refreshToken`),
+      accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
+      refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),
     });
-    localStorage[`${sessionStorage.server}::accessToken`] = '';
-    localStorage[`${sessionStorage.server}::refreshToken`] = '';
-    localStorage[`${sessionStorage.server}::userType`] = 'unauthorized';
+    localStorage[`${localStorage.server}::accessToken`] = '';
+    localStorage[`${localStorage.server}::refreshToken`] = '';
+    localStorage[`${localStorage.server}::userType`] = 'unauthorized';
     window.location.assign(window.location.origin);
   };
 

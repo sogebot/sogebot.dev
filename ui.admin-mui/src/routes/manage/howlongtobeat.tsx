@@ -107,7 +107,7 @@ const PageManageHLTB = () => {
         if (stream) {
           stream.offset = offset.value;
 
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
           setItems(i => {
             const it = i.filter(o => o.id !== offset.id);
             it.push(item);
@@ -133,7 +133,7 @@ const PageManageHLTB = () => {
             stream.isCompletionistCounted = !stream.isCompletionistCounted;
           }
 
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
           setItems(i => {
             const it = i.filter(o => o.id !== toggle.id);
             it.push(item);
@@ -162,7 +162,7 @@ const PageManageHLTB = () => {
   }, [thumbnails]);
 
   const deleteItem = useCallback((item: HowLongToBeatGame) => {
-    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         setItems(i => i.filter(o => o.id !== item.id));
         enqueueSnackbar(`Game ${item.game} deleted.`, { variant: 'success' });
@@ -266,7 +266,7 @@ const PageManageHLTB = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/hltb`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/hltb`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             setThumbnails(data.thumbnails);
@@ -286,7 +286,7 @@ const PageManageHLTB = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>(resolve => {
-          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });

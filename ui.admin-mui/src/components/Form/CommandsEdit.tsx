@@ -87,7 +87,7 @@ export const CommandsEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           setItem(data.data);
           setCount(data.count);
@@ -113,7 +113,7 @@ export const CommandsEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands`,
+    axios.post(`${JSON.parse(localStorage.server)}/api/systems/customcommands`,
       {
         ...item, count,
       },

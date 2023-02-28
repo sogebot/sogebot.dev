@@ -141,7 +141,7 @@ const PageCommandsCommands = () => {
   }, [items]);
 
   const deleteItem = useCallback((item: Commands) => {
-    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Commands ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -155,7 +155,7 @@ const PageCommandsCommands = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             const commands = data.data;
             for (const command of commands) {
@@ -166,7 +166,7 @@ const PageCommandsCommands = () => {
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();
@@ -225,7 +225,7 @@ const PageCommandsCommands = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -261,7 +261,7 @@ const PageCommandsCommands = () => {
       if (item) {
         item.count = 0;
         await new Promise<void>((resolve) => {
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -286,7 +286,7 @@ const PageCommandsCommands = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

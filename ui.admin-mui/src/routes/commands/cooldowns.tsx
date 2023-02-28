@@ -128,7 +128,7 @@ const PageCommandsCooldown = () => {
   ]);
 
   const deleteItem = useCallback((item: Cooldown) => {
-    axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Cooldown ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -144,7 +144,7 @@ const PageCommandsCooldown = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(sessionStorage.server)}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`${JSON.parse(localStorage.server)}/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -203,7 +203,7 @@ const PageCommandsCooldown = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(sessionStorage.server)}/api/systems/cooldown`,
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/cooldown`,
             { ...item },
             { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
@@ -232,7 +232,7 @@ const PageCommandsCooldown = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(sessionStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }
