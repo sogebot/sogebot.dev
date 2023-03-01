@@ -6,7 +6,7 @@ import {
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, LinearProgress, Stack, TextField,
+  Autocomplete, Box, Button, ButtonGroup, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, LinearProgress, Stack, TextField,
 } from '@mui/material';
 import { Commands, CommandsGroup } from '@sogebot/backend/dest/database/entity/commands';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -25,6 +25,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 
 import { FormResponse } from './Input/Response';
+import { FormTriggerAlert } from './Input/TriggerAlert';
+import { CommandsMenu } from './Menu/CommandsMenu';
 import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
@@ -66,21 +68,21 @@ export const CommandsEdit: React.FC<{
     setItem(update);
   }, [ item ]);
 
-  const addResponse = useCallback(() => {
+  const addResponse = useCallback((response: string) => {
     if (!item) {
       return;
     }
 
-    const response = {
+    const newResponse = {
       id:             v4(),
       order:          item.responses.length,
       filter:         '',
-      response:       '',
+      response:       response,
       stopIfExecuted: false,
       permission:     defaultPermissions.VIEWERS,
     };
     const update = cloneDeep(item);
-    update.responses = [...item.responses, response];
+    update.responses = [...item.responses, newResponse];
     setItem(update);
   }, [item]);
 
@@ -286,7 +288,10 @@ export const CommandsEdit: React.FC<{
                             <DragIndicatorTwoTone/>
                           </Grid>
                           <Grid item sm>
-                            <FormResponse value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
+                            {o.response.includes('$triggerAlert')
+                              ? <FormTriggerAlert value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
+                              : <FormResponse value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
+                            }
                           </Grid>
                           <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
                             <IconButton color="error"  onClick={() => deleteResponse(o.id)} sx={{ mx: 0 }}><DeleteTwoTone/></IconButton>
@@ -305,12 +310,17 @@ export const CommandsEdit: React.FC<{
       </DialogContent>
     </Collapse>
     <Divider/>
-    <Box sx={{ p: 1 }}>
+    <Box sx={{
+      p: 1, px: 3,
+    }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
-          <Button onClick={addResponse} disabled={loading} sx={{ width: 200 }}>
-            { translate('systems.customcommands.addResponse') }
-          </Button>
+          <ButtonGroup color='light' variant='contained' aria-label="outlined primary button group">
+            <Button onClick={() => addResponse('')} disabled={loading}>
+              { translate('systems.customcommands.addResponse') }
+            </Button>
+            <CommandsMenu onClick={addResponse}/>
+          </ButtonGroup>
         </Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
