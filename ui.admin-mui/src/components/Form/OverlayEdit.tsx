@@ -18,6 +18,7 @@ import { useMouse, usePreviousImmediate } from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
+import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
@@ -353,6 +354,9 @@ export const OverlayEdit: React.FC = () => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
