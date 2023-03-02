@@ -1,30 +1,42 @@
 import {
   Fade,
-  FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Typography,
+  FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, TextField, Typography,
 } from '@mui/material';
 import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import axios from 'axios';
-import React from 'react';
+import React, {  } from 'react';
 
+import { AdditionalGridFormResponse } from './Response';
 import getAccessToken from '../../../getAccessToken';
 
 type Props = {
   value: any,
   idx: number,
   onChange?: (value: any) => void,
+  disablePermission?: boolean,
+  disableFilter?: boolean,
+  disableExecution?: boolean,
 };
 
-const selectedItemRegex = /\$triggerAlert\((?<uuid>[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12})\)/mi;
+const selectedItemRegex = /\$triggerAlert\((?<uuid>[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}),? ?(?<options>.*)?\)/mi;
 
-export const FormTriggerAlert: React.FC<Props> = ({ value, onChange }) => {
+export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
+  disablePermission,
+  disableFilter,
+  disableExecution }) => {
   const [ alerts, setAlerts ] = React.useState<Alert[] | null>(null);
   const [ loading, setLoading ] = React.useState(true);
+  const [ propsValue, setPropsValue ] = React.useState(value);
 
   const parsedResponse = (value.response as string).match(selectedItemRegex);
-  console.log({
-    parsedResponse, response: value.response,
-  });
+  const parsedOptions = parsedResponse?.groups && parsedResponse?.groups.options
+    ? JSON.parse(Buffer.from(parsedResponse?.groups.options, 'base64').toString())
+    : null;
+
   const [ selectedItemId, setSelectedItemId ] = React.useState<null | string>(parsedResponse?.groups ? parsedResponse.groups.uuid : null);
+  const [ options, setOptions ] = React.useState<null | {
+    volume: number
+  }>(parsedOptions);
 
   React.useEffect(() => {
     axios.get<Alert[]>(`${JSON.parse(localStorage.server)}/api/registries/alerts/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -35,10 +47,13 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange }) => {
   React.useEffect(() => {
     if (onChange) {
       onChange({
-        ...value, response: `$triggerAlert(${selectedItemId})`,
+        ...propsValue,
+        response: options
+          ? `$triggerAlert(${selectedItemId}, ${Buffer.from(JSON.stringify(options)).toString('base64')})`
+          : `$triggerAlert(${selectedItemId})`,
       });
     }
-  }, [ selectedItemId ]);
+  }, [ selectedItemId, options, propsValue ]);
 
   return <>
     <FormControl fullWidth variant="filled" >
@@ -60,5 +75,17 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange }) => {
       </Select>
       <Fade in={loading}><LinearProgress /></Fade>
     </FormControl>
+
+    <TextField
+      fullWidth
+      variant='filled'
+      label="Volume"
+      value={options?.volume ?? 20}
+      onChange={(ev) => setOptions(o => ({
+        ...o, volume: Number(ev.target.value),
+      }))}
+    />
+
+    <AdditionalGridFormResponse disableExecution={disableExecution} disableFilter={disableFilter} disablePermission={disablePermission} value={propsValue} onChange={setPropsValue}/>
   </>;
 };
