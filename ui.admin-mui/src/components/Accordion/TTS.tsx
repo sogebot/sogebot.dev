@@ -3,7 +3,7 @@ import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, FormLabel, IconButton, Link, Paper, Slider, Stack, Switch, Typography,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { AlertInterface, CommonSettingsInterface } from '@sogebot/backend/dest/database/entity/alert';
+import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
@@ -31,7 +31,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onChange: (value: any) => void;
 };
 
-function isGlobal (value: Partial<CommonSettingsInterface['tts']> | Required<AlertInterface['tts']>): value is Required<AlertInterface['tts']> {
+function isGlobal (value: Partial<Alert['items'][number]['tts']> | Required<Alert['tts']>): value is Required<Alert['tts']> {
   if (value) {
     return Object.keys(value).includes('voice');
   } else {

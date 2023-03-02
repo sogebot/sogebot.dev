@@ -12,6 +12,7 @@ module.exports = {
     'key-spacing':                              ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
+    'no-useless-escape':       'off',
     'object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': true }],
     'object-curly-spacing':    ['error', 'always'],
     'object-curly-newline':    ['error', {
