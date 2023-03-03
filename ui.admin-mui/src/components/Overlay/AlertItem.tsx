@@ -18,6 +18,8 @@ import type { Props } from './ChatItem';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
 
+require('animate.css');
+
 type RunningAlert = EmitData & {
   id: string;
   isShowingText: boolean;
@@ -189,6 +191,7 @@ const isResponsiveVoiceEnabled = () => {
 export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) => {
   getSocket('/core/emotes', true); // init socket
 
+  const [ timestamp, setTimestamp ] = React.useState(0);
   const [ alert, setAlert ] = React.useState<null | Alert>(null);
   const [ ready, setReady ] = React.useState(false);
   const [ defaultProfanityList, setDefaultProfanityList ] = React.useState<string[]>([]);
@@ -207,8 +210,8 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
   const [ preparedAdvancedHTML, setPreparedAdvancedHTML ] = React.useState('');
 
   const animationTextClass = React.useMemo(() => {
-    if (runningAlert && runningAlert.showTextAt <= Date.now()) {
-      return runningAlert.hideAt - Date.now() <= 0
+    if (runningAlert && runningAlert.showTextAt <= timestamp) {
+      return runningAlert.hideAt - timestamp <= 0
           && (!isTTSPlaying || !runningAlert.alert.tts.keepAlertShown)
           && !runningAlert.waitingForTTS
         ? runningAlert.alert.animationOut
@@ -216,10 +219,14 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     } else {
       return 'none';
     }
-  }, [ runningAlert ]);
+  }, [ runningAlert, timestamp ]);
+
+  console.log({
+    preparedAdvancedHTML, animationTextClass,
+  });
   const animationSpeed = React.useMemo(() => {
     if (runningAlert) {
-      return runningAlert.hideAt - Date.now() <= 0
+      return runningAlert.hideAt - timestamp <= 0
           && (!isTTSPlaying || !runningAlert.alert.tts.keepAlertShown)
           && !runningAlert.waitingForTTS
         ? (runningAlert.alert.animationOut === 'none' ? 0 : runningAlert.alert.animationOutDuration)
@@ -227,10 +234,10 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     } else {
       return 1000;
     }
-  }, [ runningAlert ]);
+  }, [ runningAlert, timestamp ]);
   const animationClass = React.useMemo(() => {
     if (runningAlert) {
-      if (runningAlert.hideAt - Date.now() <= 0
+      if (runningAlert.hideAt - timestamp <= 0
           && (!isTTSPlaying || !runningAlert.alert.tts.keepAlertShown)
           && !runningAlert.waitingForTTS) {
         // animation out
@@ -241,7 +248,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     } else {
       return 'none';
     }
-  }, [ runningAlert ]);
+  }, [ runningAlert, timestamp ]);
 
   const speak = React.useCallback(async (text: string, voice: string, rate: number, pitch: number, volume: number) => {
     isTTSPlaying = true;
@@ -341,6 +348,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
   };
 
   React.useEffect(() => {
+    console.log('alert', 'init');
     getSocket('/registries/alerts', true).on('alert', (data2) => {
       processIncomingAlert(data2);
     });
@@ -488,6 +496,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
 
   // process running alert
   useIntervalWhen(async () => {
+    setTimestamp(Date.now());
     if (runningAlert) {
       // cleanup alert after 5s and if responsiveVoice is done
       if (runningAlert.hideAt - Date.now() <= 0
@@ -626,7 +635,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
 
     if (ready) {
       if (runningAlert === null && alerts.length > 0) {
-
+        console.log({ alerts });
         const emitData = alerts.shift();
         if (emitData && alert) {
           let possibleAlerts = alert.items.filter(o => o.type === emitData.event);
@@ -840,7 +849,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               hideAt:        alert.alertDelayInMs + Date.now() + selectedItem.alertDurationInMs + selectedItem.animationInDuration,
               showTextAt:    alert.alertDelayInMs + Date.now() + selectedItem.alertTextDelayInMs,
               waitingForTTS: selectedItem.tts.enabled && isAmountForTTSInRange,
-              alert:         alert as any,
+              alert:         selectedItem,
               ...emitData,
             });
           } else {
@@ -870,11 +879,27 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
     </Helmet>
     {alert && <>
-      {runningAlert && <Box>
-        GOT RUNNIG ALERT
-        {runningAlert.isShowing && <>
+      {animationClass}
+      {runningAlert && <Box id={`wrap-${runningAlert.alert.id}`} key={runningAlert.id} sx={{
+        position: 'absolute',
+        left:     0,
+        right:    0,
+        top:      0,
+        bottom:   0,
+        margin:   'auto',
+      }}>
+        {(runningAlert.alert.soundId && typeOfMedia.get(runningAlert.alert.soundId) === 'audio') && <audio id="audio">
+          <source src={link(runningAlert.alert.soundId)}/>
+        </audio>
+        }
+
+        {runningAlert.isShowing && <div
+          className={`animate__animated layout-${runningAlert.alert.layout} ${shouldAnimate ? `animate__${animationClass}` : ''}`}
+          style={{ animationDuration: `${animationSpeed}ms` }}
+        >
           { showImage && <Box>
             <img
+              title="Alert media image"
               src={link(runningAlert.alert.imageId)}
               style={{
                 display:     'block',
@@ -886,12 +911,8 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               }}
             />
           </Box>}
-        </>}
+        </div>}
       </Box>}
-
-      {JSON.stringify({
-        showImage,isTTSPlaying, preparedAdvancedHTML, shouldAnimate, animationSpeed, animationTextClass, animationClass,
-      })}
     </>}
 
     <Grow in={selected} unmountOnExit mountOnEnter>
