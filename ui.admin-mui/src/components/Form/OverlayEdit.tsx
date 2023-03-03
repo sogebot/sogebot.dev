@@ -40,6 +40,7 @@ import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
+import { AlertItem } from '../Overlay/AlertItem';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
@@ -436,7 +437,8 @@ export const OverlayEdit: React.FC = () => {
                     transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                   }}
                 >
-                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id}  selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'alertsRegistry' && <AlertItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'polls' && <PollsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
