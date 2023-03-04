@@ -54,6 +54,8 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
     "react-scripts": "latest",
+    "react-simple-typewriter": "^5.0.1",
+    "react-string-replace": "^1.1.0",
     "react-window": "^1.8.8",
     "react-youtube": "^10.1.0",
     "rooks": "^7.4.3",

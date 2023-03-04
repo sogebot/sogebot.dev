@@ -12,14 +12,16 @@ import HTMLReactParser from 'html-react-parser';
 import { get } from 'lodash';
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { Typewriter } from 'react-simple-typewriter';
+import reactStringReplace from 'react-string-replace';
 import { useIntervalWhen } from 'rooks';
 import urlRegex from 'url-regex';
 import { v4 } from 'uuid';
+import './assets/letter-animations.css';
 
 import type { Props } from './ChatItem';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
-import './assets/letter-animations.css';
 
 require('animate.css');
 
@@ -195,34 +197,40 @@ const withEmotes = (text: string | undefined, emotes: any, runningAlert: Running
   }
   return text;
 };
-console.log({ withEmotes }); // TODO: remove
 const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: string) => {
   const prepareChar = (char: string, index: number) => {
     if (char.trim().length === 0) {
-      return `<span style="padding-left: ${(runningAlert.alert.font?.size ?? 10) * 2}px" />`;
+      return <span style={{ paddingLeft: `${(runningAlert.alert.font?.size ?? 10) * 2}px` }} />;
     }
-    return `<div class="animate__animated animate__infinite animate__${runningAlert.alert.animationText} animate__${runningAlert.alert.animationTextOptions.speed}" style="animation-delay: ${index * 50}ms; color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor}; display: inline-block;">${char}</div>`;
+    return <div
+      style= {{
+        animationDelay: `${index * 50}ms`,
+        color:          runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor,
+        display:        'inline-block',
+      }}
+      className={`animate__animated animate__infinite animate__${runningAlert.alert.animationText} animate__${runningAlert.alert.animationTextOptions.speed}`}>
+      { char }
+    </div>;
   };
-  let game: string | string[] = (runningAlert.game || '').split('').map(prepareChar).join('');
-  let name: string | string[] = runningAlert.name.split('').map(prepareChar).join('');
-  let recipient: string | string[] = (runningAlert.recipient || '').split('').map(prepareChar).join('');
-  let amount: string | string[] = String(runningAlert.amount).split('').map(prepareChar).join('');
-  let currency: string | string[] = String(runningAlert.currency).split('').map(prepareChar).join('');
-  let monthsName: string | string[] = String(runningAlert.monthsName).split('').map(prepareChar).join('');
+  let game = (runningAlert.game || '').split('').map(prepareChar);
+  let name = (runningAlert.name || '').split('').map(prepareChar);
+  let recipient = (runningAlert.recipient || '').split('').map(prepareChar);
+  let amount = (String(runningAlert.amount) || '').split('').map(prepareChar);
+  let currency = (runningAlert.currency || '').split('').map(prepareChar);
+  let monthsName = (runningAlert.monthsName || '').split('').map(prepareChar);
 
   const isFadingOut = runningAlert.hideAt - Date.now() <= 0
         && !isTTSPlaying
         && !runningAlert.waitingForTTS;
 
-  console.log('aaaaaaaaaa');
   if (!isFadingOut && (runningAlert.alert.animationText === 'baffle' || runningAlert.alert.animationText === 'typewriter')) {
     if (runningAlert.alert.animationText === 'baffle') {
-      name = `<span class="obfuscate-name" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.name}</span>`;
-      game = `<span class="obfuscate-game" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.game}</span>`;
-      recipient = `<span class="obfuscate-recipient" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.recipient}</span>`;
-      amount = `<span class="obfuscate-amount" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.amount}</span>`;
-      currency = `<span class="obfuscate-currency" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.currency}</span>`;
-      monthsName = `<span class="obfuscate-monthsName" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor};">${runningAlert.monthsName}</span>`;
+      name = [<span className="obfuscate-name" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.name}</span>];
+      game = [<span className="obfuscate-game" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.game}</span>];
+      recipient = [<span className="obfuscate-recipient" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.recipient}</span>];
+      amount = [<span className="obfuscate-amount" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.amount}</span>];
+      currency = [<span className="obfuscate-currency" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.currency}</span>];
+      monthsName = [<span className="obfuscate-monthsName" style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>{runningAlert.monthsName}</span>];
       setTimeout(() => {
         for (const item of ['game', 'name', 'recipient', 'amount', 'currency', 'monthsName']) {
           baffle('.obfuscate-' + item, {
@@ -231,36 +239,31 @@ const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: s
           }).start().reveal(4000, 4000);
         }
       });
-      /*
-        game = `<text-animation-baffle :key="'game-' + runningAlert.game" :text="runningAlert.game || ''" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        name = `<text-animation-baffle :key="'name-' + runningAlert.name" :text="runningAlert.name" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        recipient = `<text-animation-baffle :key="'recipient-' + runningAlert.recipient" :text="runningAlert.recipient" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        amount = `<text-animation-baffle :key="'amount-' + runningAlert.amount" :text="String(runningAlert.amount)" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        currency = `<text-animation-baffle :key="'currency-' + runningAlert.currency" :text="runningAlert.currency" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        monthsName = `<text-animation-baffle :key="'monthsName-' + runningAlert.monthsName" :text="runningAlert.monthsName" :options="{...runningAlert.alert.animationTextOptions, maxTimeToDecrypt: ${maxTimeToDecrypt}}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-        */
-      /* else if (!isFadingOut && runningAlert.alert.animationText === 'typewriter') {
-      game = `<text-animation-typewriter :key="'game-' + runningAlert.game" :text="runningAlert.game || ''" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-      name = `<text-animation-typewriter :key="'name-' + runningAlert.name" :text="runningAlert.name" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-      recipient = `<text-animation-typewriter :key="'recipient-' + runningAlert.recipient" :text="runningAlert.recipient" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-      amount = `<text-animation-typewriter :key="'amount-' + runningAlert.amount" :text="String(runningAlert.amount)" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-      currency = `<text-animation-typewriter :key="'currency-' + runningAlert.currency" :text="runningAlert.currency" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-      monthsName = `<text-animation-typewriter :key="'monthsName-' + runningAlert.monthsName" :text="runningAlert.monthsName" :options="{...runningAlert.alert.animationTextOptions}" style="color: ${runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : data.value?.font.highlightcolor}"/>`;
-    }*/
+    } else {
+      name = [<span style={{ color: runningAlert.alert.font ? runningAlert.alert.font.highlightcolor : alert?.font.highlightcolor }}>
+        <Typewriter
+          words={['', runningAlert.name]}
+          loop={1}
+          cursor
+          cursorStyle='_'
+          typeSpeed={runningAlert.alert.animationTextOptions.speed as unknown as number}
+
+          delaySpeed={runningAlert.alert.animationInDuration + runningAlert.alert.alertTextDelayInMs}
+        />
+      </span>];
     }
   }
-  msg = msg
-    .replace(/\{game:highlight\}/g, game)
-    .replace(/\{name:highlight\}/g, name)
-    .replace(/\{recipient:highlight\}/g, recipient)
-    .replace(/\{amount:highlight\}/g, amount)
-    .replace(/\{currency:highlight\}/g, currency)
-    .replace(/\{monthsName:highlight\}/g, monthsName)
-    .replace(/\{game\}/g, runningAlert.game || '')
-    .replace(/\{name\}/g, runningAlert.name)
-    .replace(/\{amount\}/g, String(runningAlert.amount))
-    .replace(/\{currency\}/g, runningAlert.currency)
-    .replace(/\{monthsName\}/g, runningAlert.monthsName);
+  let replacedText = reactStringReplace(msg, /(\{name:highlight\})/g, () => name);
+  replacedText = reactStringReplace(replacedText, /(\{game:highlight\})/g, () => game);
+  replacedText = reactStringReplace(replacedText, /(\{recipient:highlight\})/g, () => recipient);
+  replacedText = reactStringReplace(replacedText, /(\{amount:highlight\})/g, () => amount);
+  replacedText = reactStringReplace(replacedText, /(\{currency:highlight\})/g, () => currency);
+  replacedText = reactStringReplace(replacedText, /(\{monthsName:highlight\})/g, () => monthsName);
+  replacedText = reactStringReplace(replacedText, /(\{game\})/g, () => runningAlert.game || '');
+  replacedText = reactStringReplace(replacedText, /(\{name\})/g, () => runningAlert.name);
+  replacedText = reactStringReplace(replacedText, /(\{amount\})/g, () => String(runningAlert.amount));
+  replacedText = reactStringReplace(replacedText, /(\{currency\})/g, () => runningAlert.currency);
+  replacedText = reactStringReplace(replacedText, /(\{monthsName\})/g, () => runningAlert.monthsName);
 
   return <Box sx={{
     fontFamily: encodeFont(runningAlert.alert.font ? runningAlert.alert.font.family : alert.font.family),
@@ -274,7 +277,7 @@ const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: s
       ),
       shadowGenerator(runningAlert.alert.font ? runningAlert.alert.font.shadow : alert.font.shadow)].filter(Boolean).join(', '),
   }}>
-    {HTMLReactParser(msg)}
+    {replacedText}
   </Box>;
 };
 
@@ -678,7 +681,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
             }
             video.play();
           }
-        });
+        }, 100);
       }
 
       if (runningAlert.showTextAt <= Date.now() && !runningAlert.isShowingText) {
@@ -927,20 +930,51 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
           className={`animate__animated layout-${runningAlert.alert.layout} ${shouldAnimate ? `animate__${animationClass}` : ''}`}
           style={{ animationDuration: `${animationSpeed}ms` }}
         >
-          { showImage && <Box>
-            <img
-              title="Alert media image"
-              src={link(runningAlert.alert.imageId)}
-              style={{
-                display:     'block',
-                marginLeft:  'auto',
-                marginRight: 'auto',
-                width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
-                height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
-                transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
-              }}
-            />
-          </Box>}
+          {showImage && <>
+            {(runningAlert.alert.imageId || (runningAlert.event === 'promo' && runningAlert.user?.profileImageUrl)) && <Box sx={{ visibility: shouldAnimate ? 'visible': 'hidden' }}>
+              { runningAlert.event === 'promo'
+                ? runningAlert.user?.profileImageUrl && <img
+                  title="Alert profile image"
+                  src={runningAlert.user.profileImageUrl}
+                  style={{
+                    display:     'block',
+                    marginLeft:  'auto',
+                    marginRight: 'auto',
+                    width:       150 * (runningAlert.alert.imageOptions.scale / 100),
+                    height:      150 * (runningAlert.alert.imageOptions.scale / 100),
+                    transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                  }}
+                />
+                : typeOfMedia.get(runningAlert.alert.imageId!) === 'video'
+                  ? <video id="video" loop={runningAlert.alert.imageOptions.loop}  style={{
+                    display:     'block',
+                    marginLeft:  'auto',
+                    marginRight: 'auto',
+                    width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
+                    height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
+                    transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                  }}
+                  >
+                    <source
+                      src={link(runningAlert.alert.imageId)}
+                      type="video/webm"
+                    />
+                Your browser does not support the video tag.
+                  </video>
+                  : <img
+                    title="Alert media image"
+                    src={link(runningAlert.alert.imageId)}
+                    style={{
+                      display:     'block',
+                      marginLeft:  'auto',
+                      marginRight: 'auto',
+                      width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
+                      height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
+                      transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                    }}
+                  />}
+            </Box>}
+          </>}
 
           {messageTemplateSplitIdx > -1 && <Box key={String(runningAlert.isShowingText)}
             className={`animate__animated animate__${animationTextClass} animate__${runningAlert.alert.animationTextOptions.speed}`}
@@ -952,6 +986,23 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               textAlign:  (runningAlert.alert.font ? runningAlert.alert.font.align : alert.font.align),
             }}>
             {preparedMessage}
+            {('message' in runningAlert.alert && (runningAlert.alert.message.minAmountToShow || 0) <= runningAlert.amount) && <Box
+              sx={{
+                width:      '30rem',
+                margin:     (runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align) === 'center' ? 'auto' : 'inherit',
+                textAlign:  runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align,
+                flex:       '1 0 0px',
+                fontFamily: encodeFont(runningAlert.alert.message.font ? runningAlert.alert.message.font.family : alert.fontMessage.family),
+                fontSize:   (runningAlert.alert.message.font ? runningAlert.alert.message.font.size : alert.fontMessage.size) + 'px',
+                fontWeight: runningAlert.alert.message.font ? runningAlert.alert.message.font.weight : alert.fontMessage.weight,
+                color:      runningAlert.alert.message.font ? runningAlert.alert.message.font.color : alert.fontMessage.color,
+                textShadow: textStrokeGenerator(
+                  runningAlert.alert.message.font ? runningAlert.alert.message.font.borderPx : alert.fontMessage.borderPx,
+                  runningAlert.alert.message.font ? runningAlert.alert.message.font.borderColor : alert.fontMessage.borderColor,
+                ),
+              }}>
+              {HTMLReactParser(withEmotes(runningAlert.message, emotes, runningAlert))}
+            </Box>}
           </Box>}
         </div>}
       </Box>}
