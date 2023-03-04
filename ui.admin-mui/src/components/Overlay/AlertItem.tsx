@@ -19,6 +19,7 @@ import urlRegex from 'url-regex';
 import { v4 } from 'uuid';
 import './assets/letter-animations.css';
 
+import { isAlreadyProcessed } from './_processedSocketCalls';
 import type { Props } from './ChatItem';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
@@ -89,13 +90,14 @@ let snd: HTMLAudioElement; // to be able to parry
 let isTTSPlaying = false;
 let cleanupAlert = false;
 
-const alerts: (EmitData & {
+const alerts: Record<string, (EmitData & {
   isTTSMuted: boolean, isSoundMuted: boolean, TTSService: number, TTSKey: string,
   caster: null | UserInterface,
   user: null | UserInterface,
   recipientUser: null | UserInterface,
   game?: string,
-})[] = [];
+})[]> = {};
+let blocked = false; // we want to block across whole overlay set
 
 /* eslint-disable */
 const triggerFunction = (_____________code: string, _____________fnc: 'onStarted' | 'onEnded', _____________alert: RunningAlert) => {
@@ -467,6 +469,9 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     user: UserInterface | null;
     recipientUser: UserInterface | null;
   }) => {
+    if (isAlreadyProcessed(data2.id)) {
+      return;
+    }
     console.debug('Incoming alert', data2);
 
     if (data2.TTSService === 0) {
@@ -501,41 +506,38 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       getMeta(data2.user.profileImageUrl, 'Thumbnail');
     }
 
-    if (alert && ['tips', 'cheers', 'resubs', 'subs'].includes(data2.event) && runningAlert && alert.parry.enabled && haveAvailableAlert(data2, alert)) {
-      alerts.push(data2);
-      console.log('Skipping playing alert - parrying enabled');
-      setTimeout(() => {
-        setRunningAlert(null);
-        if (typeof (window as any).responsiveVoice !== 'undefined') {
-          (window as any).responsiveVoice.cancel();
-        }
-        if (snd) {
-          snd.pause();
-          isTTSPlaying = false;
-        }
-      }, alert.parry.delay);
-    } else {
-      alerts.push(data2);
+    if (alert) {
+      if (['tips', 'cheers', 'resubs', 'subs'].includes(data2.event) && runningAlert && alert.parry.enabled && haveAvailableAlert(data2, alert)) {
+        alerts[alert.id] ??= [];
+        alerts[alert.id].push(data2);
+        console.log('Skipping playing alert - parrying enabled');
+        setTimeout(() => {
+          blocked = false;
+          setRunningAlert(null);
+          if (typeof (window as any).responsiveVoice !== 'undefined') {
+            (window as any).responsiveVoice.cancel();
+          }
+          if (snd) {
+            snd.pause();
+            isTTSPlaying = false;
+          }
+        }, alert.parry.delay);
+      } else {
+        alerts[alert.id] ??= [];
+        alerts[alert.id].push(data2);
+      }
     }
   };
 
   React.useEffect(() => {
-    console.log('alert', 'init');
-    getSocket('/registries/alerts', true).on('alert', (data2) => {
-      processIncomingAlert(data2);
-    });
+    getSocket('/registries/alerts', true).on('alert', processIncomingAlert);
     getSocket('/registries/alerts', true).on('skip', () => {
-      if (runningAlert) {
-        console.log('Skipping playing alert');
-        setRunningAlert(null);
-        if (typeof (window as any).responsiveVoice !== 'undefined') {
-          (window as any).responsiveVoice.cancel();
-        }
-      } else {
-        console.log('No alert to skip');
+      setRunningAlert(null);
+      if (typeof (window as any).responsiveVoice !== 'undefined') {
+        (window as any).responsiveVoice.cancel();
       }
     });
-  }, []);
+  }, [ready, alert]); // we need to refresh for processIncomingAlert
 
   // process alert refresh
   useIntervalWhen(() => {
@@ -687,6 +689,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
 
           cleanupAlert = true;
           setTimeout(() => {
+            blocked = false;
             setRunningAlert(null);
             setShouldAnimate(false);
             cleanupAlert = false;
@@ -762,9 +765,6 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               .replace(/\{currency\}/g, runningAlert.currency)
               .replace(/\{message\}/g, message);
           }
-          console.log({
-            template: runningAlert.alert.ttsTemplate, ttsTemplate,
-          });
 
           if (ttsTemplate.trim().length > 0) {
             if (alert?.tts === null) {
@@ -805,10 +805,9 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       }
     }
 
-    if (ready) {
-      if (runningAlert === null && alerts.length > 0) {
-        console.log({ alerts });
-        const emitData = alerts.shift();
+    if (ready && !blocked && alert) {
+      if (runningAlert === null && (alerts[alert.id] ?? []).length > 0) {
+        const emitData = alerts[alert.id].shift();
         if (emitData && alert) {
           let possibleAlerts = alert.items.filter(o => o.type === emitData.event);
 
@@ -855,8 +854,6 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               return;
             }
 
-            console.log('alert', { selectedItem });
-
             // advancedMode
             if (selectedItem.enableAdvancedMode) {
               // prepare HTML
@@ -895,6 +892,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               .replace(/\{amount\}/g, '{amount:highlight}')
               .replace(/\{monthsName\}/g, '{monthsName:highlight}')
               .replace(/\{currency\}/g, '{currency:highlight}');
+            blocked = true;
             setRunningAlert({
               id:            v4(),
               soundPlayed:   false,
@@ -909,9 +907,11 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
             });
           } else {
             console.log('No possible alert found.');
+            blocked = false;
             setRunningAlert(null);
           }
         } else {
+          blocked = false;
           setRunningAlert(null);
         }
       }
@@ -925,9 +925,6 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
 
   const preparedMessage = React.useMemo(() => {
     if (alert && runningAlert && messageTemplateSplitIdx > -1) {
-      console.log({
-        messageTemplateSplit, messageTemplateSplitIdx,
-      });
       return prepareMessageTemplate(alert, runningAlert, messageTemplateSplit[messageTemplateSplitIdx]);
     } else {
       return '';
