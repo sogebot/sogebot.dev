@@ -1,5 +1,5 @@
 import {
-  Box, Button, Grow,
+  Box, Button, Grow, SxProps, Theme,
 } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { AlertsRegistry } from '@sogebot/backend/dest/database/entity/overlay';
@@ -24,6 +24,38 @@ import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
 
 require('animate.css');
+
+const layouts: Record<string, SxProps<Theme>> = {
+  '0': { display: 'none' },
+  '1': {
+    display:       'flex',
+    flexDirection: 'column',
+  },
+  '2': {
+    display:       'flex',
+    flexDirection: 'column-reverse',
+  },
+  '3': {
+    display:    'grid',
+    alignItems: 'center',
+    '& > *':    {
+      position:  'absolute',
+      top:       '50%',
+      left:      '50%',
+      transform: 'translate(-50%, -50%) !important',
+    },
+  },
+  '4': {
+    display:       'flex',
+    alignItems:    'center',
+    flexDirection: 'row-reverse',
+  },
+  '5': {
+    display:       'flex',
+    alignItems:    'center',
+    flexDirection: 'row',
+  },
+};
 
 type RunningAlert = EmitData & {
   id: string;
@@ -914,21 +946,22 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     </Helmet>
     {alert && <>
       {runningAlert && <Box id={`wrap-${runningAlert.alert.id}`} key={runningAlert.id} sx={{
-        position: 'absolute',
-        left:     0,
-        right:    0,
-        top:      0,
-        bottom:   0,
-        margin:   'auto',
+        position:  'absolute',
+        top:       '50%',
+        left:      '50%',
+        transform: 'translate(-50%, -50%) !important',
+        width:     'max-content !important',
       }}>
         {(runningAlert.alert.soundId && typeOfMedia.get(runningAlert.alert.soundId) === 'audio') && <audio id="audio">
           <source src={link(runningAlert.alert.soundId)}/>
         </audio>
         }
 
-        {runningAlert.isShowing && <div
-          className={`animate__animated layout-${runningAlert.alert.layout} ${shouldAnimate ? `animate__${animationClass}` : ''}`}
-          style={{ animationDuration: `${animationSpeed}ms` }}
+        {runningAlert.isShowing && <Box
+          className={`animate__animated ${shouldAnimate ? `animate__${animationClass}` : ''}`}
+          sx={{
+            animationDuration: `${animationSpeed}ms`, ...layouts[runningAlert.alert.layout],
+          }}
         >
           {showImage && <>
             {(runningAlert.alert.imageId || (runningAlert.event === 'promo' && runningAlert.user?.profileImageUrl)) && <Box sx={{ visibility: shouldAnimate ? 'visible': 'hidden' }}>
@@ -986,7 +1019,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               textAlign:  (runningAlert.alert.font ? runningAlert.alert.font.align : alert.font.align),
             }}>
             {preparedMessage}
-            {('message' in runningAlert.alert && (runningAlert.alert.message.minAmountToShow || 0) <= runningAlert.amount) && <Box
+            {('message' in runningAlert.alert && runningAlert.alert.message && (runningAlert.alert.message.minAmountToShow || 0) <= runningAlert.amount) && <Box
               sx={{
                 width:      '30rem',
                 margin:     (runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align) === 'center' ? 'auto' : 'inherit',
@@ -1004,7 +1037,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               {HTMLReactParser(withEmotes(runningAlert.message, emotes, runningAlert))}
             </Box>}
           </Box>}
-        </div>}
+        </Box>}
       </Box>}
     </>}
 
