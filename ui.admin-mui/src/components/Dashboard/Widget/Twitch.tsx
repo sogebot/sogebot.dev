@@ -3,6 +3,7 @@ import {
   Box, Card, Tab,
 } from '@mui/material';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -13,10 +14,24 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
+  const [timestamp, setTimestamp] = React.useState(Date.now());
   const [room, setRoom] = React.useState('');
+  const { isStreamOnline } = useSelector((state: any) => state.page);
 
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
+
+  React.useEffect(() => {
+    setTimestamp(Date.now());
+  }, [ value ]);
+
+  React.useEffect(() => {
+    if (isStreamOnline) {
+      setTimeout(() => {
+        setTimestamp(Date.now());
+      }, 60000 * 10);
+    }
+  }, [ isStreamOnline ]);
 
   React.useEffect(() => {
     getSocket('/widgets/chat').emit('room', (err, val) => {
@@ -75,7 +90,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
               height="100%"
             />
           </Box>
-          <Box sx={{
+          <Box key={`twitch-monitor-${timestamp}`} sx={{
             ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
           }}>
             <iframe
