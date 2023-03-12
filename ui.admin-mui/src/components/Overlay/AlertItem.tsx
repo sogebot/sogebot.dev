@@ -941,8 +941,34 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
         const head = document.getElementsByTagName('head')[0];
         const style = document.createElement('style');
         style.type = 'text/css';
-        const css = runningAlert.alert.advancedMode.css
-          .replace(/#wrap/g, '#wrap-' + runningAlert.alert.id); // replace .wrap with only this goal wrap
+        let css = runningAlert.alert.advancedMode.css
+          .replace(/#wrap/g, '#wrap-' + runningAlert.alert.id) // replace .wrap with only this goal wrap
+          .replace(/\{fontAttributes\}/g, `
+            /* font settings from a bot */
+            text-align:  ${runningAlert.alert.font ? runningAlert.alert.font.align : alert.font.align} !important;
+            font-family: ${encodeFont(runningAlert.alert.font ? runningAlert.alert.font.family : alert.font.family)} !important;
+            font-size:   ${runningAlert.alert.font ? runningAlert.alert.font.size : alert.font.size}px !important;
+            font-weight: ${runningAlert.alert.font ? runningAlert.alert.font.weight : alert.font.weight} !important;
+            color:      ${runningAlert.alert.font ? runningAlert.alert.font.color : alert.font.color} !important;
+            text-shadow: ${textStrokeGenerator(
+    runningAlert.alert.font ? runningAlert.alert.font.borderPx : alert.font.borderPx,
+    runningAlert.alert.font ? runningAlert.alert.font.borderColor : alert.font.borderColor,
+  )} !important;`);
+        if ('message' in runningAlert.alert && runningAlert.alert.message) {
+          css = css.replace(/\{fontMessageAttributes\}/g, `
+          /* message font settings from a bot */
+            text-align:  ${runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align} !important;
+            font-family: ${encodeFont(runningAlert.alert.message.font ? runningAlert.alert.message.font.family : alert.fontMessage.family)} !important;
+            font-size:   ${runningAlert.alert.message.font ? runningAlert.alert.message.font.size : alert.fontMessage.size}px !important;
+            font-weight: ${runningAlert.alert.message.font ? runningAlert.alert.message.font.weight : alert.fontMessage.weight} !important;
+            color:      ${runningAlert.alert.message.font ? runningAlert.alert.message.font.color : alert.fontMessage.color} !important;
+            text-shadow: ${textStrokeGenerator(
+    runningAlert.alert.message.font ? runningAlert.alert.message.font.borderPx : alert.fontMessage.borderPx,
+    runningAlert.alert.message.font ? runningAlert.alert.message.font.borderColor : alert.fontMessage.borderColor,
+  )} !important;`);
+        } else {
+          css = css.replace(/\{fontMessageAttributes\}/g, ``);
+        }
         style.appendChild(document.createTextNode(css));
         head.appendChild(style);
       }
