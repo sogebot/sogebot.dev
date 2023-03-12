@@ -461,6 +461,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
   }, [ runningAlert ]);
 
   const processIncomingAlert = async (data2: EmitData & {
+    id: string;
     isTTSMuted: boolean;
     isSoundMuted: boolean;
     TTSService: number;

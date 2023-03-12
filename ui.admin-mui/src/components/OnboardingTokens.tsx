@@ -23,7 +23,7 @@ export const OnboardingTokens: React.FC = () => {
 
   useEffect(() => {
     if (settings) {
-      if (server === 'https://demobot.sogebot.xyz' || (settings.bot.botAccessToken[0].length > 0 && settings.broadcaster.broadcasterAccessToken[0].length > 0)) {
+      if (server === 'https://demobot.sogebot.xyz' || (settings.bot.botRefreshToken[0].length > 0 && settings.broadcaster.broadcasterRefreshToken[0].length > 0)) {
         dispatch(setTokensOnboardingState(true));
         setOpen(false);
       } else {
@@ -55,13 +55,13 @@ export const OnboardingTokens: React.FC = () => {
 
   const revoke = useCallback((accountType: 'bot' | 'broadcaster') => {
     getSocket('/services/twitch').emit('twitch::revoke', { accountType }, () => {
-      enqueueSnackbar('User access revoked.', { variant: 'success' });
+      enqueueSnackbar('User Access revoked.', { variant: 'success' });
       refresh();
     });
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
-    const popup = window.open((process.env.PUBLIC_URL ?? '/') + 'credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open((process.env.PUBLIC_URL !== '/' ? window.location.origin + '/' : process.env.PUBLIC_URL) + 'credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
