@@ -47,7 +47,7 @@ export const AlertsRegistrySettings: React.FC<Props> = ({ model, onUpdate }) => 
           })}
         >
           <MenuItem value=''>Please select item</MenuItem>
-          {alerts?.filter(o => o.items.filter(b => b.type === 'custom').length > 0).map(alert => ([
+          {alerts?.map(alert => ([
             <MenuItem value={alert.id} key={alert.id}>{alert.name} <Typography variant='caption' component='small'>{alert.id}</Typography></MenuItem>,
           ]))}
         </Select>

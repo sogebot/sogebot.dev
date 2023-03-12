@@ -78,6 +78,7 @@ type RunningAlert = EmitData & {
   game?: string,
 };
 
+const loadedCSS: string[] = [];
 const loadedFonts: string[] = [];
 const loadedScripts: string[] = [];
 const loadedMedia: string[] = [];
@@ -460,7 +461,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     }
   }, [ runningAlert ]);
 
-  const processIncomingAlert = async (data2: EmitData & {
+  const processIncomingAlert = React.useCallback(async (data2: EmitData & {
     id: string;
     isTTSMuted: boolean;
     isSoundMuted: boolean;
@@ -469,11 +470,13 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     caster: UserInterface | null;
     user: UserInterface | null;
     recipientUser: UserInterface | null;
-  }) => {
+  }, _alert: Alert) => {
     if (isAlreadyProcessed(data2.id)) {
       return;
     }
-    console.debug('Incoming alert', data2);
+    console.debug('Incoming alert', {
+      data2, alert,
+    });
 
     if (data2.TTSService === 0) {
       setResponsiveVoiceKey(data2.TTSKey);
@@ -483,17 +486,17 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     // checking for vulgarities
     if (data2.message && data2.message.length > 0) {
       for (const vulgar of defaultProfanityList) {
-        if (alert) {
-          if (alert.profanityFilterType === 'replace-with-asterisk') {
+        if (_alert) {
+          if (_alert.profanityFilterType === 'replace-with-asterisk') {
             data2.message = data2.message.replace(new RegExp(vulgar, 'gmi'), '***');
-          } else if (alert.profanityFilterType === 'replace-with-happy-words') {
+          } else if (_alert.profanityFilterType === 'replace-with-happy-words') {
             data2.message = data2.message.replace(new RegExp(vulgar, 'gmi'), listHappyWords[Math.floor(Math.random() * listHappyWords.length)]);
-          } else if (alert.profanityFilterType === 'hide-messages') {
+          } else if (_alert.profanityFilterType === 'hide-messages') {
             if (data2.message.search(new RegExp(vulgar, 'gmi')) >= 0) {
               console.debug('Message contain vulgarity "' + vulgar + '" and is hidden.');
               data2.message = '';
             }
-          } else if (alert.profanityFilterType === 'disable-alerts') {
+          } else if (_alert.profanityFilterType === 'disable-alerts') {
             if (data2.message.search(new RegExp(vulgar, 'gmi')) >= 0) {
               console.debug('Message contain vulgarity "' + vulgar + '" and is alert disabled.');
               return;
@@ -507,10 +510,10 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       getMeta(data2.user.profileImageUrl, 'Thumbnail');
     }
 
-    if (alert) {
-      if (['tips', 'cheers', 'resubs', 'subs'].includes(data2.event) && runningAlert && alert.parry.enabled && haveAvailableAlert(data2, alert)) {
-        alerts[alert.id] ??= [];
-        alerts[alert.id].push(data2);
+    if (_alert) {
+      if (['tips', 'cheers', 'resubs', 'subs'].includes(data2.event) && runningAlert && _alert.parry.enabled && haveAvailableAlert(data2, alert)) {
+        alerts[_alert.id] ??= [];
+        alerts[_alert.id].push(data2);
         console.log('Skipping playing alert - parrying enabled');
         setTimeout(() => {
           blocked = false;
@@ -522,23 +525,25 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
             snd.pause();
             isTTSPlaying = false;
           }
-        }, alert.parry.delay);
+        }, _alert.parry.delay);
       } else {
-        alerts[alert.id] ??= [];
-        alerts[alert.id].push(data2);
+        alerts[_alert.id] ??= [];
+        alerts[_alert.id].push(data2);
       }
     }
-  };
+  }, [ alert ]);
 
   React.useEffect(() => {
-    getSocket('/registries/alerts', true).on('alert', processIncomingAlert);
-    getSocket('/registries/alerts', true).on('skip', () => {
-      setRunningAlert(null);
-      if (typeof (window as any).responsiveVoice !== 'undefined') {
-        (window as any).responsiveVoice.cancel();
-      }
-    });
-  }, [ready, alert]); // we need to refresh for processIncomingAlert
+    if (alert && ready) {
+      getSocket('/registries/alerts', true).on('alert', (data2) => processIncomingAlert(data2, alert));
+      getSocket('/registries/alerts', true).on('skip', () => {
+        setRunningAlert(null);
+        if (typeof (window as any).responsiveVoice !== 'undefined') {
+          (window as any).responsiveVoice.cancel();
+        }
+      });
+    }
+  }, [ready, alert]);
 
   // process alert refresh
   useIntervalWhen(() => {
@@ -548,6 +553,9 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
         .then(async res => {
           if (!alert || alert.updatedAt !== res.data.updatedAt) {
             setReady(false);
+            while(loadedCSS.length > 0) {
+              loadedCSS.shift(); // cleanup css
+            }
             setAlert(res.data);
 
             // process cache
@@ -924,6 +932,45 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     console.log({ emotes });
   };
 
+  const preparedAdvancedHTML = React.useMemo(() => {
+    if (alert && runningAlert) {
+      // load CSS
+      if (!loadedCSS.includes(runningAlert.alert.id)) {
+        console.debug('loaded custom CSS for ' + runningAlert.alert.id);
+        loadedCSS.push(runningAlert.alert.id);
+        const head = document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        const css = runningAlert.alert.advancedMode.css
+          .replace(/#wrap/g, '#wrap-' + runningAlert.alert.id); // replace .wrap with only this goal wrap
+        style.appendChild(document.createTextNode(css));
+        head.appendChild(style);
+      }
+
+      let html = runningAlert.alert.advancedMode.html ?? '';
+      // replacing #wrap to wrap with id
+      html = html.replace('id="wrap"', `id="wrap-${runningAlert.alert.id}"`);
+      // we will simplify advanced mode where user NEEDS to handle all animations himself
+      // so no animations, fonts etc are used
+      html = html
+        .replace(/\{image\}/g, runningAlert.event === 'promo' && runningAlert.user!.profileImageUrl
+          ? runningAlert.user!.profileImageUrl
+          : link(runningAlert.alert.imageId!))
+        .replace(/\{messageTemplate\}/g, runningAlert.alert.messageTemplate)
+        .replace(/\{game.*?\}/g, runningAlert.game || '')
+        .replace(/\{name.*?\}/g, runningAlert.name)
+        .replace(/\{recipient.*?\}/g, runningAlert.recipient || '')
+        .replace(/\{amount.*?\}/g, String(runningAlert.amount))
+        .replace(/\{monthsName.*?\}/g, runningAlert.monthsName)
+        .replace(/\{currency.*?\}/g, runningAlert.currency)
+        .replace(/\{message.*?\}/g, withEmotes(runningAlert.message, emotes, runningAlert));
+      // TODO: add class for fonts to be able to use global or per alert font
+
+      return HTMLReactParser(html);
+    }
+    return '';
+  }, [ alert, runningAlert, animationSpeed, emotes ]);
+
   const preparedMessage = React.useMemo(() => {
     if (alert && runningAlert && messageTemplateSplitIdx > -1) {
       return prepareMessageTemplate(alert, runningAlert, messageTemplateSplit[messageTemplateSplitIdx]);
@@ -943,99 +990,108 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
     </Helmet>
     {alert && <>
-      {runningAlert && <Box id={`wrap-${runningAlert.alert.id}`} key={runningAlert.id} sx={{
-        position:  'absolute',
-        top:       '50%',
-        left:      '50%',
-        transform: 'translate(-50%, -50%) !important',
-        width:     'max-content !important',
-      }}>
+      {runningAlert && <Box key={runningAlert.id} sx={runningAlert.alert.enableAdvancedMode
+        ? {
+          position: 'absolute',
+          width:    'max-content !important',
+        }
+        : {
+          position:  'absolute',
+          top:       '50%',
+          left:      '50%',
+          transform: 'translate(-50%, -50%) !important',
+          width:     'max-content !important',
+        }}>
         {(runningAlert.alert.soundId && typeOfMedia.get(runningAlert.alert.soundId) === 'audio') && <audio id="audio">
           <source src={link(runningAlert.alert.soundId)}/>
         </audio>
         }
 
-        {runningAlert.isShowing && <Box
-          className={`animate__animated ${shouldAnimate ? `animate__${animationClass}` : ''}`}
-          sx={{
-            animationDuration: `${animationSpeed}ms`, ...layouts[runningAlert.alert.layout],
-          }}
-        >
-          {showImage && <>
-            {(runningAlert.alert.imageId || (runningAlert.event === 'promo' && runningAlert.user?.profileImageUrl)) && <Box sx={{ visibility: shouldAnimate ? 'visible': 'hidden' }}>
-              { runningAlert.event === 'promo'
-                ? runningAlert.user?.profileImageUrl && <img
-                  title="Alert profile image"
-                  src={runningAlert.user.profileImageUrl}
-                  style={{
-                    display:     'block',
-                    marginLeft:  'auto',
-                    marginRight: 'auto',
-                    width:       150 * (runningAlert.alert.imageOptions.scale / 100),
-                    height:      150 * (runningAlert.alert.imageOptions.scale / 100),
-                    transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
-                  }}
-                />
-                : typeOfMedia.get(runningAlert.alert.imageId!) === 'video'
-                  ? <video id="video" loop={runningAlert.alert.imageOptions.loop}  style={{
-                    display:     'block',
-                    marginLeft:  'auto',
-                    marginRight: 'auto',
-                    width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
-                    height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
-                    transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
-                  }}
-                  >
-                    <source
-                      src={link(runningAlert.alert.imageId)}
-                      type="video/webm"
-                    />
-                Your browser does not support the video tag.
-                  </video>
-                  : <img
-                    title="Alert media image"
-                    src={link(runningAlert.alert.imageId)}
-                    style={{
-                      display:     'block',
-                      marginLeft:  'auto',
-                      marginRight: 'auto',
-                      width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
-                      height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
-                      transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
-                    }}
-                  />}
-            </Box>}
-          </>}
-
-          {messageTemplateSplitIdx > -1 && <Box key={String(runningAlert.isShowingText)}
-            className={`animate__animated animate__${animationTextClass} animate__${runningAlert.alert.animationTextOptions.speed}`}
-            sx={{
-              gridColumn: 1,
-              gridRow:    1,
-              zIndex:     9999,
-              visibility: runningAlert.isShowingText ? 'visible' : 'hidden',
-              textAlign:  (runningAlert.alert.font ? runningAlert.alert.font.align : alert.font.align),
-            }}>
-            {preparedMessage}
-            {('message' in runningAlert.alert && runningAlert.alert.message && (runningAlert.alert.message.minAmountToShow || 0) <= runningAlert.amount) && <Box
+        {runningAlert.isShowing && <>
+          { runningAlert.alert.enableAdvancedMode
+            ? preparedAdvancedHTML
+            : <Box
+              className={`animate__animated ${shouldAnimate ? `animate__${animationClass}` : ''}`}
               sx={{
-                width:      '30rem',
-                margin:     (runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align) === 'center' ? 'auto' : 'inherit',
-                textAlign:  runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align,
-                flex:       '1 0 0px',
-                fontFamily: encodeFont(runningAlert.alert.message.font ? runningAlert.alert.message.font.family : alert.fontMessage.family),
-                fontSize:   (runningAlert.alert.message.font ? runningAlert.alert.message.font.size : alert.fontMessage.size) + 'px',
-                fontWeight: runningAlert.alert.message.font ? runningAlert.alert.message.font.weight : alert.fontMessage.weight,
-                color:      runningAlert.alert.message.font ? runningAlert.alert.message.font.color : alert.fontMessage.color,
-                textShadow: textStrokeGenerator(
-                  runningAlert.alert.message.font ? runningAlert.alert.message.font.borderPx : alert.fontMessage.borderPx,
-                  runningAlert.alert.message.font ? runningAlert.alert.message.font.borderColor : alert.fontMessage.borderColor,
-                ),
-              }}>
-              {HTMLReactParser(withEmotes(runningAlert.message, emotes, runningAlert))}
+                animationDuration: `${animationSpeed}ms`, ...layouts[runningAlert.alert.layout],
+              }}
+            >
+              {showImage && <>
+                {(runningAlert.alert.imageId || (runningAlert.event === 'promo' && runningAlert.user?.profileImageUrl)) && <Box sx={{ visibility: shouldAnimate ? 'visible': 'hidden' }}>
+                  { runningAlert.event === 'promo'
+                    ? runningAlert.user?.profileImageUrl && <img
+                      title="Alert profile image"
+                      src={runningAlert.user.profileImageUrl}
+                      style={{
+                        display:     'block',
+                        marginLeft:  'auto',
+                        marginRight: 'auto',
+                        width:       150 * (runningAlert.alert.imageOptions.scale / 100),
+                        height:      150 * (runningAlert.alert.imageOptions.scale / 100),
+                        transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                      }}
+                    />
+                    : typeOfMedia.get(runningAlert.alert.imageId!) === 'video'
+                      ? <video id="video" loop={runningAlert.alert.imageOptions.loop}  style={{
+                        display:     'block',
+                        marginLeft:  'auto',
+                        marginRight: 'auto',
+                        width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
+                        height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
+                        transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                      }}
+                      >
+                        <source
+                          src={link(runningAlert.alert.imageId)}
+                          type="video/webm"
+                        />
+                Your browser does not support the video tag.
+                      </video>
+                      : <img
+                        title="Alert media image"
+                        src={link(runningAlert.alert.imageId)}
+                        style={{
+                          display:     'block',
+                          marginLeft:  'auto',
+                          marginRight: 'auto',
+                          width:       getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'width'),
+                          height:      getSizeOfMedia(runningAlert.alert.imageId, runningAlert.alert.imageOptions.scale / 100, 'height'),
+                          transform:   'translate(' + runningAlert.alert.imageOptions.translateX +'px, ' + runningAlert.alert.imageOptions.translateY +'px)',
+                        }}
+                      />}
+                </Box>}
+              </>}
+
+              {messageTemplateSplitIdx > -1 && <Box key={String(runningAlert.isShowingText)}
+                className={`animate__animated animate__${animationTextClass} animate__${runningAlert.alert.animationTextOptions.speed}`}
+                sx={{
+                  gridColumn: 1,
+                  gridRow:    1,
+                  zIndex:     9999,
+                  visibility: runningAlert.isShowingText ? 'visible' : 'hidden',
+                  textAlign:  (runningAlert.alert.font ? runningAlert.alert.font.align : alert.font.align),
+                }}>
+                {preparedMessage}
+                {('message' in runningAlert.alert && runningAlert.alert.message && (runningAlert.alert.message.minAmountToShow || 0) <= runningAlert.amount) && <Box
+                  sx={{
+                    width:      '30rem',
+                    margin:     (runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align) === 'center' ? 'auto' : 'inherit',
+                    textAlign:  runningAlert.alert.message.font ? runningAlert.alert.message.font.align : alert.fontMessage.align,
+                    flex:       '1 0 0px',
+                    fontFamily: encodeFont(runningAlert.alert.message.font ? runningAlert.alert.message.font.family : alert.fontMessage.family),
+                    fontSize:   (runningAlert.alert.message.font ? runningAlert.alert.message.font.size : alert.fontMessage.size) + 'px',
+                    fontWeight: runningAlert.alert.message.font ? runningAlert.alert.message.font.weight : alert.fontMessage.weight,
+                    color:      runningAlert.alert.message.font ? runningAlert.alert.message.font.color : alert.fontMessage.color,
+                    textShadow: textStrokeGenerator(
+                      runningAlert.alert.message.font ? runningAlert.alert.message.font.borderPx : alert.fontMessage.borderPx,
+                      runningAlert.alert.message.font ? runningAlert.alert.message.font.borderColor : alert.fontMessage.borderColor,
+                    ),
+                  }}>
+                  {HTMLReactParser(withEmotes(runningAlert.message, emotes, runningAlert))}
+                </Box>}
+              </Box>}
             </Box>}
-          </Box>}
-        </Box>}
+        </>}
       </Box>}
     </>}
 
