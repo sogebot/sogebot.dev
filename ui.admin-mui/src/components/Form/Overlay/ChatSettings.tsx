@@ -295,6 +295,18 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
 
       <Box sx={{ py: 2 }}>
         <FormControlLabel sx={{
+          width: '100%', alignItems: 'self-start', pt: 1,
+        }} control={<Switch checked={model.showCommandMessages} onChange={(_, checked) => onUpdate({
+          ...model, showCommandMessages: checked,
+        })} />} label={<>
+          <Typography>Show !command messages</Typography>
+          <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.showCommandMessages
+            ? 'Command messages starting with ! will be shown.'
+            : 'Command messages starting with ! won\'t be shown.'
+          }</Typography>
+        </>}/>
+
+        <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start',
         }} control={<Switch checked={model.showTimestamp} onChange={(_, checked) => onUpdate({
           ...model, showTimestamp: checked,

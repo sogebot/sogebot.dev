@@ -88,6 +88,9 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
     });
 
     getSocket('/overlays/chat', true).on('message', (data) => {
+      if (data.message.startsWith('!') && !item.showCommandMessages) {
+        return;
+      }
       setMessages(i => {
         if (!i.find(o => o.id === data.id)) {
           return [...i, data as any];
@@ -106,9 +109,9 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
         moveNicoNico(data.id);
       }
     });
-  }, []);
+  }, [ item ]);
 
-  const test = React. useCallback(async () => {
+  const test = React.useCallback(async () => {
     // show test messages
     const userName = jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase();
     const longMessage = Math.random() <= 0.1;
