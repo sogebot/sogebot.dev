@@ -91,6 +91,9 @@ export const CommandsEdit: React.FC<{
       setLoading(true);
       axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
+          data.data.responses = data.data.responses.map((o: any) => ({
+            ...o, id: v4(), // force random id to ensure that we can always drag
+          }));
           setItem(data.data);
           setCount(data.count);
           setLoading(false);
