@@ -471,7 +471,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     user: UserInterface | null;
     recipientUser: UserInterface | null;
   }, _alert: Alert) => {
-    if (isAlreadyProcessed(data2.id)) {
+    if (isAlreadyProcessed(alert!.id + data2.id)) {
       return;
     }
     console.debug('Incoming alert', {
