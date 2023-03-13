@@ -68,6 +68,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 				"whispers:edit",
 				"channel:edit:commercial",
 				"moderator:manage:announcements",
+				"moderator:manage:chat_messages",
 				"moderator:read:chatters",
 				"user:manage:whispers",
 			}
