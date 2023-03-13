@@ -893,7 +893,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
             }
 
             setShowImage(true);
-            const isAmountForTTSInRange = selectedItem.tts.minAmountToPlay === null || selectedItem.tts.minAmountToPlay <= emitData.amount;
+            const isAmountForTTSInRange = !('minAmountToPlay' in selectedItem.tts) || (selectedItem.tts.minAmountToPlay ?? 0) <= emitData.amount;
             selectedItem.messageTemplate = selectedItem.messageTemplate
               .replace(/\{name\}/g, '{name:highlight}')
               .replace(/\{game\}/g, '{game:highlight}')
