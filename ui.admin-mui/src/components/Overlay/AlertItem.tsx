@@ -649,7 +649,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               if (typeof (event as any).message !== 'undefined' && !loadedFonts.includes(messageFontFamily)) {
                 console.debug('Loading font', messageFontFamily);
                 loadedFonts.push(messageFontFamily);
-                const font = ((event as any).message.font ? (event as any).message.font.family : res.data.fontMessage.family).replace(/ /g, '+');
+                const font = ((event as any).message?.font ? (event as any).message.font.family : res.data.fontMessage.family).replace(/ /g, '+');
                 const css = '@import url(\'https://fonts.googleapis.com/css?family=' + font + '\');';
                 style.appendChild(document.createTextNode(css));
               }
