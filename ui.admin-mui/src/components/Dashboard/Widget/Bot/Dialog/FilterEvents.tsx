@@ -66,7 +66,7 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
                 <FormControlLabel control={<Switch checked={events.showBits} onClick={() => handleEventChange('showBits', !events.showBits)}/>} label="Bits" />
                 <FormControlLabel control={<Switch checked={events.showRaids} onClick={() => handleEventChange('showRaids', !events.showRaids)}/>} label="Raids" />
                 <FormControlLabel control={<Switch checked={events.showRedeems} onClick={() => handleEventChange('showRedeems', !events.showRedeems)}/>} label="Reward Redeems" />
-                <FormControlLabel control={<Switch checked={events.showSubgifts} onClick={() => handleEventChange('showSubgifts', !events.showSubgifts)}/>} label="Subscription gifts" />
+                <FormControlLabel control={<Switch checked={events.showSubGifts} onClick={() => handleEventChange('showSubGifts', !events.showSubGifts)}/>} label="Subscription gifts" />
                 <FormControlLabel control={<Switch checked={events.showSubCommunityGifts} onClick={() => handleEventChange('showSubCommunityGifts', !events.showSubCommunityGifts)}/>} label="Subscription community gifts" />
               </FormGroup>
             </Grid>

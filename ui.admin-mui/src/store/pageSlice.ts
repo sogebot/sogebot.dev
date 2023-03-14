@@ -16,7 +16,7 @@ export const pageSlice = createSlice({
         showBits:                true,
         showRaids:               true,
         showRedeems:             true,
-        showSubgifts:            true,
+        showSubGifts:            true,
         showSubCommunityGifts:   true,
         showSubs:                true,
         showSubsPrime:           true,
