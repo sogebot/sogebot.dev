@@ -280,8 +280,24 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       <FormSelectorGallery
         label="Media"
         type='image'
-        volume={0}
+        volume={options?.volume}
         value={options?.mediaId}
+        onVolumeChange={(val) => {
+          if (val !== null) {
+            setOptions(o => ({
+              ...(o ?? {}), volume: val,
+            }));
+          } else {
+            setOptions(o => {
+              const opts = o ?? {};
+              delete opts.volume;
+              if (Object.keys(opts).length === 0) {
+                return null;
+              }
+              return { ...opts };
+            });
+          }
+        }}
         onChange={(val) => {
           if (val) {
             setOptions(o => ({
