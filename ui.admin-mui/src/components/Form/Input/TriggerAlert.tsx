@@ -20,6 +20,7 @@ import layout2 from '../assets/layout2.png';
 import layout3 from '../assets/layout3.png';
 import layout4 from '../assets/layout4.png';
 import layout5 from '../assets/layout5.png';
+import { FormSelectorGallery } from '../Selector/Gallery';
 
 type Props = {
   value: any,
@@ -52,8 +53,8 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
     textDelay? : number;
     layout? : number;
     messageTemplate? : string;
-    audioUrl? : string;
-    mediaUrl? : string;
+    audioId? : string;
+    mediaId? : string;
   }>(parsedOptions);
 
   const [ expand, setExpand ] = React.useState(false);
@@ -61,8 +62,8 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   const alertDurationRef = useRef<HTMLInputElement>();
   const textDelayRef = useRef<HTMLInputElement>();
   const messageTemplateRef = useRef<HTMLInputElement>();
-  const audioUrlRef = useRef<HTMLInputElement>();
-  const mediaUrlRef = useRef<HTMLInputElement>();
+  const audioIdRef = useRef<HTMLInputElement>();
+  const mediaIdRef = useRef<HTMLInputElement>();
 
   React.useEffect(() => {
     axios.get<Alert[]>(`${JSON.parse(localStorage.server)}/api/registries/alerts/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -350,31 +351,41 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
         }}
       />
 
+      <FormSelectorGallery
+        label="Media"
+        type='image'
+      />
+
+      <FormSelectorGallery
+        label="Audio"
+        type='audio'
+      />
+
       <TextField
-        inputRef={audioUrlRef}
+        inputRef={audioIdRef}
         fullWidth
         placeholder='Enter your customized audio url'
         variant='filled'
         label="Audio URL"
-        value={options?.audioUrl ?? (audioUrlRef.current ? audioUrlRef.current!.value : '')}
+        value={options?.audioId ?? (audioIdRef.current ? audioIdRef.current!.value : '')}
         onChange={(ev) => {
           const val = ev.target.value;
           setOptions(o => ({
-            ...o, audioUrl: val,
+            ...o, audioId: val,
           }));
         }}
         InputProps={{
           startAdornment: <>
             <InputAdornment position="start">
-              <Switch  size='small' checked={'audioUrl' in (options ?? {})} onChange={(_, checked) => {
+              <Switch  size='small' checked={'audioId' in (options ?? {})} onChange={(_, checked) => {
                 if (checked) {
                   setOptions(o => ({
-                    ...(o ?? {}), audioUrl: audioUrlRef.current!.value,
+                    ...(o ?? {}), audioId: audioIdRef.current!.value,
                   }));
                 } else {
                   setOptions(o => {
                     const opts = o ?? {};
-                    delete opts.audioUrl;
+                    delete opts.audioId;
                     if (Object.keys(opts).length === 0) {
                       return null;
                     }
@@ -388,30 +399,30 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       />
 
       <TextField
-        inputRef={mediaUrlRef}
+        inputRef={mediaIdRef}
         fullWidth
         placeholder='Enter your customized image/video url'
         variant='filled'
         label="Image/Video URL"
-        value={options?.mediaUrl ?? (mediaUrlRef.current ? mediaUrlRef.current!.value : '')}
+        value={options?.mediaId ?? (mediaIdRef.current ? mediaIdRef.current!.value : '')}
         onChange={(ev) => {
           const val = ev.target.value;
           setOptions(o => ({
-            ...o, mediaUrl: val,
+            ...o, mediaId: val,
           }));
         }}
         InputProps={{
           startAdornment: <>
             <InputAdornment position="start">
-              <Switch  size='small' checked={'mediaUrl' in (options ?? {})} onChange={(_, checked) => {
+              <Switch  size='small' checked={'mediaId' in (options ?? {})} onChange={(_, checked) => {
                 if (checked) {
                   setOptions(o => ({
-                    ...(o ?? {}), mediaUrl: mediaUrlRef.current!.value,
+                    ...(o ?? {}), mediaId: mediaIdRef.current!.value,
                   }));
                 } else {
                   setOptions(o => {
                     const opts = o ?? {};
-                    delete opts.mediaUrl;
+                    delete opts.mediaId;
                     if (Object.keys(opts).length === 0) {
                       return null;
                     }
@@ -494,7 +505,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       </Stack>
     </Collapse>
     <Divider onClick={() => setExpand(!expand)} sx={{
-      position: 'relative', zIndex: 9999,
+      position: 'relative', zIndex: 9999, cursor: 'pointer',
     }}>
       <ExpandMoreTwoTone sx={{
         transform: expand ? 'rotate(-180deg)' : '', position: 'relative', top: '5px', transition: 'all 250ms',
