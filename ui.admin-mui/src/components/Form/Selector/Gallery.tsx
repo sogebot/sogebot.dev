@@ -1,7 +1,7 @@
-import { FolderTwoTone } from '@mui/icons-material';
+import { CollectionsTwoTone, FolderTwoTone } from '@mui/icons-material';
 import {
   Box,
-  Breadcrumbs, Button, Grid, IconButton, LinearProgress, Link, Popover, Stack, Toolbar, Typography,
+  Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography,
 } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import { uniq } from 'lodash';
@@ -9,11 +9,7 @@ import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
-
-type Props = {
-  label: string
-  type: 'audio' | 'image'
-};
+import theme from '../../../theme';
 
 const normalizePath = (path: string) => {
   // remove . if path is empty
@@ -56,32 +52,38 @@ const getDirectoriesOf = (items: GalleryInterface[], directories: string[]) => {
   return (uniq(firstLevelFolder)).sort();
 };
 
-export const FormSelectorGallery: React.FC<Props> = ({ label, type }) => {
+type Props = {
+  label: string
+  type: 'audio' | 'image',
+  value?: string;
+  volume?: number;
+  onChange(value: string | null): void;
+  onVolumeChange?(value: number | null): void;
+};
+
+export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onChange, volume, onVolumeChange }) => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ items, setItems ] = React.useState<GalleryInterface[]>([]);
   const [ folder, setFolder ] = React.useState('/');
   const [ loading, setLoading ] = React.useState(false);
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const [ open, setOpen ] = React.useState(false);
 
   const itemsInFolder = React.useMemo(() => {
     return items.filter(o => o.folder === folder);
   }, [ items, folder ]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = () => {
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
   React.useEffect(() => {
-    if (anchorEl) {
+    if (open) {
       setFolder('/');
 
       setLoading(true);
@@ -104,105 +106,195 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type }) => {
             folder: normalizePath(item.folder),
           })));
 
+        // go to selected item folder
+        if (value) {
+          const currentItem = _items.find(o => o.id === value);
+          setFolder(currentItem?.folder ?? '/');
+        }
+
         setLoading(false);
       });
     }
-  }, [ anchorEl ]);
+  }, [ open ]);
 
-  return <>
-    <Button aria-describedby={id} variant="contained" onClick={handleClick}>
-      {label}
-    </Button>
-    <Popover
-      id={id}
+  const selectedItem = items.find(o => o.id === value);
+
+  return <Box sx={{ width: '100%' }}>
+    <Stack direction='row' alignItems={'center'}>
+      <Stack direction='row' sx={{ width: '170px' }} alignItems='center' spacing={2}>
+        <FormLabel>{label}</FormLabel>
+        <IconButton onClick={handleClick} sx={{ borderRadius: 0 }}>
+          <CollectionsTwoTone/>
+        </IconButton>
+      </Stack>
+      { selectedItem ? <Box sx={{ pb: 0 }}>
+        {selectedItem.type.includes('image') && <img
+          alt=''
+          src={`${server}/gallery/${selectedItem.id}`}
+          style={{
+            height: '150px', maxWidth: '266px', objectFit: 'contain',
+          }}
+        />}
+        {selectedItem.type.includes('video') && <video
+          controls
+          onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
+          src={`${server}/gallery/${selectedItem.id}`}
+          style={{
+            height: '150px', maxWidth: '266px', objectFit: 'contain',
+          }}
+        />}
+        {selectedItem.type.includes('audio') && <audio
+          controls
+          onLoadedData={(ev) => ev.currentTarget.volume = volume ? volume / 100 : 0.2}
+          onVolumeChange={(ev) => onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100)}
+          src={`${server}/gallery/${selectedItem.id}`}
+          style={{ height: '20px' }}
+        />}
+      </Box> : <Typography>No item selected</Typography>}
+    </Stack>
+    <Dialog
+      maxWidth={false}
+      PaperProps={{
+        sx: {
+          width: '70%', height: '70%',
+        },
+      }}
+      hideBackdrop
       key={String(loading)}
       open={open}
-      anchorEl={anchorEl}
       onClose={handleClose}
-      anchorOrigin={{
-        vertical:   'bottom',
-        horizontal: 'left',
-      }}
     >
-      {loading && <LinearProgress />}
-      <Toolbar variant='dense'  sx={{
-        backgroundColor: 'rgba(0,0,0,0.5)', height: '20px', mb: 2,
-      }}>
-        <Stack direction='row' sx={{ p: 2 }} spacing={2}>
-          <FolderTwoTone/>
-          <Breadcrumbs aria-label="breadcrumb">
-            <Link component='span' underline="hover" color="text.primary" onClick={() => setFolder('/')}>
-              root
-            </Link>
-            {folder.split('/').filter(o => o.length > 0).map((item, idx) => <Link
-              key={item + idx}
-              component='span'
-              underline="hover"
-              color="text.primary"
-              onClick={() => {
-                // build folder
-                let expectedFolder = '';
-                for (let i = 0; i <= idx + 1; i++){
-                  expectedFolder += '/' + folder.split('/')[i];
-                }
-                expectedFolder = expectedFolder.replace(/\/\//g, '/');
-                setFolder(expectedFolder);
+      {loading
+        ? <>
+          <DialogTitle sx={{
+            backgroundColor: 'rgba(0,0,0,0.5)', padding: '0 24px',
+          }}>
+            <Box sx={{ p: '16px' }}>
+              <Skeleton width={200}/>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Grid container>
+              {[...Array(9).keys()].map((_, idx) => <Grid key={idx} xs={4} sx={{ p: 0.5 }}>
+                <Skeleton variant='rectangular' width='100%' height='100%' sx={{ aspectRatio: '1.5/1' }}/>
+              </Grid>)}
+            </Grid>
+          </DialogContent>
+        </>
+        : <>
+          <DialogTitle sx={{
+            backgroundColor: 'rgba(0,0,0,0.5)', padding: '0 24px',
+          }}>
+            <Stack direction='row' sx={{
+              p: 2, width: '100%',
+            }} spacing={2}>
+              <FolderTwoTone/>
+              <Breadcrumbs aria-label="breadcrumb">
+                <Link component='span' underline="hover" color="text.primary" onClick={() => setFolder('/')}>
+                root
+                </Link>
+                {folder.split('/').filter(o => o.length > 0).map((item, idx) => <Link
+                  key={item + idx}
+                  component='span'
+                  underline="hover"
+                  color="text.primary"
+                  onClick={() => {
+                    // build folder
+                    let expectedFolder = '';
+                    for (let i = 0; i <= idx + 1; i++){
+                      expectedFolder += '/' + folder.split('/')[i];
+                    }
+                    expectedFolder = expectedFolder.replace(/\/\//g, '/');
+                    setFolder(expectedFolder);
+                  }}>
+                  {item}
+                </Link>,
+                )}
+              </Breadcrumbs>
+            </Stack>
+          </DialogTitle>
+
+          <DialogContent>
+            <Grid container>
+              {getDirectoriesOf(items, folder.split('/').filter(Boolean) ).map(directory => <Grid key={directory} xs={4} sx={{ p: 0.5 }}>
+                <IconButton sx={{
+                  borderRadius: 0,
+                  width:        '100%',
+                  height:       '100%',
+                  aspectRatio:  '1.5/1',
+                }} onClick={() => setFolder(`${folder}/${directory}`.replace(/\/\//g, '/'))}>
+                  <Stack alignItems='center'>
+                    <FolderTwoTone sx={{ fontSize: '80px' }}/>
+                    <Typography variant='caption'>{directory}</Typography>
+                  </Stack>
+                </IconButton>
+              </Grid>)}
+              {itemsInFolder.map(item => <Grid key={item.id} xs={4} sx={{
+                p: 0.5, aspectRatio: '1.5/1',
               }}>
-              {item}
-            </Link>,
-            )}
-          </Breadcrumbs>
-        </Stack>
-      </Toolbar>
+                <IconButton sx={{
+                  '&:hover':       { backgroundColor: value === item.id ? `${theme.palette.primary.main}66` : undefined },
+                  borderRadius:    0,
+                  width:           '100%',
+                  height:          '100%',
+                  p:               1,
+                  pb:              4,
+                  backgroundColor: value === item.id ? `${theme.palette.primary.main}55` : undefined,
+                }} onClick={() => {
+                  if (value === item.id!) {
+                    onChange(null);
+                    onVolumeChange && onVolumeChange(null);
+                  } else {
+                    onChange(item.id!);
+                    onVolumeChange && onVolumeChange(20); //set default volume to 20%
+                  }
+                }}>
+                  <Box alignItems='center' sx={{
+                    height: '100%', width: '100%', position: 'relative',
+                  }}>
+                    {item.type.includes('image') && <img
+                      alt=''
+                      src={`${server}/gallery/${item.id}`}
+                      style={{
+                        objectFit: 'contain', width: '100%', height: '100%',
+                      }}
+                    />}
+                    {item.type.includes('video') && <video
+                      controls
+                      onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
+                      src={`${server}/gallery/${item.id}`}
+                      style={{
+                        objectFit: 'contain', width: '100%', height: '100%',
+                      }}
+                    />}
+                    {item.type.includes('audio') && <audio
+                      controls
+                      onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
+                      src={`${server}/gallery/${item.id}`}
+                      style={{
+                        objectFit: 'contain', width: '100%', height: '100%',
+                      }}
+                    />}
+                    <Typography variant='caption' sx={{
+                      position:   'absolute',
+                      width:      '100%',
+                      left:       '50%',
+                      transform:  'translateX(-50%)',
+                      bottom:     '-1.5rem',
+                      textShadow: '0px 0px 2px #000000, 0px 0px 5px #000000, 0px 0px 10px #000000',
+                    }}>{item.name}</Typography>
+                  </Box>
+                </IconButton>
+              </Grid>)}
+            </Grid>
+          </DialogContent>
+        </>}
+      <DialogActions>
+        <Button sx={{
+          width: '200px', ml: 2,
+        }} variant='contained' onClick={() => setOpen(false)}>Close</Button>
+      </DialogActions>
+    </Dialog>
 
-      <Box sx={{ width: '50vw' }}>
-        <Grid container>
-          {getDirectoriesOf(items, folder.split('/').filter(Boolean) ).map(directory => <Grid key={directory} xs={4}>
-            <IconButton sx={{
-              borderRadius: 0, width: '100%', height: '100%',
-            }} onClick={() => setFolder(`${folder}/${directory}`.replace(/\/\//g, '/'))}>
-              <Stack alignItems='center'>
-                <FolderTwoTone sx={{ fontSize: '80px' }}/>
-                <Typography variant='caption'>{directory}</Typography>
-              </Stack>
-            </IconButton>
-          </Grid>)}
-          {itemsInFolder.map(item => <Grid key={item.id} xs={4}>
-            <IconButton sx={{
-              borderRadius: 0, width: '100%', height: '100%',
-            }}>
-              <Stack alignItems='center'>
-
-                {item.type.includes('image') && <img
-                  alt=''
-                  src={`${server}/gallery/${item.id}`}
-                  style={{
-                    maxWidth: '100%', maxHeight: '200px',
-                  }}
-                />}
-                {item.type.includes('video') && <video
-                  controls
-                  onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
-                  src={`${server}/gallery/${item.id}`}
-                  style={{
-                    maxWidth: '100%', maxHeight: '200px',
-                  }}
-                />}
-                {item.type.includes('audio') && <audio
-                  controls
-                  onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
-                  src={`${server}/gallery/${item.id}`}
-                  style={{
-                    maxWidth: '100%', maxHeight: '200px',
-                  }}
-                />}
-                <Typography variant='caption'>{item.name}</Typography>
-              </Stack>
-            </IconButton>
-          </Grid>)}
-        </Grid>
-      </Box>
-    </Popover>
-
-  </>;
+  </Box>;
 };

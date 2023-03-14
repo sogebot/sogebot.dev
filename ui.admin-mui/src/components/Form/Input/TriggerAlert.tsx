@@ -58,12 +58,9 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   }>(parsedOptions);
 
   const [ expand, setExpand ] = React.useState(false);
-  const volumeRef = useRef<HTMLInputElement>();
   const alertDurationRef = useRef<HTMLInputElement>();
   const textDelayRef = useRef<HTMLInputElement>();
   const messageTemplateRef = useRef<HTMLInputElement>();
-  const audioIdRef = useRef<HTMLInputElement>();
-  const mediaIdRef = useRef<HTMLInputElement>();
 
   React.useEffect(() => {
     axios.get<Alert[]>(`${JSON.parse(localStorage.server)}/api/registries/alerts/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -105,77 +102,6 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
 
     <Collapse in={expand}>
       <Stack direction='row' spacing={1}>
-        <TextField
-          inputRef={volumeRef}
-          fullWidth
-          variant='filled'
-          label="Volume"
-          onKeyDown={(ev) => {
-            const i = ev.shiftKey ? 10 : 1;
-            if (ev.key === 'ArrowDown') {
-              ev.preventDefault(); // disable accidental shiftkey selection
-              setOptions(o => {
-                const volume = Math.max((o?.volume ?? Number(volumeRef.current ? volumeRef.current!.value : 20)) - i, 0);
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, volume,
-                };
-              });
-            }
-            if (ev.key === 'ArrowUp') {
-              ev.preventDefault();  // disable accidental shiftkey selection
-              setOptions(o => {
-                const volume = Math.min((o?.volume ?? Number(volumeRef.current ? volumeRef.current!.value : 20)) + i, 100);
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, volume,
-                };
-              });
-            }
-          }}
-          value={options?.volume ?? (volumeRef.current ? volumeRef.current!.value : 20)}
-          onChange={(ev) => {
-            let val = Number(ev.target.value);
-            if (!isNaN(val)) {
-              if (val < 0) {
-                val = 0;
-              }
-              if (val > 100) {
-                val = 100;
-              }
-              setOptions(o => ({
-                ...o, volume: val,
-              }));
-            }
-          }}
-          InputProps={{
-            startAdornment: <>
-              <InputAdornment position="start">
-                <Switch size='small' checked={'volume' in (options ?? {})} onChange={(_, checked) => {
-                  if (checked) {
-                    setOptions(o => ({
-                      ...(o ?? {}), volume: Number(volumeRef.current!.value),
-                    }));
-                  } else {
-                    setOptions(o => {
-                      const opts = o ?? {};
-                      delete opts.volume;
-                      if (Object.keys(opts).length === 0) {
-                        return null;
-                      }
-                      return { ...opts };
-                    });
-                  }
-                }}/>
-              </InputAdornment>
-            </>,
-            endAdornment: <>
-              <InputAdornment position="end">
-            %
-              </InputAdornment>
-            </>,
-          }}
-        />
         <TextField
           inputRef={alertDurationRef}
           fullWidth
@@ -354,84 +280,62 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       <FormSelectorGallery
         label="Media"
         type='image'
+        volume={0}
+        value={options?.mediaId}
+        onChange={(val) => {
+          if (val) {
+            setOptions(o => ({
+              ...(o ?? {}), mediaId: val,
+            }));
+          } else {
+            setOptions(o => {
+              const opts = o ?? {};
+              delete opts.mediaId;
+              if (Object.keys(opts).length === 0) {
+                return null;
+              }
+              return { ...opts };
+            });
+          }
+        }}
       />
 
       <FormSelectorGallery
         label="Audio"
         type='audio'
-      />
-
-      <TextField
-        inputRef={audioIdRef}
-        fullWidth
-        placeholder='Enter your customized audio url'
-        variant='filled'
-        label="Audio URL"
-        value={options?.audioId ?? (audioIdRef.current ? audioIdRef.current!.value : '')}
-        onChange={(ev) => {
-          const val = ev.target.value;
-          setOptions(o => ({
-            ...o, audioId: val,
-          }));
+        volume={options?.volume}
+        value={options?.audioId}
+        onVolumeChange={(val) => {
+          if (val !== null) {
+            setOptions(o => ({
+              ...(o ?? {}), volume: val,
+            }));
+          } else {
+            setOptions(o => {
+              const opts = o ?? {};
+              delete opts.volume;
+              if (Object.keys(opts).length === 0) {
+                return null;
+              }
+              return { ...opts };
+            });
+          }
         }}
-        InputProps={{
-          startAdornment: <>
-            <InputAdornment position="start">
-              <Switch  size='small' checked={'audioId' in (options ?? {})} onChange={(_, checked) => {
-                if (checked) {
-                  setOptions(o => ({
-                    ...(o ?? {}), audioId: audioIdRef.current!.value,
-                  }));
-                } else {
-                  setOptions(o => {
-                    const opts = o ?? {};
-                    delete opts.audioId;
-                    if (Object.keys(opts).length === 0) {
-                      return null;
-                    }
-                    return { ...opts };
-                  });
-                }
-              }}/>
-            </InputAdornment>
-          </>,
-        }}
-      />
-
-      <TextField
-        inputRef={mediaIdRef}
-        fullWidth
-        placeholder='Enter your customized image/video url'
-        variant='filled'
-        label="Image/Video URL"
-        value={options?.mediaId ?? (mediaIdRef.current ? mediaIdRef.current!.value : '')}
-        onChange={(ev) => {
-          const val = ev.target.value;
-          setOptions(o => ({
-            ...o, mediaId: val,
-          }));
-        }}
-        InputProps={{
-          startAdornment: <>
-            <InputAdornment position="start">
-              <Switch  size='small' checked={'mediaId' in (options ?? {})} onChange={(_, checked) => {
-                if (checked) {
-                  setOptions(o => ({
-                    ...(o ?? {}), mediaId: mediaIdRef.current!.value,
-                  }));
-                } else {
-                  setOptions(o => {
-                    const opts = o ?? {};
-                    delete opts.mediaId;
-                    if (Object.keys(opts).length === 0) {
-                      return null;
-                    }
-                    return { ...opts };
-                  });
-                }
-              }}/>
-            </InputAdornment>
-          </>,
+        onChange={(val) => {
+          if (val) {
+            setOptions(o => ({
+              ...(o ?? {}), audioId: val,
+            }));
+          } else {
+            setOptions(o => {
+              const opts = o ?? {};
+              delete opts.audioId;
+              if (Object.keys(opts).length === 0) {
+                return null;
+              }
+              return { ...opts };
+            });
+          }
         }}
       />
 
