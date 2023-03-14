@@ -1019,7 +1019,8 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       {runningAlert && <Box key={runningAlert.id} sx={runningAlert.alert.enableAdvancedMode
         ? {
           position: 'absolute',
-          width:    'max-content !important',
+          width:    '100% !important',
+          height:   '100% !important',
         }
         : {
           position:  'absolute',
