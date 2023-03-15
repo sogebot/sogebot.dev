@@ -8,7 +8,7 @@ import {
   FormControl,
   FormLabel, IconButton, InputAdornment, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Switch, TextField, Typography,
 } from '@mui/material';
-import { Alert } from '@sogebot/backend/dest/database/entity/alert';
+import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import axios from 'axios';
 import React, { useRef } from 'react';
 
@@ -47,15 +47,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
     : null;
 
   const [ selectedItemId, setSelectedItemId ] = React.useState<null | string>(parsedResponse?.groups ? parsedResponse.groups.uuid : null);
-  const [ options, setOptions ] = React.useState<null | {
-    volume?: number;
-    alertDuration? : number;
-    textDelay? : number;
-    layout? : number;
-    messageTemplate? : string;
-    audioId? : string;
-    mediaId? : string;
-  }>(parsedOptions);
+  const [ options, setOptions ] = React.useState<null | EmitData['customOptions']>(parsedOptions);
 
   const [ expand, setExpand ] = React.useState(false);
   const alertDurationRef = useRef<HTMLInputElement>();
