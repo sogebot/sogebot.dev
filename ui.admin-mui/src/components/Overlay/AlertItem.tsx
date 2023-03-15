@@ -827,9 +827,25 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
 
           let omitFilters = false;
           if (emitData.event === 'custom' && emitData.alertId) {
-            console.log('Alert is command redeem and triggers', emitData.alertId, 'by force');
             possibleAlerts = possibleAlerts.filter(o => o.id === emitData.alertId);
             omitFilters = true;
+
+            if (emitData.customOptions) {
+              console.log('Alert is command redeem and triggers', emitData.alertId, 'by force with custom options', emitData.customOptions);
+              // we are forcing new values into possible alerts
+              possibleAlerts = possibleAlerts.map(obj => ({
+                ...obj,
+                layout:             (emitData.customOptions?.layout ? String(emitData.customOptions?.layout) : obj.layout) as (typeof possibleAlerts)[number]['layout'],
+                soundVolume:        (emitData.customOptions?.volume ? emitData.customOptions?.volume : obj.soundVolume),
+                alertDurationInMs:  (emitData.customOptions?.alertDuration ? emitData.customOptions?.alertDuration : obj.alertDurationInMs),
+                alertTextDelayInMs: (emitData.customOptions?.textDelay ? emitData.customOptions?.textDelay : obj.alertTextDelayInMs),
+                messageTemplate:    (emitData.customOptions?.messageTemplate ? emitData.customOptions?.messageTemplate : obj.messageTemplate),
+                imageId:            (emitData.customOptions?.mediaId ? emitData.customOptions?.mediaId : obj.imageId),
+                soundId:            (emitData.customOptions?.audioId ? emitData.customOptions?.audioId : obj.soundId),
+              }));
+            } else {
+              console.log('Alert is command redeem and triggers', emitData.alertId, 'by force');
+            }
           }
           if (possibleAlerts.length > 0) {
             // filter variants
