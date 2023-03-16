@@ -57,6 +57,25 @@ export const RestAPI: React.FC<Props> = ({ id, opts }) => {
             <strong>POST</strong> {server}/api/overlays/countdown/{ id }/toggle<br/>Authorization: Bearer &lt;socketToken&gt;
           </Typography>
         </>}
+        {opts.typeId === 'stopwatch' && <>
+          <Typography>
+            <Typography component='span' variant='h6' sx={{ display: 'block' }}>Reset stopwatch to 0 and stops</Typography>
+            <strong>POST</strong> {server}/api/overlays/stopwatch/{ id }/resetAndStop
+            <br/>Authorization: Bearer &lt;socketToken&gt;
+          </Typography>
+          <Typography>
+            <Typography component='span' variant='h6' sx={{ display: 'block' }}>Start stopwatch</Typography>
+            <strong>POST</strong> {server}/api/overlays/stopwatch/{ id }/start<br/>Authorization: Bearer &lt;socketToken&gt;
+          </Typography>
+          <Typography>
+            <Typography component='span' variant='h6' sx={{ display: 'block' }}>Stop stopwatch</Typography>
+            <strong>POST</strong> {server}/api/overlays/stopwatch/{ id }/stop<br/>Authorization: Bearer &lt;socketToken&gt;
+          </Typography>
+          <Typography>
+            <Typography component='span' variant='h6' sx={{ display: 'block' }}>Toggle between start/stop</Typography>
+            <strong>POST</strong> {server}/api/overlays/stopwatch/{ id }/toggle<br/>Authorization: Bearer &lt;socketToken&gt;
+          </Typography>
+        </>}
       </Box>
     </AccordionDetails>
   </Accordion>;

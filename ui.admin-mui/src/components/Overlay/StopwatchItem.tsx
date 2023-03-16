@@ -1,8 +1,5 @@
-import { AbcTwoTone, HourglassBottomTwoTone } from '@mui/icons-material';
-import {
-  Box, Grow, IconButton,
-} from '@mui/material';
-import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
+import { Box } from '@mui/material';
+import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
 import React from 'react';
@@ -16,20 +13,18 @@ import {
 } from '../../constants';
 import { getSocket } from '../../helpers/socket';
 import { toBoolean } from '../../helpers/toBoolean';
-import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 
 let lastTimeSync = Date.now();
 let lastSave = Date.now();
 
-export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, groupId, selected }) => {
-  const [ show, setShow ] = React.useState('time');
+export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, groupId }) => {
   const [ model, setModel ] = React.useState(item);
   const [ isReady, setReady ] = React.useState(false);
   const [ threadId ] = React.useState(shortid());
 
   const enabled = React.useMemo(() => {
-    return isReady && (active ?? false) && model.isStartedOnSourceLoad && model.currentTime > 0;
+    return isReady && (active ?? false) && model.isStartedOnSourceLoad;
   }, [active, model, isReady]);
 
   React.useEffect(() => {
@@ -39,16 +34,10 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
   }, [active, item]);
 
   React.useEffect(() => {
-    if (model.showMessageWhenReachedZero && model.currentTime <= 0) {
-      setShow('text');
-    }
-  }, [ model ]);
-
-  React.useEffect(() => {
-    if (localStorage.getItem(`countdown-controller-${id}`) === threadId) {
-      localStorage.setItem(`countdown-controller-${id}-currentTime`, String(model.currentTime));
-      localStorage.setItem(`countdown-controller-${id}-currentTimeAt`, new Date().toISOString());
-      localStorage.setItem(`countdown-controller-${id}-enabled`, String(enabled));
+    if (localStorage.getItem(`stopwatch-controller-${id}`) === threadId) {
+      localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(model.currentTime));
+      localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
+      localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(enabled));
       if (model.isPersistent && Date.now() - lastSave > 10) {
         lastSave = Date.now();
         getSocket('/registries/overlays', true).emit('overlays::tick', {
@@ -67,31 +56,31 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
     latestModel.current = model;
   }, [enabled, model]);
   const update = () => {
-    if (localStorage.getItem(`countdown-controller-${id}`) !== threadId) {
+    if (localStorage.getItem(`stopwatch-controller-${id}`) !== threadId) {
       console.debug('Secondary');
-      console.debug(localStorage.getItem(`countdown-controller-${id}-enabled`));
+      console.debug(localStorage.getItem(`stopwatch-controller-${id}-enabled`));
 
       if (Date.now() - lastTimeSync > 1000 || !latestEnabled.current) {
       // get when it was set to get offset
         const currentTimeAt = latestEnabled.current
-          ? new Date(localStorage.getItem(`countdown-controller-${id}-currentTimeAt`) || Date.now()).getTime()
+          ? new Date(localStorage.getItem(`stopwatch-controller-${id}-currentTimeAt`) || Date.now()).getTime()
           : Date.now();
         if (lastTimeSync === currentTimeAt) {
           console.debug('No update, setting as controller');
-          localStorage.setItem(`countdown-controller-${id}`, threadId);
+          localStorage.setItem(`stopwatch-controller-${id}`, threadId);
         }
         lastTimeSync = currentTimeAt;
 
         setModel(o => ({
-          ...o, currentTime: Date.now() - currentTimeAt + Number(localStorage.getItem(`countdown-controller-${id}-currentTime`)),
+          ...o, currentTime: Date.now() - currentTimeAt + Number(localStorage.getItem(`stopwatch-controller-${id}-currentTime`)),
         }));
       }
 
       return;
     }
     console.debug('Primary');
-    getSocket('/overlays/countdown', true)
-      .emit('countdown::update', {
+    getSocket('/overlays/stopwatch', true)
+      .emit('stopwatch::update', {
         id:        id,
         isEnabled: latestEnabled.current,
         time:      latestModel.current.currentTime,
@@ -103,9 +92,9 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
             }));
           }
 
-          localStorage.setItem(`countdown-controller-${id}-currentTime`, String(latestModel.current.currentTime));
-          localStorage.setItem(`countdown-controller-${id}-currentTimeAt`, new Date().toISOString());
-          localStorage.setItem(`countdown-controller-${id}-enabled`, String(latestEnabled.current));
+          localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(latestModel.current.currentTime));
+          localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
+          localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(latestEnabled.current));
 
           if (data.time !== null) {
             setModel(o => ({
@@ -117,20 +106,13 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
   };
 
   React.useEffect(() => {
-    loadFont(model.countdownFont.family);
-    loadFont(model.messageFont.family);
+    loadFont(model.stopwatchFont.family);
 
     if (active) {
-      console.log(`====== COUNTDOWN (${threadId}) ======`);
+      console.log(`====== Stopwatch (${threadId}) ======`);
 
       // setting as controller (we don't care which one will control, it will be last one to load)
-      localStorage.setItem(`countdown-controller-${id}`, threadId);
-
-      if (!item.isPersistent) {
-        setModel(o => ({
-          ...o, currentTime: item.time,
-        }));
-      }
+      localStorage.setItem(`stopwatch-controller-${id}`, threadId);
     }
     setReady(true);
   }, [item]);
@@ -147,21 +129,17 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
 
   useIntervalWhen(() => {
     if (enabled) {
-      if (toBoolean(localStorage.getItem(`countdown-controller-${id}-enabled`) || false)) {
+      if (toBoolean(localStorage.getItem(`stopwatch-controller-${id}-enabled`) || false)) {
         setModel(o => ({
-          ...o, currentTime: o.currentTime - 10,
+          ...o, currentTime: o.currentTime + 10,
         }));
       }
     }
   }, 10, true, true);
 
   const font = React.useMemo(() => {
-    if (show === 'time') {
-      return model.countdownFont;
-    } else {
-      return model.messageFont;
-    }
-  }, [ show, model ]);
+    return model.stopwatchFont;
+  }, [ model ]);
 
   const time = React.useMemo(() => {
     const days = Math.floor(model.currentTime / DAY);
@@ -210,7 +188,6 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
         textAlign: 'right',
       },
     }}>
-
       <Box sx={{
         height:         'fit-content',
         width:          '100%',
@@ -218,20 +195,8 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
         textAlign:      'center',
         justifyContent: 'center',
       }}>
-        { show === 'time'
-          ? HTMLReactParser(time)
-          : model.messageWhenReachedZero
-        }
+        {HTMLReactParser(time)}
       </Box>
     </Box>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        <IconButton onClick={() => setShow('time')} sx={{ backgroundColor: show === 'time' ? `${theme.palette.primary.main}55` : undefined }} size='small'><HourglassBottomTwoTone/></IconButton>
-        {model.showMessageWhenReachedZero && <IconButton onClick={() => setShow('text')} sx={{ backgroundColor: show === 'text' ? `${theme.palette.primary.main}55` : undefined }}  size='small'><AbcTwoTone/></IconButton>}
-      </Box>
-    </Grow>
   </>;
 };

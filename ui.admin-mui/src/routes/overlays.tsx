@@ -16,6 +16,7 @@ import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { HTMLItem } from '../components/Overlay/HTMLItem';
 import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
+import { StopwatchItem } from '../components/Overlay/StopwatchItem';
 import { TTSItem } from '../components/Overlay/TTSItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
 import { WordcloudItem } from '../components/Overlay/WordcloudItem';
@@ -77,6 +78,7 @@ export default function Overlays() {
         {item.opts.typeId === 'alertsRegistry' && <AlertItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'chat' && <ChatItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'stopwatch' && <StopwatchItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'tts' && <TTSItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}

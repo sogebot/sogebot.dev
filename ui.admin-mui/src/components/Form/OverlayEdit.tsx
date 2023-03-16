@@ -31,6 +31,7 @@ import { Layers } from './Overlay/Layers';
 import { PollsSettings } from './Overlay/PollsSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
+import { StopwatchSettings } from './Overlay/StopwatchSettings';
 import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
@@ -52,6 +53,7 @@ import { HTMLItem } from '../Overlay/HTMLItem';
 import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
 import { PollsItem } from '../Overlay/PollsItem';
+import { StopwatchItem } from '../Overlay/StopwatchItem';
 import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
@@ -339,6 +341,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -372,7 +377,7 @@ export const OverlayEdit: React.FC = () => {
 
               {
                 selectedItem
-                  && ['countdown'].includes(selectedItem.opts.typeId)
+                  && ['countdown', 'stopwatch'].includes(selectedItem.opts.typeId)
                   && <RestAPI id={selectedItem.id} opts={selectedItem.opts}/>
               }
             </SimpleBar>
@@ -439,6 +444,7 @@ export const OverlayEdit: React.FC = () => {
                 >
                   {o.opts.typeId === 'alertsRegistry' && <AlertItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'stopwatch' && <StopwatchItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'polls' && <PollsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
