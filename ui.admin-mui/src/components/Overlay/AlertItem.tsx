@@ -315,7 +315,6 @@ const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: s
     {replacedText}
   </Box>;
 };
-
 const isResponsiveVoiceEnabled = () => {
   return new Promise<void>((resolve) => {
     const check = () => {
@@ -328,6 +327,52 @@ const isResponsiveVoiceEnabled = () => {
       }
     };
     check();
+  });
+};
+const fetchSound = (soundId: string) => {
+  loadedMedia.push(soundId);
+  return new Promise<void>(resolve => {
+    fetch(link(soundId), { headers: { 'Cache-Control': 'max-age=604800' } })
+      .then((response2) => {
+        if (!response2.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response2.blob();
+      })
+      .then(() => {
+        console.log(`Audio ${soundId} was found on server.`);
+        typeOfMedia.set(soundId || '', 'audio');
+      })
+      .catch((error) => {
+        typeOfMedia.set(soundId || '', null);
+        console.error(`Audio ${soundId} was not found on server.`);
+        console.error(error);
+      })
+      .finally(resolve);
+  });
+};
+const fetchImage = (imageId: string) => {
+  loadedMedia.push(imageId);
+  return new Promise<void>(resolve => {
+    fetch(link(imageId), { headers: { 'Cache-Control': 'max-age=604800' } })
+      .then(async (response2) => {
+        if (!response2.ok || !imageId) {
+          throw new Error('Network response was not ok');
+        }
+        const myBlob = await response2.blob();
+        console.log(`${myBlob.type.startsWith('video') ? 'Video' : 'Image'} ${imageId} was found on server.`);
+        typeOfMedia.set(imageId, myBlob.type.startsWith('video') ? 'video' : 'image');
+
+        if (imageId) {
+          getMeta(imageId, myBlob.type.startsWith('video') ? 'Video' : 'Image');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        typeOfMedia.set(imageId || '', null);
+        console.error(`Image/Video ${imageId} was not found on server.`);
+      })
+      .finally(resolve);
   });
 };
 
@@ -565,44 +610,10 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
               event.imageId = event.imageId === '_default_' ? '_default_image' : event.imageId;
 
               if (event.soundId && !loadedMedia.includes(event.soundId)) {
-                loadedMedia.push(event.soundId);
-                fetch(link(event.soundId), { headers: { 'Cache-Control': 'max-age=604800' } })
-                  .then((response2) => {
-                    if (!response2.ok) {
-                      throw new Error('Network response was not ok');
-                    }
-                    return response2.blob();
-                  })
-                  .then(() => {
-                    console.log(`Audio ${event.soundId} was found on server.`);
-                    typeOfMedia.set(event.soundId || '', 'audio');
-                  })
-                  .catch((error) => {
-                    typeOfMedia.set(event.soundId || '', null);
-                    console.error(`Audio ${event.soundId} was not found on server.`);
-                    console.error(error);
-                  });
+                fetchSound(event.soundId);
               }
               if (event.imageId && !loadedMedia.includes(event.imageId)) {
-                loadedMedia.push(event.imageId);
-                fetch(link(event.imageId), { headers: { 'Cache-Control': 'max-age=604800' } })
-                  .then(async (response2) => {
-                    if (!response2.ok || !event.imageId) {
-                      throw new Error('Network response was not ok');
-                    }
-                    const myBlob = await response2.blob();
-                    console.log(`${myBlob.type.startsWith('video') ? 'Video' : 'Image'} ${event.imageId} was found on server.`);
-                    typeOfMedia.set(event.imageId, myBlob.type.startsWith('video') ? 'video' : 'image');
-
-                    if (event.imageId) {
-                      getMeta(event.imageId, myBlob.type.startsWith('video') ? 'Video' : 'Image');
-                    }
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                    typeOfMedia.set(event.imageId || '', null);
-                    console.error(`Image/Video ${event.imageId} was not found on server.`);
-                  });
+                fetchImage(event.imageId);
               }
             }
             for (const [lang, isEnabled] of Object.entries(res.data.loadStandardProfanityList)) {
@@ -843,6 +854,14 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
                 imageId:            (emitData.customOptions?.mediaId ? emitData.customOptions?.mediaId : obj.imageId),
                 soundId:            (emitData.customOptions?.audioId ? emitData.customOptions?.audioId : obj.soundId),
               }));
+
+              if (emitData.customOptions?.audioId) {
+                await fetchSound(emitData.customOptions?.audioId);
+              }
+
+              if (emitData.customOptions?.mediaId) {
+                await fetchImage(emitData.customOptions?.mediaId);
+              }
             } else {
               console.log('Alert is command redeem and triggers', emitData.alertId, 'by force');
             }
