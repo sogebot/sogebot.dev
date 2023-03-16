@@ -55,6 +55,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 			"channel:manage:moderators",
 			"moderator:manage:banned_users",
 			"moderator:read:followers",
+			"bits:read",
 		}
 		// bot scopes
 		if strings.HasPrefix(state, "bot") {
@@ -73,6 +74,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 				"moderator:manage:banned_users",
 				"moderator:read:chatters",
 				"user:manage:whispers",
+				"bits:read",
 			}
 		}
 
