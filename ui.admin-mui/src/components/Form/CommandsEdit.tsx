@@ -6,7 +6,7 @@ import {
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, ButtonGroup, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, LinearProgress, Stack, TextField,
+  Autocomplete, Box, Button, ButtonGroup, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, InputAdornment, LinearProgress, Stack, TextField,
 } from '@mui/material';
 import { Commands, CommandsGroup } from '@sogebot/backend/dest/database/entity/commands';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -190,8 +190,8 @@ export const CommandsEdit: React.FC<{
 
   return(<>
     {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
+    <DialogContent>
+      <Collapse in={!loading} mountOnEnter unmountOnExit>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -251,28 +251,32 @@ export const CommandsEdit: React.FC<{
             }}
           />}
 
-          <Grid container columnSpacing={1}>
-            <Grid item xs={6}>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{
-                  position: 'relative', top: '-10px',
-                }}>
-                  {item?.enabled ? 'Command is enabled': 'Command is disabled'}
-                </FormHelperText>
-              </FormGroup>
-            </Grid>
-            <Grid item xs={6}>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox checked={item?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
-                <FormHelperText sx={{
-                  position: 'relative', top: '-10px',
-                }}>
-                  {item?.visible ? 'Command is visible': 'Command is hidden'}
-                </FormHelperText>
-              </FormGroup>
-            </Grid>
-          </Grid>
+          <Stack direction='row' spacing={1} px={2}>
+            <FormGroup sx={{ width: '100%' }}>
+              <FormControlLabel control={<Checkbox checked={item?.enabled || false} onChange={(event) => handleValueChange('enabled', event.target.checked)}/>} label={translate('enabled')} />
+              <FormHelperText sx={{
+                position: 'relative', top: '-10px',
+              }}>
+                {item?.enabled ? 'Command is enabled.': 'Command is disabled.'}
+              </FormHelperText>
+            </FormGroup>
+            <FormGroup sx={{ width: '100%' }}>
+              <FormControlLabel control={<Checkbox checked={item?.visible || false} onChange={(event) => handleValueChange('visible', event.target.checked)}/>} label={capitalize(translate('visible'))} />
+              <FormHelperText sx={{
+                position: 'relative', top: '-10px',
+              }}>
+                {item?.visible ? 'Command is visible.': 'Command is hidden.'}
+              </FormHelperText>
+            </FormGroup>
+            <FormGroup sx={{ width: '100%' }}>
+              <FormControlLabel control={<Checkbox checked={item?.areResponsesRandomized || false} onChange={(event) => handleValueChange('areResponsesRandomized', event.target.checked)}/>} label={capitalize('Randomized')} />
+              <FormHelperText sx={{
+                position: 'relative', top: '-10px',
+              }}>
+                {item?.areResponsesRandomized ? 'Commands responses will be randomized.': 'Command responses will be triggered in exact order.'}
+              </FormHelperText>
+            </FormGroup>
+          </Stack>
 
           <DragDropContext onDragEnd={onDragEndHandler}>
             <Droppable droppableId="droppable">
@@ -310,12 +314,9 @@ export const CommandsEdit: React.FC<{
             </Droppable>
           </DragDropContext>
         </Box>
-      </DialogContent>
-    </Collapse>
-    <Divider/>
-    <Box sx={{
-      p: 1, px: 3,
-    }}>
+      </Collapse>
+    </DialogContent>
+    <DialogActions>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
           <ButtonGroup color='light' variant='contained' aria-label="outlined primary button group">
@@ -332,6 +333,6 @@ export const CommandsEdit: React.FC<{
           </Stack>
         </Grid>
       </Grid>
-    </Box>
+    </DialogActions>
   </>);
 };

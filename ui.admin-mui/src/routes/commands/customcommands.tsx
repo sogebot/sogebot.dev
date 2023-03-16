@@ -104,6 +104,9 @@ const PageCommandsCommands = () => {
       columnName: 'visible', filtering: { type: 'boolean' }, table: { align: 'center' },
     },
     {
+      columnName: 'areResponsesRandomized', filtering: { type: 'boolean' }, table: { align: 'center' }, translation: 'Randomized',
+    },
+    {
       columnName: 'group',
       column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' /* ungrouped should be first */ },
       filtering:  {
@@ -376,7 +379,7 @@ const PageCommandsCommands = () => {
               for={['group']}
             />
             <BoolTypeProvider
-              for={['visible', 'enabled']}
+              for={['visible', 'enabled', 'areResponsesRandomized']}
             />
 
             <SortingState

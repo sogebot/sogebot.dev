@@ -846,6 +846,9 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
             } else {
               console.log('Alert is command redeem and triggers', emitData.alertId, 'by force');
             }
+          } else if (emitData.event === 'custom' && !emitData.alertId) {
+            blocked = false;
+            return console.error('Missing alertId for custom, skipping');
           }
           if (possibleAlerts.length > 0) {
             // filter variants
