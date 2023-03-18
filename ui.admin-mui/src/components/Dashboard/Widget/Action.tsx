@@ -6,6 +6,7 @@ import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { DashboardWidgetActionUnknownButton } from './Action/Buttons/UnknownButton';
 import { DashboardWidgetActionCommandButton } from './Action/CommandButton';
@@ -26,14 +27,14 @@ export const DashboardWidgetAction: React.FC = () => {
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
 
-  React.useEffect(() => {
+  useIntervalWhen(() => {
     if (ref.current) {
       const bodyRect = document.body.getBoundingClientRect();
       const elemRect = ref.current.getBoundingClientRect();
       const offset   = elemRect.top - bodyRect.top;
       setHeight(window.innerHeight - offset - 3);
     }
-  }, [ref]);
+  }, 1000, true, true);
 
   React.useEffect(() => {
     getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {

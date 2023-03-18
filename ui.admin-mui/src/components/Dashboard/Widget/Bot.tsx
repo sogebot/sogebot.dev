@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { DashboardWidgetBotChecklist } from './Bot/Checklist';
 import { DashboardWidgetBotCustom } from './Bot/Custom';
@@ -25,14 +26,14 @@ export const DashboardWidgetBot: React.FC = () => {
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
 
-  React.useEffect(() => {
+  useIntervalWhen(() => {
     if (ref.current) {
       const bodyRect = document.body.getBoundingClientRect();
       const elemRect = ref.current.getBoundingClientRect();
       const offset   = elemRect.top - bodyRect.top;
       setHeight(window.innerHeight - offset - 3);
     }
-  }, [ref]);
+  }, 1000, true, true);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);

@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -40,14 +41,16 @@ export const DashboardWidgetTwitch: React.FC = () => {
       }
       setRoom(val);
     });
+  }, []);
 
+  useIntervalWhen(() => {
     if (ref.current) {
       const bodyRect = document.body.getBoundingClientRect();
       const elemRect = ref.current.getBoundingClientRect();
       const offset   = elemRect.top - bodyRect.top;
       setHeight(window.innerHeight - offset - 3);
     }
-  }, [ref]);
+  }, 1000, true, true);
 
   const videoUrl = React.useMemo(() => {
     return `${window.location.protocol}//player.twitch.tv/?channel=${room}&autoplay=true&muted=true&parent=${window.location.hostname}`;
