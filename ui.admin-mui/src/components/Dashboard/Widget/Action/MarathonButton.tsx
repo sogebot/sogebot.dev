@@ -1,5 +1,9 @@
-import { Edit } from '@mui/icons-material';
-import { Popover } from '@mui/material';
+import {
+  AddTwoTone, Edit, RemoveTwoTone,
+} from '@mui/icons-material';
+import {
+  IconButton, InputAdornment, Popover,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayMarathonItem } from '@sogebot/backend/src/database/entity/dashboard';
@@ -25,9 +29,11 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
   const [ menuWidth, setMenuWidth ] = useState<string>('inherit');
   const open = Boolean(anchorEl);
 
+  const [ addTimeValue, setAddTimeValue ] = useState(0);
+
   const time = useMemo(() => {
     return GenerateTime(Math.max(timestamp - Date.now(), 0), marathon?.showMilliseconds ?? false);
-  }, [ timestamp, marathon ]);
+  }, [ timestamp, marathon, key ]);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     if (btnRef.current) {
@@ -56,12 +62,12 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
   }, [item.options.marathonId]);
 
   useIntervalWhen(() => {
+    setKey(Date.now());
     // get actual status of opened overlay
     if (marathon) {
       getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err, data) => {
-        setKey(Date.now());
         if (data && marathon) {
-          setTimestamp(Math.max(data.opts.endTime, Date.now()));
+          setTimestamp(Math.max(data.endTime, Date.now()));
         }
       });
     }
@@ -114,8 +120,13 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       <FormInputTime
         sx={{ width: menuWidth }}
         variant="filled"
-        value={0}
-        onChange={(value) => updateValue(value)}
+        value={addTimeValue}
+        onChange={setAddTimeValue}
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><IconButton onClick={() => updateValue(-addTimeValue)}><RemoveTwoTone/></IconButton></InputAdornment>,
+          endAdornment:   <InputAdornment position="end"><IconButton onClick={() => updateValue(addTimeValue)}><AddTwoTone/></IconButton></InputAdornment>,
+        }}
+
       />
     </Popover>
   </>

@@ -12,6 +12,7 @@
     "@emotion/styled": "latest",
     "@formkit/auto-animate": "^1.0.0-beta.6",
     "@hello-pangea/dnd": "^16.2.0",
+    "@jrwats/react-sparklines": "^1.7.8",
     "@mdi/js": "^7.1.96",
     "@mdi/react": "^1.6.1",
     "@monaco-editor/react": "^4.4.6",

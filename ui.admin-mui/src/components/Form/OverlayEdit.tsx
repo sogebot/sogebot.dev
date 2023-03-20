@@ -53,6 +53,7 @@ import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
 import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
+import { MarathonItem } from '../Overlay/MarathonItem';
 import { PollsItem } from '../Overlay/PollsItem';
 import { StopwatchItem } from '../Overlay/StopwatchItem';
 import { TTSItem } from '../Overlay/TTSItem';
@@ -413,7 +414,7 @@ export const OverlayEdit: React.FC = () => {
                 }}>
                 {item.items.map(o => <Paper
                   id={o.id.replace(/-/g, '')}
-                  key={`${o.id}`}
+                  key={`${o.id}-${JSON.stringify(o.opts) /* force refresh on opts change */}`}
                   onMouseDown={(e) => {
                     if (e.button !== 1) {
                       e.stopPropagation();
@@ -449,6 +450,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'alertsRegistry' && <AlertItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'stopwatch' && <StopwatchItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'marathon' && <MarathonItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'polls' && <PollsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}

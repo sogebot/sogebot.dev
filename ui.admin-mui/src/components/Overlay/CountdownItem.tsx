@@ -11,13 +11,11 @@ import shortid from 'shortid';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../constants';
 import { getSocket } from '../../helpers/socket';
 import { toBoolean } from '../../helpers/toBoolean';
 import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
+import { GenerateTime } from '../Dashboard/Widget/Action/GenerateTime';
 
 let lastTimeSync = Date.now();
 let lastSave = Date.now();
@@ -163,31 +161,6 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
     }
   }, [ show, model ]);
 
-  const time = React.useMemo(() => {
-    const days = Math.floor(model.currentTime / DAY);
-    const hours = Math.floor((model.currentTime - days * DAY) / HOUR);
-    const minutes = Math.floor((model.currentTime - (days * DAY) - (hours * HOUR)) / MINUTE);
-    const seconds = Math.floor((model.currentTime - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-    let millis: number | string = Math.floor((model.currentTime - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
-
-    if (millis < 10) {
-      millis = `0${millis}`;
-    }
-
-    let output = '';
-    if (days > 0) {
-      output += `${days}d`;
-    }
-
-    output += `<span>`;
-    output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    output += `</span>`;
-    if (model.showMilliseconds) {
-      output += `<small>.${millis}</small>`;
-    }
-    return output;
-  }, [ model ]);
-
   return <>
     <Box sx={{
       fontSize:              `${font.size}px`,
@@ -219,7 +192,7 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
         justifyContent: 'center',
       }}>
         { show === 'time'
-          ? HTMLReactParser(time)
+          ? HTMLReactParser(GenerateTime(model.currentTime, model.showMilliseconds))
           : model.messageWhenReachedZero
         }
       </Box>

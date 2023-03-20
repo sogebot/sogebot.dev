@@ -1,5 +1,5 @@
 import {
-  SxProps, TextField, Theme,
+  SxProps, TextField, TextFieldProps, Theme,
 } from '@mui/material';
 import React, {
   ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useState,
@@ -10,9 +10,14 @@ import {
 } from '../../../constants';
 
 export const FormInputTime: React.FC<{
-  label?: string, disabled?: boolean, sx?: SxProps<Theme>, variant?: 'filled' | 'outlined' | 'standard', value?: number, onChange?: (value: number) => void,
+  label?: string,
+  disabled?: boolean,
+  sx?: SxProps<Theme>,
+  variant?: 'filled' | 'outlined' | 'standard',
+  value?: number, onChange?: (value: number) => void,
+  InputProps?: TextFieldProps['InputProps']
 }> = ({
-  label, disabled, sx, variant, value, onChange,
+  label, disabled, sx, variant, value, onChange, InputProps,
 }) => {
   const [propsValue, setPropsValue] = useState(value || 0);
 
@@ -91,6 +96,7 @@ export const FormInputTime: React.FC<{
       value={outputValue}
       onChange={onChangeHandler}
       inputProps={{ onKeyDown: keydownHandler }}
+      InputProps={InputProps}
     />
   );
 };

@@ -5,17 +5,14 @@ import {
   FormHelperText,
   Stack,
   Switch,
-  TextField,
 } from '@mui/material';
 import { DateTimeValidationError } from '@mui/x-date-pickers';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
-import { useIntervalWhen } from 'rooks';
 
 import { AccordionTimeAdditions } from './MarathonSettings/TimeAdditions';
 import { dayjs } from '../../../helpers/dayjsHelper';
-import { timestampToObject } from '../../../helpers/getTime';
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
@@ -25,15 +22,6 @@ type Props = {
 
 export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const [ open, setOpen ] = React.useState('');
-
-  const [ timestamp, setTimestamp ] = React.useState(Date.now);
-  useIntervalWhen(() => {
-    setTimestamp(Date.now());
-  }, 1000, true, true);
-
-  const time = React.useMemo(() => {
-    return timestampToObject(Math.max(model.endTime - Date.now(), 0));
-  }, [model.endTime, timestamp]);
 
   const [ invalidDateError, setInvalidDateError ] = React.useState<DateTimeValidationError | null>(null);
 
@@ -53,56 +41,6 @@ export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
     <Divider/>
 
     <Stack spacing={0.5} sx={{ pt: 2 }}>
-      <Stack direction='row'>
-        <TextField
-          fullWidth
-          variant="filled"
-          type="number"
-          InputProps={{ disabled: true }}
-          value={time.days}
-          required
-          label={'Days'}
-          sx={{
-            '& .MuiInputBase-root': {
-              borderRadius: 0, borderLeftRightRadius: '4px',
-            },
-          }}
-        />
-        <TextField
-          fullWidth
-          variant="filled"
-          type="number"
-          InputProps={{ disabled: true }}
-          value={time.hours}
-          required
-          label={'Hours'}
-          sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
-        />
-        <TextField
-          fullWidth
-          variant="filled"
-          type="number"
-          InputProps={{ disabled: true }}
-          value={time.minutes}
-          required
-          label={'Minutes'}
-          sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
-        />
-        <TextField
-          fullWidth
-          variant="filled"
-          type="number"
-          InputProps={{ disabled: true }}
-          value={time.seconds}
-          required
-          label={'Seconds'}
-          sx={{
-            '& .MuiInputBase-root': {
-              borderRadius: 0, borderTopRightRadius: '4px',
-            },
-          }}
-        />
-      </Stack>
       <FormHelperText>To adjust time, use quickactions button</FormHelperText>
 
       <DateTimeField
