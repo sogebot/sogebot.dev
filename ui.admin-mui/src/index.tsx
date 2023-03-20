@@ -8,7 +8,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const Credentials = lazy(() => import('./routes/credentials'));
 const Root = lazy(() => import('./routes/root'));
-import Overlays from './routes/overlays';
+const Overlays = lazy(() => import('./routes/overlays'));
 import makeStore from './store/store';
 import theme from './theme';
 

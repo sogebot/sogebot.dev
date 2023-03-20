@@ -1,0 +1,173 @@
+import {
+  Box,
+  Divider,
+  FormControlLabel,
+  FormHelperText,
+  Stack,
+  Switch,
+  TextField,
+} from '@mui/material';
+import { DateTimeValidationError } from '@mui/x-date-pickers';
+import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
+import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
+import React from 'react';
+import { useIntervalWhen } from 'rooks';
+
+import { AccordionTimeAdditions } from './MarathonSettings/TimeAdditions';
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { timestampToObject } from '../../../helpers/getTime';
+import { AccordionFont } from '../../Accordion/Font';
+
+type Props = {
+  model: Marathon;
+  onUpdate: (value: Marathon) => void;
+};
+
+export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
+  const [ open, setOpen ] = React.useState('');
+
+  const [ timestamp, setTimestamp ] = React.useState(Date.now);
+  useIntervalWhen(() => {
+    setTimestamp(Date.now());
+  }, 1000, true, true);
+
+  const time = React.useMemo(() => {
+    return timestampToObject(Math.max(model.endTime - Date.now(), 0));
+  }, [model.endTime, timestamp]);
+
+  const [ invalidDateError, setInvalidDateError ] = React.useState<DateTimeValidationError | null>(null);
+
+  const errorMessage = React.useMemo(() => {
+    switch (invalidDateError) {
+      case 'invalidDate': {
+        return 'Your date is not valid';
+      }
+
+      default: {
+        return '';
+      }
+    }
+  }, [invalidDateError]);
+
+  return <>
+    <Divider/>
+
+    <Stack spacing={0.5} sx={{ pt: 2 }}>
+      <Stack direction='row'>
+        <TextField
+          fullWidth
+          variant="filled"
+          type="number"
+          InputProps={{ disabled: true }}
+          value={time.days}
+          required
+          label={'Days'}
+          sx={{
+            '& .MuiInputBase-root': {
+              borderRadius: 0, borderLeftRightRadius: '4px',
+            },
+          }}
+        />
+        <TextField
+          fullWidth
+          variant="filled"
+          type="number"
+          InputProps={{ disabled: true }}
+          value={time.hours}
+          required
+          label={'Hours'}
+          sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
+        />
+        <TextField
+          fullWidth
+          variant="filled"
+          type="number"
+          InputProps={{ disabled: true }}
+          value={time.minutes}
+          required
+          label={'Minutes'}
+          sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
+        />
+        <TextField
+          fullWidth
+          variant="filled"
+          type="number"
+          InputProps={{ disabled: true }}
+          value={time.seconds}
+          required
+          label={'Seconds'}
+          sx={{
+            '& .MuiInputBase-root': {
+              borderRadius: 0, borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      </Stack>
+      <FormHelperText>To adjust time, use quickactions button</FormHelperText>
+
+      <DateTimeField
+        label="Maximum end time"
+        defaultValue={model.maxEndTime ? dayjs(model.maxEndTime) : null}
+        onChange={(newValue: any) => {
+          const value = newValue?.$d?.getTime();
+          onUpdate({
+            ...model, maxEndTime: isNaN(value) ? null : value,
+          });
+          if (isNaN(value) ? null : value) {
+            setInvalidDateError(null);
+          }
+        }}
+        onError={(newError, value) => {
+          setInvalidDateError(newError);
+          if (value) {
+            if (newError) {
+              onUpdate({
+                ...model, maxEndTime: null,
+              });
+            }
+          }
+        }}
+        slotProps={{ textField: { helperText: errorMessage } }}
+      />
+
+      <Box sx={{ py: 2 }}>
+        <FormControlLabel sx={{
+          width: '100%', pt: 1,
+        }} control={<Switch checked={model.disableWhenReachedZero} onChange={(_, checked) => onUpdate({
+          ...model, disableWhenReachedZero: checked,
+        })} />} label='Disable when reached zero'/>
+        <FormControlLabel sx={{
+          width: '100%', pt: 1,
+        }} control={<Switch checked={model.showProgressGraph} onChange={(_, checked) => onUpdate({
+          ...model, showProgressGraph: checked,
+        })} />} label='Show progress graph'/>
+        <FormControlLabel sx={{
+          width: '100%', pt: 1,
+        }} control={<Switch checked={model.showMilliseconds} onChange={(_, checked) => onUpdate({
+          ...model, showMilliseconds: checked,
+        })} />} label='Show milliseconds'/>
+      </Box>
+      <AccordionTimeAdditions
+        model={model.values}
+        open={open}
+        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onChange={(val) => {
+          onUpdate({
+            ...model, values: val,
+          });
+        }}/>
+      <AccordionFont
+        disableExample
+        label='Marathon font'
+        accordionId='marathonFont'
+        model={model.marathonFont}
+        open={open}
+        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onChange={(val) => {
+          onUpdate({
+            ...model, marathonFont: val,
+          });
+        }}/>
+    </Stack>
+  </>;
+};

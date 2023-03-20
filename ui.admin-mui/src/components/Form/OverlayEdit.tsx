@@ -28,6 +28,7 @@ import { EmotesSettings } from './Overlay/EmotesSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
 import { HTMLSettings } from './Overlay/HTMLSettings';
 import { Layers } from './Overlay/Layers';
+import { MarathonSettings } from './Overlay/MarathonSettings';
 import { PollsSettings } from './Overlay/PollsSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
@@ -351,6 +352,9 @@ export const OverlayEdit: React.FC = () => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {

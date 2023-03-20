@@ -1,6 +1,8 @@
 import {
   AppBar, Backdrop, Box, CircularProgress, Fade, Grid, Slide, Toolbar,
 } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
@@ -151,7 +153,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 export default function Root() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { server, connectedToServer, state, tokensOnboardingState } = useSelector((s: any) => s.loader);
+  const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
 
   useEffect(() => {
@@ -174,7 +176,7 @@ export default function Root() {
       }, { passive: true });
     }
   }, [ element, dispatch, throttledFunction ]);
-  return <>
+  return <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={configuration.lang}>
     <ServerSelect/>
     <Version/>
     <LoginWarning/>
@@ -267,5 +269,5 @@ export default function Root() {
         </Box>
       </Fade>
     </>}
-  </>;
+  </LocalizationProvider>;
 }
