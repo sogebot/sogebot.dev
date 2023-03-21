@@ -55,6 +55,7 @@ import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
 import { MarathonItem } from '../Overlay/MarathonItem';
 import { PollsItem } from '../Overlay/PollsItem';
+import { StatsItem } from '../Overlay/StatsItem';
 import { StopwatchItem } from '../Overlay/StopwatchItem';
 import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
@@ -452,6 +453,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'stopwatch' && <StopwatchItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'marathon' && <MarathonItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'stats' && <StatsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'polls' && <PollsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
@@ -589,7 +591,6 @@ export const OverlayEdit: React.FC = () => {
                     }));
                   }}
                   onDrag={e => {
-                    console.log({ e });
                     setFrame(val => ({
                       translate: e.beforeTranslate, rotate: val.rotate,
                     }));

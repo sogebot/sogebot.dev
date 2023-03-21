@@ -17,6 +17,7 @@ import { HTMLItem } from '../components/Overlay/HTMLItem';
 import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { MarathonItem } from '../components/Overlay/MarathonItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
+import { StatsItem } from '../components/Overlay/StatsItem';
 import { StopwatchItem } from '../components/Overlay/StopwatchItem';
 import { TTSItem } from '../components/Overlay/TTSItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
@@ -87,6 +88,7 @@ export default function Overlays() {
         {item.opts.typeId === 'emotes' && <EmotesItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'eventlist' && <EventlistItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'url' && <UrlItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'stats' && <StatsItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'polls' && <PollsItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'html' && <HTMLItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}

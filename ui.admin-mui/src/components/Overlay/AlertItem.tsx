@@ -1,5 +1,5 @@
 import {
-  Box, Button, Grow, SxProps, Theme,
+  Box, Grow, SxProps, Theme,
 } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { AlertsRegistry } from '@sogebot/backend/dest/database/entity/overlay';
@@ -965,11 +965,6 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
     }
   }, 100, true, true );
 
-  const test = () => {
-    console.log('test');
-    console.log({ emotes });
-  };
-
   const preparedAdvancedHTML = React.useMemo(() => {
     if (alert && runningAlert) {
       // load CSS
@@ -1164,7 +1159,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
       <Box sx={{
         position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
       }}>
-        <Button size='small' onClick={test} variant='contained'>Test</Button>
+        {/*<Button size='small' onClick={test} variant='contained'>Test</Button>*/}
       </Box>
     </Grow>
   </Box>;

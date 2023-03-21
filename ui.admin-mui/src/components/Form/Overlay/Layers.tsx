@@ -86,7 +86,10 @@ export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUp
                 setOpen(o => !o);
                 popupState.close();
               }}>
-                {['alertsRegistry', 'chat', 'clipscarousel', 'countdown', 'emotesfireworks', 'emotes', 'eventlist', 'html', 'hypetrain', 'marathon', 'polls', 'stopwatch', 'tts', 'url', 'wordcloud'].map(o => <MenuItem key={o} onClick={(ev) => {
+                {[
+                  'alertsRegistry', 'chat', 'clipscarousel', 'countdown', 'emotesfireworks', 'emotes', 'eventlist',
+                  'html', 'hypetrain', 'marathon', 'polls', 'stopwatch', 'stats', 'tts', 'url', 'wordcloud',
+                ].map(o => <MenuItem key={o} onClick={(ev) => {
                   ev.stopPropagation();
                   ev.preventDefault();
                   onAdd(o as Overlay['items'][number]['opts']['typeId']);
