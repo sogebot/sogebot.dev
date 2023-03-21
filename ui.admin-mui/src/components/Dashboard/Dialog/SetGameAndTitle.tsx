@@ -246,9 +246,11 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
               {lastGames.map((game) => {
                 return (
                   <Grid sx={{
-                    padding: '0px !important', height: '130px', ...classes.parent,
+                    padding: '0px !important', ...classes.parent,
                   }} item key={game} xs={1} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
-                    <img style={{ width: '100%' }} title={game} alt={game} src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
+                    <img style={{
+                      width: '100%', height: '100%', 
+                    }} title={game} alt={game} src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
                     <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
                       <CheckSharp/>
                     </Backdrop>
