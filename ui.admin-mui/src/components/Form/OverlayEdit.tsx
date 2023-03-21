@@ -29,6 +29,7 @@ import { EventlistSettings } from './Overlay/EventlistSettings';
 import { HTMLSettings } from './Overlay/HTMLSettings';
 import { Layers } from './Overlay/Layers';
 import { MarathonSettings } from './Overlay/MarathonSettings';
+import { OBSWebsocketSettings } from './Overlay/OBSWebsocketSettings';
 import { PollsSettings } from './Overlay/PollsSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
@@ -54,6 +55,7 @@ import { HTMLItem } from '../Overlay/HTMLItem';
 import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
 import { MarathonItem } from '../Overlay/MarathonItem';
+import { OBSWebsocketItem } from '../Overlay/OBSWebsocketItem';
 import { PollsItem } from '../Overlay/PollsItem';
 import { StatsItem } from '../Overlay/StatsItem';
 import { StopwatchItem } from '../Overlay/StopwatchItem';
@@ -359,6 +361,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -452,6 +457,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'countdown' && <CountdownItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'stopwatch' && <StopwatchItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'marathon' && <MarathonItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'obswebsocket' && <OBSWebsocketItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'chat' && <ChatItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'stats' && <StatsItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'tts' && <TTSItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}

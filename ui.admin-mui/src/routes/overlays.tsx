@@ -16,6 +16,7 @@ import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { HTMLItem } from '../components/Overlay/HTMLItem';
 import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { MarathonItem } from '../components/Overlay/MarathonItem';
+import { OBSWebsocketItem } from '../components/Overlay/OBSWebsocketItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
 import { StatsItem } from '../components/Overlay/StatsItem';
 import { StopwatchItem } from '../components/Overlay/StopwatchItem';
@@ -82,6 +83,7 @@ export default function Overlays() {
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'stopwatch' && <StopwatchItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'marathon' && <MarathonItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'obswebsocket' && <OBSWebsocketItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'tts' && <TTSItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
