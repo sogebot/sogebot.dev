@@ -59,7 +59,6 @@ import PageSettingsModulesSystemsLevels from '../../components/Settings/Systems/
 import PageSettingsModulesSystemsModeration from '../../components/Settings/Systems/moderation';
 import PageSettingsModulesSystemsModules from '../../components/Settings/Systems/modules';
 import PageSettingsModulesSystemsPoints from '../../components/Settings/Systems/points';
-import PageSettingsModulesSystemsPolls from '../../components/Settings/Systems/polls';
 import PageSettingsModulesSystemsRaffles from '../../components/Settings/Systems/raffles';
 import PageSettingsModulesSystemsScrim from '../../components/Settings/Systems/scrim';
 import PageSettingsModulesSystemsSongs from '../../components/Settings/Systems/songs';
@@ -141,7 +140,6 @@ const PageSettingsModules = () => {
                 'levels',
                 'moderation',
                 'points',
-                'polls',
                 'raffles',
                 'scrim',
                 'songs',
@@ -218,7 +216,6 @@ const PageSettingsModules = () => {
                 <PageSettingsModulesSystemsLevels onVisible={() => setActiveTab('systems-levels')}/>
                 <PageSettingsModulesSystemsModeration onVisible={() => setActiveTab('systems-moderation')}/>
                 <PageSettingsModulesSystemsPoints onVisible={() => setActiveTab('systems-points')}/>
-                <PageSettingsModulesSystemsPolls onVisible={() => setActiveTab('systems-polls')}/>
                 <PageSettingsModulesSystemsRaffles onVisible={() => setActiveTab('systems-raffles')}/>
                 <PageSettingsModulesSystemsScrim onVisible={() => setActiveTab('systems-scrim')}/>
                 <PageSettingsModulesSystemsSongs onVisible={() => setActiveTab('systems-songs')}/>

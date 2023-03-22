@@ -1,8 +1,7 @@
 import {
   Box, Fade, LinearProgress, Stack, SxProps, Theme, Typography,
 } from '@mui/material';
-import { Polls } from '@sogebot/backend/dest/database/entity/overlay';
-import HTMLReactParser from 'html-react-parser';
+import { Polls } from '@sogebot/backend/src/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -13,6 +12,25 @@ import { dayjs, setLocale } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
+const testValues = {
+  'id':      'ed961efd-8a3f-4cf5-a9d0-e616c590cd2a',
+  'title':   'Heads or Tails?',
+  'choices': [
+    {
+      'id':         '4c123012-1351-4f33-84b7-43856e7a0f47',
+      'title':      'Heads',
+      'totalVotes': 452,
+    },
+    {
+      'id':         '279087e3-54a7-467e-bcd0-c1393fcea4f0',
+      'title':      'Tails',
+      'totalVotes': 101,
+    },
+  ],
+  'endDate':   new Date(Date.now() + 60 * 10000).toISOString(),
+  'startDate': new Date().toISOString(),
+};
+
 export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   // initialize socket
   getSocket('/overlays/polls', true);
@@ -21,30 +39,11 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   const lang = useSelector((state: any) => state.loader.configuration.lang );
 
   const [ ended, setEnded ] = React.useState(false);
-  const [ voteCommand, setVoteCommand ] = React.useState('!vote');
   const [ currentTime, setCurrentTime ] = React.useState(Date.now());
   const [ lastUpdatedAt, setLastUpdatedAt ] = React.useState(0);
-  const [ currentVote, setCurrentVote ] = React.useState<any | null>(active ? null : {
-    type:     'normal',
-    title:    'What is my question?',
-    openedAt: new Date().toISOString(),
-    closedAt: null,
-    options:  [
-      'yes', 'no', 'maybe',
-    ],
-    votes: [{
-      votedBy: 'test',
-      votes:   1,
-      option:  1,
-    }, {
-      votedBy: 'test',
-      votes:   2,
-      option:  0,
-    }],
-  });
+  const [ currentVote, setCurrentVote ] = React.useState<typeof testValues | null>(active ? null : testValues);
 
   React.useEffect(() => {
-    console.log({ lang });
     setLocale(lang);
   }, [lang]);
 
@@ -53,17 +52,16 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   }, 100, true, true);
 
   useIntervalWhen(() => {
-    getSocket('/overlays/polls', true).emit('data', (cb) => {
+    getSocket('/overlays/polls', true).emit('data', (data) => {
+      console.log({ data });
       // force show if new vote
       if (currentVote === null) {
         setLastUpdatedAt(Date.now());
       }
-      if (currentVote?.votes && cb?.votes) {
-        if (!isEqual(currentVote.votes, cb.votes)) {
-          setLastUpdatedAt(Date.now());
-        }
+      if (!isEqual(currentVote?.choices, data?.choices)) {
+        setLastUpdatedAt(Date.now());
       }
-      if (!cb) {
+      if (!data) {
         if (!ended) {
           setEnded(true);
         } else {
@@ -71,29 +69,29 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
         }
       } else {
         setEnded(false);
-        setCurrentVote(cb);
+        setCurrentVote(data);
       }
     });
   }, 5000, active === true, true);
 
   const inactivityTime = React.useMemo(() => currentTime - lastUpdatedAt, [ currentTime, lastUpdatedAt ]);
-  const activeTime = React.useMemo(() => new Date(currentVote?.openedAt ?? 0).getTime(), [ currentVote ]);
+  const activeTime = React.useMemo(() => new Date(currentVote?.startDate ?? 0).getTime(), [ currentVote ]);
 
   const totalVotes = React.useMemo(() => {
-    const votes = currentVote?.votes || 0;
+    const votes = (currentVote?.choices || []).map(o => o.totalVotes);
     let _votes = 0;
     for (let i = 0, length = votes.length; i < length; i++) {
-      _votes += votes[i].votes;
+      _votes += votes[i];
     }
     return _votes;
   }, [ currentVote ]);
 
   const getPercentage = React.useCallback((index: number, toFixed?: number) => {
-    const votes = currentVote?.votes || 0;
+    const votes = (currentVote?.choices || []).map(o => o.totalVotes);
     let _votes = 0;
     for (let i = 0, length = votes.length; i < length; i++) {
-      if (votes[i].option === index) {
-        _votes += votes[i].votes;
+      if (i === index) {
+        _votes += votes[i];
       }
     }
     return Number((100 / totalVotes) * _votes || 0).toFixed(toFixed || 0);
@@ -101,7 +99,6 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
 
   React.useEffect(() => {
     console.log('====== POLLS ======');
-    getSocket('/overlays/polls', true).emit('getVoteCommand', (cmd: string) => setVoteCommand(cmd));
   }, []);
 
   const theme = React.useMemo<SxProps<Theme> | undefined>(() => {
@@ -125,10 +122,6 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
         '& .title': {
           fontWeight: 'bold',
           fontSize:   '1.2rem',
-        },
-        '& .helper': {
-          textAlign:  'center',
-          paddingTop: '0.5rem',
         },
         '& .space':     { pt: 2 },
         '& .highlight': {
@@ -168,10 +161,6 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
           fontWeight: 'bold',
           fontSize:   '1.2rem',
         },
-        '& .helper': {
-          textAlign:  'center',
-          paddingTop: '0.5rem',
-        },
         '& .space':     { pt: 2 },
         '& .highlight': {
           fontWeight: 'bold', color: 'rgb(100 100 100)',
@@ -210,10 +199,6 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
           fontWeight: 'bold',
           fontSize:   '1.2rem',
         },
-        '& .helper': {
-          textAlign:  'center',
-          paddingTop: '0.5rem',
-        },
         '& .space':     { pt: 2 },
         '& .highlight': {
           fontWeight: 'bold', color: 'rgb(150 150 150)',
@@ -238,6 +223,8 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
     width:         '100%',
     textTransform: 'initial',
     display:       'grid',
+    overflow:      'hidden',
+    wordBreak:     'break-all',
     alignItems:    item.align === 'bottom' ? 'end' : 'start',
   }}>
     <Fade in={
@@ -246,31 +233,14 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
       {currentVote !== null ? <Box sx={{ ...theme }}>
         <Typography className='title'>{currentVote.title}</Typography>
 
-        {currentVote.type === 'normal' && <Typography className='helper'>
-          { translate('systems.polls.overlay.type') } <kbd>{ voteCommand } 1</kbd>, <kbd>{ voteCommand } 2</kbd>,
-          { translate('systems.polls.overlay.inChatToVote') }
-        </Typography>}
-        {currentVote.type === 'numbers' && <Typography className='helper'>
-          { translate('systems.polls.overlay.type') } <kbd>1</kbd>, <kbd>2</kbd>,
-          { translate('systems.polls.overlay.inChatToVote') }
-        </Typography>}
-        {currentVote.type === 'tips' && <Typography className='helper'>
-          { translate('systems.polls.overlay.add') } <kbd>#vote1</kbd>, <kbd>#vote2</kbd>,
-          { HTMLReactParser(translate('systems.polls.overlay.toYourMessage').replace('$type', translate('systems.polls.overlay.tips')))}
-        </Typography>}
-        {currentVote.type === 'bits' && <Typography className='helper'>
-          { translate('systems.polls.overlay.add') } <kbd>#vote1</kbd>, <kbd>#vote2</kbd>,
-          { HTMLReactParser(translate('systems.polls.overlay.toYourMessage').replace('$type', translate('systems.polls.overlay.bits')))}
-        </Typography>}
-
         <Box className='space'/>
 
-        {currentVote.options.map((option: string, index: number) => <Box key={index}>
+        {currentVote.choices.map((option, index: number) => <Box key={index}>
           <Stack direction='row'>
             <Typography className='number'>{index+1}</Typography>
             <Stack sx={{ width: '100%' }} spacing={0.5}>
               <Stack direction='row' justifyContent='space-between' >
-                <Typography className='option'>{option}</Typography>
+                <Typography className='option'>{option.title}</Typography>
                 <Typography className='percentage'>{ getPercentage(index, 1) }%</Typography>
               </Stack>
               <LinearProgress className='progress' variant="determinate" value={Number(getPercentage(index))} />
@@ -285,10 +255,7 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
             { translate('systems.polls.totalVotes') }
             {' '}
             <Typography component='span' className='highlight'>
-              {currentVote.type === 'tips'
-                ?  Number(totalVotes).toFixed(1)
-                :  totalVotes
-              }
+              {totalVotes}
             </Typography>
           </Typography>
           <Typography>
