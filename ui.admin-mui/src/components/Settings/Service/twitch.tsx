@@ -74,14 +74,31 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       return '';
     }
 
-    const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast moderator:read:chatters';
+    const scopes = [
+      'clips:edit',
+      'user:edit:broadcast',
+      'user:read:broadcast',
+      'chat:read',
+      'chat:edit',
+      'channel:moderate',
+      'whispers:read',
+      'whispers:edit',
+      'channel:edit:commercial',
+      'moderator:manage:announcements',
+      'moderator:manage:chat_messages',
+      'moderator:manage:banned_users',
+      'moderator:read:chatters',
+      'user:manage:whispers',
+      'bits:read',
+    ];
+
     const clientId = settings.general.tokenServiceCustomClientId[0];
     const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
 
     if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
       return null;
     } else {
-      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}&type=bot`;
+      return `${redirectUri}?scope=${scopes.join(' ')}&clientId=${clientId}&clientSecret=${clientSecret}&type=bot`;
     }
   }, [settings, redirectUri ]);
 
@@ -90,14 +107,35 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       return '';
     }
 
-    const scope = 'scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast user:edit:broadcast moderator:read:chatters';
+    const scopes = [
+      'channel_editor',
+      'chat:read',
+      'chat:edit',
+      'channel:moderate',
+      'channel:read:subscriptions',
+      'channel:manage:vips',
+      'user:edit:broadcast',
+      'user:read:broadcast',
+      'channel:edit:commercial',
+      'channel:read:redemptions',
+      'moderation:read',
+      'channel:read:hype_train',
+      'moderator:read:chatters',
+      'channel:read:polls',
+      'channel:manage:polls',
+      'channel:manage:predictions',
+      'channel:manage:moderators',
+      'moderator:manage:banned_users',
+      'moderator:read:followers',
+      'bits:read',
+    ];
     const clientId = settings.general.tokenServiceCustomClientId[0];
     const clientSecret = settings.general.tokenServiceCustomClientSecret[0];
 
     if (settings.general.tokenService[0] === 'SogeBot Token Generator v2') {
       return null;
     } else {
-      return `${redirectUri}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}&type=broadcaster`;
+      return `${redirectUri}?scope=${scopes.join(' ')}&clientId=${clientId}&clientSecret=${clientSecret}&type=broadcaster`;
     }
   }, [settings, redirectUri ]);
 
