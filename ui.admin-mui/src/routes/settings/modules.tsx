@@ -50,7 +50,6 @@ import PageSettingsModulesIntegrationsTipeeestream from '../../components/Settin
 import PageSettingsModulesServiceGoogle from '../../components/Settings/Service/google';
 import PageSettingsModulesServiceTwitch from '../../components/Settings/Service/twitch';
 import PageSettingsModulesSystemsAntihateRaid from '../../components/Settings/Systems/antihateraid';
-import PageSettingsModulesSystemsBets from '../../components/Settings/Systems/bets';
 import PageSettingsModulesSystemsChecklist from '../../components/Settings/Systems/checklist';
 import PageSettingsModulesSystemsCooldown from '../../components/Settings/Systems/cooldown';
 import PageSettingsModulesSystemsEmotesCombo from '../../components/Settings/Systems/emotescombo';
@@ -132,7 +131,6 @@ const PageSettingsModules = () => {
 
             {type === `systems` && <>
               {['antihateraid',
-                'bets',
                 'checklist',
                 'cooldown',
                 'emotescombo',
@@ -208,7 +206,6 @@ const PageSettingsModules = () => {
               {type === `systems` && <>
                 <PageSettingsModulesSystemsModules onVisible={() => setActiveTab('systems-modules')}/>
                 <PageSettingsModulesSystemsAntihateRaid onVisible={() => setActiveTab('systems-antihateraid')}/>
-                <PageSettingsModulesSystemsBets onVisible={() => setActiveTab('systems-bets')}/>
                 <PageSettingsModulesSystemsChecklist onVisible={() => setActiveTab('systems-checklist')}/>
                 <PageSettingsModulesSystemsCooldown onVisible={() => setActiveTab('systems-cooldown')}/>
                 <PageSettingsModulesSystemsEmotesCombo onVisible={() => setActiveTab('systems-emotescombo')}/>
