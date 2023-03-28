@@ -94,7 +94,7 @@ const PageSettingsPermissions = () => {
       return;
     }
     const viewers = cloneDeep(items.find(o => o.id === defaultPermissions.VIEWERS));
-    const sorted = sortBy(items.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc').map((o, idx) => ({
+    const sorted = (sortBy(items.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc') as Permissions[]).map((o, idx) => ({
       ...o, order: idx,
     })) as Permissions[];
     if (viewers) {

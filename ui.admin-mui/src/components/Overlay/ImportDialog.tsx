@@ -46,7 +46,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
     return orderBy(remoteOverlays?.filter(o =>
       o.name.toLowerCase().includes(search.toLowerCase())
       || o.description.toLowerCase().includes(search.toLowerCase()),
-    ), order, orderAsc ? 'asc' : 'desc');
+    ), order, orderAsc ? 'asc' : 'desc') as RemoteOverlay[];
   }, [search, remoteOverlays, order, orderAsc]);
   const pagedRemoteOverlays = React.useMemo(() => {
     return chunk(filteredRemoteOverlays, 5)[page - 1];
