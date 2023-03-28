@@ -123,6 +123,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       'channel:read:hype_train',
       'moderator:read:chatters',
       'channel:read:polls',
+      'channel:read:predictions',
       'channel:manage:polls',
       'channel:manage:predictions',
       'channel:manage:moderators',
