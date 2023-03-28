@@ -50,6 +50,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 			"channel:read:hype_train",
 			"moderator:read:chatters",
 			"channel:read:polls",
+			"channel:read:predictions",
 			"channel:manage:polls",
 			"channel:manage:predictions",
 			"channel:manage:moderators",
