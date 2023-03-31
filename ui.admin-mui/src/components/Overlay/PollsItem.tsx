@@ -31,6 +31,32 @@ const testValues = {
   'startDate': new Date().toISOString(),
 };
 
+const testValuesBet = {
+  'id':            'ad961efd-8a3f-4cf5-a9d0-e616c590cd2a',
+  'title':         'Is this prediction?',
+  'autoLockAfter': new Date(Date.now() + 60000).toISOString(),
+  'creationDate':  new Date().toISOString(),
+  'lockDate':      null,
+  'outcomes':      [
+    {
+      'id':                 '5c123012-1351-4f33-84b7-43856e7a0f47',
+      'title':              'Yes',
+      'totalChannelPoints': 452,
+      'users':              5,
+      color:                'BLUE',
+    },
+    {
+      'id':                 '379087e3-54a7-467e-bcd0-c1393fcea4f0',
+      'title':              'No',
+      'totalChannelPoints': 222,
+      'users':              100,
+      color:                'PINK',
+    },
+  ],
+  'winningOutcomeId': null,
+  'winningOutcome':   null,
+};
+
 export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   // initialize socket
   getSocket('/overlays/polls', true);
@@ -43,6 +69,10 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   const [ lastUpdatedAt, setLastUpdatedAt ] = React.useState(0);
   const [ currentVote, setCurrentVote ] = React.useState<typeof testValues | null>(active ? null : testValues);
 
+  const [ currentPrediction, setCurrentPrediction ] = React.useState<typeof testValuesBet | null>(active ? null : testValuesBet);
+  const [ predictionUpdatedAt, setPredictionUpdatedAt ] = React.useState(0);
+  const [ predictionEnded, setPredictionEnded ] = React.useState(false);
+
   React.useEffect(() => {
     setLocale(lang);
   }, [lang]);
@@ -53,7 +83,6 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
 
   useIntervalWhen(() => {
     getSocket('/overlays/polls', true).emit('data', (data) => {
-      console.log({ data });
       // force show if new vote
       if (currentVote === null) {
         setLastUpdatedAt(Date.now());
@@ -72,10 +101,33 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
         setCurrentVote(data);
       }
     });
+    getSocket('/overlays/bets', true).emit('data', (data) => {
+      if (currentPrediction === null) {
+        setPredictionUpdatedAt(Date.now());
+      }
+      if (!isEqual(currentPrediction?.outcomes, data?.outcomes)) {
+        setPredictionUpdatedAt(Date.now());
+      }
+      if (!data) {
+        if (!predictionEnded) {
+          setPredictionEnded(true);
+        } else {
+          setCurrentPrediction(null);
+        }
+      } else {
+        setPredictionEnded(false);
+        setCurrentPrediction(data);
+      }
+    });
   }, 5000, active === true, true);
 
   const inactivityTime = React.useMemo(() => currentTime - lastUpdatedAt, [ currentTime, lastUpdatedAt ]);
   const activeTime = React.useMemo(() => new Date(currentVote?.startDate ?? 0).getTime(), [ currentVote ]);
+
+  const predictionInactivityTime = React.useMemo(() => currentTime - predictionUpdatedAt, [ currentTime, predictionUpdatedAt ]);
+  const predictionRemainingTime = React.useMemo(() => new Date(
+    new Date(currentPrediction?.autoLockAfter ?? Date.now()).getTime() - currentTime).getTime()
+  , [ currentPrediction, currentTime ]);
 
   const totalVotes = React.useMemo(() => {
     const votes = (currentVote?.choices || []).map(o => o.totalVotes);
@@ -86,19 +138,30 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
     return _votes;
   }, [ currentVote ]);
 
-  const getPercentage = React.useCallback((index: number, toFixed?: number) => {
-    const votes = (currentVote?.choices || []).map(o => o.totalVotes);
+  const totalPoints = React.useMemo(() => {
+    const votes = (currentPrediction?.outcomes || []).map(o => o.totalChannelPoints);
+    let _votes = 0;
+    for (let i = 0, length = votes.length; i < length; i++) {
+      _votes += votes[i];
+    }
+    return _votes;
+  }, [ currentPrediction ]);
+
+  const getPercentage = React.useCallback((index: number, toFixed?: number, isPrediction = false) => {
+    const votes = isPrediction
+      ? (currentPrediction?.outcomes || []).map(o => o.totalChannelPoints)
+      : (currentVote?.choices || []).map(o => o.totalVotes);
     let _votes = 0;
     for (let i = 0, length = votes.length; i < length; i++) {
       if (i === index) {
         _votes += votes[i];
       }
     }
-    return Number((100 / totalVotes) * _votes || 0).toFixed(toFixed || 0);
-  }, [ currentVote, totalVotes ]);
+    return Number((100 / (isPrediction ? totalPoints : totalVotes)) * _votes || 0).toFixed(toFixed || 0);
+  }, [ currentVote, currentPrediction, totalVotes, totalPoints ]);
 
   React.useEffect(() => {
-    console.log('====== POLLS ======');
+    console.log('====== POLLS AND PREDICTIONS ======');
   }, []);
 
   const theme = React.useMemo<SxProps<Theme> | undefined>(() => {
@@ -227,7 +290,7 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
     wordBreak:     'break-all',
     alignItems:    item.align === 'bottom' ? 'end' : 'start',
   }}>
-    <Fade in={
+    <Fade  mountOnEnter unmountOnExit in={
       !ended && currentVote !== null && (!item.hideAfterInactivity || (item.hideAfterInactivity && inactivityTime < item.inactivityTime))
     }>
       {currentVote !== null ? <Box sx={{ ...theme }}>
@@ -263,6 +326,48 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
             {' '}
             <Typography component='span' className='highlight'>
               { dayjs().from(dayjs(activeTime), true) }
+            </Typography>
+          </Typography>
+        </Stack>
+      </Box>
+        : <Box/>}
+    </Fade>
+
+    <Fade mountOnEnter unmountOnExit in={
+      !predictionEnded && currentPrediction !== null && (!item.hideAfterInactivity || (item.hideAfterInactivity && predictionInactivityTime < item.inactivityTime))
+    }>
+      {currentPrediction !== null ? <Box sx={{ ...theme }}>
+        <Typography className='title'>
+          {currentPrediction.title}
+          {currentPrediction.lockDate
+            ? <Typography component='div'>Submissions closed</Typography>
+            : currentPrediction.autoLockAfter && <Typography component='div'>Submissions closing in {dayjs().from(dayjs(predictionRemainingTime), true)}</Typography>
+          }
+        </Typography>
+
+        <Box className='space'/>
+
+        {currentPrediction.outcomes.map((option, index: number) => <Box key={index}>
+          <Stack direction='row'>
+            <Typography className='number'>{index+1}</Typography>
+            <Stack sx={{ width: '100%' }} spacing={0.5}>
+              <Stack direction='row' justifyContent='space-between' >
+                <Typography className='option'>{option.title}</Typography>
+                <Typography className='percentage'>{ getPercentage(index, 1, true) }%</Typography>
+              </Stack>
+              <LinearProgress className='progress' variant="determinate" value={Number(getPercentage(index, undefined, true))} />
+            </Stack>
+          </Stack>
+        </Box>)}
+
+        <Box className='space'/>
+
+        <Stack direction={'row'} className='footer'>
+          <Typography>
+            { translate('systems.polls.totalPoints') }
+            {' '}
+            <Typography component='span' className='highlight'>
+              {totalPoints}
             </Typography>
           </Typography>
         </Stack>
