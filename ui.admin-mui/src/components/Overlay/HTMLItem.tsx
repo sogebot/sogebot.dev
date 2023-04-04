@@ -34,7 +34,7 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active }) => {
         }
       }
     });
-  }, 2000, (item.html.includes('$_') || item.javascript.includes('$_')), true);
+  }, 2000, true, true);
 
   React.useEffect(() => {
     if (active) {
