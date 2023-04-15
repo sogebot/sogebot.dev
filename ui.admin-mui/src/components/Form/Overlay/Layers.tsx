@@ -89,6 +89,7 @@ export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUp
                 {[
                   'alertsRegistry', 'chat', 'clipscarousel', 'countdown', 'emotesfireworks', 'emotes', 'eventlist',
                   'html', 'hypetrain', 'marathon', 'polls', 'stopwatch', 'stats', 'tts', 'url', 'wordcloud', 'obswebsocket',
+                  'randomizer',
                 ].map(o => <MenuItem key={o} onClick={(ev) => {
                   ev.stopPropagation();
                   ev.preventDefault();

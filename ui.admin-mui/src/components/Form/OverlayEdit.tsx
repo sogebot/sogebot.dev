@@ -57,6 +57,7 @@ import { ImportDialog } from '../Overlay/ImportDialog';
 import { MarathonItem } from '../Overlay/MarathonItem';
 import { OBSWebsocketItem } from '../Overlay/OBSWebsocketItem';
 import { PollsItem } from '../Overlay/PollsItem';
+import { RandomizerItem } from '../Overlay/RandomizerItem';
 import { StatsItem } from '../Overlay/StatsItem';
 import { StopwatchItem } from '../Overlay/StopwatchItem';
 import { TTSItem } from '../Overlay/TTSItem';
@@ -469,6 +470,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'html' && <HTMLItem item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'hypetrain' && <HypeTrainItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'url' && <UrlItem item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'randomizer' && <RandomizerItem item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'wordcloud' && <WordcloudItem item={o.opts} groupId={id!} id={o.id}/>}
                   <Box sx={{
                     position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 1,
