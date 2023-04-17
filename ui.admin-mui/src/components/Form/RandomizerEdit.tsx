@@ -9,7 +9,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box, Button, Card, Collapse, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography,
+  Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography,
 } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
@@ -32,6 +32,48 @@ import { isHexColor } from '../../validators';
 import { AccordionFont } from '../Accordion/Font';
 import { AccordionPosition } from '../Accordion/Position';
 import { AccordionTTS } from '../Accordion/TTS';
+
+export const generateItems = (items: any[], generatedItems: Required<Randomizer['items']> = []) => {
+  const beforeItems = cloneDeep(orderBy(items, 'order'));
+  items = cloneDeep(orderBy(items, 'order'));
+  items = items.filter(o => o.numOfDuplicates > 0);
+
+  const countGroupItems = (item2: Randomizer['items'][number], count = 0): number => {
+    const child = items.find(o => o.groupId === item2.id);
+    if (child) {
+      return countGroupItems(child, count + 1);
+    } else {
+      return count;
+    }
+  };
+  const haveMinimalSpacing = (item2: any) => {
+    const lastIdx = generatedItems.map(o => o.name).lastIndexOf(item2.name);
+    const currentIdx = generatedItems.length;
+    return lastIdx === -1 || lastIdx + item2.minimalSpacing + countGroupItems(item2) < currentIdx;
+  };
+  const addGroupItems = (item2: Randomizer['items'][number], _generatedItems: Randomizer['items'][]) => {
+    const child = items.find(o => o.groupId === item2.id);
+    if (child) {
+      _generatedItems.push(child);
+      addGroupItems(child, _generatedItems);
+    }
+  };
+
+  for (const item2 of items) {
+    if (item2.numOfDuplicates > 0 && haveMinimalSpacing(item2) && !item2.groupId /* is not grouped or is parent of group */) {
+      generatedItems.push(item2);
+      item2.numOfDuplicates--;
+      addGroupItems(item2, generatedItems as any);
+    }
+  }
+
+  // run next iteration if some items are still there and that any change was made
+  // so we don't have infinite loop when e.g. minimalspacing is not satisfied
+  if (items.filter(o => o.numOfDuplicates > 0).length > 0 && !isEqual(items.filter(o => o.numOfDuplicates > 0), beforeItems)) {
+    generateItems(items, generatedItems);
+  }
+  return generatedItems;
+};
 
 const emptyItem: Partial<Randomizer> = {
   name:           '',
@@ -311,48 +353,6 @@ export const RandomizerEdit: React.FC = () => {
     }
   };
 
-  const generateItems = (items: any[], generatedItems: Required<Randomizer['items']> = []) => {
-    const beforeItems = cloneDeep(orderBy(items, 'order'));
-    items = cloneDeep(orderBy(items, 'order'));
-    items = items.filter(o => o.numOfDuplicates > 0);
-
-    const countGroupItems = (item2: Randomizer['items'][number], count = 0): number => {
-      const child = items.find(o => o.groupId === item2.id);
-      if (child) {
-        return countGroupItems(child, count + 1);
-      } else {
-        return count;
-      }
-    };
-    const haveMinimalSpacing = (item2: any) => {
-      const lastIdx = generatedItems.map(o => o.name).lastIndexOf(item2.name);
-      const currentIdx = generatedItems.length;
-      return lastIdx === -1 || lastIdx + item2.minimalSpacing + countGroupItems(item2) < currentIdx;
-    };
-    const addGroupItems = (item2: Randomizer['items'][number], _generatedItems: Randomizer['items'][]) => {
-      const child = items.find(o => o.groupId === item2.id);
-      if (child) {
-        _generatedItems.push(child);
-        addGroupItems(child, _generatedItems);
-      }
-    };
-
-    for (const item2 of items) {
-      if (item2.numOfDuplicates > 0 && haveMinimalSpacing(item2) && !item2.groupId /* is not grouped or is parent of group */) {
-        generatedItems.push(item2);
-        item2.numOfDuplicates--;
-        addGroupItems(item2, generatedItems as any);
-      }
-    }
-
-    // run next iteration if some items are still there and that any change was made
-    // so we don't have infinite loop when e.g. minimalspacing is not satisfied
-    if (items.filter(o => o.numOfDuplicates > 0).length > 0 && !isEqual(items.filter(o => o.numOfDuplicates > 0), beforeItems)) {
-      generateItems(items, generatedItems);
-    }
-    return generatedItems;
-  };
-
   const onDragEndHandler = React.useCallback<OnDragEndResponder>((result) => {
     if (!result.destination || !item) {
       return;
@@ -389,202 +389,199 @@ export const RandomizerEdit: React.FC = () => {
   }, [ item.items ]);
 
   return(<>
-    {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      { item && <DialogContent>
-        <Grid container spacing={1}>
-          <Grid lg={6} md={12}>
-            <Box
-              component="form"
-              sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-              noValidate
-              autoComplete="off"
-            >
+    {loading && <><LinearProgress /><DialogContent></DialogContent></>}
+    { (!loading && item) && <DialogContent>
+      <Grid container spacing={1}>
+        <Grid lg={6} md={12}>
+          <Box
+            component="form"
+            sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              fullWidth
+              {...propsError('item')}
+              variant="filled"
+              required
+              value={item?.name || ''}
+              label={translate('registry.randomizer.form.name')}
+              onChange={(event) => handleValueChange('name', event.target.value)}
+            />
+
+            <Stack direction='row' spacing={1}>
               <TextField
                 fullWidth
-                {...propsError('item')}
+                {...propsError('command')}
                 variant="filled"
                 required
-                value={item?.name || ''}
-                label={translate('registry.randomizer.form.name')}
-                onChange={(event) => handleValueChange('name', event.target.value)}
+                value={item?.command || ''}
+                label={translate('registry.randomizer.form.command')}
+                onChange={(event) => handleValueChange('command', event.target.value)}
               />
-
-              <Stack direction='row' spacing={1}>
-                <TextField
-                  fullWidth
-                  {...propsError('command')}
-                  variant="filled"
-                  required
-                  value={item?.command || ''}
-                  label={translate('registry.randomizer.form.command')}
-                  onChange={(event) => handleValueChange('command', event.target.value)}
-                />
-                <FormControl fullWidth variant="filled" >
-                  <InputLabel id="type-select-label">{translate('registry.randomizer.form.type')}</InputLabel>
-                  <Select
-                    label={translate('registry.randomizer.form.type')}
-                    labelId="type-select-label"
-                    onChange={(event) => handleValueChange('type', event.target.value as 'simple' | 'wheelOfFortune' | 'tape')}
-                    value={item?.type || 'simple'}
-                  >
-                    <MenuItem value='simple'>{translate('registry.randomizer.form.simple')}</MenuItem>
-                    <MenuItem value='wheelOfFortune'>{translate('registry.randomizer.form.wheelOfFortune')}</MenuItem>
-                    <MenuItem value='tape'>{translate('registry.randomizer.form.tape')}</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <FormControl fullWidth variant="filled" >
-                  <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
-                  <Select
-                    label={translate('permissions')}
-                    labelId="permission-select-label"
-                    onChange={(event) => handleValueChange('permissionId', event.target.value)}
-                    value={item?.permissionId || defaultPermissions.VIEWERS}
-                  >
-                    {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
-                  </Select>
-                </FormControl>
-              </Stack>
-
-              {item.position && <AccordionPosition
-                model={item.position}
-                disabled={item.type === 'wheelOfFortune'}
-                open={expanded}
-                onClick={value => typeof value === 'string' && setExpanded(value)}
-                onChange={(value) => handleValueChange('position', value)}
-              />}
-
-              {item.tts && <AccordionTTS
-                model={item.tts}
-                open={expanded}
-                onClick={value => typeof value === 'string' && setExpanded(value)}
-                onChange={(value) => handleValueChange('tts', value)}
-              />}
-
-              {item.customizationFont && <AccordionFont
-                model={item.customizationFont}
-                open={expanded}
-                onClick={value => typeof value === 'string' && setExpanded(value)}
-                onChange={(value) => handleValueChange('customizationFont', value)}
-              />}
-
-              <Accordion expanded={expanded === 'probability'}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreTwoTone />}
-                  onClick={() => setExpanded('probability')}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
+              <FormControl fullWidth variant="filled" >
+                <InputLabel id="type-select-label">{translate('registry.randomizer.form.type')}</InputLabel>
+                <Select
+                  label={translate('registry.randomizer.form.type')}
+                  labelId="type-select-label"
+                  onChange={(event) => handleValueChange('type', event.target.value as 'simple' | 'wheelOfFortune' | 'tape')}
+                  value={item?.type || 'simple'}
                 >
-                  <Typography>{ translate('registry.randomizer.form.probability') }</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {(item.items || []).length === 0
+                  <MenuItem value='simple'>{translate('registry.randomizer.form.simple')}</MenuItem>
+                  <MenuItem value='wheelOfFortune'>{translate('registry.randomizer.form.wheelOfFortune')}</MenuItem>
+                  <MenuItem value='tape'>{translate('registry.randomizer.form.tape')}</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth variant="filled" >
+                <InputLabel id="permission-select-label">{translate('permissions')}</InputLabel>
+                <Select
+                  label={translate('permissions')}
+                  labelId="permission-select-label"
+                  onChange={(event) => handleValueChange('permissionId', event.target.value)}
+                  value={item?.permissionId || defaultPermissions.VIEWERS}
+                >
+                  {permissions?.map(o => (<MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Stack>
+
+            {item.position && <AccordionPosition
+              model={item.position}
+              disabled={item.type === 'wheelOfFortune'}
+              open={expanded}
+              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onChange={(value) => handleValueChange('position', value)}
+            />}
+
+            {item.tts && <AccordionTTS
+              model={item.tts}
+              open={expanded}
+              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onChange={(value) => handleValueChange('tts', value)}
+            />}
+
+            {item.customizationFont && <AccordionFont
+              model={item.customizationFont}
+              open={expanded}
+              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onChange={(value) => handleValueChange('customizationFont', value)}
+            />}
+
+            <Accordion expanded={expanded === 'probability'}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreTwoTone />}
+                onClick={() => setExpanded('probability')}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>{ translate('registry.randomizer.form.probability') }</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {(item.items || []).length === 0
+                  ? translate('registry.randomizer.form.optionsAreEmpty')
+                  :  Array.from(new Set(item.items.map(o => <div>
+                    {o.name}
+                    <strong style={{ paddingLeft: '5px' }}>{ Number((generateItems(item.items).filter(b => b.name === o.name).length / generateItems(item.items).length) * 100).toFixed(2) }%</strong>
+                  </div>,
+                  )))}
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={expanded === 'preview'}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreTwoTone />}
+                onClick={() => setExpanded('preview')}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>{ translate('registry.randomizer.form.generatedOptionsPreview') }</Typography>
+              </AccordionSummary>
+              <AccordionDetails key={(item.items || []).map(o => o.id).join()}>
+                {
+                  generateItems(item.items).length === 0
                     ? translate('registry.randomizer.form.optionsAreEmpty')
-                    :  Array.from(new Set(item.items.map(o => <div>
+                    : generateItems(item.items).map(o => <div key={`generated-${o.id}`} style={{
+                      color: getContrastColor(o.color), backgroundColor: o.color, width: '100%',
+                    }}>
                       {o.name}
-                      <strong style={{ paddingLeft: '5px' }}>{ Number((generateItems(item.items).filter(b => b.name === o.name).length / generateItems(item.items).length) * 100).toFixed(2) }%</strong>
-                    </div>,
-                    )))}
-                </AccordionDetails>
-              </Accordion>
-
-              <Accordion expanded={expanded === 'preview'}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreTwoTone />}
-                  onClick={() => setExpanded('preview')}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography>{ translate('registry.randomizer.form.generatedOptionsPreview') }</Typography>
-                </AccordionSummary>
-                <AccordionDetails key={(item.items || []).map(o => o.id).join()}>
-                  {
-                    generateItems(item.items).length === 0
-                      ? translate('registry.randomizer.form.optionsAreEmpty')
-                      : generateItems(item.items).map(o => <div key={`generated-${o.id}`} style={{
-                        color: getContrastColor(o.color), backgroundColor: o.color, width: '100%',
-                      }}>
-                        {o.name}
-                      </div>)
-                  }
-                </AccordionDetails>
-              </Accordion>
-            </Box>
-          </Grid>
-          <Grid lg={6} md={12}>
-            <Box
-              component="form"
-              sx={{
-                '& .MuiFormControl-root': { my: 0.5 },
-                width:                    '100%',
-                mt:                       '2px !important',
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <Card variant='outlined' sx={{ backgroundColor: '#1e1e1e' }}>
-                <Typography gutterBottom sx={{
-                  pt: 2, pl: 2, pb: 2,
-                }}>{ translate('registry.randomizer.form.options') }</Typography>
-
-                <Grid container sx={{ borderBottom: '1px solid divider' }}>
-                  <Grid width={50}></Grid>
-                  <Grid sx={{ flexGrow: 1 }}><Typography variant='subtitle2'>{translate('registry.randomizer.form.name')}</Typography></Grid>
-                  <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.numOfDuplicates')}</Typography></Grid>
-                  <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.minimalSpacing')}</Typography></Grid>
-                  <Grid width={50}></Grid>
-                  <Grid width={50}></Grid>
-                </Grid>
-
-                <DragDropContext onDragEnd={onDragEndHandler}>
-                  <Droppable droppableId={'1'} direction="vertical">
-                    {(provided) => {
-                      return (
-                        <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ '& > div': { width: '100%' } }}>
-                          {(item.items || []).map((row, idx) => row.groupId === null && <Draggable key={`row-${row.id}`} draggableId={row.id} index={idx}>
-                            {(draggableProvided) => (
-                              <div
-                                ref={draggableProvided.innerRef}
-                                {...draggableProvided.draggableProps}>
-                                <ItemGrid
-                                  item={row}
-                                  key={`itemGrid-${row.id}`}
-                                  previousId={item.items[idx - 1]?.id}
-                                  onChange={(value) => handleItemChange(idx, value)}
-                                  dragHandleProps={draggableProvided.dragHandleProps}
-                                  onDelete={(() => handleItemDelete(row.id))}
-                                />
-                                {getChildren(row.id).map((val, idx2) => <ItemGrid
-                                  onChange={(value) => handleItemChange(idx + idx2 + 1, value)}
-                                  previousId={item.items[idx + idx2 + 1]?.id}
-                                  item={val}
-                                  key={`itemGridChild-${val.id}`}/>,
-                                )}
-                              </div>
-                            )}
-                          </Draggable>,
-                          )}
-                          {provided.placeholder}
-                        </Box>
-                      );
-                    }}
-                  </Droppable>
-                  <Divider/>
-                  <ItemGrid
-                    item={emptyItemToAdd}
-                    key={`emptyItem-${emptyItemToAdd.id}`}
-                    onChange={(value) => setEmptyItemToAdd(value)}
-                  />
-                </DragDropContext>
-              </Card>
-            </Box>
-          </Grid>
+                    </div>)
+                }
+              </AccordionDetails>
+            </Accordion>
+          </Box>
         </Grid>
-      </DialogContent>}
-    </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
+        <Grid lg={6} md={12}>
+          <Box
+            component="form"
+            sx={{
+              '& .MuiFormControl-root': { my: 0.5 },
+              width:                    '100%',
+              mt:                       '2px !important',
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <Card variant='outlined' sx={{ backgroundColor: '#1e1e1e' }}>
+              <Typography gutterBottom sx={{
+                pt: 2, pl: 2, pb: 2,
+              }}>{ translate('registry.randomizer.form.options') }</Typography>
+
+              <Grid container sx={{ borderBottom: '1px solid divider' }}>
+                <Grid width={50}></Grid>
+                <Grid sx={{ flexGrow: 1 }}><Typography variant='subtitle2'>{translate('registry.randomizer.form.name')}</Typography></Grid>
+                <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.numOfDuplicates')}</Typography></Grid>
+                <Grid width={100}><Typography variant='subtitle2'>{translate('registry.randomizer.form.minimalSpacing')}</Typography></Grid>
+                <Grid width={50}></Grid>
+                <Grid width={50}></Grid>
+              </Grid>
+
+              <DragDropContext onDragEnd={onDragEndHandler}>
+                <Droppable droppableId={'1'} direction="vertical">
+                  {(provided) => {
+                    return (
+                      <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ '& > div': { width: '100%' } }}>
+                        {(item.items || []).map((row, idx) => row.groupId === null && <Draggable key={`row-${row.id}`} draggableId={row.id} index={idx}>
+                          {(draggableProvided) => (
+                            <div
+                              ref={draggableProvided.innerRef}
+                              {...draggableProvided.draggableProps}>
+                              <ItemGrid
+                                item={row}
+                                key={`itemGrid-${row.id}`}
+                                previousId={item.items[idx - 1]?.id}
+                                onChange={(value) => handleItemChange(idx, value)}
+                                dragHandleProps={draggableProvided.dragHandleProps}
+                                onDelete={(() => handleItemDelete(row.id))}
+                              />
+                              {getChildren(row.id).map((val, idx2) => <ItemGrid
+                                onChange={(value) => handleItemChange(idx + idx2 + 1, value)}
+                                previousId={item.items[idx + idx2 + 1]?.id}
+                                item={val}
+                                key={`itemGridChild-${val.id}`}/>,
+                              )}
+                            </div>
+                          )}
+                        </Draggable>,
+                        )}
+                        {provided.placeholder}
+                      </Box>
+                    );
+                  }}
+                </Droppable>
+                <Divider/>
+                <ItemGrid
+                  item={emptyItemToAdd}
+                  key={`emptyItem-${emptyItemToAdd.id}`}
+                  onChange={(value) => setEmptyItemToAdd(value)}
+                />
+              </DragDropContext>
+            </Card>
+          </Box>
+        </Grid>
+      </Grid>
+    </DialogContent>}
+    <DialogActions>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
         <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
@@ -593,6 +590,6 @@ export const RandomizerEdit: React.FC = () => {
           <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
-    </Box>
+    </DialogActions>
   </>);
 };

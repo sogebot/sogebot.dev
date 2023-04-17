@@ -18,6 +18,7 @@ import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { MarathonItem } from '../components/Overlay/MarathonItem';
 import { OBSWebsocketItem } from '../components/Overlay/OBSWebsocketItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
+import { RandomizerItem } from '../components/Overlay/RandomizerItem';
 import { StatsItem } from '../components/Overlay/StatsItem';
 import { StopwatchItem } from '../components/Overlay/StopwatchItem';
 import { TTSItem } from '../components/Overlay/TTSItem';
@@ -93,6 +94,7 @@ export default function Overlays() {
         {item.opts.typeId === 'stats' && <StatsItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'polls' && <PollsItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'html' && <HTMLItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
+        {item.opts.typeId === 'randomizer' && <RandomizerItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
         {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} active />}
       </Box>,

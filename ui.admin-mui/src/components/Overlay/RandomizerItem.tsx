@@ -3,31 +3,172 @@ import {
 } from '@mui/material';
 import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
+import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
+import { Mutex } from 'async-mutex';
 import axios from 'axios';
+import gsap from 'gsap';
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
+import { getContrastColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
+import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
+import { generateItems } from '../Form/RandomizerEdit';
+
+const mutex = new Mutex();
+const delay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
+
+const isResponsiveVoiceEnabled = () => {
+  return new Promise<void>((resolve) => {
+    const check = () => {
+      if (typeof (window as any).responsiveVoice === 'undefined') {
+        setTimeout(() => check(), 200);
+      } else {
+        console.debug('= ResponsiveVoice init OK');
+        (window as any).responsiveVoice.init();
+        resolve();
+      }
+    };
+    check();
+  });
+};
+
+let isSpeaking = false;
+const isTTSPlaying = {
+  0: () => typeof window.responsiveVoice !== 'undefined' && window.responsiveVoice.isPlaying(),
+  1: () => isSpeaking,
+};
+const speak = (service: 0 | 1, key: string, text: string, voice: string, rate: number, pitch: number, volume: number) => {
+  if (isTTSPlaying[service]()) {
+    // wait and try later
+    setTimeout(() => speak(service, key, text, voice, rate, pitch, volume), 1000);
+    return;
+  }
+
+  if (service === 0) {
+    // RESPONSIVE VOICE
+    window.responsiveVoice.speak(text, voice, {
+      rate, pitch, volume,
+    });
+  } else {
+    // GOOGLE
+    isSpeaking = true;
+    getSocket('/core/tts', true).emit('speak', {
+      voice, rate, pitch, volume, key, text,
+    }, (err, b64mp3) => {
+      if (err) {
+        isSpeaking = false;
+        return console.error(err);
+      }
+      const snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
+      snd.play();
+      snd.onended = () => (isSpeaking = false);
+    });
+  }
+};
+
+function getMiddleElement () {
+  const clientWidth = window.innerWidth;
+  let element: null | HTMLElement = null;
+  for (const child of Array.from(document.getElementById('tape')?.children ?? [])) {
+    if (child.getBoundingClientRect().x < clientWidth / 2) {
+      element = child as HTMLElement;
+    } else {
+      break;
+    }
+  }
+  return element;
+}
+
+function blinkElementBackground (element: HTMLElement) {
+  const tl = gsap.timeline({
+    repeat: 4, repeatDelay: 0,
+  });
+  tl.to(element, { backgroundColor: 'darkorange' });
+  tl.to(element, { backgroundColor: element.style.backgroundColor });
+}
 
 export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) => {
+  const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
+
   const [ randomizerId, setRandomizerId ] = React.useState('');
   const [ randomizers, setRandomizers ] = React.useState<Randomizer[]>([]);
   const [ threadId ] = React.useState(shortid());
 
+  const animationTriggered = React.useRef(false);
+  const [ tapeLoops, setTapeLoops ] = React.useState(0);
+  const tapeLoopsRef = React.useRef(tapeLoops);
   React.useEffect(() => {
-    console.log(`====== Randomizer (${threadId}) ======`);
-  }, []);
+    tapeLoopsRef.current = tapeLoops;
+  }, [tapeLoops]);
 
-  const currentRandomizer = React.useMemo(() => {
+  const currentRandomizer = React.useMemo<Randomizer | undefined>(() => {
     const randomizer = randomizers.find(o => o.id === randomizerId);
     if (randomizer) {
       loadFont(randomizer.customizationFont.family);
     }
     return randomizer;
   }, [randomizers, randomizerId]);
+  const currentRandomizerRef = React.useRef(currentRandomizer);
+  React.useEffect(() => {
+    currentRandomizerRef.current = currentRandomizer;
+  }, [currentRandomizer]);
+
+  React.useEffect(() => {
+    console.log(`====== Randomizer (${threadId}) ======`);
+
+    getSocket('/registries/randomizer', true).on('spin', async ({ service, key }) => {
+      if (service === 0) {
+        setResponsiveVoiceKey(key);
+        await isResponsiveVoiceEnabled();
+      }
+
+      if (!currentRandomizerRef.current) {
+        console.error('No randomizer is visible!');
+        return;
+      }
+
+      if (currentRandomizerRef.current.type === 'tape') {
+        if (animationTriggered.current) {
+          return;
+        }
+
+        animationTriggered.current = true;
+
+        // get initial size of div of 1 loop
+        const width = (document.getElementById('tape')?.clientWidth ?? 0) / (tapeLoopsRef.current + 5);
+
+        // add several loops
+        const newLoops = tapeLoopsRef.current + Math.floor(Math.random() * 5);
+        setTapeLoops(newLoops);
+
+        // we need to move x loops with last loop random
+        const newPos = width * (newLoops + 1) + Math.floor(Math.random() * width);
+
+        gsap.to(document.getElementById('tape'), {
+          x:          -newPos,
+          duration:   5 + Math.random() * 5,
+          ease:       'ease-out',
+          onComplete: () => {
+            animationTriggered.current = false;
+
+            // we need to get element in the middle
+            const winnerEl = getMiddleElement();
+            if (winnerEl) {
+              if (currentRandomizerRef.current && currentRandomizerRef.current.tts.enabled) {
+                speak(service, key, winnerEl.innerHTML.trim(), currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
+              }
+              blinkElementBackground(winnerEl);
+            }
+          },
+        });
+      }
+    });
+  }, []);
 
   const refresh = React.useCallback(async () => {
     axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -37,32 +178,113 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
   }, []);
 
   useIntervalWhen(async () => {
+    // we need to lock mutex because we are doing mid states
+    if (mutex.isLocked()) {
+      return;
+    }
+    const release = await mutex.acquire();
     if (!active) {
-      refresh();
+      await refresh();
     } else {
       const response = await axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/visible`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       const randomizer = response.data.data;
+
+      // if randomizer is not visible anymore, do midstate isShown:false, then remove
       if (!randomizer) {
+        if (randomizers[0]) {
+          setRandomizers(o => [{
+            ...o[0], isShown: false,
+          } as Randomizer]);
+          await delay(500);
+        }
         setRandomizers([]);
+        release();
         return;
+      }
+
+      // if we are changing randomizer, then we do midstate and then show new one
+      if (randomizerId !== randomizer.id) {
+        if (randomizers[0]) {
+          setRandomizers(o => [{
+            ...o[0], isShown: false,
+          } as Randomizer]);
+          await delay(500);
+        }
       }
       setRandomizers([randomizer as Randomizer]);
       setRandomizerId(randomizer.id);
 
       if (randomizer.items.length === 0) {
         console.error('No items detected in your randomizer');
+        release();
         return;
       }
     }
+    release();
   }, 1000, true, true);
 
   return <>
+    <Helmet>
+      {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
+    </Helmet>
     <Box sx={{
-      width: '100%', height: '100%', overflow: 'hidden', position: 'relative', p: 0.5, textTransform: 'none !important',
+      color:         'black',
+      width:         '100%',
+      height:        '100%',
+      overflow:      'hidden',
+      position:      'relative',
+      p:             0.5,
+      textTransform: 'none !important',
+      '*':           { lineHeight: 'normal' },
     }}>
       <Fade in={(currentRandomizer?.isShown ?? false) || (currentRandomizer !== undefined && !active)} unmountOnExit mountOnEnter>
-        <Box>
-          {JSON.stringify({ currentRandomizer })}
+        <Box sx={{ width: 'max-content' }}>
+          {currentRandomizer && <>
+            {currentRandomizer.type === 'tape' && <Box sx={{ height: 'fit-content' }}>
+              <Box id="tape" sx={{
+                width: '100%', overflow: 'hidden',
+              }}>
+                {Array(5 + tapeLoops).fill(0).map((_, loop) => generateItems(currentRandomizer!.items).map((o, idx) => <Box
+                  key={`${o.id}_${loop}_${idx}`}
+                  style={{
+                    backgroundColor: o.color,
+                    color:           getContrastColor(o.color),
+                    width:           'fit-content',
+                    minWidth:        '200px',
+                    padding:         '10px',
+                    display:         'inline-block',
+                    textAlign:       'center',
+                    fontFamily:      `'${currentRandomizer.customizationFont.family}'`,
+                    fontSize:        currentRandomizer.customizationFont.size + 'px',
+                    fontWeight:      currentRandomizer.customizationFont.weight,
+                    textShadow:      [
+                      textStrokeGenerator(
+                        currentRandomizer.customizationFont.borderPx,
+                        currentRandomizer.customizationFont.borderColor,
+                      ),
+                      shadowGenerator(currentRandomizer.customizationFont.shadow)].filter(Boolean).join(', '),
+                  }}
+                >{o.name}</Box>),
+                ) }
+              </Box>
+              <Fade in={document.getElementById('tape') !== null}>
+                <Box
+                  sx={{
+                    textAlign:   'center',
+                    zIndex:      9999,
+                    left:        '50%',
+                    top:         '0px',
+                    width:       '2px',
+                    position:    'absolute',
+                    margin:      'auto',
+                    borderLeft:  '3px solid black',
+                    borderRight: '3px solid white',
+                    height:      `${document.getElementById('tape') ? document.getElementById('tape')!.offsetHeight + 8 : 0}px`,
+                  }}
+                />
+              </Fade>
+            </Box>}
+          </>}
         </Box>
       </Fade>
     </Box>
