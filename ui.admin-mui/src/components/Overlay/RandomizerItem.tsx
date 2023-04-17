@@ -322,3 +322,98 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
     </Grow>
   </>;
 };
+
+/*
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .wheel {
+        position: relative;
+        width: 700px;
+        height: 700px;
+        border: 1px solid black;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+
+      .segment {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: auto;
+        transform: translateX(-50%);
+        transform-origin: 0 0;
+        width: 9999999px;
+        height: 50%;
+        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      }
+
+      .segment::after {
+        text-align: center;
+        align-self: center;
+        margin: auto;
+        transform-origin: 50% 50%;
+    content: 'Lorem Ipsum Dolor';
+    width:max-content;
+    rotate: 90deg;
+      }
+
+      .segment:nth-child(1) {
+        background-color: #1900ff;
+      }
+
+.segment:nth-child(2) {
+  background-color: #3cff00;
+  rotate: 180deg;
+}
+
+      .arrow {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(0deg);
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 20px 30px 20px;
+        border-color: transparent transparent #000000 transparent;
+      }
+
+      #spin-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      #result {
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wheel">
+        <div class="segment">
+        </div>
+        <div class="segment">
+        </div>
+        <!-- Segments will be dynamically created with JavaScript -->
+      </div>
+      <button id="spin-button" onclick="spin()">Spin the wheel</button>
+      <p id="result"></p>
+    </div>
+</body>
+</html>
+*/
