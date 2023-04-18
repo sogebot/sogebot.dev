@@ -7,6 +7,7 @@ import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
 import gsap from 'gsap';
+import { random } from 'lodash';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useIntervalWhen } from 'rooks';
@@ -84,6 +85,17 @@ function getMiddleElement () {
   return element;
 }
 
+function blinkElementColor (element: HTMLElement) {
+  console.log({
+    element, gsap,
+  });
+  const tl = gsap.timeline({
+    repeat: 4, repeatDelay: 0,
+  });
+  tl.to(element, { color: 'darkorange' });
+  tl.to(element, { color: element.style.color });
+}
+
 function blinkElementBackground (element: HTMLElement) {
   const tl = gsap.timeline({
     repeat: 4, repeatDelay: 0,
@@ -98,6 +110,9 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
   const [ randomizerId, setRandomizerId ] = React.useState('');
   const [ randomizers, setRandomizers ] = React.useState<Randomizer[]>([]);
   const [ threadId ] = React.useState(shortid());
+
+  // simple randomizer
+  const [ simpleIndex, setSimpleIndex ] = React.useState(0);
 
   const animationTriggered = React.useRef(false);
   const [ tapeLoops, setTapeLoops ] = React.useState(0);
@@ -132,13 +147,50 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
         return;
       }
 
+      if (animationTriggered.current) {
+        return;
+      }
+      animationTriggered.current = true;
+
+      if (currentRandomizerRef.current.type === 'simple') {
+        let selectedIdx = 0;
+        await new Promise<void>((resolve) => {
+          let moveBy = random(100, Math.max(200, (currentRandomizerRef.current?.items.length ?? 0) * 10));
+          const move = async () => {
+            if (moveBy === 0) {
+              resolve();
+              return;
+            }
+            if (moveBy < 3) {
+              await delay(1000);
+            } else if (moveBy < 10) {
+              await delay(200);
+            } else if (moveBy < 20) {
+              await delay(100);
+            } else if (moveBy < 50) {
+              await delay(50);
+            } else if (moveBy < 100) {
+              await delay(25);
+            }
+            setSimpleIndex(idx => {
+              const newIdx = idx + 1;
+              selectedIdx = currentRandomizerRef.current?.items[newIdx] ? newIdx : 0;
+              return selectedIdx;
+            });
+            moveBy--;
+            setTimeout(() => move(), 10);
+          };
+          move();
+        });
+        animationTriggered.current = false;
+        console.log('Blinking', document.getElementById('simple'));
+        console.log('Speaking', currentRandomizerRef.current?.items[selectedIdx].name);
+        blinkElementColor(document.getElementById('simple')!);
+        speak(service, key, currentRandomizerRef.current?.items[selectedIdx].name, currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
+
+      }
+
       if (currentRandomizerRef.current.type === 'tape') {
-        if (animationTriggered.current) {
-          return;
-        }
-
-        animationTriggered.current = true;
-
         // get initial size of div of 1 loop
         const width = (document.getElementById('tape')?.clientWidth ?? 0) / (tapeLoopsRef.current + 5);
 
@@ -177,6 +229,10 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
       });
   }, []);
 
+  React.useEffect(() => {
+    setSimpleIndex(random(currentRandomizerRef.current?.items.length ?? 0));
+  }, [randomizerId]);
+
   useIntervalWhen(async () => {
     // we need to lock mutex because we are doing mid states
     if (mutex.isLocked()) {
@@ -198,6 +254,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
           await delay(500);
         }
         setRandomizers([]);
+        setSimpleIndex(0);
         release();
         return;
       }
@@ -233,14 +290,56 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
       height:        '100%',
       overflow:      'hidden',
       position:      'relative',
-      p:             0.5,
       textTransform: 'none !important',
       '*':           { lineHeight: 'normal' },
     }}>
       <Fade in={(currentRandomizer?.isShown ?? false) || (currentRandomizer !== undefined && !active)} unmountOnExit mountOnEnter>
         <Box sx={{ width: 'max-content' }}>
-          {currentRandomizer && <>
-            {currentRandomizer.type === 'tape' && <Box sx={{ height: 'fit-content' }}>
+          {currentRandomizer && <Box>
+            <Box
+              sx={{
+                textAlign:   'center',
+                zIndex:      9999,
+                left:        '50%',
+                width:       '2px',
+                position:    'absolute',
+                bottom:      0,
+                margin:      'auto',
+                overflow:    'hidden',
+                borderLeft:  '2px solid black',
+                borderRight: '2px solid white',
+                height:      `${document.getElementById('tape') ? document.getElementById('tape')!.offsetHeight : 0}px`,
+                transition:  'all 200ms',
+                boxShadow:   '0px 0px 10px 0px rgba(0,0,0,1)',
+                clipPath:    'inset(0 -15px 0 -15px)',
+              }}
+            />
+            {currentRandomizer.type === 'simple' && <Box sx={{
+              height: 'fit-content', position: 'absolute',  width: 'max-content', bottom: 0, left: '50%', transform: `translateX(-50%)`,
+            }}>
+              <Box
+                id="simple"
+                style={{
+                  color:      generateItems(currentRandomizer!.items)[simpleIndex].color,
+                  width:      '100%',
+                  padding:    '10px',
+                  display:    'inline-block',
+                  textAlign:  'center',
+                  fontFamily: `'${currentRandomizer.customizationFont.family}'`,
+                  fontSize:   currentRandomizer.customizationFont.size + 'px',
+                  fontWeight: currentRandomizer.customizationFont.weight,
+                  textShadow: [
+                    textStrokeGenerator(
+                      currentRandomizer.customizationFont.borderPx,
+                      currentRandomizer.customizationFont.borderColor,
+                    ),
+                    shadowGenerator(currentRandomizer.customizationFont.shadow)].filter(Boolean).join(', '),
+                }}
+              >{generateItems(currentRandomizer!.items)[simpleIndex].name}</Box>
+            </Box>}
+            {currentRandomizer.type === 'tape' && <Box sx={{
+              height: 'fit-content', position: 'absolute',  width: 'max-content', bottom: 0,
+            }}>
               <Box id="tape" sx={{
                 width: '100%', overflow: 'hidden',
               }}>
@@ -267,24 +366,8 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
                 >{o.name}</Box>),
                 ) }
               </Box>
-              <Fade in={document.getElementById('tape') !== null}>
-                <Box
-                  sx={{
-                    textAlign:   'center',
-                    zIndex:      9999,
-                    left:        '50%',
-                    top:         '0px',
-                    width:       '2px',
-                    position:    'absolute',
-                    margin:      'auto',
-                    borderLeft:  '3px solid black',
-                    borderRight: '3px solid white',
-                    height:      `${document.getElementById('tape') ? document.getElementById('tape')!.offsetHeight + 8 : 0}px`,
-                  }}
-                />
-              </Fade>
             </Box>}
-          </>}
+          </Box>}
         </Box>
       </Fade>
     </Box>
