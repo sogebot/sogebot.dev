@@ -104,7 +104,7 @@ function blinkElementBackground (element: HTMLElement) {
   tl.to(element, { backgroundColor: element.style.backgroundColor });
 }
 
-export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) => {
+export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active, selected }) => {
   const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
 
   const [ randomizerId, setRandomizerId ] = React.useState('');
@@ -192,14 +192,14 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
 
       if (currentRandomizerRef.current.type === 'tape') {
         // get initial size of div of 1 loop
-        const width = (document.getElementById('tape')?.clientWidth ?? 0) / (tapeLoopsRef.current + 5);
+        const tapeWidth = (document.getElementById('tape')?.clientWidth ?? 0) / (tapeLoopsRef.current + 5);
 
         // add several loops
         const newLoops = tapeLoopsRef.current + Math.floor(Math.random() * 5);
         setTapeLoops(newLoops);
 
         // we need to move x loops with last loop random
-        const newPos = width * (newLoops + 1) + Math.floor(Math.random() * width);
+        const newPos = tapeWidth * (newLoops + 1) + Math.floor(Math.random() * tapeWidth);
 
         gsap.to(document.getElementById('tape'), {
           x:          -newPos,
@@ -216,6 +216,26 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
               }
               blinkElementBackground(winnerEl);
             }
+          },
+        });
+      }
+
+      if (currentRandomizerRef.current.type === 'wheelOfFortune') {
+        // add 10 loops (11 if we already rotated)
+        const loops = ((document.getElementById('wheel')!.style.transform.length > 0 ? 11 : 10) + Math.random() * 5) * 360;
+        console.log('Spinning by ', loops, 'degrees');
+
+        gsap.to(document.getElementById('wheel'), {
+          rotate:     `${loops}deg`,
+          duration:   5 + Math.random() * 5,
+          ease:       'easeOut',
+          onComplete: () => {
+            // cleanup rotation value to one rotation
+            gsap.to(document.getElementById('wheel'), {
+              duration: 0, rotate: `${loops % 360}deg`,
+            });
+            animationTriggered.current = false;
+            // TODO: get winner to blink and speak
           },
         });
       }
@@ -367,6 +387,85 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
                 ) }
               </Box>
             </Box>}
+
+            {/* {JSON.stringify({ items: generateItems(currentRandomizer!.items) })} */}
+            {currentRandomizer.type === 'wheelOfFortune' && <>
+              <Box sx={{
+                position:  'absolute',
+                left:      '50%',
+                top:       '-35px',
+                transform: 'translateX(-50%)',
+                zIndex:    2,
+              }}>
+                <Box sx={{
+                  width:        '0',
+                  height:       '0',
+                  position:     'relative',
+                  borderBottom: 'solid 50px transparent',
+                  borderTop:    'solid 50px black',
+                  borderLeft:   'solid 30px transparent',
+                  borderRight:  'solid 30px transparent',
+                  '&::before':  {
+                    display:      'block',
+                    bottom:       '-50px',
+                    borderStyle:  'solid',
+                    borderWidth:  '48px 48px 0 48px',
+                    borderColor:  'white transparent transparent transparent',
+                    content:      '""',
+                    width:        '0',
+                    height:       '0',
+                    position:     'absolute',
+                    borderBottom: 'solid 48px transparent',
+                    borderTop:    'solid 48px white',
+                    borderLeft:   'solid 24px transparent',
+                    borderRight:  'solid 24px transparent',
+                    top:          '-50px',
+                    left:         '-24px',
+                  },
+                }}/>
+              </Box>
+              <Box id="wheel" sx={{
+                border:       '2px solid black',
+                borderRadius: '50%',
+                position:     'relative',
+                overflow:     'hidden',
+                // center
+                transform:    `translateX(${(width - Math.min(width, height)) / 2}px)`,
+                width:        `${Math.min(width, height)}px`,
+                height:       `${Math.min(width, height)}px`,
+              }}>
+                {generateItems(currentRandomizer!.items).length === 2 && <>
+                  {/* if there are only 2 items */}
+                  {generateItems(currentRandomizer!.items).map((item, idx) => <Box data-type='segment' data-value='item1' sx={{
+                    position:        'absolute',
+                    rotate:          `${idx * 180}deg`,
+                    top:             '50%',
+                    backgroundColor: item.color,
+                    width:           `${Math.min(width, height) - 4}px`,
+                    transformOrigin: '50% 0',
+                    height:          '100%',
+                  }}>
+                    <Box sx={{
+                      rotate:     `180deg`,
+                      color:      'white',
+                      textAlign:  'center',
+                      lineHeight: `${(Math.min(width, height) - 4) / 2}px`,
+                      fontFamily: `'${currentRandomizer.customizationFont.family}'`,
+                      fontSize:   currentRandomizer.customizationFont.size + 'px',
+                      fontWeight: currentRandomizer.customizationFont.weight,
+                      textShadow: [
+                        textStrokeGenerator(
+                          currentRandomizer.customizationFont.borderPx,
+                          currentRandomizer.customizationFont.borderColor,
+                        ),
+                        shadowGenerator(currentRandomizer.customizationFont.shadow)].filter(Boolean).join(', '),
+                    }}>
+                      {item.name}
+                    </Box>
+                  </Box>)}
+                </>}
+              </Box>
+            </>}
           </Box>}
         </Box>
       </Fade>
@@ -437,7 +536,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ active, selected }) =
         transform-origin: 0 0;
         width: 9999999px;
         height: 50%;
-        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
       }
 
       .segment::after {

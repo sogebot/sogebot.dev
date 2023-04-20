@@ -23,6 +23,8 @@ export type Props<T> = {
   active?: boolean,
   /** Selected in editation */
   selected?: boolean,
+  width: number,
+  height: number,
 };
 
 const jabber = new Jabber();
