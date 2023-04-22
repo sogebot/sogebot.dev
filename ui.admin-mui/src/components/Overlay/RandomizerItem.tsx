@@ -104,6 +104,15 @@ function blinkElementBackground (element: HTMLElement) {
   tl.to(element, { backgroundColor: element.style.backgroundColor });
 }
 
+function blinkElementWoFBackground (element: HTMLElement) {
+  const tl = gsap.timeline({
+    repeat: 4, repeatDelay: 0,
+  });
+  const newBg = element.style.background.replace(/(rgb\(\w+, \w+, \w+\))/g, 'rgb(255, 140, 0)');
+  tl.to(element, { background: newBg });
+  tl.to(element, { background: element.style.background });
+}
+
 export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active, selected }) => {
   const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
 
@@ -223,7 +232,6 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
       if (currentRandomizerRef.current.type === 'wheelOfFortune') {
         // add 10 loops (11 if we already rotated)
         const loops = ((document.getElementById('wheel')!.style.transform.length > 0 ? 11 : 10) + Math.random() * 5) * 360;
-        console.log('Spinning by ', loops, 'degrees');
 
         gsap.to(document.getElementById('wheel'), {
           rotate:     `${loops}deg`,
@@ -235,6 +243,20 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
               duration: 0, rotate: `${loops % 360}deg`,
             });
             animationTriggered.current = false;
+            if (currentRandomizerRef.current) {
+              const winDeg = loops % 360;
+              const numOfItems = generateItems(currentRandomizerRef.current!.items).length;
+              const degPerItem = 360 / numOfItems;
+              const index = Math.floor(winDeg / degPerItem);
+
+              if (currentRandomizerRef.current.tts.enabled) {
+                speak(service, key, generateItems(currentRandomizerRef.current!.items).reverse()[index].name, currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
+              }
+
+              const segments = Array.from(document.getElementsByClassName('segment')).reverse();
+              blinkElementWoFBackground(segments[index] as HTMLElement);
+              console.log(segments[index]);
+            }
             // TODO: get winner to blink and speak
           },
         });
@@ -434,36 +456,48 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
                 width:        `${Math.min(width, height)}px`,
                 height:       `${Math.min(width, height)}px`,
               }}>
-                {generateItems(currentRandomizer!.items).length === 2 && <>
-                  {/* if there are only 2 items */}
-                  {generateItems(currentRandomizer!.items).map((item, idx) => <Box data-type='segment' data-value='item1' sx={{
-                    position:        'absolute',
-                    rotate:          `${idx * 180}deg`,
-                    top:             '50%',
-                    backgroundColor: item.color,
-                    width:           `${Math.min(width, height) - 4}px`,
-                    transformOrigin: '50% 0',
-                    height:          '100%',
+                {generateItems(currentRandomizer!.items).map((item, idx) => <Box
+                  data-type='segment'
+                  className='segment'
+                  data-value='item1'
+                  style={{ background: `conic-gradient(${item.color} ${(360 / generateItems(currentRandomizer!.items).length) + 0.1}deg, transparent ${(360 / generateItems(currentRandomizer!.items).length)}deg calc(${(360 / generateItems(currentRandomizer!.items).length) + 0}deg))` }}
+                  sx={{
+                    position: 'absolute',
+                    rotate:   `${idx * (360 / generateItems(currentRandomizer!.items).length)}deg`,
+                    width:    `${Math.min(width, height) - 4}px !important`,
+                    height:   `${Math.min(width, height) - 4}px !important`,
                   }}>
-                    <Box sx={{
-                      rotate:     `180deg`,
-                      color:      'white',
-                      textAlign:  'center',
-                      lineHeight: `${(Math.min(width, height) - 4) / 2}px`,
-                      fontFamily: `'${currentRandomizer.customizationFont.family}'`,
-                      fontSize:   currentRandomizer.customizationFont.size + 'px',
-                      fontWeight: currentRandomizer.customizationFont.weight,
-                      textShadow: [
-                        textStrokeGenerator(
-                          currentRandomizer.customizationFont.borderPx,
-                          currentRandomizer.customizationFont.borderColor,
-                        ),
-                        shadowGenerator(currentRandomizer.customizationFont.shadow)].filter(Boolean).join(', '),
+                  <Box sx={{
+                    rotate:          `${180 / generateItems(currentRandomizer!.items).length}deg`,
+                    transformOrigin: '50% 100%',
+                    color:           'white',
+                    textAlign:       'center',
+                    height:          `${(Math.min(width, height) - 4) / 2}px`,
+                    fontFamily:      `'${currentRandomizer.customizationFont.family}'`,
+                    fontSize:        currentRandomizer.customizationFont.size + 'px',
+                    fontWeight:      currentRandomizer.customizationFont.weight,
+                    textShadow:      [
+                      textStrokeGenerator(
+                        currentRandomizer.customizationFont.borderPx,
+                        currentRandomizer.customizationFont.borderColor,
+                      ),
+                      shadowGenerator(currentRandomizer.customizationFont.shadow)].filter(Boolean).join(', '),
+                  }}>
+                    <span style={{
+                      writingMode:     'vertical-rl',
+                      height:          `${Math.min(width, height) / 2}px`,
+                      textOrientation: 'mixed',
+                      transform:       'rotate(180deg)',
+                      display:         'inline-block',
+                      // backgroundColor: 'blue',
+                      // clipPath:        'polygon(56% 0%, 150% 100%, -50% 100%)',
+                      // clipPath:        `polygon(56% 0%, ${(Math.min(width, height) / generateItems(currentRandomizer!.items).length) * 2}px 100%, -50% 100%)`,
                     }}>
                       {item.name}
-                    </Box>
-                  </Box>)}
-                </>}
+                    </span>
+                  </Box>
+                </Box>,
+                )}
               </Box>
             </>}
           </Box>}
@@ -504,98 +538,3 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
     </Grow>
   </>;
 };
-
-/*
-<!DOCTYPE html>
-<html>
-  <head>
-    <style>
-      .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .wheel {
-        position: relative;
-        width: 700px;
-        height: 700px;
-        border: 1px solid black;
-        border-radius: 50%;
-        overflow: hidden;
-      }
-
-      .segment {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        display: flex;
-        flex-wrap: wrap;
-        margin-left: auto;
-        transform: translateX(-50%);
-        transform-origin: 0 0;
-        width: 9999999px;
-        height: 50%;
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      }
-
-      .segment::after {
-        text-align: center;
-        align-self: center;
-        margin: auto;
-        transform-origin: 50% 50%;
-    content: 'Lorem Ipsum Dolor';
-    width:max-content;
-    rotate: 90deg;
-      }
-
-      .segment:nth-child(1) {
-        background-color: #1900ff;
-      }
-
-.segment:nth-child(2) {
-  background-color: #3cff00;
-  rotate: 180deg;
-}
-
-      .arrow {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(0deg);
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 0 20px 30px 20px;
-        border-color: transparent transparent #000000 transparent;
-      }
-
-      #spin-button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 20px;
-        cursor: pointer;
-      }
-
-      #result {
-        font-size: 30px;
-        font-weight: bold;
-        margin-top: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="wheel">
-        <div class="segment">
-        </div>
-        <div class="segment">
-        </div>
-        <!-- Segments will be dynamically created with JavaScript -->
-      </div>
-      <button id="spin-button" onclick="spin()">Spin the wheel</button>
-      <p id="result"></p>
-    </div>
-</body>
-</html>
-*/
