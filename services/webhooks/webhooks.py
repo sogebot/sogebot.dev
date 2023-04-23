@@ -1,8 +1,11 @@
 import asyncio
 import traceback
 import signal
+import psycopg2
 import sys
-import logging
+import json
+import datetime
+import pytz
 
 from twitchAPI.twitch import Twitch
 from twitchAPI.helper import first
@@ -10,42 +13,54 @@ from twitchAPI.eventsub import EventSub
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.types import AuthScope
 
+from logger import setup_custom_logger
+
 from dotenv import dotenv_values
 config = dotenv_values(".env")
 
 from pyngrok import ngrok
 http_tunnel = ngrok.connect('http://localhost:8080')
 
-formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
-                              datefmt='%Y-%m-%d %H:%M:%S')
-
 APP_ID = config.get('TWITCH_EVENTSUB_CLIENTID')
 APP_SECRET = config.get('TWITCH_EVENTSUB_CLIENTSECRET')
 EVENTSUB_URL = 'https://webhooks.sogebot.xyz/handler'
 EVENTSUB_URL = http_tunnel.public_url
-USERID = '96965261'
 
-def setup_custom_logger(name):
-    formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
-                                  datefmt='%Y-%m-%d %H:%M:%S')
-    handler = logging.FileHandler('log.txt', mode='w')
-    handler.setFormatter(formatter)
-    screen_handler = logging.StreamHandler(stream=sys.stdout)
-    screen_handler.setFormatter(formatter)
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
-    logger.addHandler(screen_handler)
-    return logger
+conn = psycopg2.connect(database=config.get('PG_DB'),
+                        host="localhost",
+                        user=config.get('PG_USERNAME'),
+                        password=config.get('PG_PASSWORD'),
+                        port="5432")
+
+
 logger = setup_custom_logger('myapp')
-
 logger.info('Starting up EventSub Webhooks service')
 
-async def on_channel_redemption_add(data: dict):
+status = []
+
+def add_event_to_database(event, userId, json_data):
+    cur = conn.cursor()
+    cur.execute('INSERT INTO "eventsub_events" (userId, event, data) VALUES (%s, %s, %s)', (userId, event, json_data))
+    conn.commit()
+    cur.close()
+    return
+
+async def save_event_to_db(data: dict):
     # our event happend, lets do things with the data we got!
+    event = data.get('subscription')['type']
+    userId = data.get('subscription')['condition']['broadcaster_user_id']
+    json_data = json.dumps(data)
+    add_event_to_database(event, userId, json_data)
     logger.info(data)
 
-async def eventsub_example():
+def getUsers(timestamp):
+  logger.info('Getting users from DB (t=%s)' % (timestamp,))
+  with conn.cursor() as cur:
+    cur.execute('SELECT "userId", "scopes" FROM "eventsub_users" WHERE "eventsub_users"."updatedat" >= %s', (timestamp,))
+    users_from_db = cur.fetchall()
+  return users_from_db
+
+async def main():
   try:
     # create the api instance and get the ID of the target user
     twitch = await Twitch(APP_ID, APP_SECRET)
@@ -61,11 +76,32 @@ async def eventsub_example():
     # subscribing to the desired eventsub hook for our user
     # the given function (in this example on_follow) will be called every time this event is triggered
     # the broadcaster is a moderator in their own channel by default so specifying both as the same works in this example
-    try:
-      await event_sub.listen_channel_points_custom_reward_redemption_add(USERID, on_channel_redemption_add)
-      logger.info(f'User {USERID} subscribed to listen_channel_points_custom_reward_redemption_add')
-    except Exception as e:
-      logger.error(f'User {USERID} error for listen_channel_points_custom_reward_redemption_add: {e}')
+
+    timestamp = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    while True:
+      current_timestamp = datetime.datetime.now(tz=pytz.utc)
+      users_from_db = getUsers(timestamp)
+      timestamp = current_timestamp
+
+      for user_id, scopes in users_from_db:
+        if 'channel:read:redemptions' in scopes:
+          try:
+            await event_sub.listen_channel_points_custom_reward_redemption_add(user_id, save_event_to_db)
+            logger.info(f'User {user_id} subscribed to listen_channel_points_custom_reward_redemption_add')
+          except Exception as e:
+            if 'subscription already exists' not in e:
+              logger.error(f'User {user_id} error for listen_channel_points_custom_reward_redemption_add: {e}')
+
+        if 'moderator:read:followers' in scopes:
+          try:
+            await event_sub.listen_channel_follow_v2(user_id, user_id, save_event_to_db)
+            logger.info(f'User {user_id} subscribed to listen_channel_follow_v2')
+          except Exception as e:
+            if 'subscription already exists' not in e:
+              logger.error(f'User {user_id} error for listen_channel_follow_v2: {e}')
+
+      await asyncio.sleep(60)
+
 
     # eventsub will run in its own process
     # so lets just wait for user input before shutting it all down again
@@ -86,4 +122,4 @@ async def eventsub_example():
       traceback.print_exc()
 
 # lets run our example
-asyncio.run(eventsub_example())
+asyncio.run(main())

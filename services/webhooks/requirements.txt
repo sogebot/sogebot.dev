@@ -13,9 +13,11 @@ idna==3.4
 iso8601==1.1.0
 m3u8==3.4.0
 multidict==6.0.4
+psycopg2==2.9.6
 pyngrok==6.0.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+pytz==2023.3
 PyYAML==6.0
 rfc3986==1.5.0
 six==1.16.0
