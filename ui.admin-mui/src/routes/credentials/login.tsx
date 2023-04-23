@@ -7,6 +7,7 @@ const Login = () => {
     const scopes = [
       'user:edit',
       'user:read:email',
+      'moderator:read:followers',
     ];
     const clientId = '25ptx7puxva3gg1lt557qjp1ii0uur';
     const state = encodeURIComponent(window.btoa(
