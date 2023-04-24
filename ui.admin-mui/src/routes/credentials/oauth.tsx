@@ -60,11 +60,7 @@ const OAuth = () => {
       console.groupEnd();
       localStorage['cached-logged-user'] = JSON.stringify(data);
 
-      axios.post('https://credentials.sogebot.xyz/twitch/webhooks/user', {
-        userId: twitchValidation.data.user_id,
-        login:  twitchValidation.data.login,
-        scopes: twitchValidation.data.scopes,
-      });
+      axios.post('https://eventsub.sogebot.xyz/user', undefined, twitchHeaders);
 
       window.location.assign(`${gotoAfterLogin || state.referrer || state.url}`);
     } catch (error) {

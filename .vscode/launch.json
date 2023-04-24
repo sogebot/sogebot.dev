@@ -2,6 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${fileDirname}"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "without moderation",
@@ -17,13 +26,15 @@
                 "ENV": "development",
                 "CORS": "http://localhost:3000",
                 "NODE_ENV": "development",
-                "DISABLE":"moderation",
+                "DISABLE": "moderation",
                 "DEBUG": "tmi.message"
             },
             "preLaunchTask": "npm: build - backend",
             "sourceMaps": true,
             "port": 9229,
-            "outFiles": ["${workspaceFolder}/backend/dest/**/*"]
+            "outFiles": [
+                "${workspaceFolder}/backend/dest/**/*"
+            ]
         },
         {
             "type": "node",
@@ -45,7 +56,9 @@
             "preLaunchTask": "npm: build - backend",
             "sourceMaps": true,
             "port": 9229,
-            "outFiles": ["${workspaceFolder}/dest/**/*"]
+            "outFiles": [
+                "${workspaceFolder}/dest/**/*"
+            ]
         },
         {
             "type": "node",
@@ -66,7 +79,9 @@
             "preLaunchTask": "npm: build - backend",
             "sourceMaps": true,
             "port": 9229,
-            "outFiles": ["${workspaceFolder}/dest/**/*"]
+            "outFiles": [
+                "${workspaceFolder}/dest/**/*"
+            ]
         }
     ]
 }

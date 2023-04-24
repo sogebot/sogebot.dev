@@ -1,11 +1,15 @@
+# Add dependencies folder
+import sys
+sys.path.insert(0, 'dependencies')
+
 import asyncio
 import traceback
 import signal
-import psycopg2
-import sys
 import json
 import datetime
 import pytz
+import os
+from pyngrok import ngrok
 
 from twitchAPI.twitch import Twitch
 from twitchAPI.helper import first
@@ -13,30 +17,12 @@ from twitchAPI.eventsub import EventSub
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.types import AuthScope
 
-from logger import setup_custom_logger
+from logger import logger
+from server import run_server
+from database import conn
 
-from dotenv import dotenv_values
-config = dotenv_values(".env")
-
-from pyngrok import ngrok
-http_tunnel = ngrok.connect('http://localhost:8080')
-
-APP_ID = config.get('TWITCH_EVENTSUB_CLIENTID')
-APP_SECRET = config.get('TWITCH_EVENTSUB_CLIENTSECRET')
-EVENTSUB_URL = 'https://webhooks.sogebot.xyz/handler'
-EVENTSUB_URL = http_tunnel.public_url
-
-conn = psycopg2.connect(database=config.get('PG_DB'),
-                        host="localhost",
-                        user=config.get('PG_USERNAME'),
-                        password=config.get('PG_PASSWORD'),
-                        port="5432")
-
-
-logger = setup_custom_logger('myapp')
-logger.info('Starting up EventSub Webhooks service')
-
-status = []
+from dotenv import load_dotenv
+load_dotenv()
 
 def add_event_to_database(event, userId, json_data):
     cur = conn.cursor()
@@ -53,15 +39,28 @@ async def save_event_to_db(data: dict):
     add_event_to_database(event, userId, json_data)
     logger.info(data)
 
-def getUsers(timestamp):
+def getUsers(conn, timestamp):
   logger.info('Getting users from DB (t=%s)' % (timestamp,))
   with conn.cursor() as cur:
     cur.execute('SELECT "userId", "scopes" FROM "eventsub_users" WHERE "eventsub_users"."updatedat" >= %s', (timestamp,))
     users_from_db = cur.fetchall()
   return users_from_db
 
+
 async def main():
+  logger.info('Starting up EventSub Webhooks service')
+
+  EVENTSUB_URL = 'https://eventsub.sogebot.xyz'
+  if os.getenv('ENV') == 'development':
+    logger.info('Using ngrok tunnel on development')
+    http_tunnel = ngrok.connect('http://localhost:8080')
+    EVENTSUB_URL = http_tunnel.public_url
+
   try:
+    run_server(8081)
+
+    APP_ID = os.getenv('TWITCH_EVENTSUB_CLIENTID')
+    APP_SECRET = os.getenv('TWITCH_EVENTSUB_CLIENTSECRET')
     # create the api instance and get the ID of the target user
     twitch = await Twitch(APP_ID, APP_SECRET)
 
@@ -80,7 +79,7 @@ async def main():
     timestamp = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     while True:
       current_timestamp = datetime.datetime.now(tz=pytz.utc)
-      users_from_db = getUsers(timestamp)
+      users_from_db = getUsers(conn, timestamp)
       timestamp = current_timestamp
 
       for user_id, scopes in users_from_db:
@@ -89,16 +88,16 @@ async def main():
             await event_sub.listen_channel_points_custom_reward_redemption_add(user_id, save_event_to_db)
             logger.info(f'User {user_id} subscribed to listen_channel_points_custom_reward_redemption_add')
           except Exception as e:
-            if 'subscription already exists' not in e:
-              logger.error(f'User {user_id} error for listen_channel_points_custom_reward_redemption_add: {e}')
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {user_id} error for listen_channel_points_custom_reward_redemption_add: {str(e)}')
 
         if 'moderator:read:followers' in scopes:
           try:
             await event_sub.listen_channel_follow_v2(user_id, user_id, save_event_to_db)
             logger.info(f'User {user_id} subscribed to listen_channel_follow_v2')
           except Exception as e:
-            if 'subscription already exists' not in e:
-              logger.error(f'User {user_id} error for listen_channel_follow_v2: {e}')
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {user_id} error for listen_channel_follow_v2: {str(e)}')
 
       await asyncio.sleep(60)
 
@@ -121,5 +120,6 @@ async def main():
       logger.error('An error occurred:')
       traceback.print_exc()
 
-# lets run our example
-asyncio.run(main())
+
+if __name__ == '__main__':
+    asyncio.run(main())

@@ -13,3 +13,7 @@ def setup_custom_logger(name):
     logger.addHandler(handler)
     logger.addHandler(screen_handler)
     return logger
+
+logger = setup_custom_logger('webhooks')
+
+__all__ = [ logger ]
