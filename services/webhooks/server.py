@@ -5,6 +5,7 @@ import threading
 import json
 import requests
 import os
+import datetime
 
 from logger import logger
 from database import conn
@@ -26,10 +27,24 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/user':
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(b'This works!')
+          # first implementation assumes my user 96965261
+          # TODO:
+          #  - added user will get password, which will be generated on POST /user
+          #  - this will be saved and user will then be authorized by this key
+
+          # Get the headers of the incoming request
+          timestamp = float(self.headers.get('sogebot-event-timestamp', 0)) / 1000
+          timestamptz = datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
+          user_id = '96965261'
+          with conn.cursor() as cur:
+            cur.execute('SELECT "data" FROM "eventsub_events" WHERE "userid"=%s AND timestamp >= %s',
+                        (user_id, timestamptz))
+            events = cur.fetchall()
+
+          self.send_response(200)
+          self.send_header('Content-Type', 'application/json')
+          self.end_headers()
+          self.wfile.write(json.dumps(events).encode('utf-8'))
 
     def do_POST(self):
         if self.path == '/user':
