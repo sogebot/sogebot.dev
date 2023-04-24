@@ -100,6 +100,36 @@ async def main():
             if 'subscription already exists' not in str(e):
               logger.error(f'User {user_id} error for listen_channel_follow_v2: {str(e)}')
 
+        if 'bits:read' in scopes:
+          try:
+            await event_sub.listen_channel_cheer(user_id, save_event_to_db)
+            logger.info(f'User {user_id} subscribed to listen_channel_cheer')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {user_id} error for listen_channel_cheer: {str(e)}')
+
+        if 'channel:moderate' in scopes:
+          try:
+            await event_sub.listen_channel_ban(user_id, save_event_to_db)
+            logger.info(f'User {user_id} subscribed to listen_channel_ban')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {user_id} error for listen_channel_ban: {str(e)}')
+          try:
+            await event_sub.listen_channel_unban(user_id, save_event_to_db)
+            logger.info(f'User {user_id} subscribed to listen_channel_unban')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {user_id} error for listen_channel_unban: {str(e)}')
+
+
+        # no auth required
+        try:
+          await event_sub.listen_channel_raid(save_event_to_db, to_broadcaster_user_id=user_id)
+          logger.info(f'User {user_id} subscribed to listen_channel_raid (to broadcaster)')
+        except Exception as e:
+          if 'subscription already exists' not in str(e):
+            logger.error(f'User {user_id} error for listen_channel_raid (to broadcaster): {str(e)}')
       await asyncio.sleep(60)
 
 

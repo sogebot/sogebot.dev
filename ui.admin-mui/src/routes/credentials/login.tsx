@@ -9,6 +9,8 @@ const Login = () => {
       'user:read:email',
       'moderator:read:followers',
       'channel:read:redemptions',
+      'bits:read',
+      'channel:moderate',
     ];
     const clientId = '25ptx7puxva3gg1lt557qjp1ii0uur';
     const state = encodeURIComponent(window.btoa(
