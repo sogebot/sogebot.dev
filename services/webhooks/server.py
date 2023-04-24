@@ -6,6 +6,8 @@ import json
 import requests
 import os
 import datetime
+import pytz
+import time
 
 from logger import logger
 from database import conn
@@ -27,23 +29,46 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/user':
-          timestamp = float(self.headers.get('sogebot-event-timestamp', 0)) / 1000
           user_id = self.headers.get('sogebot-event-userid', None)
-          if user_id:
-            timestamptz = datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
-            with conn.cursor() as cur:
-              cur.execute('SELECT "data" FROM "eventsub_events" WHERE "userid"=%s AND timestamp >= %s',
-                          (user_id, timestamptz))
-              events = cur.fetchall()
 
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(events).encode('utf-8'))
-          else:
-            self.send_response(400)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
+          # Wait for up to 60 seconds for new data to be available
+          self.connection.settimeout(120)
+
+          # Wait for up to 60 seconds for new data to be available
+          try:
+            if user_id:
+              for i in range(60):
+                with conn.cursor() as cur:
+                  cur.execute('SELECT "userid", "timestamp", "data" FROM "eventsub_events" WHERE "userid"=%s ORDER BY "timestamp" ASC LIMIT 1',
+                              (user_id,))
+                  event = cur.fetchone()
+
+                  if event:
+                    #  we have data
+                    user_id = event[0]
+                    timestamp = event[1]
+                    data = event[2]
+
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(data.encode('utf-8'))
+                    # we delete used data
+                    cur.execute('DELETE FROM "eventsub_events" WHERE "userid"=%s AND timestamp=%s', (user_id, timestamp))
+                    conn.commit()
+                    return
+                  else:
+                    time.sleep(1)
+            else:
+              self.send_response(400)
+              self.send_header('Content-Type', 'application/json')
+              self.end_headers()
+          except socket.timeout:
+            pass
+
+          self.send_response(204)
+          self.send_header('Content-Type', 'application/json')
+          self.end_headers()
 
     def do_POST(self):
         if self.path == '/user':
