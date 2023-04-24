@@ -40,7 +40,8 @@ async def save_event_to_db(data: dict):
     logger.info(data)
 
 def getUsers(conn, timestamp):
-  logger.info('Getting users from DB (t=%s)' % (timestamp,))
+  if os.getenv('ENV') == 'development':
+    logger.info('Getting users from DB (t=%s)' % (timestamp,))
   with conn.cursor() as cur:
     cur.execute('SELECT "userId", "scopes" FROM "eventsub_users" WHERE "eventsub_users"."updatedat" >= %s', (timestamp,))
     users_from_db = cur.fetchall()
