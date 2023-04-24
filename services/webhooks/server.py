@@ -37,7 +37,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
           # Wait for up to 60 seconds for new data to be available
           try:
             if user_id:
-              for i in range(60):
+              for i in range(60 * 3):
                 with conn.cursor() as cur:
                   cur.execute('SELECT "userid", "timestamp", "data" FROM "eventsub_events" WHERE "userid"=%s ORDER BY "timestamp" ASC LIMIT 1',
                               (user_id,))
@@ -58,7 +58,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
                     conn.commit()
                     return
                   else:
-                    time.sleep(1)
+                    time.sleep(1/3)
             else:
               self.send_response(400)
               self.send_header('Content-Type', 'application/json')
