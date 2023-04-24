@@ -8,6 +8,7 @@ import os
 import datetime
 import pytz
 import time
+import socket
 
 from logger import logger
 from database import conn
@@ -106,6 +107,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
                   if os.getenv('ENV') == 'development':
                     logger.info(f'User {user_id} not found. Creating.')
                   cur.execute('INSERT INTO "eventsub_users" ("userId", "scopes") VALUES(%s, %s)', (user_id, scopes))
+                conn.commit()
 
               self.send_response(200)
               self.send_header('Content-Type', 'text/plain')

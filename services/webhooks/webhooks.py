@@ -25,10 +25,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def add_event_to_database(event, userId, json_data):
-    cur = conn.cursor()
-    cur.execute('INSERT INTO "eventsub_events" (userId, event, data) VALUES (%s, %s, %s)', (userId, event, json_data))
-    conn.commit()
-    cur.close()
+    with conn.cursor() as cur:
+      cur.execute('INSERT INTO "eventsub_events" (userId, event, data) VALUES (%s, %s, %s)', (userId, event, json_data))
+      conn.commit()
     return
 
 async def save_event_to_db(data: dict):
@@ -79,7 +78,7 @@ async def main():
 
     timestamp = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     while True:
-      current_timestamp = datetime.datetime.now(tz=pytz.utc)
+      current_timestamp = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(minutes=1)
       users_from_db = getUsers(conn, timestamp)
       timestamp = current_timestamp
 
@@ -115,6 +114,7 @@ async def main():
           except Exception as e:
             if 'subscription already exists' not in str(e):
               logger.error(f'User {user_id} error for listen_channel_ban: {str(e)}')
+
           try:
             await event_sub.listen_channel_unban(user_id, save_event_to_db)
             logger.info(f'User {user_id} subscribed to listen_channel_unban')
