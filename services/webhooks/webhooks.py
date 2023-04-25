@@ -71,10 +71,9 @@ async def main():
     # basic setup, will run on port 8080 and a reverse proxy takes care of the https and certificate
     event_sub = EventSub(EVENTSUB_URL, APP_ID, 8080, twitch)
 
-    # TODO:
-    # - we should list subscriptions and check if correct endpoint is used
-    #   otherwise we should unsubscribe THAT subscription
-    # - then we should add subscriptions if missing by scopes
+    # unsubscribe from all old events that might still be there
+    # this will ensure we have a clean slate
+    await event_sub.unsubscribe_all()
 
     # start the eventsub client
     event_sub.start()
