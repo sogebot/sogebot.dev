@@ -2,16 +2,17 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import React from 'react';
 import { useDidMount } from 'rooks';
 
+export const scopes = [
+  'user:edit',
+  'user:read:email',
+  'moderator:read:followers',
+  'channel:read:redemptions',
+  'bits:read',
+  'channel:moderate',
+];
+
 const Login = () => {
   useDidMount(() => {
-    const scopes = [
-      'user:edit',
-      'user:read:email',
-      'moderator:read:followers',
-      'channel:read:redemptions',
-      'bits:read',
-      'channel:moderate',
-    ];
     const clientId = '25ptx7puxva3gg1lt557qjp1ii0uur';
     const state = encodeURIComponent(window.btoa(
       JSON.stringify({

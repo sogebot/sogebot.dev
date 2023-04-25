@@ -58,7 +58,9 @@ const OAuth = () => {
       console.group('isUserLoggedIn::twitch::cached-logged-user');
       console.debug(JSON.stringify(data));
       console.groupEnd();
-      localStorage['cached-logged-user'] = JSON.stringify(data);
+      localStorage['cached-logged-user'] = JSON.stringify({
+        ...data, scopes: twitchValidation.data.scopes,
+      });
 
       axios.post('https://eventsub.sogebot.xyz/user', undefined, twitchHeaders).finally(() => {
         window.location.assign(`${gotoAfterLogin || state.referrer || state.url}`);

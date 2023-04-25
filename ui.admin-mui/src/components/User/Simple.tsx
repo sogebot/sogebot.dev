@@ -3,11 +3,16 @@ import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import {
   Avatar, Box, IconButton, InputAdornment, TextField,
 } from '@mui/material';
+import { isEqual } from 'lodash';
 import React from 'react';
+import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+import { scopes } from '../../routes/credentials/login';
 
 export const UserSimple: React.FC = () => {
+  const [ user ] = useLocalstorageState<false | Record<string, any>>('cached-logged-user', false);
+
   const logout = () => {
     delete localStorage['cached-logged-user'];
     const socket = getSocket('/core/users', true);
@@ -20,6 +25,18 @@ export const UserSimple: React.FC = () => {
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
     window.location.assign(window.location.origin);
   };
+
+  React.useEffect(() => {
+    if (user) {
+      if (!isEqual(
+        (user.scopes ?? []).sort(),
+        scopes.sort(),
+      )) {
+        console.error('Scopes are missing or incorrect, logging out');
+        logout();
+      }
+    }
+  }, [user]);
 
   const login = () => {
     window.location.assign(window.location.origin + '/credentials/login');
