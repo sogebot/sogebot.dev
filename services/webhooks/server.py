@@ -17,6 +17,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class CORSRequestHandler(SimpleHTTPRequestHandler):
+    def log_message(self, format, *args):
+        # Log request information using custom format
+
+        user_id = self.headers.get('sogebot-event-userid')
+        if user_id:
+          logger.info(f'[{self.client_address[0]}:{self.client_address[1]}] #{user_id} "{self.requestline}" {args[1]}')
+        else:
+          logger.info(f'[{self.client_address[0]}:{self.client_address[1]}] "{self.requestline}" {args[1]}')
+
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', '*')
@@ -58,15 +67,20 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
                     cur.execute('DELETE FROM "eventsub_events" WHERE "userid"=%s AND timestamp=%s', (user_id, timestamp))
                     return
                   else:
-                    time.sleep(1/3)
+                    time.sleep(1 / 3)
             else:
               self.send_response(400)
               self.send_header('Content-Type', 'application/json')
               self.end_headers()
+              return
           except socket.timeout:
             pass
 
           self.send_response(204)
+          self.send_header('Content-Type', 'application/json')
+          self.end_headers()
+        else:
+          self.send_response(400)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
 
@@ -117,9 +131,13 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'Not found')
 
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+    pass
+
 def run_server(port):
     server_address = ('', port)
-    server  = HTTPServer(server_address, CORSRequestHandler)
-    logger.info(f'Starting /user listener on {port}')
+    server  = ThreadedHTTPServer(server_address, CORSRequestHandler)
+    server.quiet = True  # Disable server logs
     server_thread = threading.Thread(target=server.serve_forever)
     server_thread.start()
