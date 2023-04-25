@@ -1,6 +1,6 @@
 twitchAPI==3.10.0
 python-dotenv==1.0.0
 pyngrok==6.0.0
-pg8000==1.29.4
+psycopg2==2.9.6
 pytz==2023.3
 requests==2.28.2

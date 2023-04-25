@@ -8,10 +8,6 @@ WORKDIR /app
 
 COPY requirements.txt requirements.txt
 
-# Remove unnecessary WINDOWS requirements
-RUN sed -i '/^pywin32/d' ./requirements.txt
-RUN sed -i '/^pypiwin32/d' ./requirements.txt
-
 RUN pip install --upgrade pip && \
     pip install --user --no-cache-dir wheel && \
     pip wheel --no-cache-dir --wheel-dir=/wheels -r /app/requirements.txt
@@ -26,6 +22,9 @@ ARG ENV=production
 ENV ENV $ENV
 
 WORKDIR /app
+
+# Intall postgres
+RUN apk add --no-cache postgresql-client
 
 # Copy the wheel packages from the first stage
 COPY --from=builder /wheels /wheels
