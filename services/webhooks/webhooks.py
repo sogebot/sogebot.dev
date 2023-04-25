@@ -201,11 +201,11 @@ async def main():
 
         # no auth required
         try:
-          await event_sub.listen_channel_raid(callback, to_broadcaster_user_id=user_id)
-          logger.info(f'User {user_id} subscribed to listen_channel_raid (to broadcaster)')
+          await event_sub.listen_channel_raid(callback, to_broadcaster_user_id=broadcaster_user_id)
+          logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_raid (to broadcaster)')
         except Exception as e:
           if 'subscription already exists' not in str(e):
-            logger.error(f'User {user_id} error for listen_channel_raid (to broadcaster): {str(e)}')
+            logger.error(f'User {broadcaster_user_id} error for listen_channel_raid (to broadcaster): {str(e)}')
       await asyncio.sleep(60)
 
 
