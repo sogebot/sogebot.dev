@@ -9,6 +9,9 @@ export const scopes = [
   'channel:read:redemptions',
   'bits:read',
   'channel:moderate',
+  'channel:read:predictions',
+  'channel:read:polls',
+  'channel:read:hype_train',
 ];
 
 const Login = () => {

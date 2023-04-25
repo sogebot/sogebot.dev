@@ -11,5 +11,5 @@ conn = psycopg2.connect(database=os.getenv('PG_DB'),
                       user=os.getenv('PG_USERNAME'),
                       password=os.getenv('PG_PASSWORD'),
                       port=int(os.getenv('PG_PORT')))
-
+conn.set_session(autocommit=True)
 __all__ = [ conn ]

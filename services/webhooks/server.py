@@ -56,7 +56,6 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
                     self.wfile.write(data.encode('utf-8'))
                     # we delete used data
                     cur.execute('DELETE FROM "eventsub_events" WHERE "userid"=%s AND timestamp=%s', (user_id, timestamp))
-                    conn.commit()
                     return
                   else:
                     time.sleep(1/3)
@@ -102,12 +101,11 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
                   else:
                     if os.getenv('ENV') == 'development':
                       logger.info(f'User {user_id} have new scopes {scopes}. Updating.')
-                    cur.execute('UPDATE "eventsub_users" SET "scopes"=%s, "updatedat"=NOW()  WHERE "userId"=%s', (scopes, user_id))
+                    cur.execute('UPDATE "eventsub_users" SET "scopes"=%s, "updated"=%s WHERE "userId"=%s', (scopes, True, user_id))
                 else:
                   if os.getenv('ENV') == 'development':
                     logger.info(f'User {user_id} not found. Creating.')
                   cur.execute('INSERT INTO "eventsub_users" ("userId", "scopes") VALUES(%s, %s)', (user_id, scopes))
-                conn.commit()
 
               self.send_response(200)
               self.send_header('Content-Type', 'text/plain')

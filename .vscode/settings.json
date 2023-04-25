@@ -24,4 +24,5 @@
       "password": "postgres"
     }
   ],
+  "python.linting.enabled": true,
 }

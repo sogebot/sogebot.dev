@@ -27,10 +27,9 @@ load_dotenv()
 def add_event_to_database(event, userId, json_data):
     with conn.cursor() as cur:
       cur.execute('INSERT INTO "eventsub_events" (userId, event, data) VALUES (%s, %s, %s)', (userId, event, json_data))
-      conn.commit()
     return
 
-async def save_event_to_db(data: dict):
+async def callback(data: dict):
     # our event happend, lets do things with the data we got!
     event = data.get('subscription')['type']
     userId = data.get('subscription')['condition']['broadcaster_user_id']
@@ -38,12 +37,17 @@ async def save_event_to_db(data: dict):
     add_event_to_database(event, userId, json_data)
     logger.info(data)
 
-def getUsers(conn, timestamp):
+def getUsers(conn, only_flagged):
   if os.getenv('ENV') == 'development':
-    logger.info('Getting users from DB (t=%s)' % (timestamp,))
+    logger.info('Getting users from DB (only_flagged=%s)' % (only_flagged,))
   with conn.cursor() as cur:
-    cur.execute('SELECT "userId", "scopes" FROM "eventsub_users" WHERE "eventsub_users"."updatedat" >= %s', (timestamp,))
+    if only_flagged:
+      cur.execute('SELECT "userId", "scopes" FROM "eventsub_users" WHERE "eventsub_users"."updated" = %s', (True,))
+    else:
+      cur.execute('SELECT "userId", "scopes" FROM "eventsub_users"')
     users_from_db = cur.fetchall()
+
+    cur.execute('UPDATE "eventsub_users" SET "updated" = %s', (False,))
   return users_from_db
 
 
@@ -76,56 +80,128 @@ async def main():
     # the given function (in this example on_follow) will be called every time this event is triggered
     # the broadcaster is a moderator in their own channel by default so specifying both as the same works in this example
 
-    timestamp = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    only_flagged = False
     while True:
       current_timestamp = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(minutes=1)
-      users_from_db = getUsers(conn, timestamp)
-      timestamp = current_timestamp
+      users_from_db = getUsers(conn, only_flagged)
+      only_flagged = True
 
-      for user_id, scopes in users_from_db:
+      for broadcaster_user_id, scopes in users_from_db:
         if 'channel:read:redemptions' in scopes:
           try:
-            await event_sub.listen_channel_points_custom_reward_redemption_add(user_id, save_event_to_db)
-            logger.info(f'User {user_id} subscribed to listen_channel_points_custom_reward_redemption_add')
+            await event_sub.listen_channel_points_custom_reward_redemption_add(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_points_custom_reward_redemption_add')
           except Exception as e:
             if 'subscription already exists' not in str(e):
-              logger.error(f'User {user_id} error for listen_channel_points_custom_reward_redemption_add: {str(e)}')
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_points_custom_reward_redemption_add: {str(e)}')
 
         if 'moderator:read:followers' in scopes:
           try:
-            await event_sub.listen_channel_follow_v2(user_id, user_id, save_event_to_db)
-            logger.info(f'User {user_id} subscribed to listen_channel_follow_v2')
+            await event_sub.listen_channel_follow_v2(broadcaster_user_id, broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_follow_v2')
           except Exception as e:
             if 'subscription already exists' not in str(e):
-              logger.error(f'User {user_id} error for listen_channel_follow_v2: {str(e)}')
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_follow_v2: {str(e)}')
 
         if 'bits:read' in scopes:
           try:
-            await event_sub.listen_channel_cheer(user_id, save_event_to_db)
-            logger.info(f'User {user_id} subscribed to listen_channel_cheer')
+            await event_sub.listen_channel_cheer(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_cheer')
           except Exception as e:
             if 'subscription already exists' not in str(e):
-              logger.error(f'User {user_id} error for listen_channel_cheer: {str(e)}')
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_cheer: {str(e)}')
 
         if 'channel:moderate' in scopes:
           try:
-            await event_sub.listen_channel_ban(user_id, save_event_to_db)
-            logger.info(f'User {user_id} subscribed to listen_channel_ban')
+            await event_sub.listen_channel_ban(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_ban')
           except Exception as e:
             if 'subscription already exists' not in str(e):
-              logger.error(f'User {user_id} error for listen_channel_ban: {str(e)}')
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_ban: {str(e)}')
 
           try:
-            await event_sub.listen_channel_unban(user_id, save_event_to_db)
-            logger.info(f'User {user_id} subscribed to listen_channel_unban')
+            await event_sub.listen_channel_unban(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_unban')
           except Exception as e:
             if 'subscription already exists' not in str(e):
-              logger.error(f'User {user_id} error for listen_channel_unban: {str(e)}')
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_unban: {str(e)}')
 
+        if 'channel:read:predictions' in scopes:
+          try:
+            await event_sub.listen_channel_prediction_begin(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_begin')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_begin: {str(e)}')
+
+          try:
+            await event_sub.listen_channel_prediction_progress(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_progress')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_progress: {str(e)}')
+
+          try:
+            await event_sub.listen_channel_prediction_lock(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_lock')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_lock: {str(e)}')
+
+          try:
+            await event_sub.listen_channel_prediction_end(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_end')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_end: {str(e)}')
+
+        if 'channel:read:polls' in scopes:
+          try:
+            await event_sub.listen_channel_poll_begin(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_begin')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_begin: {str(e)}')
+
+          try:
+            await event_sub.listen_channel_poll_progress(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_progress')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_progress: {str(e)}')
+
+          try:
+            await event_sub.listen_channel_poll_end(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_end')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_end: {str(e)}')
+
+        if 'channel:read:hype_train' in scopes:
+          try:
+            await event_sub.listen_hype_train_begin(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_begin')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_begin: {str(e)}')
+
+          try:
+            await event_sub.listen_hype_train_progress(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_progress')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_progress: {str(e)}')
+
+          try:
+            await event_sub.listen_hype_train_end(broadcaster_user_id, callback)
+            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_end')
+          except Exception as e:
+            if 'subscription already exists' not in str(e):
+              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_end: {str(e)}')
 
         # no auth required
         try:
-          await event_sub.listen_channel_raid(save_event_to_db, to_broadcaster_user_id=user_id)
+          await event_sub.listen_channel_raid(callback, to_broadcaster_user_id=user_id)
           logger.info(f'User {user_id} subscribed to listen_channel_raid (to broadcaster)')
         except Exception as e:
           if 'subscription already exists' not in str(e):
