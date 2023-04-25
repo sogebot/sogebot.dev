@@ -12,14 +12,12 @@ import os
 from pyngrok import ngrok
 
 from twitchAPI.twitch import Twitch
-from twitchAPI.helper import first
 from twitchAPI.eventsub import EventSub
-from twitchAPI.oauth import UserAuthenticator
-from twitchAPI.types import AuthScope
 
 from logger import logger
 from server import run_server
 from database import conn
+import events
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -70,6 +68,7 @@ async def main():
 
     # basic setup, will run on port 8080 and a reverse proxy takes care of the https and certificate
     event_sub = EventSub(EVENTSUB_URL, APP_ID, 8080, twitch)
+    event_sub.secret = os.getenv('TWITCH_EVENTSUB_SECRET')
 
     # unsubscribe from all old events that might still be there
     # this will ensure we have a clean slate
@@ -81,134 +80,31 @@ async def main():
     # the given function (in this example on_follow) will be called every time this event is triggered
     # the broadcaster is a moderator in their own channel by default so specifying both as the same works in this example
 
+    logger.info('EventSub Webhooks service started')
     only_flagged = False
     while True:
-      current_timestamp = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(minutes=1)
       users_from_db = getUsers(conn, only_flagged)
       only_flagged = True
-
       for broadcaster_user_id, scopes in users_from_db:
-        if 'channel:read:redemptions' in scopes:
-          try:
-            await event_sub.listen_channel_points_custom_reward_redemption_add(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_points_custom_reward_redemption_add')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_points_custom_reward_redemption_add: {str(e)}')
-
-        if 'moderator:read:followers' in scopes:
-          try:
-            await event_sub.listen_channel_follow_v2(broadcaster_user_id, broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_follow_v2')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_follow_v2: {str(e)}')
-
-        if 'bits:read' in scopes:
-          try:
-            await event_sub.listen_channel_cheer(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_cheer')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_cheer: {str(e)}')
-
-        if 'channel:moderate' in scopes:
-          try:
-            await event_sub.listen_channel_ban(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_ban')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_ban: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_unban(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_unban')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_unban: {str(e)}')
-
-        if 'channel:read:predictions' in scopes:
-          try:
-            await event_sub.listen_channel_prediction_begin(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_begin')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_begin: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_prediction_progress(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_progress')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_progress: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_prediction_lock(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_lock')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_lock: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_prediction_end(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_prediction_end')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_prediction_end: {str(e)}')
-
-        if 'channel:read:polls' in scopes:
-          try:
-            await event_sub.listen_channel_poll_begin(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_begin')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_begin: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_poll_progress(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_progress')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_progress: {str(e)}')
-
-          try:
-            await event_sub.listen_channel_poll_end(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_poll_end')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_channel_poll_end: {str(e)}')
-
-        if 'channel:read:hype_train' in scopes:
-          try:
-            await event_sub.listen_hype_train_begin(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_begin')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_begin: {str(e)}')
-
-          try:
-            await event_sub.listen_hype_train_progress(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_progress')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_progress: {str(e)}')
-
-          try:
-            await event_sub.listen_hype_train_end(broadcaster_user_id, callback)
-            logger.info(f'User {broadcaster_user_id} subscribed to listen_hype_train_end')
-          except Exception as e:
-            if 'subscription already exists' not in str(e):
-              logger.error(f'User {broadcaster_user_id} error for listen_hype_train_end: {str(e)}')
-
-        # no auth required
-        try:
-          await event_sub.listen_channel_raid(callback, to_broadcaster_user_id=broadcaster_user_id)
-          logger.info(f'User {broadcaster_user_id} subscribed to listen_channel_raid (to broadcaster)')
-        except Exception as e:
-          if 'subscription already exists' not in str(e):
-            logger.error(f'User {broadcaster_user_id} error for listen_channel_raid (to broadcaster): {str(e)}')
-      await asyncio.sleep(60)
-
+        await asyncio.gather(
+          events.listen_channel_points_custom_reward_redemption_add(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_follow_v2(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_cheer(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_ban(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_unban(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_prediction_begin(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_prediction_progress(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_prediction_lock(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_prediction_end(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_poll_begin(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_poll_progress(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_poll_end(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_hype_train_begin(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_hype_train_progress(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_hype_train_end(broadcaster_user_id, scopes, callback, event_sub),
+          events.listen_channel_raid(broadcaster_user_id, scopes, callback, event_sub),
+        )
+      await asyncio.sleep(120)
 
     # eventsub will run in its own process
     # so lets just wait for user input before shutting it all down again
