@@ -23,6 +23,7 @@ import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
+import { EmotesComboSettings } from './Overlay/EmotesComboSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EmotesSettings } from './Overlay/EmotesSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
@@ -47,6 +48,7 @@ import { AlertItem } from '../Overlay/AlertItem';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
+import { EmotesComboItem } from '../Overlay/EmotesComboItem';
 import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EmotesItem } from '../Overlay/EmotesItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
@@ -350,6 +352,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -464,6 +469,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'tts' && <TTSItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'polls' && <PollsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                  {o.opts.typeId === 'emotescombo' && <EmotesComboItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotes' && <EmotesItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}

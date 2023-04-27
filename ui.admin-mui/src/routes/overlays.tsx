@@ -10,6 +10,7 @@ import { AlertItem } from '../components/Overlay/AlertItem';
 import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
+import { EmotesComboItem } from '../components/Overlay/EmotesComboItem';
 import { EmotesFireworksItem } from '../components/Overlay/EmotesFireworksItem';
 import { EmotesItem } from '../components/Overlay/EmotesItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
@@ -87,6 +88,7 @@ export default function Overlays() {
         {item.opts.typeId === 'obswebsocket' && <OBSWebsocketItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'tts' && <TTSItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'emotescombo' && <EmotesComboItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'emotes' && <EmotesItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'eventlist' && <EventlistItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
