@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import { uniq } from 'lodash';
+import { enqueueSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
@@ -57,11 +58,13 @@ type Props = {
   type: 'audio' | 'image',
   value?: string;
   volume?: number;
+  button?: boolean;
+  announce?: string;
   onChange(value: string | null): void;
   onVolumeChange?(value: number | null): void;
 };
 
-export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onChange, volume, onVolumeChange }) => {
+export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onChange, volume, onVolumeChange, button, announce }) => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ items, setItems ] = React.useState<GalleryInterface[]>([]);
@@ -120,38 +123,40 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
   const selectedItem = items.find(o => o.id === value);
 
   return <Box sx={{ width: '100%' }}>
-    <Stack direction='row' alignItems={'center'}>
-      <Stack direction='row' sx={{ width: '170px' }} alignItems='center' spacing={2}>
-        <FormLabel>{label}</FormLabel>
-        <IconButton onClick={handleClick} sx={{ borderRadius: 0 }}>
-          <CollectionsTwoTone/>
-        </IconButton>
+    { button ? <Button onClick={handleClick}>{label}</Button>
+      : <Stack direction='row' alignItems={'center'}>
+        <Stack direction='row' sx={{ width: '170px' }} alignItems='center' spacing={2}>
+          <FormLabel>{label}</FormLabel>
+          <IconButton onClick={handleClick} sx={{ borderRadius: 0 }}>
+            <CollectionsTwoTone/>
+          </IconButton>
+        </Stack>
+        { selectedItem ? <Box sx={{ pb: 0 }}>
+          {selectedItem.type.includes('image') && <img
+            alt=''
+            src={`${server}/gallery/${selectedItem.id}`}
+            style={{
+              height: '150px', maxWidth: '266px', objectFit: 'contain',
+            }}
+          />}
+          {selectedItem.type.includes('video') && <video
+            controls
+            onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
+            src={`${server}/gallery/${selectedItem.id}`}
+            style={{
+              height: '150px', maxWidth: '266px', objectFit: 'contain',
+            }}
+          />}
+          {selectedItem.type.includes('audio') && <audio
+            controls
+            onLoadedData={(ev) => ev.currentTarget.volume = volume ? volume / 100 : 0.2}
+            onVolumeChange={(ev) => onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100)}
+            src={`${server}/gallery/${selectedItem.id}`}
+            style={{ height: '20px' }}
+          />}
+        </Box> : <Typography>No item selected</Typography>}
       </Stack>
-      { selectedItem ? <Box sx={{ pb: 0 }}>
-        {selectedItem.type.includes('image') && <img
-          alt=''
-          src={`${server}/gallery/${selectedItem.id}`}
-          style={{
-            height: '150px', maxWidth: '266px', objectFit: 'contain',
-          }}
-        />}
-        {selectedItem.type.includes('video') && <video
-          controls
-          onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
-          src={`${server}/gallery/${selectedItem.id}`}
-          style={{
-            height: '150px', maxWidth: '266px', objectFit: 'contain',
-          }}
-        />}
-        {selectedItem.type.includes('audio') && <audio
-          controls
-          onLoadedData={(ev) => ev.currentTarget.volume = volume ? volume / 100 : 0.2}
-          onVolumeChange={(ev) => onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100)}
-          src={`${server}/gallery/${selectedItem.id}`}
-          style={{ height: '20px' }}
-        />}
-      </Box> : <Typography>No item selected</Typography>}
-    </Stack>
+    }
     <Dialog
       maxWidth={false}
       PaperProps={{
@@ -246,6 +251,9 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
                     onVolumeChange && onVolumeChange(null);
                   } else {
                     onChange(item.id!);
+                    if (announce) {
+                      enqueueSnackbar(announce);
+                    }
                     onVolumeChange && onVolumeChange(20); //set default volume to 20%
                   }
                 }}>

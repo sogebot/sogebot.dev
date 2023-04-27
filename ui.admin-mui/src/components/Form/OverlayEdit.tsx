@@ -29,6 +29,7 @@ import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EmotesSettings } from './Overlay/EmotesSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
 import { HTMLSettings } from './Overlay/HTMLSettings';
+import { ImageCarouselSettings } from './Overlay/ImageCarouselSettings';
 import { Layers } from './Overlay/Layers';
 import { MarathonSettings } from './Overlay/MarathonSettings';
 import { OBSWebsocketSettings } from './Overlay/OBSWebsocketSettings';
@@ -57,6 +58,7 @@ import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
 import { HTMLItem } from '../Overlay/HTMLItem';
 import { HypeTrainItem } from '../Overlay/HypeTrainItem';
+import { ImageCarouselItem } from '../Overlay/ImageCarouselItem';
 import { ImportDialog } from '../Overlay/ImportDialog';
 import { MarathonItem } from '../Overlay/MarathonItem';
 import { OBSWebsocketItem } from '../Overlay/OBSWebsocketItem';
@@ -136,7 +138,6 @@ export const OverlayEdit: React.FC = () => {
       } as Overlay;
     });
   }, [moveableId]);
-
   React.useEffect(() => {
     // items to have snaps
     const els: any[] = [];
@@ -345,6 +346,9 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
+                  {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -478,6 +482,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'emotesexplode' && <EmotesExplodeItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotes' && <EmotesItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'carousel' && <ImageCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'html' && <HTMLItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'hypetrain' && <HypeTrainItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}

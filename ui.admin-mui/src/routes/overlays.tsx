@@ -17,6 +17,7 @@ import { EmotesItem } from '../components/Overlay/EmotesItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
 import { HTMLItem } from '../components/Overlay/HTMLItem';
 import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
+import { ImageCarouselItem } from '../components/Overlay/ImageCarouselItem';
 import { MarathonItem } from '../components/Overlay/MarathonItem';
 import { OBSWebsocketItem } from '../components/Overlay/OBSWebsocketItem';
 import { PollsItem } from '../components/Overlay/PollsItem';
@@ -88,6 +89,7 @@ export default function Overlays() {
         {item.opts.typeId === 'marathon' && <MarathonItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'obswebsocket' && <OBSWebsocketItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'carousel' && <ImageCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'tts' && <TTSItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'emotesexplode' && <EmotesExplodeItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'emotescombo' && <EmotesComboItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
