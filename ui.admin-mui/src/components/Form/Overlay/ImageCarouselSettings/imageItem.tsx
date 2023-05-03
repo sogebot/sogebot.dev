@@ -8,11 +8,18 @@ import {
   Stack,
 } from '@mui/material';
 import { orange } from '@mui/material/colors';
-import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
+import { Carousel } from '@sogebot/backend/src/database/entity/overlay';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
-export function ImageItem(props: { image: Carousel['images'][number], isDragging: boolean, onClick: () => void, isClicked: boolean }) {
+import { ImageItemDialog } from './imageItemDialog';
+
+export function ImageItem(props: {
+  image: Carousel['images'][number],
+  isDragging: boolean,
+  onUpdate: (value: Carousel['images'][number]) => void,
+  onDelete: () => void,
+}) {
   const {
     attributes,
     listeners,
@@ -20,6 +27,7 @@ export function ImageItem(props: { image: Carousel['images'][number], isDragging
     transform,
     transition,
   } = useSortable({ id: props.image.id });
+
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const style = {
@@ -31,7 +39,6 @@ export function ImageItem(props: { image: Carousel['images'][number], isDragging
   return (
     <Grid item key={props.image.id}
       ref={setNodeRef} style={style} {...attributes}
-      onPointerDown={() => props.onClick()}
       xs={6}
       lg={3}
       md={4}
@@ -39,21 +46,31 @@ export function ImageItem(props: { image: Carousel['images'][number], isDragging
       <Paper
         variant='outlined'
         sx={{
-          cursor:          'pointer',
-          transition:      'all 300ms',
-          height:          '100%',
-          backgroundColor: props.isClicked ? orange[400]: '#000',
-          '&:hover':       { borderColor: orange[700] },
+          position:   'relative',
+          transition: 'all 300ms',
+          height:     '100%',
+          '&:hover':  { borderColor: orange[700] },
         }}>
+        <ImageItemDialog image={props.image} onDelete={props.onDelete} onUpdate={props.onUpdate}/>
         <Stack spacing={1} alignItems={'center'}>
-          <Button {...listeners} sx={{
-            width:  '100%',
-            height: '4px',
-            p:      0,
-            cursor: 'grab',
-          }} variant='contained'></Button>
-          <Box>
-            <img src={`${server}/gallery/${props.image.url}`} style={{ maxHeight: '150px' }}/>
+          <Button {...listeners}
+            onPointerDown={(ev) => {
+              listeners?.onPointerDown(ev);
+              ev.stopPropagation();
+            }}
+            sx={{
+              width:  '100%',
+              height: '4px',
+              p:      0,
+              cursor: 'grab',
+            }}
+            variant='contained'/>
+          <Box sx={{ width: '100%' }}>
+            <img src={`${server}/gallery/${props.image.url}`} style={{
+              height:    '150px',
+              width:     '100%',
+              objectFit: 'scale-down',
+            }}/>
           </Box>
         </Stack>
       </Paper>

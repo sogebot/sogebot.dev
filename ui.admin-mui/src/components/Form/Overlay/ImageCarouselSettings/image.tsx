@@ -22,10 +22,10 @@ type Props = {
   onChange(value: Carousel['images']): void,
 };
 export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
-  const [ open, setOpen ] = React.useState(true);
+  const [ open, setOpen ] = React.useState(false);
+  const [ item, setItem ] = React.useState(model);
 
   const [activeId, setActiveId] = React.useState<null | string>(null);
-  const [clickedId, setClickedId] = React.useState<null | string>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -34,9 +34,6 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
 
   function handleDragEnd(event: { active: any; over: any; }) {
     const { active, over } = event;
-    console.log({
-      active, over,
-    });
 
     if (active === null || !over) {
       return;
@@ -47,9 +44,17 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
     setActiveId(null);
   }
 
-  const removeImage = React.useCallback(() => {
-    onChange(model.filter(o => o.id !== clickedId));
-  }, [clickedId]);
+  React.useEffect(() => {
+    onChange(item);
+  }, [ item ]);
+
+  const removeImage = (id: string) => {
+    setItem(it => it.filter(o => o.id !== id));
+  };
+
+  const updateImage = (image: typeof model[number]) => {
+    setItem(it => it.map(o => o.id === image.id ? image : o));
+  };
 
   function handleDragStart(event: { active: any; }) {
     const { active } = event;
@@ -82,11 +87,11 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
               strategy={rectSortingStrategy}
             >
               {model.map(image => <ImageItem
+                onUpdate={updateImage}
+                onDelete={() => removeImage(image.id)}
                 key={image.id}
                 image={image}
                 isDragging={image.id === activeId}
-                isClicked={image.id === clickedId}
-                onClick={() => setClickedId(clickedId === image.id ? null : image.id)}
               />)}
             </SortableContext>
           </DndContext>
@@ -104,7 +109,6 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
           waitAfter:            60000,
           waitBefore:           60000,
         }])}/>
-        { clickedId && <Button sx={{ width: '200px' }} color='error' onClick={() => removeImage()}>Remove selected</Button>}
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>
