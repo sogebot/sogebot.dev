@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
-  const [ open, setOpen ] = React.useState(false);
+  const [ open, setOpen ] = React.useState(true);
   const { translate } = useTranslation();
 
   return <Accordion expanded={open}>

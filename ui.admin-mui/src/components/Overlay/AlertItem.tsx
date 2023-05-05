@@ -1,5 +1,5 @@
 import {
-  Box, Grow, SxProps, Theme,
+  Box, SxProps, Theme,
 } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { AlertsRegistry } from '@sogebot/backend/dest/database/entity/overlay';
@@ -376,7 +376,7 @@ const fetchImage = (imageId: string) => {
   });
 };
 
-export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) => {
+export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item }) => {
   getSocket('/core/emotes', true); // init socket
 
   const [ timestamp, setTimestamp ] = React.useState(0);
@@ -1154,13 +1154,5 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item, selected }) =
         </>}
       </Box>}
     </>}
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        {/*<Button size='small' onClick={test} variant='contained'>Test</Button>*/}
-      </Box>
-    </Grow>
   </Box>;
 };

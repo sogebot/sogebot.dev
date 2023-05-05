@@ -18,6 +18,7 @@ import { useMouse, usePreviousImmediate } from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
+import { AlertsRegistryTesterAccordion } from './Overlay/AlertSettings/tester';
 import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
@@ -400,6 +401,8 @@ export const OverlayEdit: React.FC = () => {
                 </Box>
               </Settings>
               }
+
+              {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}
 
               {
                 selectedItem

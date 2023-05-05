@@ -215,9 +215,7 @@ const PageRegistryOverlays = () => {
 
       <Dialog
         open={open}
-        fullWidth
-        PaperProps={{ sx: { height: '100% !important' } }}
-        maxWidth={false}>
+        fullScreen>
         {open && <OverlayEdit/>}
       </Dialog>
     </>
