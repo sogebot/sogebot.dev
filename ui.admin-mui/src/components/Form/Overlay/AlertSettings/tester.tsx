@@ -27,6 +27,7 @@ import { useSelector } from 'react-redux';
 import { getSocket } from '../../../../helpers/socket';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
+import { FormRewardInput } from '../../Input/Reward';
 
 export const AlertsRegistryTesterAccordion: React.FC = () => {
   const [ open, setOpen ] = React.useState(true);
@@ -92,11 +93,13 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
   const haveAmount = React.useMemo(() => amountLabel !== null, [ amountLabel ]);
   const [ currency, setCurrency ] = React.useState(configuration.currency);
 
-  const [ reward, setReward ] = React.useState({
-    id:   undefined,
-    name: undefined,
+  const [ reward, setReward ] = React.useState<{
+    id: string | null,
+    name: string | null,
+  }>({
+    id:   null,
+    name: null,
   });
-  console.log({ setReward });
 
   const onSubmit = React.useCallback(() => {
     const messages = [
@@ -110,7 +113,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
 
     const emit: EmitData = {
       amount:   amountRandom ? Math.floor(Math.random() * 1000) : Number(amountRef.current?.value ?? 5),
-      rewardId: reward.id,
+      rewardId: reward.id ?? undefined,
       name:
         selectedEvent === 'rewardredeem'
           ? reward.name || ''
@@ -194,7 +197,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
         </Box>}
 
         {selectedEvent === 'rewardredeem' && <>
-          Rewards here
+          <FormRewardInput value={reward.id} onChange={value => setReward(value)}/>
         </>}
 
         {haveRecipient && <Box sx={{
@@ -291,7 +294,6 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
             multiline
             disabled={messageRandom}
             inputRef={messageRef}
-            // onClick = { () => messageRef.current?.focus() }
             fullWidth
             variant="filled"
             label={translate('registry.alerts.testDlg.message')}
