@@ -1,4 +1,5 @@
 import {
+  Box,
   Divider,
   FormControl,
   FormLabel,
@@ -27,17 +28,22 @@ export const ClipsCarouselSettings: React.FC<Props> = ({ model, onUpdate }) => {
 
     <Stack spacing={0.5}>
       <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
-      <Slider
-        value={model.volume}
-        max={100}
-        valueLabelDisplay="on"
-        valueLabelFormat={(value) => `${value}%`}
-        size='small'
+      <Box sx={{
+        px: 2,
+        pt: 1,
+      }}>
+        <Slider
+          value={model.volume}
+          max={100}
+          valueLabelDisplay="on"
+          valueLabelFormat={(value) => `${value}%`}
+          size='small'
 
-        onChange={(event, newValue) => onUpdate({
-          ...model, volume: Number(newValue),
-        })}
-      />
+          onChange={(event, newValue) => onUpdate({
+            ...model, volume: Number(newValue),
+          })}
+        />
+      </Box>
 
       <TextField
         label={translate('overlays.clipscarousel.settings.cClipsCustomPeriodInDays')}

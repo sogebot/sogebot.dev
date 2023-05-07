@@ -13,7 +13,7 @@ export const ImageCarouselItem: React.FC<Props<Carousel>> = ({ item, active, hei
   const [ threadId ] = React.useState(shortid());
 
   React.useEffect(() => {
-    if (index === -1 && item.images.length > 0) {
+    if (index === -1 && (item.images ?? []).length > 0) {
       setIndex(0);
     }
   }, [ index, item, active ]);

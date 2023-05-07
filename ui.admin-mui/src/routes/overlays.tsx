@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { AlertItem } from '../components/Overlay/AlertItem';
 import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
+import { ClipsItem } from '../components/Overlay/ClipsItem';
 import { CountdownItem } from '../components/Overlay/CountdownItem';
 import { EmotesComboItem } from '../components/Overlay/EmotesComboItem';
 import { EmotesExplodeItem } from '../components/Overlay/EmotesExplodeItem';
@@ -89,6 +90,7 @@ export default function Overlays() {
         {item.opts.typeId === 'marathon' && <MarathonItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'obswebsocket' && <OBSWebsocketItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'clipscarousel' && <ClipsCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'clips' && <ClipsItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'carousel' && <ImageCarouselItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'tts' && <TTSItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'emotesexplode' && <EmotesExplodeItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}

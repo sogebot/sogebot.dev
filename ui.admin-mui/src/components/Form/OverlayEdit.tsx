@@ -23,6 +23,7 @@ import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
+import { ClipsSettings } from './Overlay/ClipsSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
 import { EmotesComboSettings } from './Overlay/EmotesComboSettings';
 import { EmotesExplodeSettings } from './Overlay/EmotesExplodeSettings';
@@ -50,6 +51,7 @@ import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 import { AlertItem } from '../Overlay/AlertItem';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
+import { ClipsItem } from '../Overlay/ClipsItem';
 import { CountdownItem } from '../Overlay/CountdownItem';
 import { EmotesComboItem } from '../Overlay/EmotesComboItem';
 import { EmotesExplodeItem } from '../Overlay/EmotesExplodeItem';
@@ -176,6 +178,9 @@ export const OverlayEdit: React.FC = () => {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
           navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
         } else {
+          console.log({
+            data, setDefaultOpts: setDefaultOpts({}, 'carousel'),
+          });
           setItem(data);
           setLoading(false);
         }
@@ -344,6 +349,9 @@ export const OverlayEdit: React.FC = () => {
                 setTimeout(() => refresh(), 100);
               }}>
                 <Box sx={{ pt: 3 }}>
+                  {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -485,6 +493,7 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'emotesexplode' && <EmotesExplodeItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'emotes' && <EmotesItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                  {o.opts.typeId === 'clips' && <ClipsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'carousel' && <ImageCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'html' && <HTMLItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
