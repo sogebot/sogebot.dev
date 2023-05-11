@@ -111,5 +111,4 @@ func ListSubscriptions() {
 
 	// Print the response fields
 	fmt.Println("No. of Subscriptions", response.Total)
-	// ... Print other fields as needed
 }

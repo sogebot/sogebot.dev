@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"services/webhooks/events"
+	"services/webhooks/handler"
 	"sync"
 	"time"
 
@@ -25,6 +26,8 @@ func main() {
 	var PG_PORT string = os.Getenv("PG_PORT")
 	var PG_HOST string = os.Getenv("PG_HOST")
 
+	handler.Start()
+
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		PG_USERNAME, PG_PASSWORD, PG_HOST, PG_PORT, PG_DB,
 	)
@@ -39,8 +42,8 @@ func main() {
 	}
 	fmt.Println("EventSub Webhooks service started")
 
-	events.ListSubscriptions()
-	// handleUsers(db, false)
+	// events.ListSubscriptions()
+	handleUsers(db, false)
 }
 
 func handleUsers(db *sql.DB, updatedOnly bool) {
@@ -70,14 +73,17 @@ func handleUsers(db *sql.DB, updatedOnly bool) {
 	)
 	for rows.Next() {
 		rows.Scan(&userId, &scopes, &updated)
+
+		if userId != "96965261" {
+			continue
+		}
 		fmt.Println(userId, scopes, updated)
 
 		var wg sync.WaitGroup
 
-		wg.Add(2)
+		wg.Add(1)
 
 		// Create two goroutines for async tasks
-		go events.ListenChannelFollow(&wg, userId, scopes)
 		go events.ListenChannelFollow(&wg, userId, scopes)
 
 		// Wait for all async tasks to complete
