@@ -39,7 +39,8 @@ func main() {
 	}
 	fmt.Println("EventSub Webhooks service started")
 
-	handleUsers(db, false)
+	events.ListSubscriptions()
+	// handleUsers(db, false)
 }
 
 func handleUsers(db *sql.DB, updatedOnly bool) {
