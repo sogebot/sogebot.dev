@@ -47,8 +47,6 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 	var clientID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 	var secret string = os.Getenv("TWITCH_EVENTSUB_SECRET")
 
-	fmt.Println("Creating follow listener", handler.EVENTSUB_URL)
-
 	// Define the request body as a struct
 	requestBody := struct {
 		Type      string                   `json:"type"`
@@ -64,7 +62,7 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 		},
 		Transport: SubscriptionAddTransport{
 			Method:   "webhook",
-			Callback: handler.EVENTSUB_URL,
+			Callback: handler.EVENTSUB_URL + "/callback",
 			Secret:   secret,
 		},
 	}
@@ -112,15 +110,12 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 		return
 	}
 
-	// Print the response body
-	fmt.Println(string(body))
-
 	// Check the response status code
 	if resp.StatusCode == http.StatusConflict {
 		// ignore this, we have pending or already registered webhook
 		return
 	} else if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		fmt.Println("Unexpected response:", resp.Status)
+		fmt.Printf("User %s error for channel.follow: %s\n", userId, string(body))
 		return
 	}
 
