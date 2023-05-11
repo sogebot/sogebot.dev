@@ -16,7 +16,6 @@ type TokenResponse struct {
 
 func Access() (string, error) {
 	// Set your Twitch app's client ID and secret
-
 	var clientID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 	var clientSecret string = os.Getenv("TWITCH_EVENTSUB_CLIENTSECRET")
 
