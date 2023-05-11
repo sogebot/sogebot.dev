@@ -1,4 +1,8 @@
 go 1.20
 
 use ./services/plugins/
-use ./services/credentials/
+
+use (
+	./services/credentials/
+	./services/webhooks-go
+)
