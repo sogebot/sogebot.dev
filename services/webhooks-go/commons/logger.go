@@ -1,8 +1,10 @@
 package commons
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"services/webhooks/debug"
 	"time"
 )
 
@@ -27,6 +29,24 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.status = code
 	rw.ResponseWriter.WriteHeader(code)
 	rw.wroteHeader = true
+}
+
+func Log(message string) {
+	t := time.Now()
+	fmt.Printf("%s %s\n",
+		t.Format("02/Jan/2006:15:04:05 -0700"),
+		message,
+	)
+}
+
+func Debug(message string) {
+	if debug.IsDEV() {
+		t := time.Now()
+		fmt.Printf("[DEBUG] %s %s\n",
+			t.Format("02/Jan/2006:15:04:05 -0700"),
+			message,
+		)
+	}
 }
 
 func Logger(handler http.Handler) http.Handler {

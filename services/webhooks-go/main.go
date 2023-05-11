@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"services/webhooks/commons"
+	"services/webhooks/debug"
 	"services/webhooks/events"
 	"services/webhooks/handler"
 	"sync"
@@ -18,7 +20,7 @@ import (
 var PG_USER_DB string = "eventsub_users"
 
 func main() {
-	fmt.Println("Starting up EventSub Webhooks service")
+	commons.Log("Starting up EventSub Webhooks service")
 
 	var PG_PASSWORD string = os.Getenv("PG_PASSWORD")
 	var PG_USERNAME string = os.Getenv("PG_USERNAME")
@@ -40,7 +42,7 @@ func main() {
 	if status != nil {
 		log.Fatal(status)
 	}
-	fmt.Println("EventSub Webhooks service started")
+	commons.Log("EventSub Webhooks service started")
 
 	events.ListSubscriptions(nil)
 	handleUsers(db, false)
@@ -74,10 +76,11 @@ func handleUsers(db *sql.DB, updatedOnly bool) {
 	for rows.Next() {
 		rows.Scan(&userId, &scopes, &updated)
 
-		if userId != "96965261" {
-			continue
+		if debug.IsDEV() {
+			if userId != "96965261" {
+				continue
+			}
 		}
-		fmt.Println(userId, scopes, updated)
 
 		var wg sync.WaitGroup
 

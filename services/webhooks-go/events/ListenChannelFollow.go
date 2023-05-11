@@ -7,17 +7,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"services/webhooks/commons"
 	"services/webhooks/handler"
 	"services/webhooks/token"
 	"sync"
 )
-
-type SubscriptionResponse struct {
-	Data         []Subscription `json:"data"`
-	Total        int            `json:"total"`
-	TotalCost    int            `json:"total_cost"`
-	MaxTotalCost int            `json:"max_total_cost"`
-}
 
 type Subscription struct {
 	ID        string                   `json:"id"`
@@ -115,22 +109,7 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 		// ignore this, we have pending or already registered webhook
 		return
 	} else if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		fmt.Printf("User %s error for channel.follow: %s\n", userId, string(body))
+		commons.Log("User " + userId + " error for channel.follow: " + string(body))
 		return
-	}
-
-	// Read the response body
-	var subscriptionResponse SubscriptionResponse
-	err = json.NewDecoder(resp.Body).Decode(&subscriptionResponse)
-	if err != nil {
-		fmt.Println("Error decoding response:", err)
-		return
-	}
-
-	// Access and print the status of the first subscription
-	if len(subscriptionResponse.Data) > 0 {
-		fmt.Println("Status:", subscriptionResponse.Data[0].Status)
-	} else {
-		fmt.Println("No subscriptions found")
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"services/webhooks/debug"
+	"services/webhooks/commons"
 	"services/webhooks/handler"
 	"services/webhooks/token"
 	"strings"
@@ -68,12 +68,10 @@ func ListSubscriptions(cursor *string) {
 
 	var TWITCH_EVENTSUB_CLIENTID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 
-	if debug.IsDEV() {
-		if cursor != nil {
-			fmt.Println("Getting list with cursor " + *cursor)
-		} else {
-			fmt.Println("Getting list without cursor")
-		}
+	if cursor != nil {
+		commons.Debug("Getting list with cursor " + *cursor)
+	} else {
+		commons.Debug("Getting list without cursor")
 	}
 
 	url := "https://api.twitch.tv/helix/eventsub/subscriptions"
@@ -122,9 +120,7 @@ func ListSubscriptions(cursor *string) {
 	}
 	for _, value := range response.Data {
 		if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) {
-			if debug.IsDEV() {
-				fmt.Printf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback)
-			}
+			commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
 			DeleteSubscription(value.ID, token)
 		}
 	}
