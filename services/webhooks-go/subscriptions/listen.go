@@ -1,4 +1,4 @@
-package events
+package subscriptions
 
 import (
 	"bytes"
@@ -25,7 +25,7 @@ type Subscription struct {
 }
 
 type SubscriptionAddTransport struct {
-	Method   Method `json:"method"`
+	Method   string `json:"method"`
 	Callback string `json:"callback"`
 	Secret   string `json:"secret"`
 }
@@ -35,7 +35,7 @@ type FollowCondition struct {
 	ModeratorUserID   string `json:"moderator_user_id"`
 }
 
-func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
+func Create(wg *sync.WaitGroup, userId string, subscriptionType string, subscriptionVersion string, subscriptionCondition interface{}) {
 	defer wg.Done()
 
 	var clientID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
@@ -45,15 +45,12 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 	requestBody := struct {
 		Type      string                   `json:"type"`
 		Version   string                   `json:"version"`
-		Condition Condition                `json:"condition"`
+		Condition interface{}              `json:"condition"`
 		Transport SubscriptionAddTransport `json:"transport"`
 	}{
-		Type:    "channel.follow",
-		Version: "2",
-		Condition: Condition{
-			BroadcasterUserID: &userId,
-			ModeratorUserID:   &userId,
-		},
+		Type:      subscriptionType,
+		Version:   subscriptionVersion,
+		Condition: subscriptionCondition,
 		Transport: SubscriptionAddTransport{
 			Method:   "webhook",
 			Callback: handler.EVENTSUB_URL + "/callback",
@@ -109,7 +106,7 @@ func ListenChannelFollow(wg *sync.WaitGroup, userId string, scopes string) {
 		// ignore this, we have pending or already registered webhook
 		return
 	} else if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		commons.Log("User " + userId + " error for channel.follow: " + string(body))
+		commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": " + string(body))
 		return
 	}
 }

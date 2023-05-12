@@ -1,0 +1,1 @@
+SELECT *  FROM eventsub_events WHERE userid='96965261'

@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"services/webhooks/commons"
+	"services/webhooks/database"
 	"services/webhooks/debug"
-	"services/webhooks/events"
 	"services/webhooks/handler"
+	"services/webhooks/subscriptions"
 	"sync"
 	"time"
 
@@ -21,46 +21,27 @@ var PG_USER_DB string = "eventsub_users"
 
 func main() {
 	commons.Log("Starting up EventSub Webhooks service")
-
-	var PG_PASSWORD string = os.Getenv("PG_PASSWORD")
-	var PG_USERNAME string = os.Getenv("PG_USERNAME")
-	var PG_DB string = os.Getenv("PG_DB")
-	var PG_PORT string = os.Getenv("PG_PORT")
-	var PG_HOST string = os.Getenv("PG_HOST")
-
-	handler.Start()
-
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		PG_USERNAME, PG_PASSWORD, PG_HOST, PG_PORT, PG_DB,
-	)
-	// Connect to database
-	db, err := sql.Open("postgres", connStr)
-	status := db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if status != nil {
-		log.Fatal(status)
-	}
+	database.Init()
 	commons.Log("EventSub Webhooks service started")
 
-	events.ListSubscriptions(nil)
-	handleUsers(db, false)
+	handler.Start()
+	subscriptions.List(nil)
+	handleUsers(false)
 }
 
-func handleUsers(db *sql.DB, updatedOnly bool) {
+func handleUsers(updatedOnly bool) {
 	var rows *sql.Rows
 	var err error
 
 	if updatedOnly {
-		rows, err = db.Query(
+		rows, err = database.DB.Query(
 			fmt.Sprintf("SELECT * FROM %s WHERE updated=$1", PG_USER_DB), true,
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		rows, err = db.Query(
+		rows, err = database.DB.Query(
 			fmt.Sprintf("SELECT * FROM %s", PG_USER_DB),
 		)
 		if err != nil {
@@ -86,8 +67,9 @@ func handleUsers(db *sql.DB, updatedOnly bool) {
 
 		wg.Add(1)
 
-		// Create two goroutines for async tasks
-		go events.ListenChannelFollow(&wg, userId, scopes)
+		go subscriptions.Create(&wg, userId, "channel.channel_points_custom_reward_redemption.add", "1", map[string]interface{}{
+			"broadcaster_user_id": userId,
+		})
 
 		// Wait for all async tasks to complete
 		wg.Wait()
@@ -96,5 +78,5 @@ func handleUsers(db *sql.DB, updatedOnly bool) {
 	time.Sleep(10 * time.Second)
 
 	// run again after while
-	handleUsers(db, true)
+	handleUsers(true)
 }

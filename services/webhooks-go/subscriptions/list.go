@@ -1,4 +1,4 @@
-package events
+package subscriptions
 
 import (
 	"encoding/json"
@@ -62,7 +62,7 @@ const (
 	Webhook Method = "webhook"
 )
 
-func ListSubscriptions(cursor *string) {
+func List(cursor *string) {
 	// Create an HTTP client
 	client := &http.Client{}
 
@@ -126,7 +126,7 @@ func ListSubscriptions(cursor *string) {
 	}
 
 	if response.Pagination.Cursor != nil {
-		ListSubscriptions(response.Pagination.Cursor)
+		List(response.Pagination.Cursor)
 	}
 }
 
