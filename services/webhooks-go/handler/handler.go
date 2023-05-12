@@ -104,7 +104,65 @@ func verifySignature(w http.ResponseWriter, r *http.Request, body []byte) bool {
 	return true
 }
 
+func postUser(w http.ResponseWriter, r *http.Request) {
+	return
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) {
+	userId := r.Header.Get("sogebot-event-userid")
+
+	// Set the response headers
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	if len(userId) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	for i := 0; i < 110*3; i++ {
+		select {
+		case <-r.Context().Done():
+			w.WriteHeader(http.StatusGone)
+			return
+		default:
+			row := database.DB.QueryRow(`SELECT "timestamp", "data" FROM "eventsub_events" WHERE "userid"=$1 ORDER BY "timestamp" ASC LIMIT 1`, userId)
+
+			var timestamp time.Time
+			var data string
+			err := row.Scan(&timestamp, &data)
+			if err == nil {
+				// Send the response
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(data))
+
+				// Delete the used data from the database
+				deleteQuery := `DELETE FROM "eventsub_events" WHERE "userid"=$1 AND "timestamp"=$2`
+				database.DB.Exec(deleteQuery, userId, timestamp)
+				return
+			} else {
+				// No event found for the user
+				time.Sleep(time.Second / 3)
+			}
+		}
+	}
+
+	// Set the response status code and write the initial response
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet && r.URL.Path == "/user" {
+		getUser(w, r)
+		return
+	}
+	if r.Method == http.MethodPost && r.URL.Path == "/user" {
+		postUser(w, r)
+		return
+	}
+
 	commons.Debug("====== EVENT RECEIVED =======")
 	// List the available headers
 	for header, values := range r.Header {
