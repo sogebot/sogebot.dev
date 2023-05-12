@@ -40,6 +40,7 @@ func handleUsers(updatedOnly bool) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		database.DB.Exec("UPDATE eventsub_users SET updated=$1", false)
 	} else {
 		rows, err = database.DB.Query(
 			fmt.Sprintf("SELECT * FROM %s", PG_USER_DB),

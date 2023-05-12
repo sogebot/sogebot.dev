@@ -162,76 +162,78 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		postUser(w, r)
 		return
 	}
+	if r.URL.Path == "/callback" {
+		commons.Debug("====== EVENT RECEIVED =======")
+		// List the available headers
+		for header, values := range r.Header {
+			commons.Debug(header + ":" + strings.Join(values, ""))
+		}
 
-	commons.Debug("====== EVENT RECEIVED =======")
-	// List the available headers
-	for header, values := range r.Header {
-		commons.Debug(header + ":" + strings.Join(values, ""))
-	}
+		messageType := strings.ToLower(r.Header.Get("Twitch-Eventsub-Message-Type"))
+		contentType := r.Header.Get("Content-Type")
 
-	messageType := strings.ToLower(r.Header.Get("Twitch-Eventsub-Message-Type"))
-	contentType := r.Header.Get("Content-Type")
-
-	// Read body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if contentType == "application/json" {
-		//  verify if signature is OK
-		if !verifySignature(w, r, body) {
+		// Read body
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	}
 
-	if messageType == "webhook_callback_verification" {
 		if contentType == "application/json" {
-			var notification WebhookCallbackVerification
-			err = json.NewDecoder(strings.NewReader(string(body))).Decode(&notification)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+			//  verify if signature is OK
+			if !verifySignature(w, r, body) {
 				return
 			}
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, notification.Challenge)
-
-			commons.Log("User " + notification.Subscription.Condition.BroadcasterUserID + " subscribed to " + notification.Subscription.Type + ".v" + notification.Subscription.Version)
-			return
 		}
-	}
 
-	if messageType == "revocation" {
-		w.WriteHeader(204)
-		return
-	}
+		if messageType == "webhook_callback_verification" {
+			if contentType == "application/json" {
+				var notification WebhookCallbackVerification
+				err = json.NewDecoder(strings.NewReader(string(body))).Decode(&notification)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprintf(w, notification.Challenge)
 
-	if messageType == "notification" {
-		if contentType == "application/json" {
-			type Payload struct {
-				Subscription struct {
-					Type      string `json:"type"`
-					Condition struct {
-						BroadcasterUserID string `json:"broadcaster_user_id"`
-					} `json:"condition"`
-				} `json:"subscription"`
-			}
-			var payload Payload
-			err = json.Unmarshal(body, &payload)
-			if err != nil {
-				http.Error(w, "Failed to parse JSON payload", http.StatusBadRequest)
+				commons.Log("User " + notification.Subscription.Condition.BroadcasterUserID + " subscribed to " + notification.Subscription.Type + ".v" + notification.Subscription.Version)
 				return
 			}
-			userId := payload.Subscription.Condition.BroadcasterUserID
-			event := payload.Subscription.Type
-			jsonData := string(body)
+		}
 
-			commons.Log("User " + userId + " received new event " + event)
-			database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
+		if messageType == "revocation" {
 			w.WriteHeader(204)
+			return
+		}
+
+		if messageType == "notification" {
+			if contentType == "application/json" {
+				type Payload struct {
+					Subscription struct {
+						Type      string `json:"type"`
+						Condition struct {
+							BroadcasterUserID string `json:"broadcaster_user_id"`
+						} `json:"condition"`
+					} `json:"subscription"`
+				}
+				var payload Payload
+				err = json.Unmarshal(body, &payload)
+				if err != nil {
+					http.Error(w, "Failed to parse JSON payload", http.StatusBadRequest)
+					return
+				}
+				userId := payload.Subscription.Condition.BroadcasterUserID
+				event := payload.Subscription.Type
+				jsonData := string(body)
+
+				commons.Log("User " + userId + " received new event " + event)
+				database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
+				w.WriteHeader(204)
+			}
 		}
 	}
+	w.WriteHeader(404)
 }
 
 func Start() {
