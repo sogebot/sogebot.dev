@@ -71,6 +71,22 @@ func handleUsers(updatedOnly bool) {
 			"broadcaster_user_id": userId,
 		})
 
+		// events.listen_channel_follow_v2(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_cheer(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_ban(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_unban(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_prediction_begin(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_prediction_progress(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_prediction_lock(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_prediction_end(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_poll_begin(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_poll_progress(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_poll_end(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_hype_train_begin(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_hype_train_progress(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_hype_train_end(broadcaster_user_id, scopes, callback, event_sub),
+		// events.listen_channel_raid(broadcaster_user_id, scopes, callback, event_sub),
+
 		// Wait for all async tasks to complete
 		wg.Wait()
 	}
