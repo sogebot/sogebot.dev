@@ -57,7 +57,6 @@ func Logger(handler http.Handler) http.Handler {
 		handler.ServeHTTP(interceptWriter, r)
 
 		userId := r.Header.Get("sogebot-event-userid")
-
 		if userId != "" {
 			log.Printf("[%s - %s] #%s \"%s %s %s\" %d %s %dus\n",
 				r.RemoteAddr,

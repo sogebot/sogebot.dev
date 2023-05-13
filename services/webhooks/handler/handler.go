@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/go-chi/httprate"
-	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
@@ -350,16 +349,19 @@ func Start() {
 		}()
 		<-done
 	} else {
-		router := mux.NewRouter().StrictSlash(true)
-		router.Use(commons.Logger)
-		router.Use(httprate.Limit(
+		corshandler := c.Handler(http.HandlerFunc(handler))
+		loggerHandler := commons.Logger(corshandler)
+		limitHandler := httprate.Limit(
 			10,          // requests
 			time.Minute, // per duration
 			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
-		))
+		)(loggerHandler)
 
-		handler := c.Handler(router)
-		log.Fatal(http.ListenAndServe(":8080", handler))
+		go func() {
+			if err := http.ListenAndServe(":8080", limitHandler); err != nil {
+				log.Fatal(err)
+			}
+		}()
 	}
 
 	commons.Log("Webhooks endpoint: " + EVENTSUB_URL)

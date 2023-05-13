@@ -4,5 +4,5 @@ use ./services/plugins/
 
 use (
 	./services/credentials/
-	./services/webhooks-go
+	./services/webhooks/
 )
