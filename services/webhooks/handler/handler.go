@@ -352,7 +352,7 @@ func Start() {
 		corshandler := c.Handler(http.HandlerFunc(handler))
 		loggerHandler := commons.Logger(corshandler)
 		limitHandler := httprate.Limit(
-			10,          // requests
+			60,          // requests
 			time.Minute, // per duration
 			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
 		)(loggerHandler)
