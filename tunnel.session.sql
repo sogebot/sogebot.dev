@@ -1,1 +1,0 @@
-SELECT *  FROM eventsub_users WHERE "userId"='96965261'
