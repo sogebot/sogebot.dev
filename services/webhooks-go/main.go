@@ -8,6 +8,7 @@ import (
 	"services/webhooks/debug"
 	"services/webhooks/handler"
 	"services/webhooks/subscriptions"
+	"strings"
 	"sync"
 	"time"
 
@@ -64,32 +65,107 @@ func handleUsers(updatedOnly bool) {
 			}
 		}
 
-		var wg sync.WaitGroup
-
-		wg.Add(1)
-
-		go subscriptions.Create(&wg, userId, "channel.channel_points_custom_reward_redemption.add", "1", map[string]interface{}{
+		basic := map[string]interface{}{
 			"broadcaster_user_id": userId,
-		})
+		}
 
-		// events.listen_channel_follow_v2(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_cheer(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_ban(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_unban(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_prediction_begin(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_prediction_progress(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_prediction_lock(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_prediction_end(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_poll_begin(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_poll_progress(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_poll_end(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_hype_train_begin(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_hype_train_progress(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_hype_train_end(broadcaster_user_id, scopes, callback, event_sub),
-		// events.listen_channel_raid(broadcaster_user_id, scopes, callback, event_sub),
+		subscriptionsMap := map[string][]struct {
+			scope     string
+			version   string
+			condition map[string]interface{}
+		}{
+			"": {{
+				scope:   "channel.raid",
+				version: "1",
+				condition: map[string]interface{}{
+					"to_broadcaster_user_id": userId,
+				},
+			}},
+			"moderator:read:followers": {{
+				scope:   "channel.follow",
+				version: "2",
+				condition: map[string]interface{}{
+					"broadcaster_user_id": userId,
+					"moderator_user_id":   userId,
+				},
+			}},
+			"channel:read:redemptions": {{
+				scope:     "channel.channel_points_custom_reward_redemption.add",
+				version:   "1",
+				condition: basic,
+			}},
+			"bits:read": {{
+				scope:     "channel.cheer",
+				version:   "1",
+				condition: basic,
+			}},
+			"channel:moderate": {{
+				scope:     "channel.ban",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.unban",
+				version:   "1",
+				condition: basic,
+			}},
+			"channel:read:predictions": {{
+				scope:     "channel.prediction.begin",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.prediction.progress",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.prediction.lock",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.prediction.end",
+				version:   "1",
+				condition: basic,
+			}},
+			"channel:read:polls": {{
+				scope:     "channel.poll.begin",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.poll.progress",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.poll.end",
+				version:   "1",
+				condition: basic,
+			}},
+			"channel:read:hype_train": {{
+				scope:     "channel.hype_train.begin",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.hype_train.progress",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.hype_train.end",
+				version:   "1",
+				condition: basic,
+			}},
+		}
 
-		// Wait for all async tasks to complete
-		wg.Wait()
+		for scope, data := range subscriptionsMap {
+			var wg sync.WaitGroup
+			wg.Add(len(data))
+			if strings.Contains(scopes, scope) {
+				for _, val := range data {
+					go subscriptions.Create(&wg, userId, val.scope, val.version, val.condition)
+				}
+			} else {
+				for i := 0; i < len(data); i++ {
+					wg.Done()
+				}
+			}
+		}
 	}
 
 	time.Sleep(10 * time.Second)

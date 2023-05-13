@@ -13,6 +13,7 @@ import (
 	"os"
 	"services/webhooks/commons"
 	"services/webhooks/database"
+	"services/webhooks/debug"
 	"strings"
 	"time"
 
@@ -105,11 +106,73 @@ func verifySignature(w http.ResponseWriter, r *http.Request, body []byte) bool {
 }
 
 func postUser(w http.ResponseWriter, r *http.Request) {
+	code := r.Header.Get("Authorization")
+
+	if len(code) == 0 {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Add("Content-Type", "text/plain")
+		fmt.Fprint(w, "Missing authorization header")
+		return
+	}
+
+	url := "https://id.twitch.tv/oauth2/validate"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+	req.Header.Set("Authorization", code)
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response:", err)
+		return
+	}
+
+	// Unmarshal the response body into a Response struct
+	var response struct {
+		ClientID  string   `json:"client_id"`
+		Login     string   `json:"login"`
+		Scopes    []string `json:"scopes"`
+		UserID    string   `json:"user_id"`
+		ExpiresIn int64    `json:"expires_in"`
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		fmt.Println("Error unmarshaling response:", err)
+		return
+	}
+
+	scopes := strings.Join(response.Scopes, " ")
+	userId := response.UserID
+
+	// TODO:
+	// - get user
+	// - check scope change
+	// - update scopes and updated bool
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/plain")
+	fmt.Fprint(w, "Success")
 	return
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.Header.Get("sogebot-event-userid")
+
+	if debug.IsDEV() {
+		userId = "96965261"
+	}
 
 	// Set the response headers
 	w.Header().Set("Content-Type", "text/plain")
