@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -52,6 +53,12 @@ type Transport struct {
 	Callback string `json:"callback"`
 }
 
+var c = cors.New(cors.Options{
+	AllowedOrigins:   []string{"*"},
+	AllowCredentials: true,
+	AllowedHeaders:   []string{"Authorization", "content-type"},
+})
+
 func ngrokTunnel(done chan<- bool) error {
 	tun, err := ngrok.Listen(context.Background(),
 		config.HTTPEndpoint(),
@@ -62,7 +69,8 @@ func ngrokTunnel(done chan<- bool) error {
 	}
 
 	EVENTSUB_URL = tun.URL()
-	loggerHandler := commons.Logger(http.HandlerFunc(handler))
+	corshandler := c.Handler(http.HandlerFunc(handler))
+	loggerHandler := commons.Logger(corshandler)
 
 	done <- true
 	return http.Serve(tun, loggerHandler)
@@ -156,15 +164,45 @@ func postUser(w http.ResponseWriter, r *http.Request) {
 	scopes := strings.Join(response.Scopes, " ")
 	userId := response.UserID
 
-	// TODO:
-	// - get user
-	// - check scope change
-	// - update scopes and updated bool
+	var db_scopes string
+	user_exists := true
+	row := database.DB.QueryRow("SELECT scopes FROM eventsub_users WHERE \"userId\"=$1", userId)
+	err = row.Scan(&db_scopes)
+	if err != nil {
+		user_exists = false
+		if err != sql.ErrNoRows {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Add("Content-Type", "text/plain")
+			fmt.Fprint(w, err)
+			commons.Log(err.Error())
+			return
+		}
+	}
 
+	if !user_exists {
+		commons.Debug("User " + userId + " not found. Creating.")
+		database.DB.Exec("INSERT INTO eventsub_users (\"userId\", scopes) VALUES ($1, $2)",
+			userId, scopes,
+		)
+		returnSuccess(w)
+		return
+	}
+
+	if db_scopes == scopes {
+		commons.Debug("User " + userId + " have no new scopes. Skipping")
+	} else {
+		commons.Debug("User " + userId + " have new scopes " + scopes + ". Updating")
+		database.DB.Exec("UPDATE eventsub_users SET scopes=$1, updated=$2 WHERE \"userId\"=$3",
+			scopes, true, userId,
+		)
+	}
+	returnSuccess(w)
+}
+
+func returnSuccess(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "text/plain")
 	fmt.Fprint(w, "Success")
-	return
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
@@ -320,11 +358,6 @@ func Start() {
 			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
 		))
 
-		c := cors.New(cors.Options{
-			AllowedOrigins:   []string{"*"},
-			AllowCredentials: true,
-			AllowedHeaders:   []string{"Authorization", "content-type"},
-		})
 		handler := c.Handler(router)
 		log.Fatal(http.ListenAndServe(":8080", handler))
 	}

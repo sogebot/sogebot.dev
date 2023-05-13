@@ -7,14 +7,26 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"services/webhooks/commons"
 	"strings"
+	"time"
 )
 
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
 }
 
+var accessTokenCache string
+var expirationTime time.Time
+
 func Access() (string, error) {
+	if len(accessTokenCache) > 0 && expirationTime.After((time.Now())) {
+		commons.Debug("Reusing old access token")
+		return accessTokenCache, nil
+	}
+	commons.Debug("Generating new access token")
+
 	// Set your Twitch app's client ID and secret
 	var clientID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 	var clientSecret string = os.Getenv("TWITCH_EVENTSUB_CLIENTSECRET")
@@ -52,5 +64,8 @@ func Access() (string, error) {
 	}
 
 	// Print the access token
-	return tokenResponse.AccessToken, nil
+	accessTokenCache = tokenResponse.AccessToken
+	expirationTime = time.Now().Add(time.Duration(tokenResponse.ExpiresIn-60) * time.Second)
+
+	return accessTokenCache, nil
 }

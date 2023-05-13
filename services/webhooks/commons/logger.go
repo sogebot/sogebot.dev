@@ -56,15 +56,13 @@ func Logger(handler http.Handler) http.Handler {
 
 		handler.ServeHTTP(interceptWriter, r)
 
-		channel := r.Header.Get("SogeBot-Channel")
-		owners := r.Header.Get("SogeBot-Owners")
+		userId := r.Header.Get("sogebot-event-userid")
 
-		if channel != "" && owners != "" {
-			log.Printf("[%s - %s] #%s[%s] \"%s %s %s\" %d %s %dus\n",
+		if userId != "" {
+			log.Printf("[%s - %s] #%s \"%s %s %s\" %d %s %dus\n",
 				r.RemoteAddr,
 				t.Format("02/Jan/2006:15:04:05 -0700"),
-				channel,
-				owners,
+				userId,
 				r.Method,
 				r.URL.Path,
 				r.Proto,
@@ -72,7 +70,6 @@ func Logger(handler http.Handler) http.Handler {
 				r.UserAgent(),
 				time.Since(t),
 			)
-
 		} else {
 			log.Printf("[%s - %s] \"%s %s %s\" %d %s %dus\n",
 				r.RemoteAddr,

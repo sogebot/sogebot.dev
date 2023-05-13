@@ -1,1 +1,1 @@
-SELECT *  FROM eventsub_events WHERE userid='96965261'
+SELECT *  FROM eventsub_users WHERE "userId"='96965261'
