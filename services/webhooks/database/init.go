@@ -16,7 +16,8 @@ var noOfconnections int = 0
 func Test() {
 	for {
 		if DB.Stats().OpenConnections > noOfconnections {
-			fmt.Println("Connections Change: " + fmt.Sprint(DB.Stats().OpenConnections) + "(" + fmt.Sprint(DB.Stats().OpenConnections-noOfconnections) + ")")
+			fmt.Println("Connections Change: " + fmt.Sprint(DB.Stats().OpenConnections) + "(+" + fmt.Sprint(DB.Stats().OpenConnections-noOfconnections) + ")")
+			noOfconnections = DB.Stats().OpenConnections
 		}
 		time.Sleep(time.Second / 2)
 	}
