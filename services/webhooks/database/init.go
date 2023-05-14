@@ -11,6 +11,17 @@ import (
 
 var DB *sql.DB // Package-level variable to hold the db connection
 
+var noOfconnections int = 0
+
+func Test() {
+	for {
+		if DB.Stats().OpenConnections > noOfconnections {
+			fmt.Println("Connections Change: " + fmt.Sprint(DB.Stats().OpenConnections) + "(" + fmt.Sprint(DB.Stats().OpenConnections-noOfconnections) + ")")
+		}
+		time.Sleep(time.Second / 2)
+	}
+}
+
 func Init() {
 	var PG_PASSWORD string = os.Getenv("PG_PASSWORD")
 	var PG_USERNAME string = os.Getenv("PG_USERNAME")
@@ -35,6 +46,7 @@ func Init() {
 
 	// clean events
 	go clean()
+	go Test()
 }
 
 func clean() {

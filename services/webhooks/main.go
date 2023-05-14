@@ -50,6 +50,7 @@ func handleUsers(updatedOnly bool) {
 			log.Fatal(err)
 		}
 	}
+	defer rows.Close()
 
 	var (
 		userId  string
