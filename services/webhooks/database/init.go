@@ -55,7 +55,7 @@ func Init() {
 
 	// clean events
 	go clean()
-	go Test()
+	// go Test()
 }
 
 func clean() {
