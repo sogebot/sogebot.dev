@@ -41,6 +41,10 @@ func Init() {
 	// := cannot be used here as it creates new local variable, we need to use =
 	var err error
 	DB, err = sql.Open("postgres", connStr)
+
+	DB.SetMaxOpenConns(10)
+	DB.SetMaxIdleConns(2)
+
 	status := DB.Ping()
 	if err != nil {
 		log.Fatal(err)
