@@ -46,6 +46,10 @@ func main() {
 	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", PG_USERNAME, PG_PASSWORD, PG_HOST, PG_PORT, PG_DB)
 	// Connect to database
 	db, err := sql.Open("postgres", connStr)
+
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(2)
+
 	status := db.Ping()
 	if err != nil {
 		log.Fatal(err)
