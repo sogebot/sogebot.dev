@@ -58,7 +58,7 @@ func Logger(handler http.Handler) http.Handler {
 
 		userId := r.Header.Get("sogebot-event-userid")
 		if userId != "" {
-			log.Printf("[%s - %s] #%s \"%s %s %s\" %d %s %dus\n",
+			log.Printf("[%s - %s] #%s \"%s %s %s\" %d %s %s\n",
 				r.RemoteAddr,
 				t.Format("02/Jan/2006:15:04:05 -0700"),
 				userId,
@@ -67,10 +67,10 @@ func Logger(handler http.Handler) http.Handler {
 				r.Proto,
 				interceptWriter.status,
 				r.UserAgent(),
-				time.Since(t),
+				time.Since(t).String(),
 			)
 		} else {
-			log.Printf("[%s - %s] \"%s %s %s\" %d %s %dus\n",
+			log.Printf("[%s - %s] \"%s %s %s\" %d %s %s\n",
 				r.RemoteAddr,
 				t.Format("02/Jan/2006:15:04:05 -0700"),
 				r.Method,
@@ -78,7 +78,7 @@ func Logger(handler http.Handler) http.Handler {
 				r.Proto,
 				interceptWriter.status,
 				r.UserAgent(),
-				time.Since(t),
+				time.Since(t).String(),
 			)
 		}
 	})
