@@ -313,7 +313,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Subscription struct {
 						Type      string `json:"type"`
 						Condition struct {
-							BroadcasterUserID string `json:"broadcaster_user_id"`
+							BroadcasterUserID   *string `json:"broadcaster_user_id,omitempty"`
+							ToBroadcasterUserID *string `json:"to_broadcaster_user_id,omitempty"`
 						} `json:"condition"`
 					} `json:"subscription"`
 				}
@@ -323,11 +324,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Failed to parse JSON payload", http.StatusBadRequest)
 					return
 				}
+
 				userId := payload.Subscription.Condition.BroadcasterUserID
+				if payload.Subscription.Condition.ToBroadcasterUserID != nil {
+					userId = payload.Subscription.Condition.ToBroadcasterUserID
+				}
 				event := payload.Subscription.Type
 				jsonData := string(body)
 
-				commons.Log("User " + userId + " received new event " + event)
+				commons.Log("User " + *userId + " received new event " + event)
 				database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
 				w.WriteHeader(204)
 			}
