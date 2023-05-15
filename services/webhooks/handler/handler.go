@@ -221,6 +221,8 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	commons.Log("Received LP check for " + userId)
+
 	for i := 0; i < 110*3; i++ {
 		select {
 		case <-r.Context().Done():
