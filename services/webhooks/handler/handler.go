@@ -211,6 +211,18 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		userId = "96965261"
 	}
 
+	t := time.Now()
+	log.Printf("[%s - %s] #%s \"%s %s %s\" %s %s \n",
+		r.RemoteAddr,
+		t.Format("02/Jan/2006:15:04:05 -0700"),
+		userId,
+		r.Method,
+		r.URL.Path,
+		r.Proto,
+		"???",
+		r.UserAgent(),
+	)
+
 	// Set the response headers
 	w.Header().Set("Content-Type", "text/plain")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -221,9 +233,8 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commons.Log("Received LP check for " + userId)
-
-	for i := 0; i < 110*3; i++ {
+	perSecond := 2
+	for i := 0; i < (60*perSecond)-10; i++ {
 		select {
 		case <-r.Context().Done():
 			w.WriteHeader(http.StatusGone)
@@ -246,7 +257,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 				return
 			} else {
 				// No event found for the user
-				time.Sleep(time.Second / 3)
+				time.Sleep(time.Second / time.Duration(perSecond))
 			}
 		}
 	}
