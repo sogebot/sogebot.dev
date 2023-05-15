@@ -234,7 +234,12 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perSecond := 2
-	for i := 0; i < (60*perSecond)-10; i++ {
+	timeout := time.Now().Add((time.Minute * 2) - 2*time.Second)
+	for {
+		if timeout.Before((time.Now())) {
+			break
+		}
+
 		select {
 		case <-r.Context().Done():
 			w.WriteHeader(http.StatusGone)
