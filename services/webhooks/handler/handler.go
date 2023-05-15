@@ -19,7 +19,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-chi/httprate"
 	"github.com/rs/cors"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
@@ -379,14 +378,14 @@ func Start() {
 	} else {
 		corshandler := c.Handler(http.HandlerFunc(handler))
 		loggerHandler := commons.Logger(corshandler)
-		limitHandler := httprate.Limit(
-			60,          // requests
-			time.Minute, // per duration
-			httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
-		)(loggerHandler)
+		// limitHandler := httprate.Limit(
+		// 	60,          // requests
+		// 	time.Minute, // per duration
+		// 	httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
+		// )(loggerHandler)
 
 		go func() {
-			if err := http.ListenAndServe(":8080", limitHandler); err != nil {
+			if err := http.ListenAndServe(":8080", loggerHandler); err != nil {
 				log.Fatal(err)
 			}
 		}()
