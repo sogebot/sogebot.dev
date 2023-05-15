@@ -236,7 +236,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perSecond := 2
-	timeout := time.Now().Add((time.Minute * 2) - 2*time.Second)
+	timeout := time.Now().Add((time.Minute * 2) - 30*time.Second)
 	for {
 		if timeout.Before((time.Now())) {
 			// Set the response status code and write the initial response
