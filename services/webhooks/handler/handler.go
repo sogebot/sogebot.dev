@@ -16,6 +16,7 @@ import (
 	"services/webhooks/database"
 	"services/webhooks/debug"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/httprate"
@@ -204,6 +205,8 @@ func returnSuccess(w http.ResponseWriter) {
 	fmt.Fprint(w, "Success")
 }
 
+var mutex = &sync.Mutex{}
+
 func getUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.Header.Get("sogebot-event-userid")
 
@@ -237,7 +240,9 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	timeout := time.Now().Add((time.Minute * 2) - 2*time.Second)
 	for {
 		if timeout.Before((time.Now())) {
-			break
+			// Set the response status code and write the initial response
+			w.WriteHeader(http.StatusNoContent)
+			return
 		}
 
 		select {
@@ -245,11 +250,14 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusGone)
 			return
 		default:
+			mutex.Lock()
 			row := database.DB.QueryRow(`SELECT "timestamp", "data" FROM "eventsub_events" WHERE "userid"=$1 ORDER BY "timestamp" ASC LIMIT 1`, userId)
 
 			var timestamp time.Time
 			var data string
 			err := row.Scan(&timestamp, &data)
+
+			mutex.Unlock()
 			if err == nil {
 				// Send the response
 				w.Header().Set("Content-Type", "application/json")
@@ -266,9 +274,6 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
-	// Set the response status code and write the initial response
-	w.WriteHeader(http.StatusNoContent)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
