@@ -99,7 +99,6 @@ export const ClipsItem: React.FC<Props<Clips>> = ({ item, active }) => {
   }, [item]);
 
   return <>
-    {clips.length}
     { isVideoSupported
       ? <Box sx={{
         width:    '100%',
