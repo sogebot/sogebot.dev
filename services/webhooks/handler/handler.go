@@ -232,11 +232,8 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// perSecond := 2
-	timeout := time.Now().Add((time.Minute * 1) - 15*time.Second)
-	if userId == "96965261" {
-		commons.Log("================= User " + userId + " START ===========")
-	}
+	perSecond := 3
+	timeout := time.Now().Add((time.Minute * 2) - 45*time.Second)
 
 	go Listen(userId)
 	defer Done(userId)
@@ -261,18 +258,12 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte(val.data))
 
 				// Delete the used data from the database
-				// if userId == "96965261" {
-				// 	commons.Log("User " + userId + " DELETE QUERY")
-				// }
 				deleteQuery := `DELETE FROM "eventsub_events" WHERE "userid"=$1 AND "timestamp"=$2`
 				database.DB.Exec(deleteQuery, userId, val.timestamp)
-				// if userId == "96965261" {
-				// 	commons.Log("User " + userId + " DELETE QUERY - after")
-				// }
 				return
 			} else {
 				// No event found for the user
-				time.Sleep(time.Second / 2)
+				time.Sleep(time.Second / time.Duration(perSecond))
 			}
 		}
 	}
@@ -382,7 +373,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				jsonData := string(body)
 
 				commons.Log("User " + *userId + " received new event " + event)
-				database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
+				rows, err := database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
+				if err != nil {
+					http.Error(w, "Failed to insert into eventsub_events", http.StatusBadRequest)
+					return
+				}
+				defer rows.Close()
 				w.WriteHeader(204)
 				return
 			}

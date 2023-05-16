@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"services/webhooks/commons"
 	"services/webhooks/database"
 	"sync"
 	"time"
@@ -22,28 +21,15 @@ func Loop() {
 	for {
 		mutex.Lock()
 		for userId := range Events {
-			if userId == "96965261" {
-				commons.Log("User " + userId + " loop check")
-			}
-
 			val, ok := Events[userId]
 			if ok && val.data != "" {
-				if userId == "96965261" {
-					commons.Log("We already have loaded event")
-				}
 				continue
 			}
 
 			row := database.DB.QueryRow(`SELECT "timestamp", "data" FROM "eventsub_events" WHERE "userid"=$1 ORDER BY "timestamp" ASC LIMIT 1`, userId)
-			if userId == "96965261" {
-				commons.Log("User " + userId + " starting SELECT")
-			}
 			var timestamp time.Time
 			var data string
 			err := row.Scan(&timestamp, &data)
-			if userId == "96965261" {
-				commons.Log("User " + userId + " SELECT scan")
-			}
 
 			if err == nil {
 				Events[userId] = struct {
@@ -57,7 +43,7 @@ func Loop() {
 		}
 		mutex.Unlock()
 
-		time.Sleep(time.Second * 2 /* / 3 */)
+		time.Sleep(time.Second / 3)
 	}
 }
 
