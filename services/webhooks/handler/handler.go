@@ -233,7 +233,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perSecond := 3
-	timeout := time.Now().Add((time.Minute * 2) - 45*time.Second)
+	timeout := time.Now().Add((time.Minute * 2) - 15*time.Second)
 
 	go Listen(userId)
 	defer Done(userId)
