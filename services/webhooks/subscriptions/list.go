@@ -119,7 +119,7 @@ func List(cursor *string) {
 		return
 	}
 	for _, value := range response.Data {
-		if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) {
+		if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status == "authorization_revoked" {
 			commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
 			DeleteSubscription(value.ID, token)
 		}

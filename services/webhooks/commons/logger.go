@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"services/webhooks/debug"
 	"time"
 )
 
@@ -40,13 +39,13 @@ func Log(message string) {
 }
 
 func Debug(message string) {
-	if debug.IsDEV() {
-		t := time.Now()
-		fmt.Printf("[DEBUG] %s %s\n",
-			t.Format("02/Jan/2006:15:04:05 -0700"),
-			message,
-		)
-	}
+	// if debug.IsDEV() {
+	// 	t := time.Now()
+	// 	fmt.Printf("[DEBUG] %s %s\n",
+	// 		t.Format("02/Jan/2006:15:04:05 -0700"),
+	// 		message,
+	// 	)
+	// }
 }
 
 func Logger(handler http.Handler) http.Handler {

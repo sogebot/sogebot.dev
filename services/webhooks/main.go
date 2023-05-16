@@ -26,6 +26,7 @@ func main() {
 	commons.Log("EventSub Webhooks service started")
 
 	handler.Start()
+	go handler.Loop()
 	subscriptions.List(nil)
 	handleUsers(false)
 }

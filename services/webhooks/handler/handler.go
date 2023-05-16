@@ -16,7 +16,6 @@ import (
 	"services/webhooks/database"
 	"services/webhooks/debug"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/rs/cors"
@@ -204,8 +203,6 @@ func returnSuccess(w http.ResponseWriter) {
 	fmt.Fprint(w, "Success")
 }
 
-var mutex = &sync.Mutex{}
-
 func getUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.Header.Get("sogebot-event-userid")
 
@@ -235,8 +232,15 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	perSecond := 2
-	timeout := time.Now().Add((time.Minute * 2) - 30*time.Second)
+	// perSecond := 2
+	timeout := time.Now().Add((time.Minute * 1) - 15*time.Second)
+	if userId == "96965261" {
+		commons.Log("================= User " + userId + " START ===========")
+	}
+
+	go Listen(userId)
+	defer Done(userId)
+
 	for {
 		if timeout.Before((time.Now())) {
 			// Set the response status code and write the initial response
@@ -249,27 +253,26 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusGone)
 			return
 		default:
-			mutex.Lock()
-			row := database.DB.QueryRow(`SELECT "timestamp", "data" FROM "eventsub_events" WHERE "userid"=$1 ORDER BY "timestamp" ASC LIMIT 1`, userId)
-
-			var timestamp time.Time
-			var data string
-			err := row.Scan(&timestamp, &data)
-
-			mutex.Unlock()
-			if err == nil {
+			val, ok := Get(userId)
+			if ok && val.data != "" {
 				// Send the response
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte(data))
+				w.Write([]byte(val.data))
 
 				// Delete the used data from the database
+				// if userId == "96965261" {
+				// 	commons.Log("User " + userId + " DELETE QUERY")
+				// }
 				deleteQuery := `DELETE FROM "eventsub_events" WHERE "userid"=$1 AND "timestamp"=$2`
-				database.DB.Exec(deleteQuery, userId, timestamp)
+				database.DB.Exec(deleteQuery, userId, val.timestamp)
+				// if userId == "96965261" {
+				// 	commons.Log("User " + userId + " DELETE QUERY - after")
+				// }
 				return
 			} else {
 				// No event found for the user
-				time.Sleep(time.Second / time.Duration(perSecond))
+				time.Sleep(time.Second / 2)
 			}
 		}
 	}
@@ -325,8 +328,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if messageType == "revocation" {
-			w.WriteHeader(204)
-			return
+			if contentType == "application/json" {
+
+				type Payload struct {
+					Subscription struct {
+						Type      string `json:"type"`
+						Condition struct {
+							BroadcasterUserID   *string `json:"broadcaster_user_id,omitempty"`
+							ToBroadcasterUserID *string `json:"to_broadcaster_user_id,omitempty"`
+						} `json:"condition"`
+					} `json:"subscription"`
+				}
+				var payload Payload
+				err = json.Unmarshal(body, &payload)
+				if err != nil {
+					http.Error(w, "Failed to parse JSON payload", http.StatusBadRequest)
+					return
+				}
+				userId := payload.Subscription.Condition.BroadcasterUserID
+				if payload.Subscription.Condition.ToBroadcasterUserID != nil {
+					userId = payload.Subscription.Condition.ToBroadcasterUserID
+				}
+				database.DB.Exec("DELETE FROM eventsub_users WHERE \"userId\"=$1", userId)
+				w.WriteHeader(204)
+
+				return
+			}
 		}
 
 		if messageType == "notification" {
@@ -357,6 +384,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				commons.Log("User " + *userId + " received new event " + event)
 				database.DB.Query("INSERT INTO eventsub_events (userId, event, data) VALUES ($1, $2, $3)", userId, event, jsonData)
 				w.WriteHeader(204)
+				return
 			}
 		}
 	}

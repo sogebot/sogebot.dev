@@ -55,7 +55,29 @@ func Init() {
 
 	// clean events
 	go clean()
+	go reconnect(connStr)
 	// go Test()
+}
+
+func reconnect(connStr string) {
+	maxRetries := 10
+	retryInterval := 5 * time.Second
+	for i := 0; i < maxRetries; i++ {
+		err := DB.Ping()
+		if err != nil {
+			commons.Log(fmt.Sprintf("Lost connection to the database. Retrying in %v...\n", retryInterval))
+			time.Sleep(retryInterval)
+
+			// Re-establish the connection
+			DB, err = sql.Open("postgres", connStr)
+			if err != nil {
+				fmt.Println("Error reconnecting to the database:", err)
+				continue
+			}
+		}
+
+		time.Sleep(time.Second)
+	}
 }
 
 func clean() {

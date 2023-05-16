@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"services/webhooks/commons"
+	"services/webhooks/database"
 	"services/webhooks/handler"
 	"services/webhooks/token"
 	"sync"
@@ -106,6 +107,23 @@ func Create(wg *sync.WaitGroup, userId string, subscriptionType string, subscrip
 		// ignore this, we have pending or already registered webhook
 		return
 	} else if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
+		var response struct {
+			Error   string `json:"error"`
+			Status  int64  `json:"status"`
+			Message string `json:"message"`
+		}
+
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": " + string(body))
+			commons.Log("Error unmarshaling response: " + err.Error())
+			return
+		}
+
+		if response.Status == 403 {
+			database.DB.Exec("DELETE FROM eventsub_users WHERE \"userId\"=$1", userId)
+			return
+		}
 		commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": " + string(body))
 		return
 	}
