@@ -350,7 +350,6 @@ export const OverlayEdit: React.FC = () => {
           </Grid>
           <Grid xs sx={{ height: '100%' }}>
             <Box id="container"
-              onClick={() => setMoveableId(null)}
               onMouseDown={() => isPositionChanging = true}
               onWheel={(e) => {
                 setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
@@ -413,7 +412,7 @@ export const OverlayEdit: React.FC = () => {
                   }}
                 >
                   <Box key={`${o.id}-${JSON.stringify(o.opts)}` /* force refresh on opts change */} sx={{
-                    width: '100%', height: '100%', 
+                    width: '100%', height: '100%',
                   }}>
                     {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
