@@ -1,6 +1,4 @@
-import {
-  Box, Fade, FormControl, Grow, InputLabel, MenuItem, Select, Typography,
-} from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
@@ -17,6 +15,8 @@ import type { Props } from './ChatItem';
 import { getContrastColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { getRandomizerId, setRandomizerId } from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';
 import { generateItems } from '../Form/RandomizerEdit';
 
@@ -113,10 +113,11 @@ function blinkElementWoFBackground (element: HTMLElement) {
   tl.to(element, { background: element.style.background });
 }
 
-export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active, selected }) => {
-  const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
+export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active }) => {
+  const dispatch = useAppDispatch();
+  const randomizerId = useAppSelector(getRandomizerId);
 
-  const [ randomizerId, setRandomizerId ] = React.useState('');
+  const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
   const [ randomizers, setRandomizers ] = React.useState<Randomizer[]>([]);
   const [ threadId ] = React.useState(shortid());
 
@@ -311,7 +312,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
         }
       }
       setRandomizers([randomizer as Randomizer]);
-      setRandomizerId(randomizer.id);
+      dispatch(setRandomizerId(randomizer.id));
 
       if (randomizer.items.length === 0) {
         console.error('No items detected in your randomizer');
@@ -410,7 +411,6 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
               </Box>
             </Box>}
 
-            {/* {JSON.stringify({ items: generateItems(currentRandomizer!.items) })} */}
             {currentRandomizer.type === 'wheelOfFortune' && <>
               <Box sx={{
                 position:  'absolute',
@@ -489,9 +489,6 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
                       textOrientation: 'mixed',
                       transform:       'rotate(180deg)',
                       display:         'inline-block',
-                      // backgroundColor: 'blue',
-                      // clipPath:        'polygon(56% 0%, 150% 100%, -50% 100%)',
-                      // clipPath:        `polygon(56% 0%, ${(Math.min(width, height) / generateItems(currentRandomizer!.items).length) * 2}px 100%, -50% 100%)`,
                     }}>
                       {item.name}
                     </span>
@@ -504,37 +501,5 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
         </Box>
       </Fade>
     </Box>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-50px`, fontSize: '10px', textAlign: 'left', left: 0, textTransform: 'none !important',
-      }}>
-        <FormControl variant="filled" sx={{ width: '100%' }}>
-          <InputLabel id="demo-simple-select-standard-label" shrink>Randomizer to test</InputLabel>
-          <Select
-            fullWidth
-            sx={{ minWidth: '250px' }}
-            size='small'
-            displayEmpty
-            labelId="demo-simple-select-standard-label"
-            id="demo-simple-select-standard"
-            value={randomizerId}
-            label="Countdown"
-            onChange={(event) => setRandomizerId(event.target.value)}
-          >
-            <MenuItem value='' key='' sx={{ fontSize: '14px' }}><em>None</em></MenuItem>
-            {randomizers.map(val => <MenuItem value={val.id} key={val.id}>
-              <Typography variant='body2'>
-                {val.name}
-                <Typography component='span' sx={{
-                  px: 0.5, fontWeight: 'bold',
-                }}>{val.command}</Typography>
-                <small>{val.id}</small>
-              </Typography>
-            </MenuItem>)}
-          </Select>
-        </FormControl>
-      </Box>
-    </Grow>
   </>;
 };

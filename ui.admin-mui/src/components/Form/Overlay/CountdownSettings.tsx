@@ -1,7 +1,9 @@
 import {
   Box,
+  Button,
   Divider,
   FormControlLabel,
+  FormLabel,
   InputAdornment,
   Stack,
   Switch,
@@ -17,15 +19,21 @@ import {
   DAY, HOUR, MINUTE, SECOND,
 } from '../../../constants';
 import { timestampToObject } from '../../../helpers/getTime';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
+import { selectOverlayCountdown, setCountdownShow } from '../../../store/overlaySlice';
+import theme from '../../../theme';
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
+  id: string;
   model: Countdown;
   onUpdate: (value: Countdown) => void;
 };
 
-export const CountdownSettings: React.FC<Props> = ({ model, onUpdate }) => {
+export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
   const [ open, setOpen ] = React.useState('');
+  const dispatch = useAppDispatch();
+  const countdowns = useAppSelector(selectOverlayCountdown);
 
   React.useEffect(() => {
     setTime(timestampToObject(model.currentTime));
@@ -117,6 +125,23 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate }) => {
 
   return <>
     <Divider/>
+    <Stack direction='row' alignItems={'baseline'}>
+      <FormLabel sx={{ width: '100%' }}>Show example of</FormLabel>
+      <Button
+        fullWidth
+        onClick={() => dispatch(setCountdownShow({ [id]: 'time' }))}
+        sx={{ backgroundColor: !countdowns[id] || countdowns[id] === 'time' ? `${theme.palette.primary.main}55` : undefined }}>
+        Time
+      </Button>
+      <Button
+        disabled={!model.showMessageWhenReachedZero}
+        fullWidth
+        onClick={() => dispatch(setCountdownShow({ [id]: 'text' }))}
+        sx={{ backgroundColor: countdowns[id] === 'text' ? `${theme.palette.primary.main}55` : undefined }}>
+            Text
+      </Button>
+    </Stack>
+    <Divider/>
 
     <Stack spacing={0.5} sx={{ pt: 2 }}>
       <Stack direction='row'>
@@ -178,9 +203,13 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate }) => {
         label={'Message to show, when countdown reaches zero'}
         InputProps={{
           endAdornment: <InputAdornment position='end'>
-            <Switch checked={model.showMessageWhenReachedZero} onChange={(_, checked) => onUpdate({
-              ...model, showMessageWhenReachedZero: checked,
-            })}/>
+            <Switch checked={model.showMessageWhenReachedZero} onChange={(_, checked) => {
+              dispatch(setCountdownShow({ [id]: 'time' }));
+              onUpdate({
+                ...model, showMessageWhenReachedZero: checked,
+              });
+            }
+            }/>
           </InputAdornment>,
         }}
         onChange={(event) => onUpdate({

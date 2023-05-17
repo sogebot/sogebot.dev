@@ -178,9 +178,7 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
 
   return <>
     <Divider/>
-
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
-
     <Divider/>
 
     <Stack spacing={0.5} sx={{ pt: 2 }}>
@@ -356,7 +354,7 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       />}
 
       <Box sx={{
-        p: 1, px: 2, 
+        p: 1, px: 2,
       }}>
         <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start', pt: 1,

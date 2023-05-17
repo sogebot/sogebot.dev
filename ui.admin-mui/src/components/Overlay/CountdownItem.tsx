@@ -1,7 +1,4 @@
-import { AbcTwoTone, HourglassBottomTwoTone } from '@mui/icons-material';
-import {
-  Box, Grow, IconButton,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
@@ -13,15 +10,21 @@ import * as workerTimers from 'worker-timers';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { toBoolean } from '../../helpers/toBoolean';
-import theme from '../../theme';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { selectOverlayCountdown, setCountdownShow } from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';
 import { GenerateTime } from '../Dashboard/Widget/Action/GenerateTime';
 
 let lastTimeSync = Date.now();
 let lastSave = Date.now();
 
-export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, groupId, selected }) => {
-  const [ show, setShow ] = React.useState('time');
+export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, groupId }) => {
+  const countdowns = useAppSelector(selectOverlayCountdown);
+  const dispatch = useAppDispatch();
+  const show = React.useMemo(() => {
+    return countdowns[id] ?? 'time';
+  }, [id, countdowns]);
+
   const [ model, setModel ] = React.useState(item);
   const [ isReady, setReady ] = React.useState(false);
   const [ threadId ] = React.useState(shortid());
@@ -37,10 +40,14 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
   }, [active, item]);
 
   React.useEffect(() => {
-    if (model.showMessageWhenReachedZero && model.currentTime <= 0) {
-      setShow('text');
+    if (active) {
+      if (model.showMessageWhenReachedZero && model.currentTime <= 0) {
+        dispatch(setCountdownShow({ [id]: 'text' }));
+      } else {
+        dispatch(setCountdownShow({ [id]: 'time' }));
+      }
     }
-  }, [ model ]);
+  }, [ model, dispatch, id, active ]);
 
   React.useEffect(() => {
     if (localStorage.getItem(`countdown-controller-${id}`) === threadId) {
@@ -197,14 +204,5 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
         }
       </Box>
     </Box>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        <IconButton onClick={() => setShow('time')} sx={{ backgroundColor: show === 'time' ? `${theme.palette.primary.main}55` : undefined }} size='small'><HourglassBottomTwoTone/></IconButton>
-        {model.showMessageWhenReachedZero && <IconButton onClick={() => setShow('text')} sx={{ backgroundColor: show === 'text' ? `${theme.palette.primary.main}55` : undefined }}  size='small'><AbcTwoTone/></IconButton>}
-      </Box>
-    </Grow>
   </>;
 };

@@ -1,6 +1,4 @@
-import {
-  Box, Button, Grow,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { EmotesExplode } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import {
@@ -17,7 +15,7 @@ import { getSocket } from '../../helpers/socket';
 let model: EmotesExplode;
 const ids: string[] = [];
 
-export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item, selected }) => {
+export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => {
   const [ containerId ] = React.useState(`emotes-explode-` + shortid());
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
@@ -122,12 +120,6 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item, select
     getSocket('/services/twitch', true).on('emote.explode', (opts: any) => explode(opts));
   }, []);
 
-  const test = () => {
-    getSocket('/core/emotes').emit('testExplosion', () => {
-      return true;
-    });
-  };
-
   return <Box
     id={containerId}
     sx={{
@@ -155,13 +147,5 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item, select
           }}
         />)}
     </Box>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        <Button size='small' onClick={test} variant='contained'>Test</Button>
-      </Box>
-    </Grow>
   </Box>;
 };

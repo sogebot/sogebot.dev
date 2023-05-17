@@ -1,4 +1,5 @@
 import {
+  Button,
   Divider,
   FormControl,
   InputAdornment,
@@ -11,6 +12,7 @@ import {
 import { EmotesFireworks } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
+import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -20,7 +22,15 @@ type Props = {
 
 export const EmotesFireworksSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
+
+  const test = () => {
+    getSocket('/core/emotes').emit('testFireworks', () => {
+      return true;
+    });
+  };
   return <>
+    <Divider/>
+    <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
     <Divider/>
 
     <Stack spacing={0.5} sx={{ pt: 2 }}>

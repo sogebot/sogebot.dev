@@ -37,6 +37,7 @@ import { Layers } from './Overlay/Layers';
 import { MarathonSettings } from './Overlay/MarathonSettings';
 import { OBSWebsocketSettings } from './Overlay/OBSWebsocketSettings';
 import { PollsSettings } from './Overlay/PollsSettings';
+import { RandomizerSettings } from './Overlay/RandomizerSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
 import { StatsSettings } from './Overlay/StatsSettings.tsx';
@@ -570,6 +571,9 @@ export const OverlayEdit: React.FC = () => {
                 setTimeout(() => refresh(), 100);
               }}>
                 <Box sx={{ pt: 3 }}>
+                  {selectedItem.opts.typeId === 'randomizer' && <RandomizerSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
@@ -588,7 +592,7 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
-                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
+                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings id={selectedItem.id} model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
                   {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
