@@ -40,7 +40,7 @@ import { PollsSettings } from './Overlay/PollsSettings';
 import { RandomizerSettings } from './Overlay/RandomizerSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
-import { StatsSettings } from './Overlay/StatsSettings.tsx';
+import { StatsSettings } from './Overlay/StatsSettings';
 import { StopwatchSettings } from './Overlay/StopwatchSettings';
 import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
