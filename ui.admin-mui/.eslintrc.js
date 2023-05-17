@@ -6,6 +6,15 @@ module.exports = {
     'plugin:import/typescript',
   ],
   rules: {
+    'no-restricted-imports':                    'off',
+    '@typescript-eslint/no-restricted-imports': [
+      'warn',
+      {
+        'name':        'react-redux',
+        'importNames': ['useSelector', 'useDispatch'],
+        'message':     'Use typed hooks `useAppDispatch` and `useAppSelector` instead.',
+      },
+    ],
     '@typescript-eslint/no-non-null-assertion': 'off',
     'func-call-spacing':                        'off',
     '@typescript-eslint/func-call-spacing':     ['error'],

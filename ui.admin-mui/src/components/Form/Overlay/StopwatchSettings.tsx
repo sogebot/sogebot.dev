@@ -168,7 +168,9 @@ export const StopwatchSettings: React.FC<Props> = ({ model, onUpdate }) => {
         />
       </Stack>
 
-      <Box sx={{ py: 2 }}>
+      <Box sx={{
+        p: 1, px: 2,
+      }}>
         <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start',
         }} control={<Switch checked={model.isStartedOnSourceLoad} onChange={(_, checked) => onUpdate({

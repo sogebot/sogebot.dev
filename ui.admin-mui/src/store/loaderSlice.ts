@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import type { AppState } from './store';
+import type { RootState } from './store';
 
 // NOT USED, KEEPING AS EXAMPLE TO USE REDUX
 
@@ -121,7 +121,7 @@ export const loaderSlice = createSlice({
 
 export const { toggleCookieManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 
-export const selectTranslationState = (state: AppState) => state.loader.translation;
-export const selectStateState = (state: AppState) => state.loader.state;
+export const selectTranslationState = (state: RootState) => state.loader.translation;
+export const selectStateState = (state: RootState) => state.loader.state;
 
 export default loaderSlice.reducer;

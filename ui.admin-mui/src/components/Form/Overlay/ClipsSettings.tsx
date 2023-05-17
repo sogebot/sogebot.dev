@@ -75,7 +75,9 @@ export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
         </Select>
       </FormControl>
 
-      <Box sx={{ py: 1 }}>
+      <Box sx={{
+        p: 1, px: 2,
+      }}>
         <FormControlLabel sx={{ width: '100%' }} control={<Switch checked={model.showLabel} onChange={(_, checked) => onUpdate({
           ...model, showLabel: checked,
         })} />} label={<>
@@ -92,6 +94,6 @@ export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
       variant="filled"
       InputProps={{ startAdornment: <InputAdornment position="start">https://clips.twitch.tv/</InputAdornment> }}
     />
-    <Button onClick={onSubmit}>Test</Button>
+    <Button sx={{ py: 1.5 }} fullWidth variant='contained' onClick={onSubmit}>Test</Button>
   </>;
 };

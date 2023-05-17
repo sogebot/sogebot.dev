@@ -30,6 +30,7 @@ import { EmotesExplodeSettings } from './Overlay/EmotesExplodeSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
 import { EmotesSettings } from './Overlay/EmotesSettings';
 import { EventlistSettings } from './Overlay/EventlistSettings';
+import { GoalSettings } from './Overlay/GoalSettings';
 import { HTMLSettings } from './Overlay/HTMLSettings';
 import { ImageCarouselSettings } from './Overlay/ImageCarouselSettings';
 import { Layers } from './Overlay/Layers';
@@ -260,11 +261,11 @@ export const OverlayEdit: React.FC = () => {
       { item && <DialogContent sx={{
         p: 0, overflowX: 'hidden',
       }}>
-        <Grid container spacing={2} sx={{
+        <Grid container spacing={0} sx={{
           height: '100%', m: 0,
         }}>
-          <Grid xs={3} sx={{
-            my: 0, pr: '0px',
+          <Grid sx={{
+            backgroundColor: '#1e1e1e', p: 1,
           }}>
             <Box sx={{ p: 1 }}>
               <Tooltip title="Snap">
@@ -343,80 +344,6 @@ export const OverlayEdit: React.FC = () => {
                   });
                 }}
               />
-
-              { selectedItem && <Settings model={selectedItem} onUpdate={(path, value) => {
-                handleItemChange(path, value);
-                setTimeout(() => refresh(), 100);
-              }}>
-                <Box sx={{ pt: 3 }}>
-                  {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                </Box>
-              </Settings>
-              }
-
-              {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}
-
-              {
-                selectedItem
-                  && ['countdown', 'stopwatch'].includes(selectedItem.opts.typeId)
-                  && <RestAPI id={selectedItem.id} opts={selectedItem.opts}/>
-              }
             </SimpleBar>
           </Grid>
           <Grid xs sx={{ height: '100%' }}>
@@ -440,9 +367,15 @@ export const OverlayEdit: React.FC = () => {
                   height:          `${item.canvas.height}px`,
                   width:           `${item.canvas.width}px`,
                   position:        'absolute',
-                  border:          `${1/zoom}px dotted white !important`,
+                  border:          `${1/zoom}px solid grey !important`,
                   transformOrigin: '0 0',
                   transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
+                  backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
+                                      linear-gradient(135deg, #222 25%, transparent 25%),
+                                      linear-gradient(45deg, transparent 75%, #222 75%),
+                                      linear-gradient(135deg, transparent 75%, #222 75%)`,
+                  backgroundSize:     `20px 20px`, /* Must be a square */
+                  backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
                 }}>
                 {item.items.map(o => <Paper
                   id={o.id.replace(/-/g, '')}
@@ -460,13 +393,11 @@ export const OverlayEdit: React.FC = () => {
                   }}
                   elevation={0}
                   sx={{
-                    zIndex:          moveableId === o.id.replace(/-/g, '') ? '2': undefined,
-                    opacity:         moveableId === o.id.replace(/-/g, '') || (moveableId == null && o.isVisible) ? '1': '0.2',
                     position:        'absolute',
                     width:           `${o.width}px`,
                     height:          `${o.height}px`,
-                    backgroundColor: o.opts.typeId === 'url' && o.opts.url.length > 0 ? 'transparent' : '#424242',
-                    border:          `${1 / zoom}px solid #626262 !important`,
+                    backgroundColor: `transparent`,
+                    border:          `0 !important`,
                     left:            `${o.alignX}px`,
                     top:             `${o.alignY}px`,
                     fontWeight:      '900',
@@ -501,16 +432,6 @@ export const OverlayEdit: React.FC = () => {
                   {o.opts.typeId === 'url' && <UrlItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                   {o.opts.typeId === 'randomizer' && <RandomizerItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                   {o.opts.typeId === 'wordcloud' && <WordcloudItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  <Box sx={{
-                    position: 'absolute', bottom: 0, fontSize: '10px', textAlign: 'left', left: 0, zIndex: 1,
-                  }}>
-                    {o.name && o.name.length > 0
-                      ? <>
-                        {o.name} <br/><small>{o.opts.typeId}</small>
-                      </>
-                      : o.opts.typeId}
-
-                  </Box>
                 </Paper>)}
                 {moveableId && <Moveable
                   key={`${moveableId}-${key}-${snapEnabled}`}
@@ -637,6 +558,89 @@ export const OverlayEdit: React.FC = () => {
               </Paper>
             </Box>
           </Grid>
+          {selectedItem && <Grid xs={3} sx={{
+            backgroundColor: '#1e1e1e', p: 1, 
+          }}>
+            <SimpleBar style={{
+              maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
+            }} autoHide={false}>
+              <Settings model={selectedItem} onUpdate={(path, value) => {
+                handleItemChange(path, value);
+                setTimeout(() => refresh(), 100);
+              }}>
+                <Box sx={{ pt: 3 }}>
+                  {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                  {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
+                </Box>
+              </Settings>
+
+              {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}
+
+              {
+                selectedItem
+                  && ['countdown', 'stopwatch'].includes(selectedItem.opts.typeId)
+                  && <RestAPI id={selectedItem.id} opts={selectedItem.opts}/>
+              }
+            </SimpleBar>
+          </Grid>}
         </Grid>
       </DialogContent>}
     </Fade>

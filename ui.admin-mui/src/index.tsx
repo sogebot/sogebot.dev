@@ -9,14 +9,13 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 const Credentials = lazy(() => import('./routes/credentials'));
 const Root = lazy(() => import('./routes/root'));
 const Overlays = lazy(() => import('./routes/overlays'));
-import makeStore from './store/store';
+import { store } from './store/store';
 import theme from './theme';
 
 import './styles/styles.css';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
-const store = makeStore();
 const router = createBrowserRouter([
   {
     path:    '/credentials/*',

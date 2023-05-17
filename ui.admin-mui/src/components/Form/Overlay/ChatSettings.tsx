@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Divider,
   FormControl,
   FormControlLabel,
@@ -13,15 +14,22 @@ import {
   Typography,
 } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
+import gsap from 'gsap';
+import Jabber from 'jabber';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
+import shortid from 'shortid';
 
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '../../../constants';
 import { timestampToObject } from '../../../helpers/getTime';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
+import { chatAddMessage, chatRemoveMessageById } from '../../../store/overlaySlice';
 import { AccordionFont } from '../../Accordion/Font';
+
+const jabber = new Jabber();
 
 type Props = {
   model: Chat;
@@ -30,6 +38,8 @@ type Props = {
 
 export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const [ open, setOpen ] = React.useState('');
+  const lang = useAppSelector((state) => state.loader.configuration.lang );
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setTime(timestampToObject(model.hideMessageAfter));
@@ -48,6 +58,54 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       });
     }
   }, [time, prevTime, model]);
+
+  const moveNicoNico = React.useCallback((elementId: string) => {
+    const element = document.getElementById(`nico-${elementId}`);
+    if (element) {
+      console.log({ element });
+      gsap.to(element, {
+        ease:       'none',
+        left:       '-100%',
+        marginLeft: '0',
+        duration:   Math.max(5, Math.floor(Math.random() * 15)),
+        onComplete: () => {
+          dispatch(chatRemoveMessageById(elementId));
+        },
+      });
+    } else {
+      setTimeout(() => moveNicoNico(elementId), 1000);
+    }
+  }, []);
+
+  const test = React.useCallback(async () => {
+    // show test messages
+    const userName = jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase();
+    const longMessage = Math.random() <= 0.1;
+    const emotes = Math.random() <= 1 ? `<span class="simpleChatImage"><img src='https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0' class="emote" alt="Kappa" title="Kappa"/></span>`.repeat(Math.round(Math.random() * 5)) : '';
+    const id = shortid();
+
+    let message = jabber.createParagraph(1 + Math.ceil(Math.random() * (longMessage ? 3 : 10))) + emotes;
+    if (lang === 'cs') {
+      message = Math.random() <= 0.3 ? 'Příliš žluťoučký kůň úpěl ďábelské ódy.' : message;
+    }
+    if (lang === 'ru') {
+      message = Math.random() <= 0.3 ? 'Эх, чужак, общий съём цен шляп (юфть) – вдрызг!' : message;
+    }
+
+    dispatch(chatAddMessage({
+      id,
+      timestamp:   Date.now(),
+      userName,
+      displayName: Math.random() <= 0.5 ? userName : jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase(),
+      message,
+      show:        true,
+      badges:      Math.random() <= 0.3 ? [{ url: 'https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3' }, { url: 'https://static-cdn.jtvnw.net/badges/v1/fc46b10c-5b45-43fd-81ad-d5cb0de6d2f4/3' }] : [],
+    }));
+
+    if (model.type === 'niconico') {
+      moveNicoNico(id);
+    }
+  }, [dispatch, model]);
 
   const handleTimeChange = <T extends keyof typeof time>(input: typeof time, key: T, value: string) => {
     let numberVal = Number(value);
@@ -119,6 +177,10 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
   };
 
   return <>
+    <Divider/>
+
+    <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
+
     <Divider/>
 
     <Stack spacing={0.5} sx={{ pt: 2 }}>
@@ -293,7 +355,9 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
         }}
       />}
 
-      <Box sx={{ py: 2 }}>
+      <Box sx={{
+        p: 1, px: 2, 
+      }}>
         <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start', pt: 1,
         }} control={<Switch checked={model.showCommandMessages} onChange={(_, checked) => onUpdate({

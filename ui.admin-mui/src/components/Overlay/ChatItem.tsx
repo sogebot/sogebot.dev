@@ -1,18 +1,19 @@
 import {
-  Box, Button, Fade, Grow, Typography,
+  Box, Fade, Typography,
 } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
-import Jabber from 'jabber';
-import { cloneDeep, orderBy } from 'lodash';
+import { orderBy } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import {
+  chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages,
+} from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';
 
 export type Props<T> = {
@@ -27,21 +28,21 @@ export type Props<T> = {
   height: number,
 };
 
-const jabber = new Jabber();
-
 const generateColorFromString = (stringInput: string) => {
   const stringUniqueHash = [...stringInput].reduce((acc, char) => {
     return char.charCodeAt(0) + ((acc << 5) - acc);
   }, 0);
   return `hsl(${stringUniqueHash % 360}, 80%, 60%)`;
 };
-export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
-  const lang = useSelector((state: any) => state.loader.configuration.lang );
+export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
+  const messages = useAppSelector(state => state.overlay.chat.messages);
+  const posY = useAppSelector(state => state.overlay.chat.posY);
+  const fontSize = useAppSelector(state => state.overlay.chat.fontSize);
+  const dispatch = useAppDispatch();
 
-  const [ messages, setMessages ] = React.useState<{ id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, badges: {url: string}[] }[]>([]);
-
-  const [ fontSize, setFontSize ] = React.useState<Record<string,number>>({});
-  const [ posY, setPosY ] = React.useState<Record<string,number>>({});
+  useIntervalWhen(() => {
+    console.log({ messages });
+  }, 1000, true, true);
 
   const moveNicoNico = React.useCallback((elementId: string) => {
     const element = document.getElementById(`nico-${elementId}`);
@@ -52,17 +53,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
         marginLeft: '0',
         duration:   Math.max(5, Math.floor(Math.random() * 15)),
         onComplete: () => {
-          setMessages(msgs => {
-            return msgs.filter(o => o.id !== elementId );
-          });
-          setPosY(pos => {
-            delete pos[elementId];
-            return { ...pos };
-          });
-          setFontSize(pos => {
-            delete pos[elementId];
-            return { ...pos };
-          });
+          dispatch(chatRemoveMessageById(elementId));
         },
       });
     } else {
@@ -71,103 +62,26 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
   }, []);
 
   React.useEffect(() => {
-    getSocket('/overlays/chat', true).on('timeout', (userName) => {
-      setMessages(msgs => {
-        const update = cloneDeep(msgs);
-        for (const msg of update.filter(o => o.userName === userName)) {
-          setPosY(pos => {
-            delete pos[msg.id];
-            return { ...pos };
-          });
-          setFontSize(pos => {
-            delete pos[msg.id];
-            return { ...pos };
-          });
-          msg.show = false;
-        }
-        return update.filter(o => o.userName !== userName);
-      });
+    getSocket('/overlays/chat', true).on('timeout', userName => {
+      dispatch(chatTimeout(userName));
     });
 
-    getSocket('/overlays/chat', true).on('message', (data) => {
+    getSocket('/overlays/chat', true).on('message', (data: any) => {
       if (data.message.startsWith('!') && !item.showCommandMessages) {
         return;
       }
-      setMessages(i => {
-        if (!i.find(o => o.id === data.id)) {
-          return [...i, data as any];
-        } else {
-          return i;
-        }
-      });
-      setPosY(o => ({
-        ...o, [data.id]: Math.floor(Math.random() * 90),
-      }));
-      setFontSize(o => ({
-        ...o, [data.id]: Math.floor(Math.random() * 30) - 15,
-      }));
+      dispatch(chatAddMessage(data));
 
       if (item.type === 'niconico') {
         moveNicoNico(data.id);
       }
     });
-  }, [ item ]);
-
-  const test = React.useCallback(async () => {
-    // show test messages
-    const userName = jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase();
-    const longMessage = Math.random() <= 0.1;
-    const emotes = Math.random() <= 1 ? `<span class="simpleChatImage"><img src='https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0' class="emote" alt="Kappa" title="Kappa"/></span>`.repeat(Math.round(Math.random() * 5)) : '';
-    const id = shortid();
-
-    let message = jabber.createParagraph(1 + Math.ceil(Math.random() * (longMessage ? 3 : 10))) + emotes;
-    if (lang === 'cs') {
-      message = Math.random() <= 0.3 ? 'Příliš žluťoučký kůň úpěl ďábelské ódy.' : message;
-    }
-    if (lang === 'ru') {
-      message = Math.random() <= 0.3 ? 'Эх, чужак, общий съём цен шляп (юфть) – вдрызг!' : message;
-    }
-
-    setMessages(i => [...i, {
-      id,
-      timestamp:   Date.now(),
-      userName,
-      displayName: Math.random() <= 0.5 ? userName : jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase(),
-      message,
-      show:        true,
-      badges:      Math.random() <= 0.3 ? [{ url: 'https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3' }, { url: 'https://static-cdn.jtvnw.net/badges/v1/fc46b10c-5b45-43fd-81ad-d5cb0de6d2f4/3' }] : [],
-    }]);
-
-    if (item.type === 'niconico') {
-      setPosY(o => ({
-        ...o, [id]: Math.floor(Math.random() * 90),
-      }));
-      setFontSize(o => ({
-        ...o, [id]: Math.floor(Math.random() * 30) - 15,
-      }));
-      moveNicoNico(id);
-    }
-  }, []);
+  }, [ item, dispatch ]);
 
   useIntervalWhen(() => {
-    messages.filter(msg => !msg.show).forEach(msg => {
-      setPosY(pos => {
-        delete pos[msg.id];
-        return { ...pos };
-      });
-      setFontSize(pos => {
-        delete pos[msg.id];
-        return { ...pos };
-      });
-    });
-
-    // check if message should be hidden
-    setMessages(i => [...i.map(msg => ({
-      ...msg, show: msg.timestamp + item.hideMessageAfter > Date.now(),
-    }))]);
-
-    // clear messages 10 seconds after hide
-    setMessages(i => [...i.filter(msg => msg.timestamp + item.hideMessageAfter + 10000 > Date.now())]);
+    if (item.type !== 'niconico') {
+      dispatch(cleanMessages(item.hideMessageAfter));
+    }
   }, 1000, true, true);
 
   React.useEffect(() => {
@@ -326,13 +240,5 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, selected }) => {
           </Fade>)}
       </Box>}
     </Box>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        <Button size='small' onClick={test} variant='contained'>Test</Button>
-      </Box>
-    </Grow>
   </>;
 };

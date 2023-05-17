@@ -68,7 +68,9 @@ export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
         slotProps={{ textField: { helperText: errorMessage } }}
       />
 
-      <Box sx={{ py: 2 }}>
+      <Box sx={{
+        p: 1, px: 2,
+      }}>
         <FormControlLabel sx={{
           width: '100%', pt: 1,
         }} control={<Switch checked={model.disableWhenReachedZero} onChange={(_, checked) => onUpdate({
