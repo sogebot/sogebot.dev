@@ -412,7 +412,9 @@ export const OverlayEdit: React.FC = () => {
                     transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                   }}
                 >
-                  <Box key={`${o.id}-${JSON.stringify(o.opts)}` /* force refresh on opts change */}>
+                  <Box key={`${o.id}-${JSON.stringify(o.opts)}` /* force refresh on opts change */} sx={{
+                    width: '100%', height: '100%', 
+                  }}>
                     {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
