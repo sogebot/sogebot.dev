@@ -3,27 +3,21 @@ import {
   PeopleTwoTone, ScheduleTwoTone, StarTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import {
-  Box, Button, Grow, Stack, Typography,
+  Box, Stack, Typography,
 } from '@mui/material';
 import { Stats } from '@sogebot/backend/dest/database/entity/overlay';
-import { random } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { overlayGetStats, statsUpdate } from '../../store/overlaySlice';
 
-export const StatsItem: React.FC<Props<Stats>> = ({ selected, active }) => {
-  const lang = useSelector((state: any) => state.loader.configuration.lang );
-
-  const [stats, setStats] = React.useState({
-    bits:        0,
-    followers:   0,
-    subscribers: 0,
-    uptime:      '00:00:00',
-    viewers:     0,
-  });
+export const StatsItem: React.FC<Props<Stats>> = ({ active }) => {
+  const lang = useAppSelector((state: any) => state.loader.configuration.lang );
+  const stats = useAppSelector(overlayGetStats);
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     console.log('====== STATS ======');
@@ -33,21 +27,10 @@ export const StatsItem: React.FC<Props<Stats>> = ({ selected, active }) => {
     if (active) {
       getSocket('/overlays/stats', true).emit('get', (cb: any) => {
         console.log({ cb });
-        setStats(cb);
+        dispatch(statsUpdate(cb));
       });
     }
   }, 1000, true, true);
-
-  const randomize = () => {
-    setStats({
-      bits:        random(0, 999999),
-      subscribers: random(0, 10000),
-      followers:   random(0, 999999),
-      viewers:     random(0, 50000),
-      uptime:      `${random(0, 1)}${random(0, 9)}:${random(0, 5)}${random(0, 9)}:${random(0, 5)}${random(0, 9)}`,
-    });
-    return;
-  };
 
   return <Box sx={{
     width:         '100%',
@@ -58,7 +41,7 @@ export const StatsItem: React.FC<Props<Stats>> = ({ selected, active }) => {
   }}>
     <Stack direction='row' spacing={2} sx={{
       overflow:        'hidden',
-      backgroundColor: 'rgb(50 50 50 / 40%)',
+      backgroundColor: 'transparent',
       padding:         '3px',
       width:           'auto',
       textShadow:      '0 0 2px #000, 0 0 4px #888, 0 0 8px #888',
@@ -91,13 +74,5 @@ export const StatsItem: React.FC<Props<Stats>> = ({ selected, active }) => {
         <Typography>{stats.bits > 100000 ? Intl.NumberFormat(lang, { notation: 'compact' }).format(stats.bits) : stats.bits}</Typography>
       </Stack>
     </Stack>
-
-    <Grow in={selected} unmountOnExit mountOnEnter>
-      <Box sx={{
-        position: 'absolute', top: `-35px`, fontSize: '10px', textAlign: 'left', left: 0,
-      }}>
-        <Button size='small' onClick={randomize} variant='contained'>Randomize</Button>
-      </Box>
-    </Grow>
   </Box>;
 };

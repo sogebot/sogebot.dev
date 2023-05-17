@@ -4,6 +4,13 @@ import type { RootState } from './store';
 
 // Define a type for the slice state
 interface OverlayState {
+  stats: {
+    bits:        number,
+    subscribers: number,
+    followers:   number,
+    viewers:     number,
+    uptime:      string,
+  },
   chat: {
     messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, badges: {url: string}[] }[],
     posY: Record<string,number>,
@@ -13,6 +20,13 @@ interface OverlayState {
 
 // Define the initial state using that type
 const initialState: OverlayState = {
+  stats: {
+    bits:        0,
+    subscribers: 0,
+    followers:   0,
+    viewers:     0,
+    uptime:      '00:00:00',
+  },
   chat: {
     messages: [],
     posY:     {},
@@ -25,6 +39,9 @@ export const overlaySlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    statsUpdate: (state, action: PayloadAction<OverlayState['stats']>) => {
+      state.stats = action.payload;
+    },
     cleanMessages: (state, action: PayloadAction<number>) => {
       state.chat.messages.filter(msg => !msg.show).forEach(msg => {
         delete state.chat.posY[msg.id];
@@ -58,9 +75,13 @@ export const overlaySlice = createSlice({
   },
 });
 
-export const { chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages } = overlaySlice.actions;
+export const {
+  statsUpdate,
+  chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages,
+} = overlaySlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectChatMessages = (state: RootState) => state.overlay.chat.messages;
+export const overlayGetStats = (state: RootState) => state.overlay.stats;
 
 export default overlaySlice.reducer;

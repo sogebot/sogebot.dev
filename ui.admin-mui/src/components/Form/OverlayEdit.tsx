@@ -39,6 +39,7 @@ import { OBSWebsocketSettings } from './Overlay/OBSWebsocketSettings';
 import { PollsSettings } from './Overlay/PollsSettings';
 import { RestAPI } from './Overlay/REST';
 import { Settings } from './Overlay/Settings';
+import { StatsSettings } from './Overlay/StatsSettings.tsx';
 import { StopwatchSettings } from './Overlay/StopwatchSettings';
 import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
@@ -559,7 +560,7 @@ export const OverlayEdit: React.FC = () => {
             </Box>
           </Grid>
           {selectedItem && <Grid xs={3} sx={{
-            backgroundColor: '#1e1e1e', p: 1, 
+            backgroundColor: '#1e1e1e', p: 1,
           }}>
             <SimpleBar style={{
               maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
@@ -569,6 +570,9 @@ export const OverlayEdit: React.FC = () => {
                 setTimeout(() => refresh(), 100);
               }}>
                 <Box sx={{ pt: 3 }}>
+                  {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
+                    handleItemChange('opts', val);
+                  }}/>}
                   {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
                     handleItemChange('opts', val);
                   }}/>}
