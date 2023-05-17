@@ -381,7 +381,7 @@ export const OverlayEdit: React.FC = () => {
                 }}>
                 {item.items.map(o => <Paper
                   id={o.id.replace(/-/g, '')}
-                  key={`${o.id}-${JSON.stringify(o.opts) /* force refresh on opts change */}`}
+                  key={`${o.id}`}
                   onMouseDown={(e) => {
                     if (e.button !== 1) {
                       e.stopPropagation();
@@ -412,28 +412,30 @@ export const OverlayEdit: React.FC = () => {
                     transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                   }}
                 >
-                  {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'marathon' && <MarathonItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'obswebsocket' && <OBSWebsocketItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'chat' && <ChatItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'stats' && <StatsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'tts' && <TTSItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'polls' && <PollsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'emotescombo' && <EmotesComboItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'emotesexplode' && <EmotesExplodeItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'emotes' && <EmotesItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'clips' && <ClipsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'carousel' && <ImageCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'html' && <HTMLItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'hypetrain' && <HypeTrainItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'url' && <UrlItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
-                  {o.opts.typeId === 'randomizer' && <RandomizerItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                  {o.opts.typeId === 'wordcloud' && <WordcloudItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                  <Box key={`${o.id}-${JSON.stringify(o.opts)}` /* force refresh on opts change */}>
+                    {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'marathon' && <MarathonItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'obswebsocket' && <OBSWebsocketItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'chat' && <ChatItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'stats' && <StatsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'tts' && <TTSItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'polls' && <PollsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'emotesfireworks' && <EmotesFireworksItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'emotescombo' && <EmotesComboItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'emotesexplode' && <EmotesExplodeItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'emotes' && <EmotesItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'clipscarousel' && <ClipsCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'clips' && <ClipsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'carousel' && <ImageCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'html' && <HTMLItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'hypetrain' && <HypeTrainItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'url' && <UrlItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'randomizer' && <RandomizerItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'wordcloud' && <WordcloudItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                  </Box>
                 </Paper>)}
                 {moveableId && <Moveable
                   key={`${moveableId}-${key}-${snapEnabled}`}
