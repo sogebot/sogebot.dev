@@ -14,7 +14,9 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMouse, usePreviousImmediate } from 'rooks';
+import {
+  useKey, useMouse, usePreviousImmediate,
+} from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
@@ -128,6 +130,16 @@ export const OverlayEdit: React.FC = () => {
   const selectedItem = React.useMemo(() => {
     return item.items.find(o => o.id.replace(/-/g, '') === moveableId);
   }, [item, moveableId]);
+
+  useKey(['Delete'], () => {
+    if (selectedItem) {
+      setItem(o => ({
+        ...o,
+        items: o.items.filter(i => i.id.replace(/-/g, '') !== selectedItem.id),
+      }) as any);
+      setMoveableId(null);
+    }
+  }, { when: !!selectedItem });
 
   const refresh = React.useCallback(() => setKey(Date.now()), [ setKey ]);
 
