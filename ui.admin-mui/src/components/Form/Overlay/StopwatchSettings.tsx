@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   FormControlLabel,
   Stack,
   Switch,
@@ -114,9 +113,7 @@ export const StopwatchSettings: React.FC<Props> = ({ model, onUpdate }) => {
   };
 
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Stack spacing={0.5}>
       <Stack direction='row'>
         <TextField
           fullWidth

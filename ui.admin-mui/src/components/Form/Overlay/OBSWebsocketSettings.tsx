@@ -1,7 +1,6 @@
 import { KeyboardReturnTwoTone } from '@mui/icons-material';
 import {
   Box,
-  Divider,
   FormLabel,
   InputAdornment,
   Stack,
@@ -65,9 +64,7 @@ export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
   };
 
   return <>
-    <Divider/>
-
-    <Stack sx={{ py: 2 }} spacing={0.5}>
+    <Stack spacing={0.5}>
       <TextField
         label={'Port'}
         fullWidth

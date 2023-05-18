@@ -590,74 +590,73 @@ export const OverlayEdit: React.FC = () => {
                 handleItemChange(path, value);
                 setTimeout(() => refresh(), 100);
               }}>
-                <Box sx={{ pt: 3 }}>
-                  {selectedItem.opts.typeId === 'randomizer' && <RandomizerSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'countdown' && <CountdownSettings id={selectedItem.id} model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                  {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
-                    handleItemChange('opts', val);
-                  }}/>}
-                </Box>
+                <Divider variant='middle'/>
+                {selectedItem.opts.typeId === 'randomizer' && <RandomizerSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'countdown' && <CountdownSettings id={selectedItem.id} model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
               </Settings>
 
               {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}

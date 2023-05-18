@@ -1,6 +1,4 @@
 import {
-  Box,
-  Divider,
   InputAdornment,
   MenuItem,
   Select,
@@ -21,39 +19,35 @@ export const WordcloudSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const [ open, setOpen ] = React.useState('');
 
   return <>
-    <Divider/>
-
-    <Box sx={{ py: 2 }}>
-      <Stack spacing={0.5}>
-        <TextField
-          label={'Fade out interval'}
-          fullWidth
-          variant="filled"
-          value={model.fadeOutInterval}
-          inputProps={{ min: 1 }}
-          type="number"
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>
-              <Select variant='filled' value={model.fadeOutIntervalType} sx={{ '&.MuiInputBase-root': { backgroundColor: 'transparent !important' } }}
-                onChange={(ev) => onUpdate({
-                  ...model, fadeOutIntervalType: ev.target.value as 'seconds',
-                })}>
-                <MenuItem value='seconds'>seconds</MenuItem>
-                <MenuItem value='minutes'>minutes</MenuItem>
-                <MenuItem value='hours'>hours</MenuItem>
-              </Select>
-            </InputAdornment>,
-          }}
-          onChange={(ev) => {
-            if (!isNaN(Number(ev.currentTarget.value))) {
-              onUpdate({
-                ...model, fadeOutInterval: Number(ev.currentTarget.value),
-              });
-            }
-          }}
-        />
-      </Stack>
-    </Box>
+    <Stack spacing={0.5}>
+      <TextField
+        label={'Fade out interval'}
+        fullWidth
+        variant="filled"
+        value={model.fadeOutInterval}
+        inputProps={{ min: 1 }}
+        type="number"
+        InputProps={{
+          endAdornment: <InputAdornment position='end'>
+            <Select variant='filled' value={model.fadeOutIntervalType} sx={{ '&.MuiInputBase-root': { backgroundColor: 'transparent !important' } }}
+              onChange={(ev) => onUpdate({
+                ...model, fadeOutIntervalType: ev.target.value as 'seconds',
+              })}>
+              <MenuItem value='seconds'>seconds</MenuItem>
+              <MenuItem value='minutes'>minutes</MenuItem>
+              <MenuItem value='hours'>hours</MenuItem>
+            </Select>
+          </InputAdornment>,
+        }}
+        onChange={(ev) => {
+          if (!isNaN(Number(ev.currentTarget.value))) {
+            onUpdate({
+              ...model, fadeOutInterval: Number(ev.currentTarget.value),
+            });
+          }
+        }}
+      />
+    </Stack>
 
     <AccordionFont
       disableExample

@@ -1,4 +1,3 @@
-import { Divider } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
@@ -13,8 +12,6 @@ type Props = {
 
 export const HTMLSettings: React.FC<Props> = ({ model, onUpdate }) => {
   return <>
-    <Divider/>
-
     <HTMLDialog model={model.html} onChange={value =>  onUpdate({
       ...model, html: value ?? '',
     })}/>

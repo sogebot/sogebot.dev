@@ -1,5 +1,4 @@
 import {
-  Divider,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -22,9 +21,7 @@ type Props = {
 export const PollsSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ py: 2 }}>
+    <Stack spacing={0.5}>
       <FormControl fullWidth>
         <InputLabel id="type-select-label">{ translate('overlays.polls.settings.cDisplayTheme') }</InputLabel>
         <Select

@@ -174,7 +174,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
         }}
       />
 
-      <Divider sx={{ m: 1 }}/>
+      <Divider variant='middle'/>
 
       <Stack spacing={0.5}>
         {selectedEvent !== 'rewardredeem' && <Box sx={{

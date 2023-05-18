@@ -30,11 +30,9 @@ export const EmotesExplodeSettings: React.FC<Props> = ({ model, onUpdate }) => {
   };
 
   return <>
-    <Divider/>
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Divider variant='middle'/>
+    <Stack spacing={0.5}>
       <FormControl fullWidth>
         <InputLabel id="type-select-label">{ translate('overlays.emotes.settings.cEmotesSize') }</InputLabel>
         <Select

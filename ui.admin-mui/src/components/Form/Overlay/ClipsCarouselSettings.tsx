@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   FormControl,
   FormLabel,
   InputLabel,
@@ -24,8 +23,6 @@ export const ClipsCarouselSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
 
   return <>
-    <Divider/>
-
     <Stack spacing={0.5}>
       <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
       <Box sx={{

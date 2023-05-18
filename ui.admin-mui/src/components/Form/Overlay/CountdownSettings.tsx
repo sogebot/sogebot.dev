@@ -124,7 +124,7 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
   };
 
   return <>
-    <Divider/>
+    <Divider variant='middle'/>
     <Stack direction='row' alignItems={'baseline'}>
       <FormLabel sx={{ width: '100%' }}>Show example of</FormLabel>
       <Button
@@ -141,9 +141,8 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
             Text
       </Button>
     </Stack>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Divider variant='middle'/>
+    <Stack spacing={0.5}>
       <Stack direction='row'>
         <TextField
           fullWidth

@@ -1,5 +1,4 @@
 import {
-  Divider,
   InputAdornment,
   Stack,
   TextField,
@@ -17,9 +16,7 @@ type Props = {
 export const EmotesComboSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Stack spacing={0.5}>
       <TextField
         fullWidth
         value={model.showEmoteInOverlayThreshold}

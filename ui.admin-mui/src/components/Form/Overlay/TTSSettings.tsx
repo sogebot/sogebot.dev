@@ -1,7 +1,4 @@
-import {
-  Divider,
-  Stack,
-} from '@mui/material';
+import { Stack } from '@mui/material';
 import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
@@ -16,9 +13,7 @@ export const TTSSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const [ open, setOpen ] = React.useState('');
 
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Stack spacing={0.5}>
       <AccordionTTS
         model={model}
         open={open}

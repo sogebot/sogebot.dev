@@ -1,5 +1,4 @@
 import {
-  Divider,
   Fade,
   FormControl,
   InputLabel,
@@ -32,9 +31,7 @@ export const AlertsRegistrySettings: React.FC<Props> = ({ model, onUpdate }) => 
   }, []);
 
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Stack spacing={0.5}>
       <FormControl fullWidth variant="filled" >
         <InputLabel id="type-select-label" shrink>Alert overlay</InputLabel>
         <Select

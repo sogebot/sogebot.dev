@@ -1,4 +1,4 @@
-import { Button, Divider } from '@mui/material';
+import { Button } from '@mui/material';
 import { Stats } from '@sogebot/backend/dest/database/entity/overlay';
 import { random } from 'lodash';
 import React from 'react';
@@ -21,10 +21,6 @@ export const StatsSettings: React.FC<Props> = () => {
     uptime:      `${random(0, 1)}${random(0, 9)}:${random(0, 5)}${random(0, 9)}:${random(0, 5)}${random(0, 9)}`,
   }));
   return <>
-    <Divider/>
-
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
-
-    <Divider/>
   </>;
 };

@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   capitalize,
-  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -40,8 +39,6 @@ export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
   };
 
   return <>
-    <Divider/>
-
     <Stack spacing={0.5} >
       <FormLabel sx={{ marginTop: '15px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
       <Box sx={{

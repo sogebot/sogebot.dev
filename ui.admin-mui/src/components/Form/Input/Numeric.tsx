@@ -18,6 +18,7 @@ export const FormNumericInput: React.FC<{
   const [propsValue, setPropsValue] = useState(value || 0);
 
   const keydownHandler: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
+    console.log({ event });
     const key = event.key;
     const shiftKey = event.shiftKey;
     const ctrlKey = event.ctrlKey;
@@ -49,6 +50,7 @@ export const FormNumericInput: React.FC<{
         return;
       }
 
+      console.log({ newValue });
       setPropsValue(newValue);
     }
   }, [ propsValue ]);
@@ -69,7 +71,7 @@ export const FormNumericInput: React.FC<{
     if (onChange) {
       onChange(propsValue);
     }
-  }, [ propsValue, onChange ]);
+  }, [ propsValue ]);
 
   return (
     <TextField

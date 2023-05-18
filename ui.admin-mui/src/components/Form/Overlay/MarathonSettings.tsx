@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   FormControlLabel,
   FormHelperText,
   Stack,
@@ -38,9 +37,7 @@ export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
   }, [invalidDateError]);
 
   return <>
-    <Divider/>
-
-    <Stack spacing={0.5} sx={{ pt: 2 }}>
+    <Stack spacing={0.5}>
       <FormHelperText>To adjust time, use quickactions button</FormHelperText>
 
       <DateTimeField
