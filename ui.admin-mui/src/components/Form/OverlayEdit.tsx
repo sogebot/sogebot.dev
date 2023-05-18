@@ -360,7 +360,12 @@ export const OverlayEdit: React.FC = () => {
               />
             </SimpleBar>
           </Grid>
-          <Grid xs sx={{ height: '100%' }}>
+          <Grid xs sx={{ height: '100%' }}
+            onContextMenu={(e) => {
+              setMoveableId(null);
+              e.stopPropagation();
+              e.preventDefault();
+            }}>
             <Box id="container"
               onMouseDown={() => isPositionChanging = true}
               onWheel={(e) => {
