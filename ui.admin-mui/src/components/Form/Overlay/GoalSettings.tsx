@@ -1,11 +1,19 @@
+import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Box, Button, FormControl, FormHelperText, InputAdornment,
-  InputLabel, MenuItem, Select, Stack, TextField, Typography,
+  Accordion, AccordionDetails, AccordionSummary,
+  Box, Button, FormControl, FormControlLabel, FormHelperText, InputAdornment,
+  InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography,
 } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
+import { useIntervalWhen } from 'rooks';
 
+import { dayjs } from '../../../helpers/dayjsHelper';
+import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { RenderList } from '../../Dashboard/Widget/Action/Dialog/ActionsEdit';
 import { FormNumericInput } from '../Input/Numeric';
 
 type Props = {
@@ -15,6 +23,11 @@ type Props = {
 
 export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
   const { translate } = useTranslation();
+  const [ tiltifyCampaigns, setTiltifyCampaigns ] = React.useState<tiltifyCampaign[]>([]);
+
+  useIntervalWhen(() => {
+    getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
+  }, 30000, true, true);
 
   const addNewGoal = () => {
     model.campaigns.push({
@@ -206,6 +219,113 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
             defaultValue={o.name}
             onChange={(ev) => updateCampaign(idx, 'name', ev.currentTarget.value ?? '')}
           />
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreTwoTone />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Goal settings</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={0.5}>
+                <FormControl fullWidth variant="filled" >
+                  <InputLabel id="type-select-label">{translate('registry.goals.input.displayAs.title')}</InputLabel>
+                  <Select
+                    MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                    label={translate('registry.goals.input.type.title')}
+                    labelId="type-select-label"
+                    value={o.type}
+                    onChange={(ev) => updateCampaign(idx, 'type', ev.target.value as 'followers')}
+                  >
+                    {[
+                      'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
+                      'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips',
+                      'intervalBits', 'tiltifyCampaign',
+                    ].map(t => <MenuItem value={t} key={t}>{t}</MenuItem>)}
+                  </Select>
+                </FormControl>
+
+                {o.type === 'tiltifyCampaign' && <FormControl fullWidth variant="filled" >
+                  <InputLabel id="type-select-label" shrink>Tiltify Campaign</InputLabel>
+                  <Select
+                    displayEmpty
+                    MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                    label={'Tiltify Campaign'}
+                    labelId="type-select-label"
+                    value={o.tiltifyCampaign}
+                    renderValue={(selected) => {
+                      return <RenderList label={tiltifyCampaigns.find(c => c.id === selected)?.name} id={selected}/>;
+                    }}
+                    onChange={(ev) => updateCampaign(idx, 'tiltifyCampaign', ev.target.value === '' ? null : Number(ev.target.value))}
+                  >
+                    <MenuItem value="">
+                      <RenderList label={''} id={''}/>
+                    </MenuItem>
+                    {tiltifyCampaigns.map(t => <MenuItem value={t.id} key={t.id}>
+                      <RenderList label={t.name} id={t.id}/>
+                    </MenuItem>)}
+                  </Select>
+                </FormControl>}
+
+                {o.type !== 'tiltifyCampaign' && <>
+                  {['tips', 'intervalTips'].includes(o.type) && <FormControlLabel sx={{
+                    width: '100%', pt: 1,
+                  }} control={<Switch
+                    checked={o.countBitsAsTips}
+                    onChange={(_, checked) => updateCampaign(idx, 'countBitsAsTips', checked)} />}
+                  label={translate('registry.goals.input.countBitsAsTips.title')}/>}
+
+                  <FormNumericInput
+                    min={0}
+                    value={o.goalAmount}
+                    label={translate('registry.goals.input.goalAmount.title')}
+                    onChange={(ev) => updateCampaign(idx, 'goalAmount', Number(ev ?? 0))}
+                  />
+
+                  {(!o.type.includes('current') && !o.type.includes('interval')) && <FormNumericInput
+                    min={0}
+                    value={o.currentAmount}
+                    label={translate('registry.goals.input.currentAmount.title')}
+                    onChange={(ev) => updateCampaign(idx, 'currentAmount', Number(ev ?? 0))}
+                  />}
+
+                  {o.type.includes('interval') && <FormControl fullWidth variant="filled" >
+                    <InputLabel id="type-select-label">{translate('registry.goals.input.interval.title')}</InputLabel>
+                    <Select
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                      label={translate('registry.goals.input.interval.title')}
+                      labelId="interval-select-label"
+                      value={o.interval}
+                      onChange={(ev) => updateCampaign(idx, 'interval', ev.target.value as 'hour')}
+                    >
+                      {['hour', 'day', 'week', 'month', 'year'].map(t => <MenuItem value={t} key={t}>{t}</MenuItem>)}
+                    </Select>
+                  </FormControl>}
+
+                  <DateTimePicker
+                    disabled={o.endAfterIgnore}
+                    value={dayjs(o.endAfter)}
+                    onChange={(date) => updateCampaign(idx, 'endAfter', date?.toISOString() ?? new Date(0).toISOString())}
+                    label={translate('registry.goals.input.endAfter.title')}
+                    slotProps={{
+                      textField: {
+                        InputProps: {
+                          startAdornment: <InputAdornment position="start">
+                            <Switch
+                              size='small'
+                              checked={!o.endAfterIgnore}
+                              onChange={(_, checked) => updateCampaign(idx, 'endAfterIgnore', !checked)}
+                            />
+                          </InputAdornment>,
+                        },
+                      },
+                    }}
+                  />
+                </>}
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
           {JSON.stringify(o)}
         </React.Fragment>)}
       </Stack>

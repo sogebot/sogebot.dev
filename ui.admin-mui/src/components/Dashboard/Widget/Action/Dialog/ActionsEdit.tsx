@@ -42,10 +42,10 @@ const reorder = (list: QuickActions.Item[], startIndex: number, endIndex: number
   return result;
 };
 
-const RenderList: React.FC<{label?: string, id: string}> = ({
+export const RenderList: React.FC<{label?: string, id: string | number | null}> = ({
   label, id,
 }) => {
-  return id.length > 0
+  return id && (String(id).length > 0)
     ? <Typography sx={{ fontWeight: label ? 'bold' : 'inherit' }} component='span'>
       {label ? HTMLReactParser(label) : '?'}
       <Typography sx={{
