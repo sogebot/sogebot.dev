@@ -31,7 +31,7 @@ export const CSSDialog: React.FC<Props> = ({ onChange, model }) => {
       disableEnforceFocus
       style={{ pointerEvents: 'none' }}
       PaperProps={{ style: { pointerEvents: 'auto' } }}
-      maxWidth='sm'
+      maxWidth='md'
       hideBackdrop
       PaperComponent={PaperComponent}
       onClose={() => setOpen(false)}
@@ -39,7 +39,7 @@ export const CSSDialog: React.FC<Props> = ({ onChange, model }) => {
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
         CSS
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ p: 0 }}>
         <Editor
           height="44vh"
           width="100%"

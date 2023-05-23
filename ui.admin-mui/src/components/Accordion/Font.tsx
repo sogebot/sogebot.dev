@@ -226,7 +226,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             }}
             value={shadowTab}
             onChange={(_, value) => setShadowTab(value)}>
-            {model.shadow.map((_, idx) => <Tab label={`Shadow#${idx + 1}`} key={idx}/>)}
+            {(model.shadow).map((_, idx) => <Tab label={`Shadow#${idx + 1}`} key={idx}/>)}
           </Tabs>
         </Stack>
 

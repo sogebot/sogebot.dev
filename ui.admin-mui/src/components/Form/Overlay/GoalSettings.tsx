@@ -7,14 +7,27 @@ import {
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
+import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import { set } from 'lodash';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
+import { CSSDialog } from './HTMLSettings/css';
+import { HTMLDialog } from './HTMLSettings/html';
+import { JavascriptDialog } from './HTMLSettings/javascript';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { AccordionFont } from '../../Accordion/Font';
 import { RenderList } from '../../Dashboard/Widget/Action/Dialog/ActionsEdit';
 import { FormNumericInput } from '../Input/Numeric';
+
+type Flatten<T extends object> = object extends T ? object : {
+  [K in keyof T]-?: (x: NonNullable<T[K]> extends infer V ? V extends object ?
+    V extends readonly any[] ? Pick<T, K> : Flatten<V> extends infer FV ? ({
+      [P in keyof FV as `${Extract<K, string | number>}.${Extract<P, string | number>}`]:
+      FV[P] }) : never : Pick<T, K> : never
+  ) => void } extends Record<keyof T, (y: infer O) => void> ? { [K in keyof O]: O[K] } : never;
 
 type Props = {
   model: Goal;
@@ -24,6 +37,8 @@ type Props = {
 export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
   const { translate } = useTranslation();
   const [ tiltifyCampaigns, setTiltifyCampaigns ] = React.useState<tiltifyCampaign[]>([]);
+
+  const [ accordionFontOpen, setAccordionFontOpen ] = React.useState(false);
 
   useIntervalWhen(() => {
     getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
@@ -94,8 +109,8 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
     onUpdate(model);
   };
 
-  const updateCampaign = <ATTR extends keyof typeof model.campaigns[number]>(idx: number, attr: ATTR, value: typeof model.campaigns[number][ATTR]) => {
-    model.campaigns[idx][attr] = value;
+  const updateCampaign = <ATTR extends keyof Flatten<typeof model.campaigns[number]>>(idx: number, attr: ATTR, value: Flatten<typeof model.campaigns[number]>[ATTR]) => {
+    set(model.campaigns[idx], attr, value);
     onUpdate(model);
   };
 
@@ -230,7 +245,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
             <AccordionDetails>
               <Stack spacing={0.5}>
                 <FormControl fullWidth variant="filled" >
-                  <InputLabel id="type-select-label">{translate('registry.goals.input.displayAs.title')}</InputLabel>
+                  <InputLabel id="type-select-label">{translate('registry.goals.input.type.title')}</InputLabel>
                   <Select
                     MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
                     label={translate('registry.goals.input.type.title')}
@@ -326,6 +341,52 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
               </Stack>
             </AccordionDetails>
           </Accordion>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreTwoTone />}
+              aria-controls="panel2a-content"
+              id="panel2a-header"
+            >
+              <Typography>Display settings</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={0.5}>
+                <FormControl fullWidth variant="filled" >
+                  <InputLabel id="type-select-label">{translate('registry.goals.display')}</InputLabel>
+                  <Select
+                    MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                    label={translate('registry.goals.display')}
+                    labelId="type-select-label"
+                    value={o.display}
+                    onChange={(ev) => updateCampaign(idx, 'display', ev.target.value as 'full')}
+                  >
+                    {[
+                      'simple', 'full', 'custom',
+                    ].map(t => <MenuItem value={t} key={t}>{t}</MenuItem>)}
+                  </Select>
+
+                </FormControl>
+                {o.display === 'custom' && <>
+                  <HTMLDialog model={o.customization.html} onChange={value => updateCampaign(idx, 'customization.html', value)}/>
+                  <CSSDialog model={o.customization.css} onChange={value => updateCampaign(idx, 'customization.css', value)}/>
+                  <JavascriptDialog model={o.customization.js} onChange={value => updateCampaign(idx, 'customization.js', value)}/>
+                </>}
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+          <AccordionFont
+            disableExample
+            open={accordionFontOpen && o.display !== 'custom' ? 'font' : ''}
+            disabled={o.display === 'custom'}
+            onClick={() => setAccordionFontOpen(val => !val)}
+            model={o.customizationFont}
+            onChange={val => {
+              const flattenVal = flatten(val);
+              for (const key of Object.keys(flattenVal)) {
+                updateCampaign(idx, 'customizationFont.' + key as any, flattenVal[key as any]);
+              }
+            }
+            }/>
           {JSON.stringify(o)}
         </React.Fragment>)}
       </Stack>
