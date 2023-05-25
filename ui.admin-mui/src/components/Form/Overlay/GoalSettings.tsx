@@ -8,7 +8,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { set } from 'lodash';
+import set from 'lodash/set';
 import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
@@ -117,6 +117,11 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
     onUpdate(model);
   };
 
+  const removeGoal = (idx: number) => {
+    model.campaigns.splice(idx, 1);
+    onUpdate(model);
+  };
+
   return <>
     <Stack spacing={0.5}>
       <FormControl fullWidth variant="filled" >
@@ -205,7 +210,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
       }
       {model.display.type === 'multi' && <>
         <FormNumericInput
-          min={1000}
+          min={0}
           value={model.display.spaceBetweenGoalsInPx}
           label={translate('registry.goals.input.spaceBetweenGoalsInPx.title')}
           InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
@@ -265,27 +270,36 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
                   </Select>
                 </FormControl>
 
-                {o.type === 'tiltifyCampaign' && <FormControl fullWidth variant="filled" >
-                  <InputLabel id="type-select-label" shrink>Tiltify Campaign</InputLabel>
-                  <Select
-                    displayEmpty
-                    MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-                    label={'Tiltify Campaign'}
-                    labelId="type-select-label"
-                    value={o.tiltifyCampaign}
-                    renderValue={(selected) => {
-                      return <RenderList label={tiltifyCampaigns.find(c => c.id === selected)?.name} id={selected}/>;
-                    }}
-                    onChange={(ev) => updateCampaign(idx, 'tiltifyCampaign', ev.target.value === '' ? null : Number(ev.target.value))}
-                  >
-                    <MenuItem value="">
-                      <RenderList label={''} id={''}/>
-                    </MenuItem>
-                    {tiltifyCampaigns.map(t => <MenuItem value={t.id} key={t.id}>
-                      <RenderList label={t.name} id={t.id}/>
-                    </MenuItem>)}
-                  </Select>
-                </FormControl>}
+                {o.type === 'tiltifyCampaign' && <>
+                  <FormControl fullWidth variant="filled" >
+                    <InputLabel id="type-select-label" shrink>Tiltify Campaign</InputLabel>
+                    <Select
+                      displayEmpty
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                      label={'Tiltify Campaign'}
+                      labelId="type-select-label"
+                      value={o.tiltifyCampaign}
+                      renderValue={(selected) => {
+                        return <RenderList label={tiltifyCampaigns.find(c => c.id === selected)?.name} id={selected}/>;
+                      }}
+                      onChange={(ev) => updateCampaign(idx, 'tiltifyCampaign', ev.target.value === '' ? null : Number(ev.target.value))}
+                    >
+                      <MenuItem value="">
+                        <RenderList label={''} id={''}/>
+                      </MenuItem>
+                      {tiltifyCampaigns.map(t => <MenuItem value={t.id} key={t.id}>
+                        <RenderList label={t.name} id={t.id}/>
+                      </MenuItem>)}
+                    </Select>
+                  </FormControl>
+
+                  <FormNumericInput
+                    min={0}
+                    value={o.currentAmount}
+                    label={translate('registry.goals.input.currentAmount.title')}
+                    onChange={(ev) => updateCampaign(idx, 'currentAmount', Number(ev ?? 0))}
+                  />
+                </>}
 
                 {o.type !== 'tiltifyCampaign' && <>
                   {['tips', 'intervalTips'].includes(o.type) && <FormControlLabel sx={{
@@ -365,7 +379,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
                     onChange={(ev) => updateCampaign(idx, 'display', ev.target.value as 'full')}
                   >
                     {[
-                      'simple', 'full', 'custom',
+                      'simple', 'full', /* TODO: 'custom',*/
                     ].map(t => <MenuItem value={t} key={t}>{t}</MenuItem>)}
                   </Select>
 
@@ -443,7 +457,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
             </AccordionDetails>
           </Accordion>
 
-          <Button sx={{ py: 1.5 }} variant='contained' color='error'>Remove goal {idx + 1}</Button>
+          <Button sx={{ py: 1.5 }} variant='contained' color='error' onClick={() => removeGoal(idx)}>Remove goal {idx + 1}</Button>
         </React.Fragment>)}
       </Stack>
     </Box>

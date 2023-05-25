@@ -64,6 +64,7 @@ import { EmotesFireworksItem } from '../Overlay/EmotesFireworksItem';
 import { EmotesItem } from '../Overlay/EmotesItem';
 import { EventlistItem } from '../Overlay/EventlistItem';
 import { ExportDialog } from '../Overlay/ExportDialog';
+import { GoalItem } from '../Overlay/GoalItem';
 import { HTMLItem } from '../Overlay/HTMLItem';
 import { HypeTrainItem } from '../Overlay/HypeTrainItem';
 import { ImageCarouselItem } from '../Overlay/ImageCarouselItem';
@@ -448,6 +449,7 @@ export const OverlayEdit: React.FC = () => {
                     {o.opts.typeId === 'clips' && <ClipsItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                     {o.opts.typeId === 'carousel' && <ImageCarouselItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                     {o.opts.typeId === 'eventlist' && <EventlistItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
+                    {o.opts.typeId === 'goal' && <GoalItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                     {o.opts.typeId === 'html' && <HTMLItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}
                     {o.opts.typeId === 'hypetrain' && <HypeTrainItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'url' && <UrlItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id}/>}

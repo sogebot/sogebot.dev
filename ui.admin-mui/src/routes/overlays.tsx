@@ -16,6 +16,7 @@ import { EmotesExplodeItem } from '../components/Overlay/EmotesExplodeItem';
 import { EmotesFireworksItem } from '../components/Overlay/EmotesFireworksItem';
 import { EmotesItem } from '../components/Overlay/EmotesItem';
 import { EventlistItem } from '../components/Overlay/EventlistItem';
+import { GoalItem } from '../components/Overlay/GoalItem';
 import { HTMLItem } from '../components/Overlay/HTMLItem';
 import { HypeTrainItem } from '../components/Overlay/HypeTrainItem';
 import { ImageCarouselItem } from '../components/Overlay/ImageCarouselItem';
@@ -101,6 +102,7 @@ export default function Overlays() {
         {item.opts.typeId === 'url' && <UrlItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'stats' && <StatsItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'polls' && <PollsItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'goal' && <GoalItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'html' && <HTMLItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'randomizer' && <RandomizerItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
