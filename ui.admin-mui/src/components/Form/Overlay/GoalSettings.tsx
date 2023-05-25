@@ -1,7 +1,7 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionSummary,
-  Box, Button, FormControl, FormControlLabel, FormHelperText, InputAdornment,
+  Accordion, AccordionDetails, AccordionSummary, Box,
+  Button, Divider, FormControl, FormControlLabel, FormHelperText, InputAdornment,
   InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -9,6 +9,7 @@ import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { set } from 'lodash';
+import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
@@ -18,6 +19,7 @@ import { JavascriptDialog } from './HTMLSettings/javascript';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { isHexColor } from '../../../validators';
 import { AccordionFont } from '../../Accordion/Font';
 import { RenderList } from '../../Dashboard/Widget/Action/Dialog/ActionsEdit';
 import { FormNumericInput } from '../Input/Numeric';
@@ -39,6 +41,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
   const [ tiltifyCampaigns, setTiltifyCampaigns ] = React.useState<tiltifyCampaign[]>([]);
 
   const [ accordionFontOpen, setAccordionFontOpen ] = React.useState(false);
+  const [ accordionBarOpen, setAccordionBarOpen ] = React.useState(false);
 
   useIntervalWhen(() => {
     getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
@@ -226,6 +229,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
     <Box sx={{ py: 2 }}>
       <Stack spacing={0.5}>
         {model.campaigns.map((o, idx) => <React.Fragment key={idx}>
+          {idx > 0 && <Divider sx={{ margin: '10px 5px 5px 0px !important' }} variant='middle' />}
           <Typography variant='h5'>Goal {idx+1}</Typography>
           <TextField
             label={translate('name')}
@@ -387,7 +391,59 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
               }
             }
             }/>
-          {JSON.stringify(o)}
+          <Accordion
+            expanded={accordionBarOpen && o.display !== 'custom'}
+            disabled={o.display === 'custom'}>
+            <AccordionSummary
+              onClick={() => setAccordionBarOpen(val => !val)}
+              expandIcon={<ExpandMoreTwoTone />}
+              aria-controls="panel3a-content"
+              id="panel3a-header"
+            >
+              <Typography>{ translate('registry.goals.barSettings') }</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={0.5}>
+                <FormNumericInput
+                  min={0}
+                  value={o.customizationBar.borderPx}
+                  label={translate('registry.goals.input.borderPx.title')}
+                  onChange={(ev) => updateCampaign(idx, 'customizationBar.borderPx', Number(ev ?? 0))}
+                  InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
+                />
+                <FormNumericInput
+                  min={0}
+                  value={o.customizationBar.height}
+                  label={translate('registry.goals.input.barHeight.title')}
+                  onChange={(ev) => updateCampaign(idx, 'customizationBar.height', Number(ev ?? 0))}
+                  InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
+                />
+                <MuiColorInput
+                  label={ translate('registry.goals.input.color.title') }
+                  fullWidth
+                  isAlphaHidden
+                  format="hex"
+                  value={isHexColor(o.customizationBar.color) ? o.customizationBar.color : '#111111'}
+                  onChange={(_, value) => updateCampaign(idx, 'customizationBar.color', isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111')} />
+                <MuiColorInput
+                  label={ translate('registry.goals.input.borderColor.title') }
+                  fullWidth
+                  isAlphaHidden
+                  format="hex"
+                  value={isHexColor(o.customizationBar.borderColor) ? o.customizationBar.borderColor : '#111111'}
+                  onChange={(_, value) => updateCampaign(idx, 'customizationBar.borderColor', isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111')} />
+                <MuiColorInput
+                  label={ translate('registry.goals.input.backgroundColor.title') }
+                  fullWidth
+                  isAlphaHidden
+                  format="hex"
+                  value={isHexColor(o.customizationBar.backgroundColor) ? o.customizationBar.backgroundColor : '#111111'}
+                  onChange={(_, value) => updateCampaign(idx, 'customizationBar.backgroundColor', isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111')} />
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+
+          <Button sx={{ py: 1.5 }} variant='contained' color='error'>Remove goal {idx + 1}</Button>
         </React.Fragment>)}
       </Stack>
     </Box>
