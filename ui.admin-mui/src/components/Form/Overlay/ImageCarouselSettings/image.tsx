@@ -21,7 +21,12 @@ type Props = {
   model: Carousel['images'],
   onChange(value: Carousel['images']): void,
 };
+
+let images: Carousel['images'] = [];
+
 export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
+  images = model; // fixing issues with rewriting model...
+
   const [ open, setOpen ] = React.useState(false);
 
   const [activeId, setActiveId] = React.useState<null | string>(null);
@@ -38,17 +43,17 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
       return;
     }
     if (active.id !== over.id) {
-      onChange(arrayMove(model, model.findIndex(o => o.id === active.id), model.findIndex(o => o.id === over.id)));
+      onChange(arrayMove(images, images.findIndex(o => o.id === active.id), images.findIndex(o => o.id === over.id)));
     }
     setActiveId(null);
   }
 
   const removeImage = (id: string) => {
-    onChange(model.filter(o => o.id !== id));
+    onChange(images.filter(o => o.id !== id));
   };
 
   const updateImage = (image: typeof model[number]) => {
-    onChange(model.map(o => o.id === image.id ? image : o));
+    onChange(images.map(o => o.id === image.id ? image : o));
   };
 
   function handleDragStart(event: { active: any; }) {
