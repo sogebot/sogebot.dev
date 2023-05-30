@@ -23,7 +23,6 @@ type Props = {
 };
 export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
   const [ open, setOpen ] = React.useState(false);
-  const [ item, setItem ] = React.useState(model);
 
   const [activeId, setActiveId] = React.useState<null | string>(null);
 
@@ -44,16 +43,12 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
     setActiveId(null);
   }
 
-  React.useEffect(() => {
-    onChange(item);
-  }, [ item ]);
-
   const removeImage = (id: string) => {
-    setItem(it => it.filter(o => o.id !== id));
+    onChange(model.filter(o => o.id !== id));
   };
 
   const updateImage = (image: typeof model[number]) => {
-    setItem(it => it.map(o => o.id === image.id ? image : o));
+    onChange(model.map(o => o.id === image.id ? image : o));
   };
 
   function handleDragStart(event: { active: any; }) {

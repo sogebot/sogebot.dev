@@ -128,15 +128,15 @@ export const OverlayEdit: React.FC = () => {
 
   const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
 
-  const selectedItem = React.useMemo(() => {
-    return item.items.find(o => o.id.replace(/-/g, '') === moveableId);
-  }, [item, moveableId]);
+  const selectedItem = item.items.find(o => o.id.replace(/-/g, '') === moveableId);
 
   useKey(['Delete'], () => {
     if (selectedItem) {
       setItem(o => ({
         ...o,
-        items: o.items.filter(i => i.id.replace(/-/g, '') !== selectedItem.id),
+        items: o.items.filter(i => {
+          return i.id.replace(/-/g, '') !== selectedItem.id && i.id !== selectedItem.id;
+        }),
       }) as any);
       setMoveableId(null);
     }

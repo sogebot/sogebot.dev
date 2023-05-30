@@ -12,7 +12,7 @@ import { useLocalstorageState } from 'rooks';
 import { getSocket } from '../../../helpers/socket';
 import theme from '../../../theme';
 
-const normalizePath = (path: string) => {
+export const normalizePath = (path: string) => {
   // remove . if path is empty
   if (path[0] === '.') {
     path = path.replace('.', '');
@@ -28,7 +28,7 @@ const normalizePath = (path: string) => {
   return path;
 };
 
-const getDirectoriesOf = (items: GalleryInterface[], directories: string[]) => {
+export const getDirectoriesOf = (items: GalleryInterface[], directories: string[]) => {
   const folders = items.map(o => o.folder.split('/').filter(Boolean));
 
   // get first level

@@ -71,6 +71,7 @@ const PageRegistryOverlays = lazy(() => import('./registry/overlays'));
 const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
 const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
 const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
+const PageRegistryGallery = lazy(() => import('./registry/gallery'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -256,6 +257,7 @@ export default function Root() {
                     <Route path="/registry/randomizer/:type?/:id?" element={<PageRegistryRandomizer/>}/>
                     <Route path="/registry/plugins/:type?/:id?" element={<PageRegistryPlugins/>}/>
                     <Route path="/registry/customvariables/:type?/:id?" element={<PageRegistryCustomVariables/>}/>
+                    <Route path="/registry/gallery" element={<PageRegistryGallery/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
