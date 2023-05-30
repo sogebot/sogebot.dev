@@ -1,7 +1,7 @@
 <template>
-  <HelloWorld />
+  <ServerSelect />
 </template>
 
 <script lang="ts" setup>
-  import HelloWorld from '@/components/HelloWorld.vue'
+  import ServerSelect from '@/components/ServerSelect.vue'
 </script>
