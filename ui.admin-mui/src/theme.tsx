@@ -15,6 +15,13 @@ declare module '@mui/material/styles' {
   }
 }
 
+declare module '@mui/material/Fab' {
+  interface FabPropsColorOverrides {
+    dark: true;
+    light: true;
+  }
+}
+
 declare module '@mui/material/ButtonGroup' {
   interface ButtonGroupPropsColorOverrides {
     dark: true;

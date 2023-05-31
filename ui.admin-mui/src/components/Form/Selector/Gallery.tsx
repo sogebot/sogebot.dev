@@ -1,4 +1,4 @@
-import { CollectionsTwoTone, FolderTwoTone } from '@mui/icons-material';
+import { CollectionsTwoTone, Folder } from '@mui/icons-material';
 import {
   Box,
   Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography,
@@ -11,6 +11,7 @@ import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
 import theme from '../../../theme';
+import { AudioButton } from '../../Audio/Button';
 
 export const normalizePath = (path: string) => {
   // remove . if path is empty
@@ -193,7 +194,7 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
             <Stack direction='row' sx={{
               p: 2, width: '100%',
             }} spacing={2}>
-              <FolderTwoTone/>
+              <Folder/>
               <Breadcrumbs aria-label="breadcrumb">
                 <Link component='span' underline="hover" color="text.primary" onClick={() => setFolder('/')}>
                 root
@@ -229,7 +230,7 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
                   aspectRatio:  '1.5/1',
                 }} onClick={() => setFolder(`${folder}/${directory}`.replace(/\/\//g, '/'))}>
                   <Stack alignItems='center'>
-                    <FolderTwoTone sx={{ fontSize: '80px' }}/>
+                    <Folder sx={{ fontSize: '80px' }}/>
                     <Typography variant='caption'>{directory}</Typography>
                   </Stack>
                 </IconButton>
@@ -275,14 +276,7 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
                         objectFit: 'contain', width: '100%', height: '100%',
                       }}
                     />}
-                    {item.type.includes('audio') && <audio
-                      controls
-                      onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
-                      src={`${server}/gallery/${item.id}`}
-                      style={{
-                        objectFit: 'contain', width: '100%', height: '100%',
-                      }}
-                    />}
+                    {item.type.includes('audio') && <AudioButton src={`${server}/gallery/${item.id}`}/>}
                     <Typography variant='caption' sx={{
                       position:   'absolute',
                       width:      '100%',

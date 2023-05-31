@@ -25,7 +25,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import HTMLReactParser from 'html-react-parser';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback,
@@ -155,7 +154,7 @@ const PageRegistryOverlays = () => {
 
   const copy = useCallback((link: string) => {
     navigator.clipboard.writeText(`${link}`);
-    enqueueSnackbar(HTMLReactParser(`Overlay link &nbsp;<strong>${link}</strong>&nbsp;copied to clipboard.`));
+    enqueueSnackbar(<div>Overlay link &nbsp;<strong>{link}</strong>&nbsp;copied to clipboard.</div>);
   }, [ enqueueSnackbar, server ]);
 
   const open = React.useMemo(() => !!(type

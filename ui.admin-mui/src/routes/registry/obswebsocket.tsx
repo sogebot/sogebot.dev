@@ -23,7 +23,6 @@ import {
   Typography,
 } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
-import HTMLReactParser from 'html-react-parser';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback,
@@ -71,7 +70,7 @@ const PageRegistryCustomVariables = () => {
 
   const copy = useCallback((idc: string) => {
     navigator.clipboard.writeText(`${command} ${idc}`);
-    enqueueSnackbar(HTMLReactParser(`Command&nbsp;<strong>${command} ${idc}</strong>&nbsp;copied to clipboard.`));
+    enqueueSnackbar(<div>Command&nbsp;<strong>{command} {idc}</strong>&nbsp;copied to clipboard.</div>);
   }, [ command, enqueueSnackbar ]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<OBSWebsocket & { command: string }>([

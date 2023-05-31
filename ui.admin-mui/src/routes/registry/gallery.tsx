@@ -1,19 +1,25 @@
-import { FolderTwoTone } from '@mui/icons-material';
+import { Folder } from '@mui/icons-material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box, Button, CircularProgress, Grid,
   IconButton, Stack, Typography,
 } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
+import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useLocalstorageState } from 'rooks';
+import { useLocalstorageState , useRefElement } from 'rooks';
+import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
+import { AudioButton } from '../../components/Audio/Button';
 import { getDirectoriesOf, normalizePath } from '../../components/Form/Selector/Gallery';
+import { getBase64FromUrl } from '../../helpers/getBase64FromURL';
 import { getSocket } from '../../helpers/socket';
 import theme from '../../theme';
 
 const PageRegistryGallery = () => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const { enqueueSnackbar } = useSnackbar();
 
   const [ selectedItem, setSelectedItem ] = React.useState<string | null>(null);
 
@@ -49,6 +55,78 @@ const PageRegistryGallery = () => {
     });
   }, []);
 
+  const copy = React.useCallback(() => {
+    if (!selectedItem) {
+      return;
+    }
+    const link = `${server}/gallery/${selectedItem}`;
+    navigator.clipboard.writeText(`${link}`);
+    enqueueSnackbar(<div>Gallery link &nbsp;<strong>{link}</strong>&nbsp;copied to clipboard.</div>);
+  }, [ enqueueSnackbar, selectedItem, server ]);
+
+  const remove = React.useCallback(() => {
+    if (!selectedItem) {
+      return;
+    }
+    getSocket('/overlays/gallery').emit('generic::deleteById', selectedItem, () => {
+      const item = items.find(o => o.id === selectedItem);
+      if (!item) {
+        return;
+      }
+      enqueueSnackbar(<div>File <strong>{item.name}</strong> was removed successfully</div>, { variant: 'success' });
+      setSelectedItem(null);
+      refresh();
+    });
+  }, [ enqueueSnackbar, selectedItem, server ]);
+
+  const [ uploading, setUploading ] = React.useState(false);
+  const [refUploadInput, elementUploadInput]  = useRefElement<HTMLElement>();
+
+  const filesChange = React.useCallback(async (filesUpload: HTMLInputElement['files']) => {
+    if (!filesUpload) {
+      return;
+    }
+    setUploading(true);
+
+    for (const file of filesUpload) {
+      try {
+        const b64data = (await getBase64FromUrl(URL.createObjectURL(file)));
+        await new Promise((resolve) => {
+          getSocket('/overlays/gallery').emit('gallery::upload', [
+            file.name,
+            {
+              folder, b64data, id: shortid(),
+            }], resolve);
+        });
+        enqueueSnackbar(<div>File <strong>{file.name}</strong> was uploaded successfully to folder <strong>{folder}</strong></div>, { variant: 'success' });
+      } catch (e) {
+        if (e instanceof Error) {
+          enqueueSnackbar(e.message, { variant: 'error' });
+          console.error(e);
+        }
+      }
+    }
+
+    refresh();
+    setUploading(false);
+  }, [ enqueueSnackbar, folder ]);
+
+  const refresh = () => {
+    // refresh
+    getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.debug('Loaded', _items);
+      setItems(_items
+        .map(item => ({
+          ...item,
+          folder: normalizePath(item.folder),
+        })));
+    });
+  };
+
   return <>
     {loading
       ? <CircularProgress color="inherit" sx={{
@@ -57,13 +135,21 @@ const PageRegistryGallery = () => {
       :  <>
         <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
           <Grid item>
-            <Button sx={{ width: 200 }} variant="contained">Upload new file</Button>
+            <LoadingButton sx={{ width: 200 }} variant="contained" loading={uploading} onClick={() => elementUploadInput?.click()}>Upload new file</LoadingButton>
+            <input
+              ref={refUploadInput}
+              type="file"
+              multiple
+              style={{ display: 'none' }}
+              accept="audio/*, video/*, image/*"
+              onChange={(event) => filesChange(event.target.files)}
+            />
           </Grid>
           {selectedItem && <Grid item>
-            <Button sx={{ width: 200 }} color='error' variant="contained">Delete file</Button>
+            <Button sx={{ width: 200 }} color='error' variant="contained" onClick={remove}>Delete file</Button>
           </Grid>}
           {selectedItem && <Grid item>
-            <Button sx={{ width: 250 }} color='dark' variant="contained">Copy link to clipboard</Button>
+            <Button sx={{ width: 250 }} color='dark' variant="contained" onClick={copy}>Copy link to clipboard</Button>
           </Grid>}
         </Grid>
         <SimpleBar style={{
@@ -81,7 +167,7 @@ const PageRegistryGallery = () => {
                 setFolder(`${folders.length === 0 ? '/' : folders}`.replace(/\/\//g, '/'));
               }}>
                 <Stack alignItems='center'>
-                  <FolderTwoTone sx={{ fontSize: '80px' }}/>
+                  <Folder sx={{ fontSize: '80px' }}/>
                   <Typography variant='caption'>..</Typography>
                 </Stack>
               </IconButton>
@@ -94,7 +180,7 @@ const PageRegistryGallery = () => {
                 aspectRatio:  '1.5/1',
               }} onClick={() => setFolder(`${folder}/${directory}`.replace(/\/\//g, '/'))}>
                 <Stack alignItems='center'>
-                  <FolderTwoTone sx={{ fontSize: '80px' }}/>
+                  <Folder sx={{ fontSize: '80px' }}/>
                   <Typography variant='caption'>{directory}</Typography>
                 </Stack>
               </IconButton>
@@ -132,21 +218,17 @@ const PageRegistryGallery = () => {
                       objectFit: 'contain', width: '100%', height: '100%',
                     }}
                   />}
-                  {item.type.includes('audio') && <audio
-                    controls
-                    onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
-                    src={`${server}/gallery/${item.id}`}
-                    style={{
-                      objectFit: 'contain', width: '100%', height: '100%',
-                    }}
-                  />}
+                  {item.type.includes('audio') && <>
+                    <AudioButton src={`${server}/gallery/${item.id}`}/>
+                  </>}
                   <Typography variant='caption' sx={{
-                    position:   'absolute',
-                    width:      '100%',
-                    left:       '50%',
-                    transform:  'translateX(-50%)',
-                    bottom:     '-1.5rem',
-                    textShadow: '0px 0px 2px #000000, 0px 0px 5px #000000, 0px 0px 10px #000000',
+                    position:     'absolute',
+                    width:        '100%',
+                    left:         '50%',
+                    transform:    'translateX(-50%)',
+                    bottom:       '-1.5rem',
+                    overflowWrap: 'break-word',
+                    textShadow:   '0px 0px 2px #000000, 0px 0px 5px #000000, 0px 0px 10px #000000',
                   }}>{item.name}</Typography>
                 </Box>
               </IconButton>
