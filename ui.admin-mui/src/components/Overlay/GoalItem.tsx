@@ -20,7 +20,7 @@ const doEnterAnimation = (idx: number, threadId: string, display: {
   durationMs: number;
   animationInMs: number;
   animationOutMs: number;
-}, retry = 0) => {
+}, haveMoreItems: boolean, retry = 0) => {
   console.log('doEnterAnimation', {
     idx, threadId, display, retry,
   });
@@ -29,14 +29,16 @@ const doEnterAnimation = (idx: number, threadId: string, display: {
   }
   const el = document.getElementById(`goal-${threadId}-${idx}`);
   if (!el) {
-    setTimeout(() => doEnterAnimation(idx, threadId, display), 100);
+    setTimeout(() => doEnterAnimation(idx, threadId, display, haveMoreItems), 100);
     return;
   }
   gsap.to(el, {
     duration:   display.animationInMs / 1000,
     opacity:    1,
     onComplete: () => {
-      setTimeout(() => doLeaveAnimation(idx, threadId, display), display.durationMs);
+      if (haveMoreItems) {
+        setTimeout(() => doLeaveAnimation(idx, threadId, display), display.durationMs);
+      }
     },
   });
 };
@@ -85,7 +87,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width }) => {
         if (typeof item.campaigns[currentGoal + 1] === 'undefined') {
           if (currentGoal !== 0) {
             if (item.display.type === 'fade') {
-              doEnterAnimation(0, threadId, item.display);
+              doEnterAnimation(0, threadId, item.display, item.campaigns.length > 1);
             }
           }
           setCurrentGoal(0);
@@ -93,7 +95,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width }) => {
           setCurrentGoal(v => {
             const newIdx = v + 1;
             if (item.display.type === 'fade') {
-              doEnterAnimation(newIdx, threadId, item.display);
+              doEnterAnimation(newIdx, threadId, item.display, item.campaigns.length > 1);
             }
             return newIdx;
           });
