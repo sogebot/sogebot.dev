@@ -14,7 +14,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Route, Routes, useLocation,
 } from 'react-router-dom';
-import { useDebounce, useRefElement } from 'rooks';
+import {
+  useDebounce, useRefElement, useSessionstorageState,
+} from 'rooks';
 
 import Error404 from './404';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
@@ -156,6 +158,8 @@ export default function Root() {
   const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
 
+  const [ unfold ] = useSessionstorageState('action_unfold', true);
+
   useEffect(() => {
     setIndexPage(location.pathname === '/');
   }, [location.pathname, dispatch]);
@@ -207,13 +211,16 @@ export default function Root() {
               }} mr={0.2}>
                 <DashboardStats/>
                 <Grid container pt={0.5} pr={0.2} spacing={0.5}>
-                  <Grid item sm={6} md={6} xs={12}>
+                  <Grid item sm={12} md={6} xs={12}>
                     <DashboardWidgetBot/>
                   </Grid>
-                  <Grid item sm={4} md={4} xs={12}>
+                  <Grid item sm md xs>
                     <DashboardWidgetTwitch/>
                   </Grid>
-                  <Grid item sm={2} md={2} xs={12}>
+                  <Grid item
+                    sm={unfold ? 2 : undefined}
+                    md={unfold ? 2 : undefined}
+                    xs={unfold ? 12 : undefined}>
                     <DashboardWidgetAction/>
                   </Grid>
                 </Grid>

@@ -1,12 +1,13 @@
+import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Box, Card, Stack, Tab,
+  Box, Card, IconButton, Stack, Tab, Typography,
 } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useIntervalWhen } from 'rooks';
+import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
 import { DashboardWidgetActionUnknownButton } from './Action/Buttons/UnknownButton';
 import { DashboardWidgetActionCommandButton } from './Action/CommandButton';
@@ -26,6 +27,8 @@ export const DashboardWidgetAction: React.FC = () => {
   const { user } = useSelector((state: any) => state.user);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
+
+  const [ unfold, setUnfold ] = useSessionstorageState('action_unfold', true);
 
   useIntervalWhen(() => {
     if (ref.current) {
@@ -53,19 +56,42 @@ export const DashboardWidgetAction: React.FC = () => {
     <Card variant="outlined" sx={{ height: height + 'px' }} ref={ref}>
       <TabContext value={value}>
         <Box sx={{
-          borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
+          borderBottom:    1,
+          borderColor:     'divider',
+          backgroundColor: theme.palette.grey[900],
+          height:          '48px',
         }}>
-          <Stack direction="row" alignItems={'center'}>
+          <Stack direction="row" alignItems={'center'} sx={{ display: unfold ? undefined : 'none' }}>
             <Box width={'100%'} height={48}>
               <TabList onChange={handleChange}>
                 <Tab label="Actions" value="1" />
               </TabList>
             </Box>
             <DashboardWidgetBotDialogActionsEdit onClose={React.useCallback(() => setTimestamp(Date.now()), [])}/>
+            <IconButton onClick={() => setUnfold(false)}>
+              <UnfoldLessTwoTone/>
+            </IconButton>
           </Stack>
+          <IconButton onClick={() => setUnfold(true)} sx={{
+            display: !unfold ? undefined : 'none', mt: 0.5,
+          }}>
+            <UnfoldMoreTwoTone/>
+          </IconButton>
         </Box>
         <Box sx={{
-          position: 'relative', height: 'calc(100% - 48px);',
+          position:        'relative',
+          height:          'calc(100% - 48px);',
+          display:         !unfold ? undefined : 'none',
+          textOrientation: 'mixed',
+          writingMode:     'vertical-rl',
+          margin:          '7px',
+        }}>
+          <Typography variant='button' sx={{ p: 1 }}>
+          Actions
+          </Typography>
+        </Box>
+        <Box sx={{
+          position: 'relative', height: 'calc(100% - 48px);', display: unfold ? undefined : 'none',
         }}>
           {actions.map(action => {
             if (action.type === 'command') {
