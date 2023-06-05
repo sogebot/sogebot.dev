@@ -87,16 +87,15 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
         + '\n',
         html: '\n\t<!-- '
         + '\n\t\tAll html objects will be wrapped in the #wrap div'
-        + '\n\t\tBootstrap classes are available'
         + '\n\t\tAvailable variables:'
           + '\n\t\t\t$name - name of goal ; $type - type of goal ; $goalAmount - total amount'
           + '\n\t\t\t$currentAmount - current amount ; $percentageAmount - how much is achieved ; $endAfter - when goal ends'
       + '\n\t-->'
       + '\n'
-      + '\n\t<div class="row no-gutters">'
-        + '\n\t\t<div class="col-4 text-left text-nowrap pl-2 pr-2">$name</div>'
-        + '\n\t\t<div class="col-4 text-nowrap text-center">$currentAmount</div>'
-        + '\n\t\t<div class="col-4 text-nowrap text-right pr-2">$goalAmount</div>'
+      + '\n\t<div>'
+        + '\n\t\t<div>$name</div>'
+        + '\n\t\t<div>$currentAmount</div>'
+        + '\n\t\t<div>$goalAmount</div>'
       + '\n\t</div>'
       + '\n'
       + '\n\t<div>'
@@ -379,7 +378,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
                     onChange={(ev) => updateCampaign(idx, 'display', ev.target.value as 'full')}
                   >
                     {[
-                      'simple', 'full', /* TODO: 'custom',*/
+                      'simple', 'full', 'custom',
                     ].map(t => <MenuItem value={t} key={t}>{t}</MenuItem>)}
                   </Select>
 

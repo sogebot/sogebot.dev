@@ -5,6 +5,7 @@ import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
+import HTMLReactParser from 'html-react-parser';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
@@ -14,6 +15,8 @@ import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { loadFont } from '../Accordion/Font';
+
+const loadedCSS: string[] = [];
 
 const doEnterAnimation = (idx: number, threadId: string, display: {
   type: 'fade';
@@ -79,6 +82,26 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width }) => {
   const encodeFont = (font: string) => {
     return `'${font}'`;
   };
+
+  React.useEffect(() => {
+    for (const [idx, campaign] of item.campaigns.entries()) {
+      if (campaign.display === 'custom') {
+      // load CSS
+        if (!loadedCSS.includes(`${threadId}-${idx}`)) {
+          console.debug(`loaded custom CSS for ${threadId}-${idx}`);
+          loadedCSS.push(`${threadId}-${idx}`);
+          const head = document.getElementsByTagName('head')[0];
+          const style = document.createElement('style');
+          style.type = 'text/css';
+          const css = campaign.customization.css
+            .replace(/#wrap/g, `#wrap-${threadId}-${idx}`); // replace .wrap with only this goal wrap
+          console.log({ css });
+          style.appendChild(document.createTextNode(css));
+          head.appendChild(style);
+        }
+      }
+    }
+  }, [ threadId ]);
 
   useIntervalWhen(() => {
     if (item.display.type === 'fade') {
@@ -326,6 +349,24 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width }) => {
                 : campaign.goalAmount}
           </Box>
         </Stack>
+      </Box>}
+
+      { campaign.display === 'custom' && <Box id={`wrap-${threadId}-${idx}`}
+        sx={{
+          width:    '100%',
+          position: 'relative',
+          filter:   isDisabled(campaign) ? 'grayscale(1)' : 'none',
+          display:  item.display.type === 'multi' || (item.display.type === 'fade' && currentGoal === idx) ? undefined : 'none',
+          opacity:  item.display.type === 'fade' ? 0 : 1,
+        }}>
+        {HTMLReactParser(
+          campaign.customization.html
+            .replaceAll('$name', campaign.name)
+            .replaceAll('$currentAmount', String(campaign.currentAmount))
+            .replaceAll('$percentageAmount', String(percentage(campaign)))
+            .replaceAll('$endAfter', campaign.endAfter)
+            .replaceAll('$goalAmount', String(campaign.goalAmount)),
+        )}
       </Box>}
     </Stack>)}
   </Box>;
