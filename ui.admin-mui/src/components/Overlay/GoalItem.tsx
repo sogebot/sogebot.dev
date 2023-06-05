@@ -6,6 +6,7 @@ import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
+import { isEqual } from 'lodash';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
@@ -69,19 +70,62 @@ const doLeaveAnimation = (idx: number, threadId: string, display: {
   });
 };
 
-export const GoalItem: React.FC<Props<Goal>> = ({ item, width }) => {
+/* eslint-disable */
+const triggerFunction = (_____________code: string, _____________fnc: 'onChange', _____________currentAmount: number) => {
+  eval(
+    `(async function() { ${_____________code}; if (typeof ${_____________fnc} === 'function') { console.log('executing ${_____________fnc}(${_____________currentAmount})'); await ${_____________fnc}(_____________currentAmount) } else { console.log('no ${_____________fnc}() function found'); } })()`,
+  );
+};
+
+export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, groupId }) => {
+  item;
   const [ tiltifyCampaigns, setTiltifyCampaigns ] = React.useState<tiltifyCampaign[]>([]);
   const lang = useAppSelector((state: any) => state.loader.configuration.lang );
   const currency = useAppSelector((state: any) => state.loader.configuration.currency );
   const [ threadId ] = React.useState(shortid());
 
   const [ lastFadeAt, setLastFadeAt ] = React.useState(0);
-
   const [ currentGoal, setCurrentGoal ] = React.useState(item.display.type === 'fade' ? item.campaigns.length : 0);
+
+  const [updatedItem, setUpdatedItem] = React.useState(item);
 
   const encodeFont = (font: string) => {
     return `'${font}'`;
   };
+
+  useIntervalWhen(() => {
+    if (!active) {
+      return;
+    }
+
+    getSocket('/registries/overlays', true).emit('generic::getOne', groupId, (err, result) => {
+      if (err) {
+        return console.error(err);
+      }
+
+      if (!result) {
+        return;
+      }
+
+      const goals = result.items.filter(o => o.opts.typeId === 'goal');
+      for (const goal of goals) {
+        if (goal.id === id) {
+            console.log(`Goal ${goal.id} check.`);
+          // we are updating this goal
+          if (!isEqual(updatedItem, goal.opts)) {
+            console.log(`Goal ${goal.id} updated.`);
+            for (const [idx, campaign] of (goal.opts as Goal).campaigns.entries()) {
+              campaign.currentAmount = 100;
+              if (campaign.currentAmount !== item.campaigns[idx].currentAmount) {
+                triggerFunction(campaign.customization.js, 'onChange', Number(campaign.currentAmount ?? 0))
+              }
+            }
+            setUpdatedItem(goal.opts as Goal);
+          }
+        }
+      }
+    });
+  }, 5000, true, true);
 
   React.useEffect(() => {
     for (const [idx, campaign] of item.campaigns.entries()) {
