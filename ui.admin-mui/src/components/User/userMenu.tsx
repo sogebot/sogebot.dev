@@ -7,7 +7,8 @@ import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useIntervalWhen } from 'rooks';
+import { useNavigate } from 'react-router-dom';
+import { useIntervalWhen, useWindowSize } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -17,6 +18,10 @@ export const UserMenu: React.FC = () => {
   const { translate } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+
+  const { innerWidth } = useWindowSize();
+  const isMobile = (innerWidth ?? 0) <= 600;
 
   const { user } = useSelector((state: any) => state.user);
   const { configuration } = useSelector((state: any) => state.loader);
@@ -53,6 +58,12 @@ export const UserMenu: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleServerLogout = () => {
+    delete localStorage.serverAutoConnect;
+    navigate('/');
+    window.location.reload();
+  };
+
   const refresh = React.useCallback(() => {
     if (typeof user === 'undefined' || user === null) {
       return;
@@ -83,11 +94,14 @@ export const UserMenu: React.FC = () => {
   return (
     <>
       {user && Object.keys(configuration).length > 0
-      && <><IconButton onClick={handleClick} sx={{
-        width: 'fit-content', alignSelf: 'center',
+      && <><Button onClick={handleClick} sx={{
+        width:     isMobile ? 'clamp(1vw, 14vw, 65px)' : 'fit-content',
+        minWidth:  'unset',
+        alignSelf: 'center',
+        height:    '65px',
       }}>
         <Avatar src={user.profile_image_url}></Avatar>
-      </IconButton>
+      </Button>
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
@@ -137,14 +151,8 @@ export const UserMenu: React.FC = () => {
           </>
           <Divider sx={{ pt: 1 }}/>
 
-          <Grid container sx={{ pt: 1 }}>
-            <Grid item xs={6}>
-              <Button onClick={handleClose} sx={{ width: 150 }}>Close</Button>
-            </Grid>
-            <Grid item xs={6} textAlign='right'>
-              <Button onClick={logout} startIcon={<LogoutIcon />} color='error' sx={{ width: 150 }}>Logout</Button>
-            </Grid>
-          </Grid>
+          <Button onClick={handleServerLogout} color='dark' fullWidth variant='contained' sx={{ mb: 1 }}>Exit server</Button>
+          <Button onClick={logout} startIcon={<LogoutIcon />} color='error'fullWidth variant='contained'>Logout</Button>
         </Box>
       </Menu></>
       }

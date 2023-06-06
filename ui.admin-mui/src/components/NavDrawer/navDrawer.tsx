@@ -2,7 +2,6 @@ import BuildIcon from '@mui/icons-material/Build';
 import CookieIcon from '@mui/icons-material/Cookie';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import LogoutIcon from '@mui/icons-material/Logout';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -14,9 +13,8 @@ import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Link, useLocation, useNavigate,
-} from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useWindowSize } from 'rooks';
 
 import { MenuItemDeep } from './menuItemDeep';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -33,6 +31,9 @@ const LinkedListItem = function (props: LinkedListItemProps) {
   const location = useLocation();
   const reducer = useSelector((state: any) => state.loader);
 
+  const { innerWidth } = useWindowSize();
+  const isMobile = (innerWidth ?? 0) <= 600;
+
   const isActive = location.pathname?.split('?')[0] === props.path;
 
   return (
@@ -42,7 +43,12 @@ const LinkedListItem = function (props: LinkedListItemProps) {
       <MuiListItemButton
         selected={isActive}
         sx={{
-          justifyContent: 'center', height: reducer.drawerWidth, p: '4px',
+          justifyContent: 'center',
+          height:         reducer.drawerWidth,
+          p:              '4px',
+          minWidth:       'unset',
+          width:          isMobile ? 'clamp(20px, 14.35vw, 65px)' : undefined,
+          aspectRatio:    '1/1',
         }}
         key={props.title}>
         <Stack alignContent={'center'} sx={{ color: isActive ? theme.palette.primary.main : 'inherit' }}>
@@ -65,80 +71,79 @@ const LinkedListItem = function (props: LinkedListItemProps) {
 export default function NavDrawer() {
   const { translate } = useTranslation();
   const reducer = useSelector((state: any) => state.loader);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleServerLogout = () => {
-    delete localStorage.serverAutoConnect;
-    navigate('/');
-    window.location.reload();
-  };
+  const { innerWidth } = useWindowSize();
+  const isMobile = (innerWidth ?? 0) <= 600;
 
   return (
     <Drawer
       sx={{
-        width:                reducer.drawerWidth,
+        width:                !isMobile ? reducer.drawerWidth : undefined,
         flexShrink:           0,
         '& .MuiDrawer-paper': {
           overflow: 'hidden',
-          width:    reducer.drawerWidth,
+          width:    !isMobile ? reducer.drawerWidth : undefined,
         },
       }}
       variant="permanent"
-      anchor="left">
+      anchor={isMobile ? 'bottom' : 'left'}>
 
-      {<Paper><Toolbar sx={{
-        '&': {
-          margin: 0, padding: 0, paddingLeft: '5px',
-        },
-      }}><UserMenu key='user-menu-drawer'/></Toolbar></Paper>}
-      <List
-        sx={{
-          flex:                          1,
-          // selected and (selected + hover) states
-          '&& .dashboard-button-active': {
-            bgcolor:                      customTheme.palette.primary.main,
-            '&, & .MuiListItemIcon-root': { color: customTheme.palette.primary.contrastText },
+      <Stack direction={isMobile ? 'row' : undefined} spacing={0} sx={{
+        width: '100%', height: '100%',
+      }}>
+
+        {isMobile ? <UserMenu key='user-menu-drawer'/> : <Paper><Toolbar sx={{
+          '&': {
+            margin: 0, padding: 0, paddingLeft: '5px',
           },
-          // hover states
-          '& .MuiListItemButton-root:hover': {
-            bgcolor:                      customTheme.palette.primary.main,
-            '&, & .MuiListItemIcon-root': { color: customTheme.palette.primary.contrastText },
-          },
-        }}>
-        <ListItem disablePadding>
-          <LinkedListItem path="/" icon={<DashboardIcon/>} title={translate('menu.index')}/>
-        </ListItem>
-        <ListItem disablePadding>
-          <MenuItemDeep icon={<PriorityHighIcon/>} title={translate('menu.commands')} category="commands"/>
-        </ListItem>
-        <ListItem disablePadding>
-          <MenuItemDeep icon={<BuildIcon/>} title={translate('menu.manage')} category="manage"/>
-        </ListItem>
-        <ListItem disablePadding>
-          <MenuItemDeep icon={<SettingsIcon/>} title={translate('menu.settings')} category="settings"/>
-        </ListItem>
-        <ListItem disablePadding>
-          <MenuItemDeep icon={<FormatListBulletedIcon/>} title={translate('menu.registry')} category="registry"/>
-        </ListItem>
-        <ListItem disablePadding>
-          <MenuItemDeep icon={<QueryStatsIcon/>} title={translate('menu.stats')} category="stats"/>
-        </ListItem>
-      </List>
+        }}><UserMenu key='user-menu-drawer'/></Toolbar></Paper>}
+        <List
+          sx={{
+            display:                       'flex',
+            flexDirection:                 isMobile ? 'row' : 'column',
+            py:                            isMobile ? 0 : 1,
+            // selected and (selected + hover) states
+            '&& .dashboard-button-active': {
+              bgcolor:                      customTheme.palette.primary.main,
+              '&, & .MuiListItemIcon-root': { color: customTheme.palette.primary.contrastText },
+            },
+            '& .MuiListItem-root': {
+              width: isMobile ? 'clamp(20px, 14.35vw, 65px)' : undefined, aspectRatio: '1/1',
+            },
+            // hover states
+            '& .MuiListItemButton-root:hover': !isMobile ? {
+              bgcolor:                      customTheme.palette.primary.main,
+              '&, & .MuiListItemIcon-root': { color: customTheme.palette.primary.contrastText },
+            }: {},
+            '& .MuiTypography-root': { fontSize: 'clamp(0.65rem, 3vw, 0.7rem)' },
 
-      <Tooltip title="Cookie management" placement='right'>
-        <Button color='light' sx={{ py: 2 }} onClick={() => dispatch(toggleCookieManager(true))}>
-          <CookieIcon/>
-        </Button>
-      </Tooltip>
-
-      <Tooltip title="Logout from server" placement='right'>
-        <Button color="error" sx={{
-          mb: 2, py: 2,
-        }} onClick={handleServerLogout}>
-          <LogoutIcon/>
-        </Button>
-      </Tooltip>
+          }}>
+          <ListItem disablePadding>
+            <LinkedListItem path="/" icon={<DashboardIcon/>} title={translate('menu.index')}/>
+          </ListItem>
+          <ListItem disablePadding>
+            <MenuItemDeep icon={<PriorityHighIcon/>} title={translate('menu.commands')} category="commands"/>
+          </ListItem>
+          <ListItem disablePadding>
+            <MenuItemDeep icon={<BuildIcon/>} title={translate('menu.manage')} category="manage"/>
+          </ListItem>
+          <ListItem disablePadding>
+            <MenuItemDeep icon={<SettingsIcon/>} title={translate('menu.settings')} category="settings"/>
+          </ListItem>
+          <ListItem disablePadding>
+            <MenuItemDeep icon={<FormatListBulletedIcon/>} title={translate('menu.registry')} category="registry"/>
+          </ListItem>
+          <ListItem disablePadding>
+            <MenuItemDeep icon={<QueryStatsIcon/>} title={translate('menu.stats')} category="stats"/>
+          </ListItem>
+        </List>
+        {!isMobile && <Tooltip title="Cookie management" placement='right'>
+          <Button color='light' sx={{ py: 2 }} onClick={() => dispatch(toggleCookieManager(true))}>
+            <CookieIcon/>
+          </Button>
+        </Tooltip>}
+      </Stack>
     </Drawer>
   );
 }

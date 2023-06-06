@@ -6,6 +6,7 @@ import MuiListItemButton from '@mui/material/ListItemButton';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+import { useWindowSize } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -23,6 +24,9 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   const [ menuItems, setMenuItems ] = useState<any[]>([]);
   const [ isActive, setIsActive ] = useState<boolean>(true);
   const { state, connectedToServer } = useSelector((s: any) => s.loader);
+
+  const { innerWidth } = useWindowSize();
+  const isMobile = (innerWidth ?? 0) <= 600;
 
   useEffect(() => {
     if (!state || !connectedToServer) {
@@ -84,12 +88,12 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
             placeContent: 'center', color: isActive || !!anchorEl ? `${theme.palette.primary.main} !important` : 'inherit',
           }}>
             {props.icon}
-            <ChevronRight sx={{
+            {!isMobile && <ChevronRight sx={{
               position: 'absolute',
               right:    '7px',
               top:      '17px',
               fontSize: '12px',
-            }}/>
+            }}/>}
           </ListItemIcon>
           <Typography variant="caption" sx={{
             textAlign: 'center', fontSize: '0.7rem',
@@ -102,13 +106,18 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        PaperProps={{
+          sx: isMobile ? {
+            width: '100%', left: 0,
+          } : undefined,
+        }}
         anchorOrigin={{
           vertical:   'top',
-          horizontal: 'right',
+          horizontal: isMobile ? 'center' : 'right',
         }}
         transformOrigin={{
-          vertical:   'top',
-          horizontal: 'left',
+          vertical:   isMobile ? 'bottom' : 'top',
+          horizontal: isMobile ? 'center' : 'left',
         }}
       >
         {menuItems.map(item => {
@@ -118,12 +127,12 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
                 fontSize: '14px', color: getColorOfItem(item),
               }} key={item.id} onClick={handleClickModules}>
                 {translate(`menu.${item.name}`)}
-                <ChevronRight sx={{
+                {!isMobile && <ChevronRight sx={{
                   position: 'absolute',
                   right:    '7px',
                   top:      '6px',
                   fontSize: '20px',
-                }}/>
+                }}/>}
               </MenuItem>
             );
           }
@@ -145,13 +154,18 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         open={openModules}
         onClose={handleCloseModules}
         sx={{ transform: 'translateY(-8px)' }}
+        PaperProps={{
+          sx: isMobile ? {
+            width: '100%', left: 0,
+          } : undefined,
+        }}
         anchorOrigin={{
           vertical:   'top',
-          horizontal: 'right',
+          horizontal: isMobile ? 'center' : 'right',
         }}
         transformOrigin={{
-          vertical:   'top',
-          horizontal: 'left',
+          vertical:   isMobile ? 'bottom' : 'top',
+          horizontal: isMobile ? 'center' : 'left',
         }}
       >
         {['core', 'services', 'systems', 'integrations', 'games'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{

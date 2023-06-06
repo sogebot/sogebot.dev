@@ -15,7 +15,7 @@ import {
   Route, Routes, useLocation,
 } from 'react-router-dom';
 import {
-  useDebounce, useLocalstorageState, useRefElement,
+  useDebounce, useLocalstorageState, useRefElement, useWindowSize,
 } from 'rooks';
 
 import Error404 from './404';
@@ -158,6 +158,9 @@ export default function Root() {
   const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
 
+  const { innerWidth } = useWindowSize();
+  const isMobile = (innerWidth ?? 0) <= 600;
+
   const [ unfold ] = useLocalstorageState('action_unfold', true);
 
   useEffect(() => {
@@ -204,10 +207,10 @@ export default function Root() {
           </Slide>
           <NavDrawer />
 
-          {state && tokensOnboardingState && <Box sx={{ paddingLeft: '65px' }}>
+          {state && tokensOnboardingState && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
             <Fade in={isIndexPage}>
               <Box sx={{
-                position: 'absolute', top: '0px', width: 'calc(100% - 75px)', left: '70px',
+                position: 'absolute', top: '0px', width: isMobile ? '100%' : 'calc(100% - 75px)', left: isMobile ? undefined : '70px',
               }} mr={0.2}>
                 <DashboardStats/>
                 <Grid container pt={0.5} pr={0.2} spacing={0.5}>
