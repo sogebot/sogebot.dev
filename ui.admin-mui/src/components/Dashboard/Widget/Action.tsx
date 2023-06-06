@@ -7,7 +7,7 @@ import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useIntervalWhen, useSessionstorageState } from 'rooks';
+import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
 import { DashboardWidgetActionUnknownButton } from './Action/Buttons/UnknownButton';
 import { DashboardWidgetActionCommandButton } from './Action/CommandButton';
@@ -28,7 +28,7 @@ export const DashboardWidgetAction: React.FC = () => {
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
 
-  const [ unfold, setUnfold ] = useSessionstorageState('action_unfold', true);
+  const [ unfold, setUnfold ] = useLocalstorageState('action_unfold', true);
 
   useIntervalWhen(() => {
     if (ref.current) {

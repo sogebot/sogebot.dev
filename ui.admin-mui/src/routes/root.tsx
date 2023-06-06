@@ -15,7 +15,7 @@ import {
   Route, Routes, useLocation,
 } from 'react-router-dom';
 import {
-  useDebounce, useRefElement, useSessionstorageState,
+  useDebounce, useLocalstorageState, useRefElement,
 } from 'rooks';
 
 import Error404 from './404';
@@ -158,7 +158,7 @@ export default function Root() {
   const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
 
-  const [ unfold ] = useSessionstorageState('action_unfold', true);
+  const [ unfold ] = useLocalstorageState('action_unfold', true);
 
   useEffect(() => {
     setIndexPage(location.pathname === '/');
