@@ -31,9 +31,9 @@ const doEnterAnimation = (idx: number, threadId: string, display: {
   if (retry > 10) {
     return;
   }
-  const el = document.getElementById(`goal-${threadId}-${idx}`);
+  const el = document.getElementById(`wrap-${threadId}-${idx}`);
   if (!el) {
-    setTimeout(() => doEnterAnimation(idx, threadId, display, haveMoreItems), 100);
+    setTimeout(() => doEnterAnimation(idx, threadId, display, haveMoreItems, retry + 1), 100);
     return;
   }
   gsap.to(el, {
@@ -59,7 +59,7 @@ const doLeaveAnimation = (idx: number, threadId: string, display: {
   if (retry > 10) {
     return;
   }
-  const el = document.getElementById(`goal-${threadId}-${idx}`);
+  const el = document.getElementById(`wrap-${threadId}-${idx}`);
   if (!el) {
     setTimeout(() => doLeaveAnimation(idx, threadId, display, retry + 1), 100);
     return;
@@ -216,7 +216,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
       spacing={0}
       sx={{ '& > *': { marginBottom: `${item.display.type === 'multi' ? item.display.spaceBetweenGoalsInPx : 0}px` } }}
     >
-      { campaign.display === 'simple' && <Box id={`goal-${threadId}-${idx}`} sx={{
+      { campaign.display === 'simple' && <Box id={`wrap-${threadId}-${idx}`} sx={{
         width:    '100%',
         position: 'relative',
         filter:   isDisabled(campaign) ? 'grayscale(1)' : 'none',
@@ -287,7 +287,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
         </Stack>
       </Box>}
 
-      { campaign.display === 'full' && <Box id={`goal-${threadId}-${idx}`} sx={{
+      { campaign.display === 'full' && <Box id={`wrap-${threadId}-${idx}`} sx={{
         width:    '100%',
         position: 'relative',
         filter:   isDisabled(campaign) ? 'grayscale(1)' : 'none',
