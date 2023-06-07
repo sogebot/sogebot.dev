@@ -6,9 +6,9 @@ import MuiListItemButton from '@mui/material/ListItemButton';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { useWindowSize } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
@@ -24,9 +24,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   const [ menuItems, setMenuItems ] = useState<any[]>([]);
   const [ isActive, setIsActive ] = useState<boolean>(true);
   const { state, connectedToServer } = useSelector((s: any) => s.loader);
-
-  const { innerWidth } = useWindowSize();
-  const isMobile = (innerWidth ?? 0) <= 600;
+  const isMobile = useMobile();
 
   useEffect(() => {
     if (!state || !connectedToServer) {

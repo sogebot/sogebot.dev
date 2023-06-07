@@ -15,7 +15,7 @@ import {
   Route, Routes, useLocation,
 } from 'react-router-dom';
 import {
-  useDebounce, useLocalstorageState, useRefElement, useWindowSize,
+  useDebounce, useLocalstorageState, useRefElement,
 } from 'rooks';
 
 import Error404 from './404';
@@ -38,6 +38,7 @@ import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
 import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
+import useMobile from '../hooks/useMobile';
 import {
   setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
 } from '../store/loaderSlice';
@@ -157,9 +158,7 @@ export default function Root() {
   const location = useLocation();
   const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
-
-  const { innerWidth } = useWindowSize();
-  const isMobile = (innerWidth ?? 0) <= 600;
+  const isMobile = useMobile();
 
   const [ unfold ] = useLocalstorageState('action_unfold', true);
 

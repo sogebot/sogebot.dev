@@ -5,14 +5,14 @@ import {
   Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, IconButton, InputAdornment, Stack, TextField,
 } from '@mui/material';
 import axios from 'axios';
-import React, {
-  useCallback, useEffect, useMemo,
-} from 'react';
+import { useSnackbar } from 'notistack';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import { UserSimple } from './User/Simple';
 import { versions } from '../compatibilityList';
+import useMobile from '../hooks/useMobile';
 import useQuery from '../hooks/useQuery';
 import sogebotLarge from '../images/sogebot_large.png';
 import { isBotStarted } from '../isBotStarted';
@@ -30,12 +30,15 @@ const checkURLValidity = (serverURL: string) => {
   }
 };
 
+let connecting = false;
+
 export const ServerSelect: React.FC = () => {
   const dispatch = useDispatch();
   const query = useQuery();
+  const isMobile = useMobile();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isInitial, setIsInitial] = React.useState(true);
-  const [connecting, setConnecting] = React.useState(false);
 
   const [validVersionError, setValidVersionError] = React.useState<string | null>(null);
 
@@ -43,6 +46,18 @@ export const ServerSelect: React.FC = () => {
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
 
   const { state, message, connectedToServer } = useSelector((s: any) => s.loader);
+
+  React.useEffect(() => {
+    if ((connecting || message)) {
+      if (message.toLowerCase().includes('checking')) {
+        return;
+      }
+      enqueueSnackbar({
+        message,
+        variant: message.includes('Cannot') || message.includes('access') ? 'error' : 'default',
+      });
+    }
+  }, [ message ]);
 
   const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
@@ -57,7 +72,7 @@ export const ServerSelect: React.FC = () => {
     }
 
     setValidVersionError(null);
-    setConnecting(false);
+    connecting = false;
   }, [serverInputValue]);
 
   React.useEffect(() => {
@@ -70,10 +85,10 @@ export const ServerSelect: React.FC = () => {
     );
   }, []);
 
-  const handleConnect = useCallback((server: string) => {
+  const handleConnect = (server: string) => {
     if (server) {
-      setConnecting(true);
-      dispatch(setMessage('Connecting to server.'));
+      connecting = true;
+      dispatch(setMessage(`Connecting to ${server}.`));
       console.log(`Connecting to ${server}`);
 
       let serverURL = server;
@@ -123,9 +138,10 @@ export const ServerSelect: React.FC = () => {
           setValidVersionError(`Something went wrong connecting to server ${url.origin}`);
         });
     }
-  }, [dispatch]);
+  };
 
   React.useEffect(() => {
+    console.log({ connecting });
     if (isInitial && !connecting && (!message || (!message.includes('Cannot connect') && !message.includes('You don\'t have access to this server')))) {
       // autoconnect by server get parameter
       const queryServer = query.get('server');
@@ -142,7 +158,7 @@ export const ServerSelect: React.FC = () => {
       }
       setIsInitial(false);
     }
-  }, [query, connecting, message, isInitial, handleConnect]);
+  }, [query, message, isInitial, handleConnect]);
 
   const getUser = () => {
     try {
@@ -156,11 +172,11 @@ export const ServerSelect: React.FC = () => {
 
   useEffect(() => {
     if (!message) {
-      setConnecting(false);
+      connecting = false;
     } else if (message.includes('Cannot connect') || message.includes('access to this server')) {
-      setConnecting(false);
+      connecting = false;
     } else {
-      setConnecting(true);
+      connecting = true;
     }
   }, [message]);
 
@@ -171,13 +187,22 @@ export const ServerSelect: React.FC = () => {
     setTimeout(() => setCopied(false), 1000);
   };
 
-  return (<Dialog open={open} hideBackdrop sx={{ zIndex: 0 }}>
-    <DialogTitle>
+  return (<Dialog open={open} hideBackdrop sx={{ zIndex: 0 }} fullScreen={isMobile}>
+    <DialogTitle sx={{
+      display:        'flex',
+      flexDirection:  'column',
+      flex:           '1 1 auto',
+      justifyContent: 'flex-end',
+    }}>
       <img src={sogebotLarge} width={190} height={25} alt="sogeBot Logo"/>
-      <br/>
       Connect to server
     </DialogTitle>
-    <DialogContent>
+    <DialogContent sx={{
+      display:        'flex',
+      flexDirection:  'column',
+      justifyContent: 'flex-start',
+      flex:           '0 0 auto',
+    }}>
       <FormGroup>
         <Autocomplete
           selectOnFocus
@@ -224,16 +249,14 @@ export const ServerSelect: React.FC = () => {
         {validVersionError && <Alert severity="error" sx={{ width: '100%' }}>{validVersionError}</Alert>}
       </Stack>
     </DialogContent>
-    <DialogActions>
-      {((connecting || message)) && <Alert severity={message.includes('Cannot') || message.includes('access') ? 'error' : 'info'} variant="outlined" sx={{
-        padding: '0 20px', marginRight: '20px',
-      }}>
-        {message}
-      </Alert>}
+    <DialogActions sx={{
+      flex: '1 0 auto', alignItems: 'flex-start', 
+    }}>
       {getUser() && <LoadingButton
         onClick={() => handleConnect(serverInputValue)}
-        loading={connecting}
-        variant="outlined"
+        loading={message && (message.toLowerCase().includes('connecting') || message.toLowerCase().includes('checking'))}
+        fullWidth
+        variant="contained"
       >
         Connect
       </LoadingButton>}

@@ -14,9 +14,9 @@ import MuiListItemButton from '@mui/material/ListItemButton';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { useWindowSize } from 'rooks';
 
 import { MenuItemDeep } from './menuItemDeep';
+import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import { toggleCookieManager } from '../../store/loaderSlice';
 import customTheme, { theme } from '../../theme';
@@ -30,9 +30,7 @@ interface LinkedListItemProps {
 const LinkedListItem = function (props: LinkedListItemProps) {
   const location = useLocation();
   const reducer = useSelector((state: any) => state.loader);
-
-  const { innerWidth } = useWindowSize();
-  const isMobile = (innerWidth ?? 0) <= 600;
+  const isMobile = useMobile();
 
   const isActive = location.pathname?.split('?')[0] === props.path;
 
@@ -72,9 +70,7 @@ export default function NavDrawer() {
   const { translate } = useTranslation();
   const reducer = useSelector((state: any) => state.loader);
   const dispatch = useDispatch();
-
-  const { innerWidth } = useWindowSize();
-  const isMobile = (innerWidth ?? 0) <= 600;
+  const isMobile = useMobile();
 
   return (
     <Drawer

@@ -5,7 +5,7 @@ import { setConnectedToServer, setMessage } from './store/loaderSlice';
 function isBotStarted(dispatch: Dispatch<AnyAction>, server: string) {
   return new Promise(resolve => {
     const check = () => {
-      dispatch(setMessage('Connecting to bot.'));
+      dispatch(setMessage('Checking bot status.'));
       console.log('Checking bot on ' + server);
       fetch(server)
         .then(response => {

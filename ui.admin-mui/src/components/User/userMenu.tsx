@@ -8,9 +8,10 @@ import { Box } from '@mui/system';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useIntervalWhen, useWindowSize } from 'rooks';
+import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
@@ -19,9 +20,7 @@ export const UserMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-
-  const { innerWidth } = useWindowSize();
-  const isMobile = (innerWidth ?? 0) <= 600;
+  const isMobile = useMobile();
 
   const { user } = useSelector((state: any) => state.user);
   const { configuration } = useSelector((state: any) => state.loader);
