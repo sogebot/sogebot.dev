@@ -2,7 +2,9 @@ import ContentPasteTwoToneIcon from '@mui/icons-material/ContentPasteTwoTone';
 import InventoryTwoToneIcon from '@mui/icons-material/InventoryTwoTone';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-  Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, IconButton, InputAdornment, Stack, TextField,
+  Alert, Autocomplete, Dialog, DialogActions, DialogContent,
+  DialogTitle, FormGroup, IconButton, InputAdornment, Link,
+  Stack, TextField,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -59,16 +61,10 @@ export const ServerSelect: React.FC = () => {
     }
   }, [ message ]);
 
-  const [isValidHttps, setIsValidHttps] = React.useState(true);
   useEffect(() => {
-    try {
-      const url = new URL(serverInputValue);
-      if (url.origin !== serverInputValue) {
-        setServerInputValue(url.origin);
-      }
-      setIsValidHttps(checkURLValidity(serverInputValue));
-    } catch {
-      setIsValidHttps(serverInputValue.includes('-- demo bot for demonstration purpose only --'));
+    const url = new URL(serverInputValue);
+    if (url.origin !== serverInputValue) {
+      setServerInputValue(url.origin);
     }
 
     setValidVersionError(null);
@@ -217,14 +213,20 @@ export const ServerSelect: React.FC = () => {
           }}
           renderInput={(params) =>
             <TextField
-              error={!isValidHttps}
-              helperText={isValidHttps ? '' : 'Consider use of https unless using localhost'}
               type="url"
               label="Server address"
               variant="filled"
               {...params}/>
           }
         />
+
+        <Alert severity="warning" >
+            If you are using <strong>HTTP without SSL</strong>, you may not be able to connect due to use of unsecured bot access on secured website.
+            You need to allow mixed content for this website. It is <strong>strongly advised</strong> to use <strong>HTTPS</strong>.
+          {' '}
+          <Link href='https://stackoverflow.com/a/24434461' target='_blank'>How to allow mixed content?</Link>
+        </Alert>
+
         <UserSimple/>
         {typeof window !== 'undefined' && !serverInputValue.includes('-- demo') && <TextField
           label="Autoconnect link"
@@ -250,7 +252,7 @@ export const ServerSelect: React.FC = () => {
       </Stack>
     </DialogContent>
     <DialogActions sx={{
-      flex: '1 0 auto', alignItems: 'flex-start', 
+      flex: '1 0 auto', alignItems: 'flex-start',
     }}>
       {getUser() && <LoadingButton
         onClick={() => handleConnect(serverInputValue)}
