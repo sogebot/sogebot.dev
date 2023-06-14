@@ -406,7 +406,14 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
         {HTMLReactParser(
           campaign.customization.html
             .replaceAll('$name', campaign.name)
-            .replaceAll('$currentAmount', String(campaign.currentAmount))
+            .replaceAll('$currentAmount',
+            campaign.type.toLowerCase().includes('tips')
+              ? Intl.NumberFormat(lang, {
+              maximumFractionDigits: new Intl.NumberFormat(lang, {
+                style: 'currency', currency: currency,
+              }).resolvedOptions().maximumFractionDigits
+            }).format((campaign.currentAmount ?? 0))
+            : String(campaign.currentAmount))
             .replaceAll('$percentageAmount', String(percentage(campaign)))
             .replaceAll('$endAfter', campaign.endAfter)
             .replaceAll('$goalAmount', String(campaign.goalAmount)),
