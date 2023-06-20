@@ -31,8 +31,7 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
@@ -44,19 +43,33 @@ import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { RowDetail } from '../../components/Table/Viewers/RowDetail';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageManageViewers = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector((state: any) => state.loader);
+  const { userId } = useParams();
+
+  React.useEffect(() => {
+    console.log({ userId });
+    if (userId) {
+      setFilters([{
+        columnName: 'userId',
+        operation:  'equal',
+        value:      Number(userId),
+      }]);
+      console.log({ userId });
+    }
+  }, [ userId ]);
 
   const [ items, setItems ] = useState<UserInterface[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { innerHeight } = useWindowSize();
@@ -194,7 +207,7 @@ const PageManageViewers = () => {
     },
   ]);
 
-  const { element: filterElement, filters } = useFilter<UserInterface>(useFilterSetup);
+  const { element: filterElement, filters, setFilters } = useFilter<UserInterface>(useFilterSetup);
 
   const refresh = useCallback(async () => {
     setLoading(true);

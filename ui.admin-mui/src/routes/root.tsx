@@ -10,7 +10,6 @@ import React, {
   lazy,
   Suspense, useEffect, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Route, Routes, useLocation,
 } from 'react-router-dom';
@@ -38,6 +37,7 @@ import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
 import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
 import {
   setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
@@ -75,6 +75,9 @@ const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
 const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
 const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
 const PageRegistryGallery = lazy(() => import('./registry/gallery'));
+
+const PageStatsBits = lazy(() => import('./stats/bits'));
+const PageStatsTips = lazy(() => import('./stats/tips'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -154,9 +157,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 };
 
 export default function Root() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
-  const { server, connectedToServer, state, tokensOnboardingState, configuration } = useSelector((s: any) => s.loader);
+  const { server, connectedToServer, state, tokensOnboardingState, configuration } = useAppSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
   const isMobile = useMobile();
 
@@ -249,7 +252,7 @@ export default function Root() {
 
                     <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
                     <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
-                    <Route path="/manage/viewers/:type?/:id?" element={<PageManageViewers/>}/>
+                    <Route path="/manage/viewers/:userId?" element={<PageManageViewers/>}/>
                     <Route path="/manage/highlights" element={<PageManageHighlights/>}/>
                     <Route path="/manage/ranks/:type?/:id?" element={<PageManageRanks/>}/>
                     <Route path="/manage/howlongtobeat/:type?/:id?" element={<PageManageHLTB/>}/>
@@ -267,6 +270,9 @@ export default function Root() {
                     <Route path="/registry/plugins/:type?/:id?" element={<PageRegistryPlugins/>}/>
                     <Route path="/registry/customvariables/:type?/:id?" element={<PageRegistryCustomVariables/>}/>
                     <Route path="/registry/gallery" element={<PageRegistryGallery/>}/>
+
+                    <Route path="/stats/bits" element={<PageStatsBits/>}/>
+                    <Route path="/stats/tips" element={<PageStatsTips/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>

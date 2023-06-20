@@ -137,7 +137,6 @@ export const ServerSelect: React.FC = () => {
   };
 
   React.useEffect(() => {
-    console.log({ connecting });
     if (isInitial && !connecting && (!message || (!message.includes('Cannot connect') && !message.includes('You don\'t have access to this server')))) {
       // autoconnect by server get parameter
       const queryServer = query.get('server');

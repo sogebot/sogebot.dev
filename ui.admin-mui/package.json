@@ -59,6 +59,7 @@
     "react-string-replace": "^1.1.0",
     "react-window": "^1.8.9",
     "react-youtube": "^10.1.0",
+    "recharts": "^2.7.1",
     "rooks": "^7.14.1",
     "semver": "^7.5.1",
     "simplebar-react": "^3.2.4",

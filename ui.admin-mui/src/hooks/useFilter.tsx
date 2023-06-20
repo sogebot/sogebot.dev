@@ -343,7 +343,7 @@ export const useFilter = <T,>(availableFilters: {
   }, [ handleListChange, handleDeleteAll, permissions, handleDelete, availableFilters, applyFilter, filters, getTranslationOfColumnName, getValueOfColumnName, handleNumberChange, handleStringChange, handleTypeChange, initializeDefaultFilter, newFilter, translate ]);
 
   return {
-    element, filters,
+    element, filters, setFilters,
   };
 
 };
