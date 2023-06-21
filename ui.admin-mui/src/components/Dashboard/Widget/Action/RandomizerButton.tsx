@@ -70,6 +70,8 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
       return;
     }
 
+    lastUpdateAt.set(item.id, Date.now());
+
     axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((res: any) => setRandomizers(res.data.data));
   }, 1000, true, true);
