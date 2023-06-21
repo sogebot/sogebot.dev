@@ -9,11 +9,11 @@ import {
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import { UserSimple } from './User/Simple';
 import { versions } from '../compatibilityList';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
 import useQuery from '../hooks/useQuery';
 import sogebotLarge from '../images/sogebot_large.png';
@@ -35,7 +35,7 @@ const checkURLValidity = (serverURL: string) => {
 let connecting = false;
 
 export const ServerSelect: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const query = useQuery();
   const isMobile = useMobile();
   const { enqueueSnackbar } = useSnackbar();
@@ -48,7 +48,7 @@ export const ServerSelect: React.FC = () => {
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
   const [invalidURL, setInvalidURL] = React.useState(false);
 
-  const { state, message, connectedToServer } = useSelector((s: any) => s.loader);
+  const { state, message, connectedToServer } = useAppSelector((s: any) => s.loader);
 
   React.useEffect(() => {
     if ((connecting || message)) {

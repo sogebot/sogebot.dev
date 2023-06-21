@@ -18,6 +18,7 @@ import { useIntervalWhen } from 'rooks';
 
 import DashboardWidgetBotDialogConfirmRaffleClose from './Dialog/ConfirmRaffleClose';
 import DashboardWidgetBotDialogConfirmRafflePick from './Dialog/ConfirmRafflePick';
+import { SECOND } from '../../../../constants';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
 import { useTranslation } from '../../../../hooks/useTranslation';
@@ -26,8 +27,10 @@ import {
 } from '../../../../validators';
 import { classes } from '../../../styles';
 
-export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
-  sx,
+let lastUpdateAt = 0;
+
+export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean }> = ({
+  sx, active,
 }) => {
   const [ loading, setLoading ] = React.useState(true);
   const { translate } = useTranslation();
@@ -148,15 +151,17 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   }, [ eligibleItems ]);
 
   useIntervalWhen(() => {
-    // better would be to have watcher, but there is no simple way
-    // to catch all relevant props without lot of a code
-    localStorage.setItem('/widget/raffles/', JSON.stringify({
-      eligible:       eligible,
-      isTypeKeywords: isTypeKeywords,
-      keyword:        keyword,
-      ticketsMax:     range[1],
-      ticketsMin:     range[0],
-    }));
+    if (!active) {
+      // do nothing if not visible
+      return;
+    }
+
+    if (Date.now() - lastUpdateAt < SECOND * 10) {
+      // not time to update yet
+      return;
+    }
+
+    lastUpdateAt = Date.now();
 
     getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffleResponse) => {
       console.groupCollapsed('raffle:getLatest');
@@ -172,6 +177,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
 
       if (!isEqual(raffle, raffleResponse)) {
         setRaffle(raffleResponse || null);
+        setKeyword(raffleResponse?.keyword ?? '');
       }
     });
   }, 1000, true, true);
@@ -210,18 +216,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
       }
     }
   }, [ raffle, eligibleItems, winner ]);
-
-  useEffect(() => {
-    const cache = localStorage.getItem('/widget/raffles/');
-    if (cache) {
-      const parsed = JSON.parse(cache);
-      setEligible(parsed.eligible);
-      setIsTypeKeywords(parsed.isTypeKeywords);
-      setKeyword(parsed.keyword);
-      setRange([parsed.ticketsMin, parsed.ticketsMax]);
-    }
-
-  }, []);
 
   const handleUserEligibility = (participant: RaffleParticipantInterface) => {
     participant.isEligible = !participant.isEligible;
@@ -271,7 +265,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
               label='Raffle command'
               fullWidth
               disabled={!raffle?.isClosed}
-              value={keyword}
+              value={keyword }
               onChange={(event) => setKeyword(event.target.value)}
               InputProps={{ endAdornment: <InputAdornment position="end">{!raffle?.isClosed && <CircularProgress size={20}/>}</InputAdornment> }}
             />

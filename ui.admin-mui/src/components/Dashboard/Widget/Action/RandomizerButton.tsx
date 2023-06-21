@@ -9,19 +9,21 @@ import axios from 'axios';
 import React, {
   MouseEventHandler, useCallback, useMemo, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { getContrastColor } from '../../../../colors';
+import { SECOND } from '../../../../constants';
 import getAccessToken from '../../../../getAccessToken';
 import { getSocket } from '../../../../helpers/socket';
+import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { isHexColor } from '../../../../validators';
 
+const lastUpdateAt = new Map<string, number>();
 export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerItem }> = ({
   item,
 }) => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector((state: any) => state.user);
   const [ running, setRunning ] = useState(false);
 
   const [ randomizers, setRandomizers ] = useState<Randomizer[]>([]);
@@ -61,6 +63,13 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
   }, [currentRandomizer, user, item.id]);
 
   useIntervalWhen(() => {
+    const updatedAt = lastUpdateAt.get(item.id) ?? 0;
+
+    if (Date.now() - updatedAt < SECOND * 10) {
+      // not time to update yet
+      return;
+    }
+
     axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((res: any) => setRandomizers(res.data.data));
   }, 1000, true, true);

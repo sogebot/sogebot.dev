@@ -12,14 +12,14 @@ import {
 import parse from 'html-react-parser';
 import get from 'lodash/get';
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useDidMount, useIntervalWhen } from 'rooks';
+import { useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
+import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
@@ -52,7 +52,7 @@ function resendAlert (id: string) {
 function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector((state: any) => state.loader);
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
@@ -133,7 +133,7 @@ function RenderRow(props: any) {
 
 export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   const [ events, setEvents ] = React.useState<any[]>([]);
-  const { events: widgetSettings } = useSelector((state: any) => state.page.widgets);
+  const { events: widgetSettings } = useAppSelector((state: any) => state.page.widgets);
 
   const [ status, setStatus ] = React.useState({
     areAlertsMuted: false,
@@ -211,13 +211,13 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     });
   }, [ events, widgetSettings ]);
 
-  useDidMount(() => {
+  React.useEffect(() => {
     getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
     getSocket('/widgets/eventlist').on('update', (values: any) => {
       setEvents(values);
     });
     getSocket('/widgets/eventlist').emit('eventlist::get', 100);
-  });
+  }, []);
 
   useIntervalWhen(() => {
     getSocket('/widgets/eventlist').emit('eventlist::get', 100);
