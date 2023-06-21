@@ -46,6 +46,7 @@ export const ServerSelect: React.FC = () => {
 
   const [serverInputValue, setServerInputValue] = React.useState('http://localhost:20000');
   const [serverHistory, setServerHistory] = React.useState<string[]>([]);
+  const [invalidURL, setInvalidURL] = React.useState(false);
 
   const { state, message, connectedToServer } = useSelector((s: any) => s.loader);
 
@@ -62,13 +63,15 @@ export const ServerSelect: React.FC = () => {
   }, [ message ]);
 
   useEffect(() => {
-    const url = new URL(serverInputValue);
-    if (url.origin !== serverInputValue) {
-      setServerInputValue(url.origin);
+    try {
+      new URL(serverInputValue);
+      setInvalidURL(false);
+    } catch {
+      setInvalidURL(true);
+    } finally {
+      setValidVersionError(null);
+      connecting = false;
     }
-
-    setValidVersionError(null);
-    connecting = false;
   }, [serverInputValue]);
 
   React.useEffect(() => {
@@ -254,6 +257,7 @@ export const ServerSelect: React.FC = () => {
       flex: '1 0 auto', alignItems: 'flex-start',
     }}>
       {getUser() && <LoadingButton
+        disabled={invalidURL}
         onClick={() => handleConnect(serverInputValue)}
         loading={message && (message.toLowerCase().includes('connecting') || message.toLowerCase().includes('checking'))}
         fullWidth
