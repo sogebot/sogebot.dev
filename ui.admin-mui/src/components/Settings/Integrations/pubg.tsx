@@ -247,7 +247,6 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
             theme={ocean}
             style={{ padding: '10px' }}
             displayDataTypes={false}
-            displayObjectSize={false}
             enableClipboard={false}
           />
           <Alert severity="info">{ translate('integrations.pubg.stats_are_automatically_refreshed_every_10_minutes') }</Alert>
@@ -260,7 +259,6 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
             theme={ocean}
             style={{ padding: '10px' }}
             displayDataTypes={false}
-            displayObjectSize={false}
             enableClipboard={false}
           />
           <Alert severity="info">{ translate('integrations.pubg.stats_are_automatically_refreshed_every_10_minutes') }</Alert>

@@ -1,48 +1,28 @@
 import {
   Grid, Paper, Typography,
 } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
-import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import React, { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useDidMount } from 'rooks';
+import React from 'react';
 
 import { Trending } from './Stats/Trending';
 import { Value } from './Stats/Value';
-import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 export const DashboardStatsTwitchSubscribers: React.FC = () => {
-  const [value, setValue] = useState<number>(0);
   const { translate } = useTranslation();
-  const [type, setType] = useState('');
-  const [loading, setLoading] = useState(true);
-  const { averageStats, isStreamOnline } = useSelector((state: any) => state.page);
+  const { averageStats, isStreamOnline, currentStats } = useAppSelector(state => state.page);
 
-  const average = useMemo(() => {
-    return averageStats.currentSubscribers;
-  }, [averageStats]);
-
-  useDidMount(() => {
-    getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
-      setValue(data.currentSubscribers);
-      setType(data.broadcasterType);
-      setLoading(false);
-    });
-  });
+  const average = React.useMemo(() => averageStats.currentSubscribers, [averageStats.currentSubscribers]);
+  const value = React.useMemo(() => currentStats.currentSubscribers, [currentStats.currentSubscribers]);
+  const type = React.useMemo(() => currentStats.broadcasterType, [currentStats.broadcasterType]);
 
   return (
     <Grid item xs={6} sm={4} md={4} lg={2}>
       <Paper sx={{
         p: 0.5, position: 'relative', overflow: 'hidden',
       }}>
-        {loading && <Box sx={{
-          width: '100%', position: 'absolute', top: '0', left: '0',
-        }}>
-          <LinearProgress />
-        </Box>}
         <Typography sx={{
           transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>

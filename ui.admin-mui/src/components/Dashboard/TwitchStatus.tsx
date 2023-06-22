@@ -1,15 +1,13 @@
 import {
   Backdrop, Grid, Paper, Typography,
 } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
-import { Box } from '@mui/system';
 import parse from 'html-react-parser';
 import { capitalize, isNil } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useDidMount } from 'rooks';
 
 import { DashboardDialogSetGameAndTitle } from './Dialog/SetGameAndTitle';
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 import { classes } from '../styles';
@@ -19,24 +17,18 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const { translate } = useTranslation();
+  const currentStats = useAppSelector((state) => state.page.currentStats);
 
-  const [game, setGame] = useState<null | string>(null);
   const [title, setTitle] = useState<null | string>(null);
-  const [rawTitle, setRawTitle] = useState<null | string>(null);
   const [cachedTitle, setCachedTitle] = useState<null | string>(null);
-  const [tags, setTags] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const game = React.useMemo(() => currentStats.game, [currentStats.game]);
+  const tags = React.useMemo(() => currentStats.tags, [currentStats.tags]);
+  const rawStatus = React.useMemo(() => currentStats.rawStatus, [currentStats.rawStatus]);
 
-  useDidMount(() => {
-    getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
-      setGame(data.game);
-      setTitle(await generateTitle(data.status, data.rawStatus));
-      setTags(data.tags);
-      setRawTitle(data.rawStatus);
-      setLoading(false);
-    });
-  });
+  React.useEffect(() => {
+    generateTitle(currentStats.status, currentStats.rawStatus).then(setTitle);
+  }, [currentStats.status, currentStats.rawStatus]);
 
   useEffect(() => {
     setHover(false);
@@ -78,12 +70,6 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
       <Paper sx={{
         p: 0.5, overflow: 'hidden', ...classes.parent,
       }}>
-        {loading && <Box sx={{
-          width: '100%', position: 'absolute', top: '0', left: '0',
-        }}>
-          <LinearProgress />
-        </Box>}
-
         <Grid container justifyContent={'left'}>
           <Grid item sm={12} xs={12}>
             <Typography sx={{
@@ -107,12 +93,12 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
             }}>{ capitalize(translate('game')) }, { capitalize(translate('title')) }, { capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
-        {!loading && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
+        <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
           <Typography variant="button">{translate('click-to-change')}</Typography>
-        </Backdrop>}
+        </Backdrop>
       </Paper>
 
-      {!loading && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawTitle || ''} tags={tags || []}/>}
+      <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawStatus || ''} tags={tags || []}/>
     </Grid>
   );
 };

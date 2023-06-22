@@ -1,39 +1,23 @@
 import {
   Grid, Paper, Typography,
 } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
-import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 
-import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 export const DashboardStatsTwitchViewers: React.FC = () => {
-  const [viewers, setViewers] = useState<null | number>(null);
-  const [loading, setLoading] = useState(true);
   const { translate } = useTranslation();
-  const { isStreamOnline } = useSelector((state: any) => state.page);
-
-  useEffect(() => {
-    getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
-      setViewers(data.currentViewers);
-      setLoading(false);
-    });
-  }, []);
+  const { isStreamOnline, currentStats } = useAppSelector(state => state.page);
+  const value = React.useMemo(() => currentStats.currentViewers, [currentStats.currentViewers]);
   return (
     <Grid item xs={6} sm={4} md={4} lg={2}>
       <Paper sx={{
         p: 0.5, position: 'relative', overflow: 'hidden',
       }}>
-        {loading && <Box sx={{
-          width: '100%', position: 'absolute', top: '0', left: '0',
-        }}>
-          <LinearProgress />
-        </Box>}
-        <Typography sx={{ transform: 'translateY(5px)' }}>{ isStreamOnline ? viewers : 0 }</Typography>
+        <Typography sx={{ transform: 'translateY(5px)' }}>{ isStreamOnline ? value : 0 }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
           pt: 2, pa: 1,
         }}>{ capitalize(translate('viewers')) }</Typography>

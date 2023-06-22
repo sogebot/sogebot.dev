@@ -1,15 +1,13 @@
 import {
   Backdrop, Grid, Paper, Typography,
 } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
-import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { getTime } from '../../helpers/getTime';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setStreamOnline } from '../../store/pageSlice';
 import theme from '../../theme';
@@ -17,11 +15,10 @@ import { classes } from '../styles';
 
 export const DashboardStatsUptime: React.FC = () => {
   const { translate } = useTranslation();
-  const [uptime, setUptime] = useState<null | number>(null);
   const [hover, setHover] = useState(false);
   const [timestamp, setTimestamp] = useState(Date.now());
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { currentStats } = useAppSelector(state => state.page);
 
   const saveHighlight = () => {
     getSocket('/systems/highlights').emit('highlight');
@@ -31,24 +28,17 @@ export const DashboardStatsUptime: React.FC = () => {
     setTimestamp(Date.now());
   }, 500, true, true);
 
-  useEffect(() => {
-    getSocket('/').on('panel::stats', (data: Record<string, any>) => {
-      setUptime(data.uptime);
-      dispatch(setStreamOnline(data.uptime !== null));
-      setLoading(false);
-    });
-  }, [dispatch]);
+  const uptime = React.useMemo(() => currentStats.uptime, [currentStats.uptime]);
+
+  React.useEffect(() => {
+    dispatch(setStreamOnline(uptime !== null));
+  }, [uptime, dispatch]);
 
   return (
     <Grid item xs={6} sm={4} md={4} lg={2} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Paper sx={{
         p: 0.5, overflow: 'hidden', ...classes.parent,
       }}>
-        {loading && <Box sx={{
-          width: '100%', position: 'absolute', top: '0', left: '0',
-        }}>
-          <LinearProgress />
-        </Box>}
         <Typography sx={{ transform: 'translateY(5px)' }}>{ getTime(uptime, false) }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
           pt: 2, pa: 1,

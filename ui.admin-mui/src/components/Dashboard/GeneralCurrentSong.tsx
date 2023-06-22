@@ -1,38 +1,23 @@
 import {
   Grid, Paper, Typography,
 } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
-import { Box } from '@mui/system';
 import { capitalize } from 'lodash';
-import React, { useState } from 'react';
-import { useDidMount } from 'rooks';
+import React from 'react';
 
-import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 export const DashboardStatsGeneralCurrentSong: React.FC = () => {
   const { translate } = useTranslation();
-  const [song, setSong] = useState<null | string>(null);
-  const [loading, setLoading] = useState(true);
-
-  useDidMount(() => {
-    getSocket('/').on('panel::stats', (data: Record<string, any>) => {
-      setSong(data.currentSong);
-      setLoading(false);
-    });
-  });
+  const { currentStats } = useAppSelector((state: any) => state.page);
+  const song = React.useMemo(() => currentStats.currentSong, [currentStats.currentSong]);
 
   return (
     <Grid item xs={6} sm={4} md={4} lg={2}>
       <Paper sx={{
         p: 0.5, position: 'relative', overflow: 'hidden',
       }}>
-        {loading && <Box sx={{
-          width: '100%', position: 'absolute', top: '0', left: '0',
-        }}>
-          <LinearProgress />
-        </Box>}
         <Typography sx={{
           transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{ song || capitalize(translate('not-available')) }</Typography>

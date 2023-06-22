@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import { DashboardStatsGeneralCurrentSong } from './GeneralCurrentSong';
@@ -16,30 +16,49 @@ import { DashboardStatsTwitchSubscribers } from './TwitchSubscribers';
 import { DashboardStatsUptime } from './TwitchUptime';
 import { DashboardStatsTwitchViewers } from './TwitchViewers';
 import { DashboardStatsTwitchWatchedTime } from './TwitchWatchedTime';
-import { getSocket } from '../../helpers/socket';
-import { setAverageStats } from '../../store/pageSlice';
+import getAccessToken from '../../getAccessToken';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { setAverageStats, setCurrentStats } from '../../store/pageSlice';
 
 export const DashboardStats: React.FC = () => {
-  const { configuration } = useSelector((state: any) => state.loader);
-  const dispatch = useDispatch();
-  const averageStats = useSelector((state: any) => state.page.averageStats);
+  const { configuration } = useAppSelector((state: any) => state.loader);
+  const dispatch = useAppDispatch();
+  const averageStats = useAppSelector((state: any) => state.page.averageStats);
+  const currentStats = useAppSelector((state: any) => state.page.currentStats);
 
   useIntervalWhen(() => {
-    getSocket('/').emit('getLatestStats', (err, data: any) => {
-      console.groupCollapsed('navbar::getLatestStats');
-      console.log({
-        averageStats, data,
-      });
-      if (err) {
-        return console.error(err);
-      }
-      console.groupEnd();
+    axios.get(`${JSON.parse(localStorage.server)}/api/stats/latest`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(res => {
+        if (res.status === 201) {
+          const data = res.data;
+          console.groupCollapsed('stats::latest');
+          console.log({
+            averageStats, data,
+          });
 
-      // this is causing rerenders (not sure why, so we force it only to change on actual change)
-      if (!isEqual(data, averageStats)) {
-        dispatch(setAverageStats(data));
-      }
-    });
+          // this is causing rerenders (not sure why, so we force it only to change on actual change)
+          if (!isEqual(data, averageStats)) {
+            dispatch(setAverageStats(data));
+          }
+          console.groupEnd();
+        }
+      });
+    axios.get(`${JSON.parse(localStorage.server)}/api/stats/current`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(res => {
+        if (res.status === 201) {
+          const data = res.data;
+          console.groupCollapsed('stats::current');
+          console.log({
+            averageStats, data,
+          });
+
+          // this is causing rerenders (not sure why, so we force it only to change on actual change)
+          if (!isEqual(data, currentStats)) {
+            dispatch(setCurrentStats(data));
+          }
+          console.groupEnd();
+        }
+      });
   }, 10000, true, true);
 
   return (
