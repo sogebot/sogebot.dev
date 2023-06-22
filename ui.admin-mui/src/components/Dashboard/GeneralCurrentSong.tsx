@@ -1,5 +1,5 @@
 import {
-  Grid, Paper, Typography,
+  Grid, Paper, Skeleton, Typography,
 } from '@mui/material';
 import { capitalize } from 'lodash';
 import React from 'react';
@@ -10,7 +10,7 @@ import theme from '../../theme';
 
 export const DashboardStatsGeneralCurrentSong: React.FC = () => {
   const { translate } = useTranslation();
-  const { currentStats } = useAppSelector((state: any) => state.page);
+  const { currentStats } = useAppSelector(state => state.page);
   const song = React.useMemo(() => currentStats.currentSong, [currentStats.currentSong]);
 
   return (
@@ -18,9 +18,16 @@ export const DashboardStatsGeneralCurrentSong: React.FC = () => {
       <Paper sx={{
         p: 0.5, position: 'relative', overflow: 'hidden',
       }}>
-        <Typography sx={{
-          transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>{ song || capitalize(translate('not-available')) }</Typography>
+
+        {
+          song
+            ? <Typography sx={{
+              transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>song</Typography>
+            : <Skeleton sx={{
+              width: '100%', position: 'relative', top: '4px',
+            }} component={Typography}/>
+        }
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
           pt: 2, pa: 1,
         }}>{ capitalize(translate('currentsong')) }</Typography>

@@ -1,5 +1,6 @@
 import {
-  Backdrop, Grid, Paper, Typography,
+  Backdrop, Grid, Paper, Skeleton,
+  Typography,
 } from '@mui/material';
 import parse from 'html-react-parser';
 import { capitalize, isNil } from 'lodash';
@@ -27,7 +28,9 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const rawStatus = React.useMemo(() => currentStats.rawStatus, [currentStats.rawStatus]);
 
   React.useEffect(() => {
-    generateTitle(currentStats.status, currentStats.rawStatus).then(setTitle);
+    if (currentStats.status && currentStats.rawStatus) {
+      generateTitle(currentStats.status, currentStats.rawStatus).then(setTitle);
+    }
   }, [currentStats.status, currentStats.rawStatus]);
 
   useEffect(() => {
@@ -72,33 +75,38 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
       }}>
         <Grid container justifyContent={'left'}>
           <Grid item sm={12} xs={12}>
-            <Typography sx={{
-              transform: 'translateY(5px)', ...classes.truncate,
-            }}>
-              <Typography component="span" sx={{
-                color: theme.palette.primary.main, fontWeight: 'bold',
+            {!game || !title
+              ? <Skeleton sx={{
+                width: '200px', position: 'relative', top: '4px', 
+              }} component={Typography}/>
+              : <Typography sx={{
+                transform: 'translateY(5px)', ...classes.truncate,
               }}>
-                { game ?? ''}
-              </Typography>
-              {' '}
-              {parse(title ?? '')}
-              {' '}
-              {tags.map((tag) => {
-                return(<Typography component="span" key={tag} sx={{ color: theme.palette.primary.main }}>
+                <Typography component="span" sx={{
+                  color: theme.palette.primary.main, fontWeight: 'bold',
+                }}>
+                  { game }
+                </Typography>
+                {' '}
+                {parse(title)}
+                {' '}
+                {tags.map((tag) => {
+                  return(<Typography component="span" key={tag} sx={{ color: theme.palette.primary.main }}>
                 #{ tag.toLocaleLowerCase() }{' '}
-                </Typography>);
-              })}</Typography>
+                  </Typography>);
+                })}</Typography>
+            }
             <Typography color={theme.palette.grey[400]} variant='caption' sx={{
               pt: 2, pa: 1,
             }}>{ capitalize(translate('game')) }, { capitalize(translate('title')) }, { capitalize(translate('tags')) }</Typography>
           </Grid>
         </Grid>
-        <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
+        { game && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
           <Typography variant="button">{translate('click-to-change')}</Typography>
-        </Backdrop>
+        </Backdrop>}
       </Paper>
 
-      <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawStatus || ''} tags={tags || []}/>
+      {game && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawStatus || ''} tags={tags || []}/>}
     </Grid>
   );
 };

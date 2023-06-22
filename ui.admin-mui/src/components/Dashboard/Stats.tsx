@@ -42,7 +42,8 @@ export const DashboardStats: React.FC = () => {
           }
           console.groupEnd();
         }
-      });
+      })
+      .catch(console.error);
     axios.get(`${JSON.parse(localStorage.server)}/api/stats/current`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => {
         if (res.status === 201) {
@@ -58,7 +59,8 @@ export const DashboardStats: React.FC = () => {
           }
           console.groupEnd();
         }
-      });
+      })
+      .catch(console.error);
   }, 10000, true, true);
 
   return (
