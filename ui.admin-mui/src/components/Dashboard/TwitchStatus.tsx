@@ -77,7 +77,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
           <Grid item sm={12} xs={12}>
             {!game || !title
               ? <Skeleton sx={{
-                width: '200px', position: 'relative', top: '4px', 
+                width: '200px', position: 'relative', top: '4px',
               }} component={Typography}/>
               : <Typography sx={{
                 transform: 'translateY(5px)', ...classes.truncate,

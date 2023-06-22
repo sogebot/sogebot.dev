@@ -117,6 +117,9 @@ export const pageSlice = createSlice({
       state.averageStats = action.payload;
     },
     setCurrentStats: (state: any, action: { payload: Record<string, any> }) => {
+      console.log({
+        state, action, 
+      });
       state.currentStats = action.payload;
     },
     setPermissions: (state: any, action: { payload: Permissions[] }) => {

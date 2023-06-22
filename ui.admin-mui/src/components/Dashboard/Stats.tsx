@@ -29,7 +29,7 @@ export const DashboardStats: React.FC = () => {
   useIntervalWhen(() => {
     axios.get(`${JSON.parse(localStorage.server)}/api/stats/latest`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           const data = res.data;
           console.groupCollapsed('stats::latest');
           console.log({
@@ -44,13 +44,14 @@ export const DashboardStats: React.FC = () => {
         }
       })
       .catch(console.error);
+
     axios.get(`${JSON.parse(localStorage.server)}/api/stats/current`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           const data = res.data;
           console.groupCollapsed('stats::current');
           console.log({
-            averageStats, data,
+            currentStats, data,
           });
 
           // this is causing rerenders (not sure why, so we force it only to change on actual change)

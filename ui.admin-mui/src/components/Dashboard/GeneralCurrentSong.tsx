@@ -23,7 +23,7 @@ export const DashboardStatsGeneralCurrentSong: React.FC = () => {
           song
             ? <Typography sx={{
               transform: 'translateY(5px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>song</Typography>
+            }}>{song}</Typography>
             : <Skeleton sx={{
               width: '100%', position: 'relative', top: '4px',
             }} component={Typography}/>
