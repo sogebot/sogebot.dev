@@ -3,7 +3,6 @@ import { Buffer } from 'buffer';
 import { Box } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { AlertItem } from '../components/Overlay/AlertItem';
@@ -30,11 +29,12 @@ import { TTSItem } from '../components/Overlay/TTSItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
 import { WordcloudItem } from '../components/Overlay/WordcloudItem';
 import { getConfiguration, getSocket } from '../helpers/socket';
+import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setConfiguration, setTranslation } from '../store/loaderSlice';
 
 export default function Overlays() {
   const { base64 } = useParams();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [ overlay, setOverlay ] = React.useState<null | Overlay>(null);
   const [ loading, setLoading ] = React.useState(true);

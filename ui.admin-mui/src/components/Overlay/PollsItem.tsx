@@ -4,12 +4,12 @@ import {
 import { Polls } from '@sogebot/backend/src/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
 import { dayjs, setLocale } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const testValues = {
@@ -62,7 +62,7 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   getSocket('/overlays/polls', true);
 
   const { translate } = useTranslation();
-  const lang = useSelector((state: any) => state.loader.configuration.lang );
+  const lang = useAppSelector(state => state.loader.configuration.lang );
 
   const [ ended, setEnded ] = React.useState(false);
   const [ currentTime, setCurrentTime ] = React.useState(Date.now());

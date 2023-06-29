@@ -15,12 +15,12 @@ import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { SliderPicker } from 'react-color';
-import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
 import { getSocket } from '../../../../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
 import {
   setCountdowns, setMarathons, setRandomizers, setStopwatchs,
 } from '../../../../../store/quickActionsSlice';
@@ -30,9 +30,6 @@ import { DroppableComponent } from '../../../../Table/DroppableComponent';
 import { TableCellKeepWidth } from '../../../../Table/TableCellKeepWidth';
 import { DashboardWidgetActionButtonsAddItem } from '../Buttons/AddItem';
 import { GenerateTime } from '../GenerateTime';
-
-type List = { id: string, label: string, };
-type State = { quickaction: { randomizers: List[], countdowns: List[], stopwatchs: List[], marathons: List[] } };
 
 const reorder = (list: QuickActions.Item[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
@@ -71,7 +68,7 @@ const DraggableComponent: React.FC<{
   const [updateItem, setUpdateItem] = React.useState(item);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const { randomizers, countdowns, stopwatchs, marathons } = useSelector((state: State) => state.quickaction);
+  const { randomizers, countdowns, stopwatchs, marathons } = useAppSelector(state => state.quickaction);
 
   const onChange = React.useCallback((obj: any) => {
     const update = cloneDeep(updateItem);
@@ -284,12 +281,12 @@ const DraggableComponent: React.FC<{
 export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void}> = ({
   onClose,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [ open, setOpen ] = React.useState(false);
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
 
-  const { randomizers, countdowns, marathons, stopwatchs } = useSelector((state: State) => state.quickaction);
+  const { randomizers, countdowns, marathons, stopwatchs } = useAppSelector(state => state.quickaction);
   const [ editingItem, setEditingItem ] = React.useState('');
 
   const onDragEnd = (result: { destination: { index: number; }; source: { index: number; }; }) => {
@@ -320,6 +317,9 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
   };
 
   React.useEffect(() => {
+    if (!user) {
+      return;
+    }
     getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
       if (err) {
         return console.error(err);
@@ -375,7 +375,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
 
     const item: any = {
       id:      v4(),
-      userId:  user.id,
+      userId:  user?.id,
       order:   actions.length,
       type:    itemType,
       options: {

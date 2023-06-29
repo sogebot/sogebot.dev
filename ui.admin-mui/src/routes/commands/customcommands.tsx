@@ -32,7 +32,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -46,6 +45,7 @@ import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
 import { Responses } from '../../components/Table/Responses';
 import getAccessToken from '../../getAccessToken';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
@@ -53,7 +53,7 @@ import { setBulkCount } from '../../store/appbarSlice';
 type CommandWithCount = Commands & { count:number };
 
 const PageCommandsCommands = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -61,7 +61,7 @@ const PageCommandsCommands = () => {
   const [ items, setItems ] = useState<CommandWithCount[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<CommandsGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<CommandWithCount>([

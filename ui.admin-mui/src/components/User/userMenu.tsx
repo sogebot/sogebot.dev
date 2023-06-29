@@ -6,11 +6,11 @@ import {
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
@@ -22,8 +22,8 @@ export const UserMenu: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useMobile();
 
-  const { user } = useSelector((state: any) => state.user);
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { user } = useAppSelector(state => state.user);
+  const { configuration } = useAppSelector(state => state.loader);
   const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
   const [ logged, setLogged ] = React.useState(false);
 
@@ -99,7 +99,7 @@ export const UserMenu: React.FC = () => {
         alignSelf: 'center',
         height:    '65px',
       }}>
-        <Avatar src={user.profile_image_url}></Avatar>
+        <Avatar src={user?.profile_image_url}></Avatar>
       </Button>
       <Menu
         id="basic-menu"

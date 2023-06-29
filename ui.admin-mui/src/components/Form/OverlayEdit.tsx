@@ -27,6 +27,7 @@ import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { ClipsSettings } from './Overlay/ClipsSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
+import { CreditsSettings } from './Overlay/CreditsSettings';
 import { EmotesComboSettings } from './Overlay/EmotesComboSettings';
 import { EmotesExplodeSettings } from './Overlay/EmotesExplodeSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
@@ -597,6 +598,9 @@ export const OverlayEdit: React.FC = () => {
                   handleItemChange('opts', val);
                 }}/>}
                 {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
+                  handleItemChange('opts', val);
+                }}/>}
+                {selectedItem.opts.typeId === 'credits' && <CreditsSettings model={selectedItem.opts} onUpdate={(val) => {
                   handleItemChange('opts', val);
                 }}/>}
                 {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {

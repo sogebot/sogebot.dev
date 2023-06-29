@@ -23,7 +23,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
@@ -62,6 +61,7 @@ import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
 import { DAY } from '../../constants';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 /* eslint-enable */
 
 const createInitialItem = async () => {
@@ -89,7 +89,7 @@ export const CustomVariablesEdit: React.FC = () => {
   const { id } = useParams();
 
   const { permissions } = usePermissions();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
   const { translate } = useTranslation();
   const { propsError, reset, showErrors, validate, haveErrors } = useValidator({
     mustBeDirty: true, translations: { variableName: translate('name') },

@@ -1,13 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+type List = { id: string, label: string, };
+export interface State {
+  randomizers: List[],
+  countdowns: List[],
+  stopwatchs: List[],
+  marathons: List[]
+}
+
+const initialState: State = {
+  randomizers: [],
+  countdowns:  [],
+  marathons:   [],
+  stopwatchs:  [],
+};
+
 export const quickActionSlice = createSlice({
-  name:         'quickaction',
-  initialState: {
-    randomizers: [],
-    countdowns:  [],
-    marathons:   [],
-    stopwatchs:  [],
-  },
+  name:     'quickaction',
+  initialState,
   reducers: {
     setRandomizers: (state, action) => {
       state.randomizers = action.payload;

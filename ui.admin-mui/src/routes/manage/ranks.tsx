@@ -27,7 +27,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -37,19 +36,20 @@ import EditButton from '../../components/Buttons/EditButton';
 import { DisabledAlert } from '../../components/DisabledAlert';
 import { RankEdit } from '../../components/Form/RankEdit';
 import getAccessToken from '../../getAccessToken';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsKeywords = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Rank[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Rank>([

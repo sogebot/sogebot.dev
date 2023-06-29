@@ -32,7 +32,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -43,19 +42,20 @@ import { DisabledAlert } from '../../components/DisabledAlert';
 import { TimerEdit } from '../../components/Form/TimerEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import getAccessToken from '../../getAccessToken';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageManageTimers = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Timer[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Timer>([

@@ -31,7 +31,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -44,6 +43,7 @@ import { DateTypeProvider } from '../../components/Table/DateTypeProvider';
 import { RowDetail } from '../../components/Table/HowLongToBeat/RowDetail';
 import getAccessToken from '../../getAccessToken';
 import { timestampToObject } from '../../helpers/getTime';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -51,7 +51,7 @@ import { setBulkCount } from '../../store/appbarSlice';
 import { setOffset, setToggle } from '../../store/hltbSlice';
 
 const PageManageHLTB = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -60,11 +60,11 @@ const PageManageHLTB = () => {
   const [ items, setItems ] = useState<HowLongToBeatGame[]>([]);
   const [ thumbnails, setThumbnails ] = useState<CacheGamesInterface[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const toggle = useSelector<any, null | { createdAt: string, type: 'main' | 'extra' | 'completionist', id: string}>(state => state.hltb.toggle);
-  const offset = useSelector<any, null | { createdAt: string, value: number, id: string}>(state => state.hltb.offset);
+  const toggle = useAppSelector(state => state.hltb.toggle);
+  const offset = useAppSelector(state => state.hltb.offset);
 
   const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number}) => {
     const output = [];

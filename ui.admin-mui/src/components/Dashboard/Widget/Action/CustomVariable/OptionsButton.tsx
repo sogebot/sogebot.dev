@@ -8,15 +8,15 @@ import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import React, {
   useCallback, useRef, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 
 import { getSocket } from '../../../../../helpers/socket';
+import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { ColorButton } from '../_ColorButton';
 
 export const DashboardWidgetActionCustomVariableOptionsButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void }> = ({
   item, variable, onUpdate,
 }) => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ menuWidth, setMenuWidth ] = useState<string>('inherit');
   const open = Boolean(anchorEl);
@@ -33,6 +33,9 @@ export const DashboardWidgetActionCustomVariableOptionsButton: React.FC<{ item: 
   };
 
   const updateValue = useCallback((value: string) => {
+    if (!user) {
+      return;
+    }
     onUpdate(value);
     console.log(`quickaction::trigger::${item.id}`);
     getSocket('/widgets/quickaction').emit('trigger', {

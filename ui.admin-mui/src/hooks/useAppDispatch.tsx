@@ -1,4 +1,5 @@
 import {
+  // eslint-disable-next-line @typescript-eslint/no-restricted-imports
   TypedUseSelectorHook, useDispatch, useSelector,
 } from 'react-redux';
 

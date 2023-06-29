@@ -18,7 +18,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const { translate } = useTranslation();
-  const currentStats = useAppSelector((state) => state.page.currentStats);
+  const currentStats = useAppSelector(state => state.page.currentStats);
 
   const [title, setTitle] = useState<null | string>(null);
   const [cachedTitle, setCachedTitle] = useState<null | string>(null);

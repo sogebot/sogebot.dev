@@ -3,16 +3,16 @@ import {
 } from '@mui/material';
 import { capitalize } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { Trending } from './Stats/Trending';
 import { Value } from './Stats/Value';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 export const DashboardStatsGeneralTips: React.FC = () => {
   const { translate } = useTranslation();
-  const { averageStats, isStreamOnline, currentStats } = useSelector((state: any) => state.page);
+  const { averageStats, isStreamOnline, currentStats } = useAppSelector(state => state.page);
 
   const average = React.useMemo(() => averageStats.currentTips, [averageStats.currentTips]);
   const value = React.useMemo(() => currentStats.currentTips, [currentStats.currentTips]);

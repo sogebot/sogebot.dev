@@ -4,14 +4,14 @@ import {
   Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip,
 } from '@mui/material';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { setWidgetsEvents } from '../../../../../store/pageSlice';
 
 export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
-  const dispatch = useDispatch();
-  const { configuration } = useSelector((state: any) => state.loader);
-  const { events } = useSelector((state: any) => state.page.widgets);
+  const dispatch = useAppDispatch();
+  const { configuration } = useAppSelector(state => state.loader);
+  const { events } = useAppSelector(state => state.page.widgets);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);

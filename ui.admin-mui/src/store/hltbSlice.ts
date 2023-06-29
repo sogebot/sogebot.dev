@@ -1,10 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export interface HLTBState {
+  toggle: null | { createdAt: string, type: 'main' | 'extra' | 'completionist', id: string }
+  offset: null | { createdAt: string, value: number, id: string }
+}
+
+const initialState: HLTBState = {
+  toggle: null, offset: null,
+};
+
 export const hltbSlice = createSlice({
-  name:         'hltb',
-  initialState: {
-    toggle: null, offset: null, 
-  },
+  name:     'hltb',
+  initialState,
   reducers: {
     setToggle: (state, action) => {
       state.toggle = action.payload;

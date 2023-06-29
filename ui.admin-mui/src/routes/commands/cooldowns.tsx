@@ -33,7 +33,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -45,6 +44,7 @@ import { DisabledAlert } from '../../components/DisabledAlert';
 import { CooldownEdit } from '../../components/Form/CooldownEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import getAccessToken from '../../getAccessToken';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -52,15 +52,15 @@ import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsCooldown = () => {
   const { translate } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const [ items, setItems ] = useState<Required<Cooldown>[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Cooldown>([

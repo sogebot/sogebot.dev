@@ -4,10 +4,10 @@ import {
 } from '@mui/material';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
 import { DashboardWidgetBotDialogCustomURLsEdit } from './Dialog/CustomURLsEdit';
 import { getSocket } from '../../../../helpers/socket';
+import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
 
@@ -15,11 +15,14 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
   sx,
 }) => {
   const [ custom, setCustom ] = React.useState<WidgetCustomInterface[]>([]);
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const [ tab, setTab ] = React.useState('1');
   const [ refreshTimestamp, setRefreshTimestamp ] = React.useState(Date.now());
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
       if (err) {
         return console.error(err);

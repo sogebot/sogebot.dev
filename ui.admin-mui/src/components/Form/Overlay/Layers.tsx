@@ -8,11 +8,10 @@ import {
   ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionSummary, IconButton, List, ListItemButton, ListItemText, Menu, MenuItem, Stack, Typography,
+  Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, IconButton, List, ListItemButton, ListItemText, Stack, Typography,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import { capitalize, cloneDeep } from 'lodash';
-import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
+import { cloneDeep } from 'lodash';
 import React from 'react';
 
 type Props = {
@@ -23,8 +22,108 @@ type Props = {
   setMoveableId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
+const layers = {
+  alertsRegistry: {
+    title:       'Alert from registry (deprecated)',
+    description: 'Add alert defined in registry',
+  },
+  chat: {
+    title:       'Chat',
+    description: 'Chat overlay, available in horizontal, vertical and niconico formats.',
+  },
+  clips: {
+    title:       'Clips',
+    description: 'Show clips created in chat during stream by !clip command or event.',
+  },
+  clipscarousel: {
+    title:       'Clips Carousel',
+    description: 'Show clips created in defined timeframe, useful for intros/outros.',
+  },
+  credits: {
+    title:       'Outro Credits',
+    description: 'Customizable credits. Usually used in outro, shows games played, followers, subs, tips, clips created during current stream and more.',
+  },
+  carousel: {
+    title:       'Image Carousel',
+    description: 'Image carousel to show list of images one by one.',
+  },
+  countdown: {
+    title:       'Countdown',
+    description: 'Countdown counter.',
+  },
+  emotescombo: {
+    title:       'Emotes Combo',
+    description: 'Shows your emotes combo status.',
+  },
+  emotesfireworks: {
+    title:       'Emotes Fireworks',
+    description: 'Enables to show fireworks of emotes in overlay',
+  },
+  emotesexplode: {
+    title:       'Emotes Explode',
+    description: 'Enables to show explostion of emotes in overlay',
+  },
+  emotes: {
+    title:       'Emotes',
+    description: 'Shows emotes used in chat in different styles: facebook, fade, zoom.',
+  },
+  eventlist: {
+    title:       'Event List',
+    description: 'Add list of events during your streams. Resubs, follows, subs and so.',
+  },
+  html: {
+    title:       'HTML',
+    description: 'Add custom made HTML page into overlay.',
+  },
+  hypetrain: {
+    title:       'Hype Train',
+    description: 'Shows train during hype train.',
+  },
+  marathon: {
+    title:       'Marathon',
+    description: 'Adds marathon timer.',
+  },
+  polls: {
+    title:       'Polls',
+    description: 'Adds poll overlay for Twitch Polls',
+  },
+  stopwatch: {
+    title:       'Stopwatch',
+    description: 'Adds stopwatch timer',
+  },
+  stats: {
+    title:       'Stats',
+    description: 'Shows stats of your stream. Uptime, viewer count, followers count and more.',
+  },
+  tts: {
+    title:       'TTS',
+    description: 'Enables usage of !tts command.',
+  },
+  url: {
+    title:       'URL',
+    description: 'Adds custom webpage by URL. Note that not all pages are supporting <iframe>.',
+  },
+  wordcloud: {
+    title:       'Word Cloud',
+    description: 'Shows cloud of used words.',
+  },
+  obswebsocket: {
+    title:       'OBS Websocket',
+    description: 'Enables Websocket connection of bot to your OBS.',
+  },
+  randomizer: {
+    title:       'Randomizer',
+    description: 'Shows wheel of fortune and randomizers used by !wof command.',
+  },
+  goal: {
+    title:       'Goal',
+    description: 'Shows your defined goals.',
+  },
+};
+
 export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUpdate, onAdd }) => {
   const [ open, setOpen ] = React.useState(true);
+  const [ openDialog, setOpenDialog ] = React.useState(false);
 
   const onDragEndHandler = React.useCallback((value: any) => {
     if (!value.destination) {
@@ -55,6 +154,8 @@ export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUp
     onUpdate(update);
   };
 
+  const closeDlg = () => setOpenDialog(false);
+
   return <Accordion expanded={open}>
     <AccordionSummary
       expandIcon={<ExpandMoreTwoTone />}
@@ -71,36 +172,44 @@ export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUp
         height:         '24px',
       }}>
         <Typography>Layers</Typography>
+        <IconButton onClick={(ev) => {
+          if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+          }
+          setOpenDialog(true);
+        }}>
+          <AddTwoTone/>
+        </IconButton>
 
-        <PopupState variant="popover" popupId="demo-popup-menu">
-          {(popupState) => (
-            <React.Fragment>
-              <IconButton {...bindTrigger(popupState)} onClick={(ev) => {
-                ev.stopPropagation();
-                ev.preventDefault();
-                bindTrigger(popupState).onClick(ev);
-              }}>
-                <AddTwoTone/>
-              </IconButton>
-              <Menu {...bindMenu(popupState)} onClose={() => {
-                setOpen(o => !o);
-                popupState.close();
-              }}>
-                {[
-                  'alertsRegistry', 'chat', 'clips', 'clipscarousel', 'carousel', 'countdown',
-                  'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes', 'eventlist',
-                  'html', 'hypetrain', 'marathon', 'polls', 'stopwatch', 'stats', 'tts', 'url',
-                  'wordcloud', 'obswebsocket', 'randomizer', 'goal',
-                ].map(o => <MenuItem key={o} onClick={(ev) => {
-                  ev.stopPropagation();
-                  ev.preventDefault();
-                  onAdd(o as Overlay['items'][number]['opts']['typeId']);
-                  popupState.close();
-                }}>{capitalize(o)}</MenuItem>)}
-              </Menu>
-            </React.Fragment>
-          )}
-        </PopupState>
+        <Dialog open={openDialog} maxWidth="lg" fullWidth>
+          <DialogContent>
+            <Grid container spacing={1}>
+              {Object.entries(layers).map(([key, val]) => <Grid item xs={3} key={key}>
+                <Card>
+                  <CardActionArea onClick={(ev) => {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    onAdd(key as Overlay['items'][number]['opts']['typeId']);
+                    closeDlg();
+                  }}>
+                    <CardContent sx={{ height: '140px' }}>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {val.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {val.description}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>)}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button sx={{ width: 150 }} onClick={closeDlg}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Stack>
     </AccordionSummary>
     <AccordionDetails>

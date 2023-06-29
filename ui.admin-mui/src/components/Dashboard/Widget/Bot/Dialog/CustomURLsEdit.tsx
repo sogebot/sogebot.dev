@@ -8,10 +8,10 @@ import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import clone from 'lodash/clone';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 
 import { getSocket } from '../../../../../helpers/socket';
+import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 
 export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimestamp: React.Dispatch<React.SetStateAction<number>>}> = ({
   setRefreshTimestamp,
@@ -20,9 +20,12 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimesta
   const [ idxDelete, setIdxDelete ] = React.useState<string[]>([]);
   const [ open, setOpen ] = React.useState(false);
   const [ isSaving, setIsSaving ] = React.useState(false);
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
 
   React.useEffect(() => {
+    if (!user) {
+      return;
+    }
     getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
       if (err) {
         return console.error(err);
@@ -35,6 +38,9 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimesta
   }, [user, open]);
 
   const addNewItem = () => {
+    if (!user) {
+      return;
+    }
     setCustom([
       ...custom,
       {

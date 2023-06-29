@@ -4,18 +4,18 @@ import { Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import { loadFont } from '../Accordion/Font';
 
 export const EventlistItem: React.FC<Props<Eventlist>> = ({ item, active }) => {
   const [ events, setEvents ] = React.useState<(EventListInterface & { summary: string; username?: string })[]>([]);
   const { translate } = useTranslation();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const [ fadePerItem, setFadePerItem ] = React.useState(100 / item.count);
 

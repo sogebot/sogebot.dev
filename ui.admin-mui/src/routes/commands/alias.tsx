@@ -30,7 +30,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -47,13 +46,14 @@ import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsAlias = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const { type, id } = useParams();
@@ -61,7 +61,7 @@ const PageCommandsAlias = () => {
   const [ items, setItems ] = useState<Alias[]>([]);
   const [ groupsSettings, setGroupsSettings ] = useState<AliasGroup[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 

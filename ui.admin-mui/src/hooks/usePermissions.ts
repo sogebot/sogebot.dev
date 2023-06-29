@@ -1,13 +1,12 @@
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { getSocket } from '../helpers/socket';
 import { setPermissions } from '../store/pageSlice';
 
 export const usePermissions = () => {
-  const dispatch = useDispatch();
-  const { permissions } = useSelector<any, { permissions: Required<Permissions>[] } >(state => state.page);
+  const dispatch = useAppDispatch();
+  const { permissions } = useAppSelector(state => state.page);
 
   const refresh = React.useCallback(() => {
     if (permissions.length === 0) {

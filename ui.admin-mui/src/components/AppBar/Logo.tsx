@@ -1,16 +1,16 @@
 import { Badge, Box } from '@mui/material';
 import React, { useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import sogebotLarge from '../../images/sogebot_large.png';
 import sogebotSmall from '../../images/sogebot_small.png';
 import { setCurrentVersion, setNextVersion } from '../../store/loaderSlice';
 
 export const Logo: React.FC = () => {
-  const { currentVersion, state, connectedToServer } = useSelector((s: any) => s.loader);
-  const dispatch = useDispatch();
+  const { currentVersion, state, connectedToServer } = useAppSelector((s: any) => s.loader);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!state || !connectedToServer) {

@@ -4,10 +4,10 @@ import {
 } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
@@ -20,10 +20,10 @@ interface LinkedListItemProps {
 export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   const location = useLocation();
   const { translate } = useTranslation();
-  const reducer = useSelector((state: any) => state.loader);
+  const reducer = useAppSelector(state => state.loader);
   const [ menuItems, setMenuItems ] = useState<any[]>([]);
   const [ isActive, setIsActive ] = useState<boolean>(true);
-  const { state, connectedToServer } = useSelector((s: any) => s.loader);
+  const { state, connectedToServer } = useAppSelector(s => s.loader);
   const isMobile = useMobile();
 
   useEffect(() => {

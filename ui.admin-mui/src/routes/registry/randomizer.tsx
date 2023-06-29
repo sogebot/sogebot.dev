@@ -34,7 +34,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
@@ -47,13 +46,14 @@ import { RandomizerEdit } from '../../components/Form/RandomizerEdit';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryRandomizer = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -62,7 +62,7 @@ const PageRegistryRandomizer = () => {
   const [ items, setItems ] = useState<Randomizer[]>([]);
 
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const refresh = useCallback(async () => {

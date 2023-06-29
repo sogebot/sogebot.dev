@@ -19,9 +19,9 @@ import {
   IsInt, IsNotEmpty, Min, validateOrReject,
 } from 'class-validator';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
@@ -59,7 +59,7 @@ const PageSettingsModulesSystemsAntihateRaid: React.FC<{
   }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

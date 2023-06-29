@@ -9,12 +9,12 @@ import {
 } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import SimpleBar from 'simplebar-react';
 
 import { HOUR, MINUTE } from '../../../constants';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { timestampToObject } from '../../../helpers/getTime';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { setOffset, setToggle } from '../../../store/hltbSlice';
@@ -26,7 +26,7 @@ type Props = {
 
 export const RowDetail: React.FC<Props> = ({ row }) => {
   const { translate } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number}) => {
     const output = [];

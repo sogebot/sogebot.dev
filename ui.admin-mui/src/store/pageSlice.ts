@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Permissions } from '@sogebot/backend/src/database/entity/permissions';
+import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 
 export interface PageState {
   averageStats:            Record<string, any>,
@@ -22,7 +22,7 @@ export interface PageState {
     tags:               string[],
   },
   isStreamOnline: boolean,
-  permissions: string[],
+  permissions: Required<Permissions>[],
   scrollY: number,
   widgets: {
     events: {
@@ -118,7 +118,7 @@ export const pageSlice = createSlice({
     },
     setCurrentStats: (state: any, action: { payload: Record<string, any> }) => {
       console.log({
-        state, action, 
+        state, action,
       });
       state.currentStats = action.payload;
     },

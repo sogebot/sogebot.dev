@@ -12,10 +12,10 @@ import {
 import FormLabel from '@mui/material/FormLabel';
 import Slider from '@mui/material/Slider';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import { format } from '../../../helpers/number';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -37,7 +37,7 @@ const PageSettingsModulesCoreGeneral: React.FC<{
   }));
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

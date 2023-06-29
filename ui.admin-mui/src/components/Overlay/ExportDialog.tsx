@@ -18,13 +18,13 @@ import axios from 'axios';
 import { IsNotEmpty, MinLength } from 'class-validator';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
 
@@ -45,7 +45,7 @@ class RemoteOverlayValidator {
 const endpoint = 'https://registry.sogebot.xyz';
 
 export const ExportDialog: React.FC<Props> = ({ model }) => {
-  const { currentVersion } = useSelector((s: any) => s.loader);
+  const { currentVersion } = useAppSelector(s => s.loader);
   const { enqueueSnackbar } = useSnackbar();
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
@@ -143,7 +143,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       description,
       items:          itemsToExport,
       data:           {},
-      compatibleWith: currentVersion.split('-')[0],
+      compatibleWith: (currentVersion ?? '').split('-')[0],
     } as {
       name: string;
       description: string,

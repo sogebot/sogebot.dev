@@ -3,22 +3,22 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { useSettings } from '../hooks/useSettings';
 import { setTokensOnboardingState } from '../store/loaderSlice';
 
 export const OnboardingTokens: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
-  const { connectedToServer } = useSelector((s: any) => s.loader);
+  const { connectedToServer } = useAppSelector((s: any) => s.loader);
   const { settings, refresh } = useSettings('/services/twitch');
 
   useEffect(() => {

@@ -36,7 +36,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useRef, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -49,19 +48,20 @@ import { DisabledAlert } from '../../../components/DisabledAlert';
 import { PlaylistEdit } from '../../../components/Form/PlaylistEdit';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { getSocket } from '../../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
 import { setBulkCount } from '../../../store/appbarSlice';
 
 const PageCommandsSongPlaylist = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<SongPlaylist[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const [ isSaving, setIsSaving ] = useState(false);
 

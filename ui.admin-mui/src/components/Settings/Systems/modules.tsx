@@ -12,10 +12,10 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useDispatch , useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { addSettingsLoading, rmSettingsLoading } from '../../../store/loaderSlice';
 
@@ -29,7 +29,7 @@ const PageSettingsModulesSystemsModules: React.FC<{
 
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [ loading, setLoading ] = useState(true);
   const [ items, setItems ] = useState<any[]>([]);
@@ -99,7 +99,7 @@ const PageSettingsModulesSystemsModules: React.FC<{
   }, [ refresh ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector((state: any) => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

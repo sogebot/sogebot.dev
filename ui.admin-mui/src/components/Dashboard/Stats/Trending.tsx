@@ -6,12 +6,12 @@ import {
 } from '@mui/material';
 import parse from 'html-react-parser';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
 export const Trending: React.FC<{average: number, current: number, isStreamOnline: boolean, type?: 'bigNumber'}> = (props) => {
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const numberReducer = (out: string, item: any) => {
     if (['currency', 'compact'].includes(item.type)) {

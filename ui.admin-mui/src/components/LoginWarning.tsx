@@ -3,11 +3,12 @@ import {
   Alert, Dialog, DialogActions, DialogContent, DialogTitle,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
+import { useAppSelector } from '../hooks/useAppDispatch';
+
 export const LoginWarning: React.FC = () => {
-  const showLoginWarning = useSelector<any, boolean>((s: any) => s.loader.showLoginWarning || false);
+  const showLoginWarning = useAppSelector(s => s.loader.showLoginWarning || false);
   const [ seconds, setSeconds ] = useState(15);
 
   useIntervalWhen(() => {

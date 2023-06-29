@@ -31,7 +31,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useRef, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -39,18 +38,19 @@ import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
 import { getSocket } from '../../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
 import { setBulkCount } from '../../../store/appbarSlice';
 
 const PageCommandsSongBan = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<SongBan[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
   const [ isSaving, setIsSaving ] = useState(false);
 

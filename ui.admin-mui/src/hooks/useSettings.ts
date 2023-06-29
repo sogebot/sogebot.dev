@@ -8,8 +8,8 @@ import {
   ChangeEvent,
   useCallback, useEffect, useState,
 } from 'react';
-import { useDispatch } from 'react-redux';
 
+import { useAppDispatch } from './useAppDispatch';
 import { usePermissions } from './usePermissions';
 import { useTranslation } from './useTranslation';
 import { saveSettings } from '../helpers/settings';
@@ -20,7 +20,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);

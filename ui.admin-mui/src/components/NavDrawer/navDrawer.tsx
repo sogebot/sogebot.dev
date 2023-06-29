@@ -12,10 +12,10 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
 import { MenuItemDeep } from './menuItemDeep';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
 import { toggleCookieManager } from '../../store/loaderSlice';
@@ -29,7 +29,7 @@ interface LinkedListItemProps {
 }
 const LinkedListItem = function (props: LinkedListItemProps) {
   const location = useLocation();
-  const reducer = useSelector((state: any) => state.loader);
+  const reducer = useAppSelector(state => state.loader);
   const isMobile = useMobile();
 
   const isActive = location.pathname?.split('?')[0] === props.path;
@@ -68,8 +68,8 @@ const LinkedListItem = function (props: LinkedListItemProps) {
 
 export default function NavDrawer() {
   const { translate } = useTranslation();
-  const reducer = useSelector((state: any) => state.loader);
-  const dispatch = useDispatch();
+  const reducer = useAppSelector(state => state.loader);
+  const dispatch = useAppDispatch();
   const isMobile = useMobile();
 
   return (

@@ -12,8 +12,8 @@ import {
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { FormNumericInput } from '../../Input/Numeric';
 
 type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
@@ -36,7 +36,7 @@ export const AccordionTimeAdditions = <T extends Marathon['values']>(props: Prop
     }
   };
 
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const handleClick = () => {
     onClick(open === accordionId ? '' : accordionId);

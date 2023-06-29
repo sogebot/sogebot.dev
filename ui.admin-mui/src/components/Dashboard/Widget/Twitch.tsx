@@ -3,10 +3,10 @@ import {
   Box, Card, Tab,
 } from '@mui/material';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 import theme from '../../../theme';
 import { classes } from '../../styles';
@@ -17,7 +17,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const [value, setValue] = React.useState('1');
   const [timestamp, setTimestamp] = React.useState(Date.now());
   const [room, setRoom] = React.useState('');
-  const { isStreamOnline } = useSelector((state: any) => state.page);
+  const { isStreamOnline } = useAppSelector(state => state.page);
 
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();

@@ -2,14 +2,15 @@ import {
   Box, Fade, Typography,
 } from '@mui/material';
 import React from 'react';
-import { useSelector } from 'react-redux';
+
+import { useAppSelector } from '../hooks/useAppDispatch';
 
 console.group('UI VERSION');
 console.log(process.env.REACT_APP_VERSION);
 console.groupEnd();
 
 export const Version: React.FC = () => {
-  const { connectedToServer } = useSelector((s: any) => s.loader);
+  const { connectedToServer } = useAppSelector(s => s.loader);
 
   return <Fade in={!connectedToServer} unmountOnExit mountOnEnter>
     <Box sx={{

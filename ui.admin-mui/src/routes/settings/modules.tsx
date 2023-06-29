@@ -18,7 +18,6 @@ import { capitalize } from 'lodash';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import PageSettingsModulesCoreCurrency from '../../components/Settings/Core/currency';
@@ -62,14 +61,15 @@ import PageSettingsModulesSystemsRaffles from '../../components/Settings/Systems
 import PageSettingsModulesSystemsScrim from '../../components/Settings/Systems/scrim';
 import PageSettingsModulesSystemsSongs from '../../components/Settings/Systems/songs';
 import PageSettingsModulesSystemsUserinfo from '../../components/Settings/Systems/userinfo';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageSettingsModules = () => {
   const { id, type } = useParams();
   const { translate } = useTranslation();
 
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
-  const settingsLoadingInProgress = useSelector<string[], string[]>((state: any) => state.loader.settingsLoadingInProgress);
+  const scrollY = useAppSelector(state => state.page.scrollY);
+  const settingsLoadingInProgress = useAppSelector(state => state.loader.settingsLoadingInProgress);
 
   const scrollTo = useCallback((idScroll: string) => {
     document.getElementById(idScroll)?.scrollIntoView({

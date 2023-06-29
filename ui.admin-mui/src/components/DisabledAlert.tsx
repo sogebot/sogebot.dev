@@ -1,7 +1,7 @@
 import { Alert, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from '../hooks/useAppDispatch';
 import { useTranslation } from '../hooks/useTranslation';
 
 type System = { system: string };
@@ -11,7 +11,7 @@ export const DisabledAlert: React.FC<System | Integration> = (props) => {
   const { translate } = useTranslation();
   const invisible = { display: 'none' };
 
-  const { systems, integrations } = useSelector((state: any) => state.loader);
+  const { systems, integrations } = useAppSelector(state => state.loader);
   const [ enabled, setEnabled ] = useState(true);
 
   const isPropsSystem = (val: any): val is System => {
@@ -23,9 +23,9 @@ export const DisabledAlert: React.FC<System | Integration> = (props) => {
       return;
     }
     if (isPropsSystem(props)) {
-      setEnabled(systems.find((o: any) => o.name === props.system)?.enabled || false);
+      setEnabled(systems.find(o => o.name === props.system)?.enabled || false);
     } else {
-      setEnabled(integrations.find((o: any) => o.name === props.integration)?.enabled || false);
+      setEnabled(integrations.find(o => o.name === props.integration)?.enabled || false);
     }
   }, [systems, integrations, props]);
 

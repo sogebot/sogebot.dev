@@ -6,7 +6,6 @@ import {
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
 import { DashboardWidgetActionUnknownButton } from './Action/Buttons/UnknownButton';
@@ -18,13 +17,14 @@ import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
 import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
 import { getSocket } from '../../../helpers/socket';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
 export const DashboardWidgetAction: React.FC = () => {
   const [value, setValue] = React.useState('1');
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
 
@@ -40,6 +40,9 @@ export const DashboardWidgetAction: React.FC = () => {
   }, 1000, true, true);
 
   React.useEffect(() => {
+    if (!user) {
+      return;
+    }
     getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
       if (err) {
         return console.error(err);

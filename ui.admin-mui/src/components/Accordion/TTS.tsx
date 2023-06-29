@@ -10,9 +10,9 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
@@ -47,7 +47,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     model,
     ...accordionProps } = props;
   const { translate } = useTranslation();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const service = React.useMemo(() => configuration.core.tts.service as -1 | 0 | 1, [ configuration ]);
   const [ voices, setVoices ] = React.useState<string[]>([]);

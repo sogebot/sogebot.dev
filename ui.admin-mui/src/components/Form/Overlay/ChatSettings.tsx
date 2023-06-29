@@ -38,7 +38,7 @@ type Props = {
 
 export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const [ open, setOpen ] = React.useState('');
-  const lang = useAppSelector((state) => state.loader.configuration.lang );
+  const lang = useAppSelector(state => state.loader.configuration.lang );
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {

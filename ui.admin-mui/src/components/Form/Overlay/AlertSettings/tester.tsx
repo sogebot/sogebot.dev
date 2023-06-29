@@ -21,10 +21,9 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { shuffle } from 'lodash';
 import React from 'react';
-// import Draggable from 'react-draggable';
-import { useSelector } from 'react-redux';
 
 import { getSocket } from '../../../../helpers/socket';
+import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
 import { FormRewardInput } from '../../Input/Reward';
@@ -32,7 +31,7 @@ import { FormRewardInput } from '../../Input/Reward';
 export const AlertsRegistryTesterAccordion: React.FC = () => {
   const [ open, setOpen ] = React.useState(true);
   const { translate } = useTranslation();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const events = ['follow', 'cheer', 'tip', 'sub', 'resub', 'subcommunitygift', 'subgift', 'raid', 'custom', 'rewardredeem', 'promo'];
   const [ event, setEvent ] = React.useState(translate('registry.alerts.event.follow'));

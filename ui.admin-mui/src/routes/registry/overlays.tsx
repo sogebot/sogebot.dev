@@ -31,7 +31,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -42,6 +41,7 @@ import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OverlayEdit } from '../../components/Form/OverlayEdit';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -54,7 +54,7 @@ const generateLinkId = (server: string, id: string) => {
 };
 
 const PageRegistryOverlays = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const location = useLocation();
   const { type, id } = useParams();
@@ -64,7 +64,7 @@ const PageRegistryOverlays = () => {
   const [ items, setItems ] = useState<Overlay[]>([]);
 
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const refresh = useCallback(async () => {

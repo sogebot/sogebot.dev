@@ -13,10 +13,10 @@ import {
 import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import getAccessToken from '../../../getAccessToken';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -37,7 +37,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
   }, [ refresh, setLoading ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

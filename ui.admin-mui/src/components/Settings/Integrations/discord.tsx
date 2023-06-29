@@ -28,10 +28,10 @@ import { xor } from 'lodash';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -102,7 +102,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
   }, [ refresh, handleChange, translate ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

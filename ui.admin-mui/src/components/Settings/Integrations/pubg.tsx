@@ -19,10 +19,10 @@ import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { JsonViewer, NamedColorspace } from '@textea/json-viewer';
 import { escapeRegExp } from 'lodash';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useDebouncedValue, useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -110,7 +110,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
   }, [ refresh, updateExample ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useSelector<number, number>((state: any) => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   React.useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {

@@ -8,16 +8,16 @@ import camelCase from 'lodash/camelCase';
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
+import { useAppSelector } from './useAppDispatch';
 import { Commands } from '../classes/Commands';
 import getAccessToken from '../getAccessToken';
 import { getSocket } from '../helpers/socket';
 
 export const useBotCommandsExample = (item: Commands | null) => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const location = useLocation();
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
@@ -86,7 +86,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
               } else if (value.startsWith('+')) {
                 value = value.replace('+', '');
                 return <Stack key={value} direction="row" spacing={1}>
-                  <Typography color="orange">{user.display_name}:</Typography>
+                  <Typography color="orange">{user?.display_name}:</Typography>
                   <Typography>{value}</Typography>
                 </Stack>;
               } else {
@@ -116,19 +116,21 @@ export const useBotCommandsExample = (item: Commands | null) => {
 
               if (!parsed[message]) {
                 // parse messages
-                axios.post(`${server}/api/core/parse`,
-                  {
-                    message,
-                    user: {
-                      id: user.id, username: user.login,
+                if (user) {
+                  axios.post(`${server}/api/core/parse`,
+                    {
+                      message,
+                      user: {
+                        id: user.id, username: user.login,
+                      },
                     },
-                  },
-                  { headers: { authorization: `Bearer ${getAccessToken()}` } })
-                  .then((response) => {
-                    setParsed(d => ({
-                      ...d, [message]: response.data.data,
-                    }));
-                  });
+                    { headers: { authorization: `Bearer ${getAccessToken()}` } })
+                    .then((response) => {
+                      setParsed(d => ({
+                        ...d, [message]: response.data.data,
+                      }));
+                    });
+                }
               }
               const messageElement = parsed[message]
                 ? <Typography>{parsed[message]}</Typography>
@@ -144,7 +146,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
               }
 
               const username = value.message.startsWith('+')
-                ? <Typography color="orange">{user.display_name}:</Typography>
+                ? <Typography color="orange">{user?.display_name}:</Typography>
                 : <Typography color="tomato">bot:</Typography>;
               return showMessage && <Stack key={value.message} direction="row" spacing={1}>
                 {username}

@@ -19,7 +19,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 
 const PageStatsTips = () => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
-  const currency = useAppSelector((state) => state.loader.configuration.currency );
+  const currency = useAppSelector(state => state.loader.configuration.currency );
   const lang = useAppSelector((state: any) => state.loader.configuration.lang );
   const { translate } = useTranslation();
 

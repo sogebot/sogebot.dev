@@ -19,13 +19,13 @@ export interface LoaderState {
   configuration:         Record<string,any>,
   translation:           Record<string,any>,
 
-  nextVersion:    null,
-  currentVersion: null,
+  nextVersion:    null | string,
+  currentVersion: null | string,
 
-  core:         null,
-  services:     null,
-  systems:      null,
-  integrations: null,
+  core:         null | { name: string }[],
+  services:     null | { name: string, enabled: boolean }[],
+  systems:      null | { name: string, enabled: boolean }[],
+  integrations: null | { name: string, enabled: boolean }[],
 
   settingsLoadingInProgress: string[],
 }

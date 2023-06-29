@@ -6,16 +6,16 @@ import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import React, {
   MouseEventHandler, useCallback, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../../../../helpers/socket';
+import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { ColorButton } from '../_ColorButton';
 
 export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void }> = ({
   item, variable, onUpdate,
 }) => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useAppSelector(state => state.user);
   const [ isIncrement, setIsIncrement ] = useState(true);
   const [ isShiftKey, setIsShiftKey ] = useState(false);
   const [ isCtrlKey, setIsCtrlKey ] = useState(false);
@@ -23,6 +23,10 @@ export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: Q
   const [ timestamp, setTimestamp ] = useState(Date.now());
 
   const updateValue = useCallback((increment: boolean, shift: boolean, ctrl: boolean) => {
+    if (!user) {
+      return;
+    }
+
     let value = 1;
     if (shift) {
       value = 10;

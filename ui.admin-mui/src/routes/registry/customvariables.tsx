@@ -38,7 +38,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
@@ -50,6 +49,7 @@ import LinkButton from '../../components/Buttons/LinkButton';
 import { CustomVariablesEdit } from '../../components/Form/CustomVariablesEdit';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -58,13 +58,13 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useTranslation();
   const { permissions } = usePermissions();
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const open = React.useMemo(() => !!(type
     && (
@@ -76,7 +76,7 @@ const PageRegistryCustomVariables = () => {
   const [ items, setItems ] = useState<Variable[]>([]);
 
   const [ loading, setLoading ] = useState(true);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const [ evalsInProgress, setEvalsInProgress ] = useState<string[]>([]);

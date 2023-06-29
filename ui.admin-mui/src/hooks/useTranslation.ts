@@ -1,11 +1,11 @@
 import at from 'lodash/at';
 import isNil from 'lodash/isNil';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { getSocket } from '../helpers/socket';
 import {
-  selectStateState, selectTranslationState, setTranslation, 
+  selectStateState, selectTranslationState, setTranslation,
 } from '../store/loaderSlice';
 
 function castObject (key: string, value: string | { [x: string]: any }) {
@@ -17,10 +17,10 @@ function castObject (key: string, value: string | { [x: string]: any }) {
 }
 
 export const useTranslation = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const translation = useSelector(selectTranslationState);
-  const state = useSelector(selectStateState);
+  const translation = useAppSelector(selectTranslationState);
+  const state = useAppSelector(selectStateState);
 
   const refresh = React.useCallback(() => {
     getSocket('/', true).emit('translations', (translations) => {

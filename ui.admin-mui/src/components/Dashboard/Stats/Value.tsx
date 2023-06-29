@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
 export const Value: React.FC<{current: number, isStreamOnline: boolean, showValueIfOffline?: boolean, type?: 'bigNumber' | 'hours' | 'currency'}> = (props) => {
-  const { configuration } = useSelector((state: any) => state.loader);
+  const { configuration } = useAppSelector(state => state.loader);
 
   const value = React.useMemo(() => {
     const numberReducer = (out: string, item: any) => {

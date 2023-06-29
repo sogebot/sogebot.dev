@@ -22,7 +22,6 @@ import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
@@ -34,12 +33,13 @@ import EditButton from '../../components/Buttons/EditButton';
 import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryPlugins = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -48,7 +48,7 @@ const PageRegistryPlugins = () => {
 
   const [ loading, setLoading ] = useState(true);
   const [ importing, setImporting ] = useState<string[]>([]);
-  const { bulkCount } = useSelector((state: any) => state.appbar);
+  const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
   const { useFilterSetup  } = useColumnMaker<Plugin>([

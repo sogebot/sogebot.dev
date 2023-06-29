@@ -8,15 +8,15 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocalstorageState } from 'rooks';
 
+import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { toggleCookieManager } from '../store/loaderSlice';
 
 export default function CookieBar() {
   const [ open, setOpen ] = useState(false);
-  const { state, connectedToServer, showCookieManager } = useSelector((s: any) => s.loader);
-  const dispatch = useDispatch();
+  const { state, connectedToServer, showCookieManager } = useAppSelector(s => s.loader);
+  const dispatch = useAppDispatch();
 
   const connected = useMemo(() => connectedToServer && state, [connectedToServer, state]);
 
