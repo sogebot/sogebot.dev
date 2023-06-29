@@ -1,6 +1,7 @@
 go 1.20
 
 use ./services/plugins/
+use ./soGObot/
 
 use (
 	./services/credentials/
