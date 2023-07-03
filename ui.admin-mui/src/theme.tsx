@@ -41,10 +41,14 @@ HTMLAnchorElement,
 Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
 >((props, ref) => {
   const { href, ...other } = props;
-  const to = href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.server)}`;
-  // Map href (MUI) -> to (react-router)
-  {
-    return <RouterLink ref={ref} to={to} {...other} />;
+  try {
+    const to = href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.server)}`;
+    // Map href (MUI) -> to (react-router)
+    {
+      return <RouterLink ref={ref} to={to} {...other} />;
+    }
+  } catch {
+    return <RouterLink ref={ref} to={href} {...other} />;
   }
 });
 
