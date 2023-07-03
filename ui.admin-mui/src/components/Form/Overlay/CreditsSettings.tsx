@@ -14,7 +14,9 @@ import { DragIndicatorTwoTone, SettingsTwoTone } from '@mui/icons-material';
 import {
   Box,
   Button,
+  Dialog,
   FormControl,
+  Grid,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -24,19 +26,23 @@ import {
   Stack,
 } from '@mui/material';
 import orange from '@mui/material/colors/orange';
-import { Credits } from '@sogebot/backend/dest/database/entity/overlay';
+import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 import { v4 } from 'uuid';
 
+import { CreditsSettingsCustom } from './CreditsSettings/Custom';
 import { FormNumericInput } from '../Input/Numeric';
 
 type Props = {
   model: Credits;
+  canvas: {
+    height: number, width: number
+  };
   onUpdate: (value: Credits) => void;
 };
 
-function SortableCard(props: { type: string, id: string, isDragging: boolean }) {
+function SortableCard(props: { name: string, id: string, isDragging: boolean, item?: Credits['screens'][number], canvas: { height: number, width: number } }) {
   const {
     attributes,
     listeners,
@@ -51,6 +57,8 @@ function SortableCard(props: { type: string, id: string, isDragging: boolean }) 
     transition,
   };
 
+  const [ open, setOpen ] = React.useState(false);
+
   return (
     <Paper key={props.id} variant='outlined' sx={{
       transition: 'border 300ms',
@@ -64,22 +72,39 @@ function SortableCard(props: { type: string, id: string, isDragging: boolean }) 
           <IconButton {...listeners}><DragIndicatorTwoTone/></IconButton>
         </Box>
         <Box sx={{ width: '100%' }}>
-          {props.type}
+          {props.name}
         </Box>
         <Box>
-          <IconButton><SettingsTwoTone/></IconButton>
+          { props.item && <>
+            <IconButton onClick={() => setOpen(true)}><SettingsTwoTone/></IconButton>
+            <Dialog
+              open={open}
+              fullScreen>
+              {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas}/>}
+              <Box sx={{ p: 1 }}>
+                <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+                  <Grid>
+                    <Button sx={{ width: 150 }} onClick={() => setOpen(false)}>Close</Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Dialog>
+          </>}
+
         </Box>
       </Stack>
     </Paper>
   );
 }
 
-export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
+export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) => {
   const [activeId, setActiveId] = React.useState<null | string>(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  const spaceBetweenScreensSelect = isNaN(Number(model.spaceBetweenScreens)) ? model.spaceBetweenScreens : 'pixels';
 
   function handleDragEnd(event: { active: any; over: any; }) {
     const { active, over } = event;
@@ -104,16 +129,39 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
     const update = cloneDeep(model);
     update.screens = [
       {
-        id:                  v4(),
-        type:                'title',
+        id:    v4(),
+        items: [
+          {
+            id:       v4(),
+            alignX:   1920 / 2,
+            alignY:   100,
+            css:      '',
+            height:   300,
+            width:    400,
+            rotation: 0,
+            html:     '<div>$currentTitle</div><div>$currentGame</div><img src="$thumbnail" width="200"/>',
+            font:     {
+              family:      'PT Sans',
+              align:       'center',
+              weight:      500,
+              color:       '#ffffff',
+              size:        20,
+              borderColor: '#000000',
+              borderPx:    1,
+              shadow:      [],
+            },
+          },
+        ],
+        name:                'Title Screen',
+        type:                'custom',
         spaceBetweenScreens: 'full-screen-between',
         waitBetweenScreens:  10000,
-        height:              1080,
         speed:               null,
       },
       {
         id:                  v4(),
         type:                'events',
+        name:                'Events',
         columns:             3,
         excludeEvents:       [],
         spaceBetweenScreens: null,
@@ -123,6 +171,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
       {
         id:                  v4(),
         type:                'clips',
+        name:                'Clips',
         play:                true,
         period:              'stream',
         periodValue:         2,
@@ -133,12 +182,33 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
         speed:               null,
       },
       {
-        id:                  v4(),
-        type:                'text',
-        html:                'Thanks for watching!',
-        css:                 '',
-        spaceBetweenScreens: null,
-        waitBetweenScreens:  null,
+        id:    v4(),
+        items: [
+          {
+            id:       v4(),
+            alignX:   1920 / 2,
+            alignY:   100,
+            css:      '',
+            height:   300,
+            width:    400,
+            rotation: 0,
+            html:     'Thanks for watching!',
+            font:     {
+              family:      'PT Sans',
+              align:       'center',
+              weight:      500,
+              color:       '#ffffff',
+              size:        20,
+              borderColor: '#000000',
+              borderPx:    1,
+              shadow:      [],
+            },
+          },
+        ],
+        name:                'Ending Screen',
+        type:                'custom',
+        spaceBetweenScreens: 'full-screen-between',
+        waitBetweenScreens:  10000,
         speed:               null,
       },
     ];
@@ -166,7 +236,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
 
       <FormNumericInput
         min={0}
-        value={typeof model.spaceBetweenScreens === 'number' ? model.spaceBetweenScreens : undefined}
+        value={typeof model.spaceBetweenScreens === 'number' ? model.spaceBetweenScreens : 0}
         label='Space between screens'
         disabled={typeof model.spaceBetweenScreens !== 'number'}
         InputProps={{
@@ -179,18 +249,15 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
               <Select
                 MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
                 label='Speed'
-                value={model.spaceBetweenScreens}
+                value={spaceBetweenScreensSelect}
                 onChange={(ev) => {
-                  let value: number | string = Number(ev.target.value);
-                  if (isNaN(value)) {
-                    value = ev.target.value;
-                  }
+                  const value = ev.target.value === 'pixels' ? 250 : ev.target.value;
                   onUpdate({
                     ...model, spaceBetweenScreens: value as typeof model.spaceBetweenScreens,
                   });
                 }}
               >
-                <MenuItem selected={typeof model.spaceBetweenScreens === 'number'} value={'250'}>Pixels</MenuItem>
+                <MenuItem value={'pixels'}>Pixels</MenuItem>
                 <MenuItem value={'full-screen-between'}>Full screen between</MenuItem>
                 <MenuItem value={'none'}>None</MenuItem>
               </Select>
@@ -215,7 +282,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
         onChange={val => {
           onUpdate({
             ...model,
-            spaceBetweenScreens: val as number,
+            waitBetweenScreens: val as number,
           });
         }}
       />
@@ -237,7 +304,9 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
           isDragging={o.id === activeId}
           id={o.id}
           key={o.id}
-          type={o.type}/>)}
+          item={o}
+          canvas={canvas}
+          name={o.name.length > 0 ? o.name : '<unnamed>'}/>)}
       </SortableContext>
       <DragOverlay>
         {activeId ? (
@@ -245,7 +314,10 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate }) => {
             isDragging={false}
             id={activeId}
             key={activeId}
-            type={model.screens.find(o => o.id === activeId)?.type || 'n/a'}/>
+            canvas={{
+              height: 0, width: 0,
+            }}
+            name={model.screens.find(o => o.id === activeId)?.name || 'n/a'}/>
         ) : null }
       </DragOverlay>
     </DndContext>

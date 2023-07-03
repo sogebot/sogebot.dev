@@ -129,7 +129,10 @@ export const OverlayEdit: React.FC = () => {
 
   const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
 
-  const selectedItem = item.items.find(o => o.id.replace(/-/g, '') === moveableId);
+  const selectedItem = React.useMemo(() => item.items.find(o => o.id.replace(/-/g, '') === moveableId), [ item, moveableId ]);
+  const selectedItemCanvas = React.useMemo(() => ({
+    width: selectedItem?.width ?? 0, height: selectedItem?.height ?? 0,
+  }), [ selectedItem?.width, selectedItem?.height ]);
 
   useKey(['Delete'], () => {
     if (selectedItem) {
@@ -281,7 +284,7 @@ export const OverlayEdit: React.FC = () => {
           height: '100%', m: 0,
         }}>
           <Grid sx={{
-            backgroundColor: '#1e1e1e', p: 1,
+            backgroundColor: '#1e1e1e', p: 1, width: '352px',
           }}>
             <Box sx={{ p: 1 }}>
               <Tooltip title="Snap">
@@ -338,15 +341,16 @@ export const OverlayEdit: React.FC = () => {
                 onAdd={(typeId) => {
                   setItem(o => {
                     const itemId = shortid();
+                    console.log(setDefaultOpts({}, typeId));
                     const newItem = {
                       id:        itemId,
                       alignX:    0,
                       alignY:    0,
-                      height:    200,
                       isVisible: true,
                       name:      '',
                       rotation:  0,
-                      width:     200,
+                      height:    typeId === 'credits' ? item.canvas.height : 200,
+                      width:     typeId === 'credits' ? item.canvas.width : 200,
                       opts:      setDefaultOpts({}, typeId),
                     } as Overlay['items'][number];
 
@@ -583,8 +587,8 @@ export const OverlayEdit: React.FC = () => {
               </Paper>
             </Box>
           </Grid>
-          {selectedItem && <Grid xs={3} sx={{
-            backgroundColor: '#1e1e1e', p: 1,
+          {selectedItem && <Grid sx={{
+            backgroundColor: '#1e1e1e', p: 1, pr: 0.5, width: '352px',
           }}>
             <SimpleBar style={{
               maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
@@ -600,7 +604,7 @@ export const OverlayEdit: React.FC = () => {
                 {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
                   handleItemChange('opts', val);
                 }}/>}
-                {selectedItem.opts.typeId === 'credits' && <CreditsSettings model={selectedItem.opts} onUpdate={(val) => {
+                {selectedItem.opts.typeId === 'credits' && <CreditsSettings canvas={selectedItemCanvas} model={selectedItem.opts} onUpdate={(val) => {
                   handleItemChange('opts', val);
                 }}/>}
                 {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
