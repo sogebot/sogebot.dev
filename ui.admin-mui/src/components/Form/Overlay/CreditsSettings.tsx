@@ -34,6 +34,31 @@ import { v4 } from 'uuid';
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
 import { FormNumericInput } from '../Input/Numeric';
 
+const css
+= `
+/* Any customized css should be in #wrapped to not affect anything outside
+#wrapper {}
+*/
+
+#wrapper .title {
+  font-size: 2.5vw;
+  text-transform: uppercase;
+}
+#wrapper .game {
+  font-size: 4vw;
+  text-transform: uppercase;
+}
+#wrapper .thumbnail {
+  padding-top: 50px;
+}
+`;
+const html
+= `
+<div class="title">$title</div>
+<div class="game">$game</div>
+<img class="thumbnail" src="$thumbnail" width="200"/>
+`;
+
 type Props = {
   model: Credits;
   canvas: {
@@ -90,7 +115,6 @@ function SortableCard(props: { name: string, id: string, isDragging: boolean, it
               </Box>
             </Dialog>
           </>}
-
         </Box>
       </Stack>
     </Paper>
@@ -133,15 +157,15 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
         items: [
           {
             id:       v4(),
-            alignX:   1920 / 2,
+            alignX:   (1920 - 1600) / 2,
             alignY:   100,
-            css:      '',
+            css,
             height:   300,
-            width:    400,
+            width:    1600,
             rotation: 0,
-            html:     '<div>$currentTitle</div><div>$currentGame</div><img src="$thumbnail" width="200"/>',
+            html,
             font:     {
-              family:      'PT Sans',
+              family:      'Cabin Condensed',
               align:       'center',
               weight:      500,
               color:       '#ffffff',
@@ -188,7 +212,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
             id:       v4(),
             alignX:   1920 / 2,
             alignY:   100,
-            css:      '',
+            css,
             height:   300,
             width:    400,
             rotation: 0,
@@ -198,7 +222,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
               align:       'center',
               weight:      500,
               color:       '#ffffff',
-              size:        20,
+              size:        80,
               borderColor: '#000000',
               borderPx:    1,
               shadow:      [],

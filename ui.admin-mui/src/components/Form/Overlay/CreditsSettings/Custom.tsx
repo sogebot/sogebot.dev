@@ -18,9 +18,13 @@ import SimpleBar from 'simplebar-react';
 
 import { useValidator } from '../../../../hooks/useValidator';
 import theme from '../../../../theme';
-import { loadFont } from '../../../Accordion/Font';
+import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../../../Moveable/RemoveButton';
+import { CreditsCustomItem } from '../../../Overlay/CreditsCustomItem';
+import { CSSDialog } from '../HTMLSettings/css';
+import { HTMLDialog } from '../HTMLSettings/html';
+import { Settings } from '../Settings';
 
 let isPositionChanging = false;
 document.addEventListener('mouseup', () => isPositionChanging = false);
@@ -31,6 +35,7 @@ type Props = {
 };
 
 export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
+  const [ accordion, setAccordion ] = React.useState('');
   const [ key, setKey ] = React.useState(Date.now());
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
@@ -130,21 +135,6 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
   React.useEffect(() => {
     validate(Overlay, item);
   }, [item, validate]);
-
-  // const handleSave = React.useCallback(() => {
-  //   setSaving(true);
-  //   getSocket('/registries/overlays').emit('generic::save', item, (err, data) => {
-  //     setSaving(false);
-  //     if (err || !data) {
-  //       enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
-  //       return console.error(err);
-  //     }
-  //     enqueueSnackbar('Saved successfully.', { variant: 'success' });
-  //     if (id !== data.id) {
-  //       navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(localStorage.server)}`);
-  //     }
-  //   });
-  // }, [id, item, navigate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
     if (containerRef.current) {
@@ -285,7 +275,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
                 <Box key={`${o.id}-${JSON.stringify(o)}` /* force refresh on opts change */} sx={{
                   width: '100%', height: '100%',
                 }}>
-                  Some item
+                  <CreditsCustomItem height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>
                 </Box>
               </Paper>)}
               {moveableId && <Moveable
@@ -418,7 +408,24 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
           <SimpleBar style={{
             maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
           }} autoHide={false}>
-            Settings
+            <Settings model={selectedItem} onUpdate={(path, value) => {
+              handleItemChange(path, value);
+              refresh();
+            }}>
+              <AccordionFont
+                disableExample
+                label='Font'
+                accordionId='customFont'
+                model={selectedItem.font}
+                open={accordion}
+                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onChange={(val) => {
+                  handleItemChange('font', val);
+                }}/>
+              <Divider variant='middle'/>
+              <HTMLDialog model={selectedItem.html} onChange={value =>  handleItemChange('html', value ?? '')}/>
+              <CSSDialog model={selectedItem.css} onChange={value =>  handleItemChange('css', value ?? '')}/>
+            </Settings>
           </SimpleBar>
         </Grid>}
       </Grid>

@@ -2,12 +2,13 @@ import {
   InputAdornment, Stack, TextField,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { CreditsScreenCustom } from '@sogebot/backend/src/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: Overlay['items'][number];
+  model: Overlay['items'][number] | CreditsScreenCustom['items'][number];
   onUpdate: (path: string, value: any) => void;
   children: React.ReactNode
 };
@@ -17,13 +18,13 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
 
   return <>
     <Stack spacing={0.5}>
-      <TextField
+      {'name' in model && <TextField
         label={translate('name')}
         fullWidth
         variant="filled"
         value={model.name || ''}
         onChange={(ev) => onUpdate('name', ev.currentTarget.value ?? '')}
-      />
+      />}
 
       <TextField
         label={'Rotate'}
