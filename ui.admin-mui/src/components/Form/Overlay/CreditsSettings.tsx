@@ -56,7 +56,7 @@ const html
 = `
 <div class="title">$title</div>
 <div class="game">$game</div>
-<img class="thumbnail" src="$thumbnail" width="200"/>
+<img class="thumbnail" src="$thumbnail(200x266)" width="200"/>
 `;
 
 type Props = {
