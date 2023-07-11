@@ -4,8 +4,7 @@ import {
 import { mdiResize, mdiTarget } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
-  AddTwoTone,
-  ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
+  AddTwoTone, ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
 } from '@mui/icons-material';
 import {
   Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, IconButton, List, ListItemButton, ListItemText, Stack, Typography,

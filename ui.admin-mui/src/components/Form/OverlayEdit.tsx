@@ -9,6 +9,7 @@ import {
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
+import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { set } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
@@ -27,7 +28,7 @@ import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { ClipsSettings } from './Overlay/ClipsSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
-import { CreditsSettings } from './Overlay/CreditsSettings';
+import { creditsDefaultScreens, CreditsSettings } from './Overlay/CreditsSettings';
 import { EmotesComboSettings } from './Overlay/EmotesComboSettings';
 import { EmotesExplodeSettings } from './Overlay/EmotesExplodeSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
@@ -341,6 +342,10 @@ export const OverlayEdit: React.FC = () => {
                 onAdd={(typeId) => {
                   setItem(o => {
                     const itemId = shortid();
+                    const opts = setDefaultOpts({}, typeId);
+                    if (typeId === 'credits') {
+                      (opts as Credits).screens = creditsDefaultScreens;
+                    }
                     console.log(setDefaultOpts({}, typeId));
                     const newItem = {
                       id:        itemId,
@@ -351,7 +356,7 @@ export const OverlayEdit: React.FC = () => {
                       rotation:  0,
                       height:    typeId === 'credits' ? item.canvas.height : 200,
                       width:     typeId === 'credits' ? item.canvas.width : 200,
-                      opts:      setDefaultOpts({}, typeId),
+                      opts,
                     } as Overlay['items'][number];
 
                     setTimeout(() => {

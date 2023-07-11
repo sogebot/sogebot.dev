@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
+import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 
@@ -17,7 +18,13 @@ export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][numb
 
   React.useEffect(() => {
     loadFont(item.font.family);
-    setText(item.html);
+    getSocket('/registries/overlays', true).emit('parse', item.html, (err, parsed) => {
+      if (err) {
+        console.error(err);
+      } else {
+        setText(parsed);
+      }
+    });
   }, [active, item]);
 
   return <Box sx={{

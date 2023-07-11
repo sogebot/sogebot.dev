@@ -3,7 +3,7 @@ import {
   CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
 } from '@mui/icons-material';
 import {
-  Box, DialogContent, Divider, Unstable_Grid2 as Grid, IconButton, Paper, TextField, Tooltip,
+  Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip,
 } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
@@ -22,6 +22,7 @@ import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../../../Moveable/RemoveButton';
 import { CreditsCustomItem } from '../../../Overlay/CreditsCustomItem';
+import { FormNumericInput } from '../../Input/Numeric';
 import { CSSDialog } from '../HTMLSettings/css';
 import { HTMLDialog } from '../HTMLSettings/html';
 import { Settings } from '../Settings';
@@ -31,10 +32,11 @@ document.addEventListener('mouseup', () => isPositionChanging = false);
 
 type Props = {
   model: CreditsScreenCustom;
-  canvas: { width: number, height: number }
+  canvas: { width: number, height: number },
+  onUpdate: (value: CreditsScreenCustom) => void;
 };
 
-export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
+export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate }) => {
   const [ accordion, setAccordion ] = React.useState('');
   const [ key, setKey ] = React.useState(Date.now());
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
@@ -69,6 +71,18 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
   const [snapEnabled, setSnapEnabled] = React.useState(true);
 
   const [ item, setItem ] = React.useState<CreditsScreenCustom>(model);
+  React.useEffect(() => {
+    onUpdate(item);
+  }, [ item ]);
+  const spaceBetweenScreensSelect
+    = React.useMemo(() => {
+      if (item.spaceBetweenScreens === null) {
+        return '';
+      }
+      return isNaN(Number(item.spaceBetweenScreens))
+        ? item.spaceBetweenScreens
+        : 'pixels';
+    }, [item]);
 
   const selectedItem = item.items.find(o => o.id.replace(/-/g, '') === moveableId);
 
@@ -120,7 +134,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
     }
   }, [moveableId, item, boundsEnabled]);
 
-  const { /* reset, haveErrors, */ validate } = useValidator();
+  const { validate } = useValidator();
 
   React.useEffect(() => {
     // load fonts
@@ -191,17 +205,97 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas }) => {
           </Box>
 
           <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
-            <TextField
-              sx={{ mb: 0.5 }}
-              label={'Name'}
-              fullWidth
-              value={item.name}
-              onChange={(ev) => {
-                setItem({
-                  ...item, name: ev.currentTarget.value,
-                });
-              }}
-            />
+            <Stack spacing={0.5}>
+              <TextField
+                sx={{ mb: 0.5 }}
+                label={'Name'}
+                fullWidth
+                value={item.name}
+                onChange={(ev) => {
+                  setItem({
+                    ...item, name: ev.currentTarget.value,
+                  });
+                }}
+              />
+              <FormControl fullWidth>
+                <InputLabel id="type-select-label" shrink>Rolling Speed</InputLabel>
+                <Select
+                  MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                  label='Speed'
+                  displayEmpty
+                  value={item.speed ?? ''}
+                  onChange={(ev) => setItem({
+                    ...item, speed: ev.target.value === '' ? null : (ev.target.value as typeof item.speed),
+                  })}
+                >
+                  <MenuItem value={''}>--- use global value ---</MenuItem>
+                  {['very slow', 'slow', 'medium', 'fast', 'very fast'].map(
+                    it => <MenuItem value={it} key={it}>{it}</MenuItem>,
+                  )}
+                </Select>
+              </FormControl>
+
+              <FormNumericInput
+                min={0}
+                value={typeof item.spaceBetweenScreens === 'number' ? item.spaceBetweenScreens : 0}
+                label='Space between screens'
+                disabled={typeof item.spaceBetweenScreens !== 'number'}
+                InputProps={{
+                  startAdornment: <InputAdornment position='start'>
+                    <FormControl variant="standard" size='small' sx={{
+                      '*::before': { border: '0px !important' },
+                      position:    'relative',
+                      top:         '5px',
+                    }}>
+                      <Select
+                        MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                        label='Speed'
+                        displayEmpty
+                        value={spaceBetweenScreensSelect}
+                        onChange={(ev) => {
+                          let value: string | number | null = ev.target.value === 'pixels' ? 250 : ev.target.value;
+                          if (value === '') {
+                            value = null;
+                          }
+                          console.log({ value });
+                          setItem({
+                            ...item, spaceBetweenScreens: value as typeof item.spaceBetweenScreens,
+                          });
+                        }}
+                      >
+                        <MenuItem value={''}>--- use global value ---</MenuItem>
+                        <MenuItem value={'pixels'}>Pixels</MenuItem>
+                        <MenuItem value={'full-screen-between'}>Full screen between</MenuItem>
+                        <MenuItem value={'none'}>None</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </InputAdornment>,
+                  endAdornment: <InputAdornment position='end'>px</InputAdornment>,
+                }}
+                onChange={val => {
+                  setItem({
+                    ...item,
+                    spaceBetweenScreens: val as number,
+                  });
+                }}
+              />
+
+              <FormNumericInput
+                min={0}
+                value={item.waitBetweenScreens}
+                displayEmpty
+                placeholder='Use global value'
+                label='Wait between screens'
+                helperText='Pauses rolling on screen end.'
+                InputProps={{ endAdornment: <InputAdornment position='end'>ms</InputAdornment> }}
+                onChange={val => {
+                  setItem({
+                    ...item,
+                    waitBetweenScreens: val as number,
+                  });
+                }}
+              />
+            </Stack>
           </SimpleBar>
         </Grid>
         <Grid xs sx={{ height: '100%' }}

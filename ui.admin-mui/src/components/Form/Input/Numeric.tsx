@@ -6,19 +6,20 @@ import React, {
 export const FormNumericInput: React.FC<{
   min?: number,
   max?: number,
-  value?: number,
-  onChange?: (value: number) => void,
+  value?: number | null,
+  onChange?: (value: number | '') => void,
+  displayEmpty?: boolean,
 } & TextFieldProps> = ({
   value,
   onChange,
   min,
   max,
+  displayEmpty,
   ...props
 }) => {
-  const [propsValue, setPropsValue] = useState(value || 0);
+  const [propsValue, setPropsValue] = useState<number | ''>(value || 0);
 
   const keydownHandler: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
-    console.log({ event });
     const key = event.key;
     const shiftKey = event.shiftKey;
     const ctrlKey = event.ctrlKey;
@@ -36,11 +37,21 @@ export const FormNumericInput: React.FC<{
       offset *= 10;
     }
 
+    let newValue = 0;
+
     if (key === 'ArrowUp') {
-      const newValue = propsValue + offset;
+      if (propsValue === '') {
+        newValue = (min ?? 0) + offset;
+      } else {
+        newValue = propsValue + offset;
+      }
       setPropsValue(newValue);
     } else if (key === 'ArrowDown') {
-      const newValue = propsValue - offset;
+      if (propsValue === '') {
+        newValue = (min ?? 0);
+      } else {
+        newValue = propsValue - offset;
+      }
       if (typeof min === 'number' && newValue < min) {
         setPropsValue(min);
         return;
@@ -49,22 +60,17 @@ export const FormNumericInput: React.FC<{
         setPropsValue(max);
         return;
       }
-
-      console.log({ newValue });
       setPropsValue(newValue);
     }
   }, [ propsValue ]);
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
-    const val = Number(event.target.value);
-    if (isNaN(val)) {
-      // if deleted set min value else ignore input
-      if (event.target.value.length === 0) {
-        setPropsValue(min ?? 0);
-      }
-    } else {
-      setPropsValue(val);
+    if (event.target.value.length === 0 && displayEmpty) {
+      setPropsValue(displayEmpty ? '' : (min ?? 0));
+      return;
     }
+    const val = Number(event.target.value);
+    setPropsValue(val);
   }, []);
 
   useEffect(() => {
@@ -79,6 +85,7 @@ export const FormNumericInput: React.FC<{
       value={value}
       onChange={onChangeHandler}
       inputProps={{ onKeyDown: keydownHandler }}
+      InputLabelProps={{ shrink: displayEmpty ?? undefined }}
     />
   );
 };

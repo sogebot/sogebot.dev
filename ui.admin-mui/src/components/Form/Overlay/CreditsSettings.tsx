@@ -59,6 +59,92 @@ const html
 <img class="thumbnail" src="$thumbnail(200x266)" width="200"/>
 `;
 
+export const creditsDefaultScreens = [
+  {
+    id:    v4(),
+    items: [
+      {
+        id:       v4(),
+        alignX:   (1920 - 1600) / 2,
+        alignY:   100,
+        css,
+        height:   1015,
+        width:    1600,
+        rotation: 0,
+        html,
+        font:     {
+          family:      'Cabin Condensed',
+          align:       'center',
+          weight:      500,
+          color:       '#ffffff',
+          size:        20,
+          borderColor: '#000000',
+          borderPx:    1,
+          shadow:      [],
+        },
+      },
+    ],
+    name:                'Title Screen',
+    type:                'custom',
+    spaceBetweenScreens: 250,
+    waitBetweenScreens:  10000,
+    speed:               null,
+  },
+  {
+    id:                  v4(),
+    type:                'events',
+    name:                'Events',
+    columns:             3,
+    excludeEvents:       [],
+    spaceBetweenScreens: null,
+    waitBetweenScreens:  null,
+    speed:               null,
+  },
+  {
+    id:                  v4(),
+    type:                'clips',
+    name:                'Clips',
+    play:                true,
+    period:              'stream',
+    periodValue:         2,
+    numOfClips:          3,
+    volume:              30,
+    spaceBetweenScreens: null,
+    waitBetweenScreens:  null,
+    speed:               null,
+  },
+  {
+    id:    v4(),
+    items: [
+      {
+        id:       v4(),
+        alignX:   (1920 - 1600) / 2,
+        alignY:   (1080 - 250) / 2,
+        css,
+        height:   185,
+        width:    1600,
+        rotation: 0,
+        html:     'Thanks for watching!',
+        font:     {
+          family:      'PT Sans',
+          align:       'center',
+          weight:      900,
+          color:       '#ffffff',
+          size:        130,
+          borderColor: '#000000',
+          borderPx:    10,
+          shadow:      [],
+        },
+      },
+    ],
+    name:                'Ending Screen',
+    type:                'custom',
+    spaceBetweenScreens: 'full-screen-between',
+    waitBetweenScreens:  10000,
+    speed:               null,
+  },
+] as Credits['screens'];
+
 type Props = {
   model: Credits;
   canvas: {
@@ -67,7 +153,14 @@ type Props = {
   onUpdate: (value: Credits) => void;
 };
 
-function SortableCard(props: { name: string, id: string, isDragging: boolean, item?: Credits['screens'][number], canvas: { height: number, width: number } }) {
+function SortableCard(props: {
+  name: string,
+  id: string,
+  isDragging: boolean,
+  item?: Credits['screens'][number],
+  canvas: { height: number, width: number } ,
+  onUpdate?: (value: Credits['screens'][number]) => void;
+}) {
   const {
     attributes,
     listeners,
@@ -105,7 +198,7 @@ function SortableCard(props: { name: string, id: string, isDragging: boolean, it
             <Dialog
               open={open}
               fullScreen>
-              {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas}/>}
+              {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               <Box sx={{ p: 1 }}>
                 <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
                   <Grid>
@@ -130,6 +223,13 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
 
   const spaceBetweenScreensSelect = isNaN(Number(model.spaceBetweenScreens)) ? model.spaceBetweenScreens : 'pixels';
 
+  function handleScreenChange(id: string, value: Credits['screens'][number]) {
+    const update = cloneDeep(model);
+    const idx = update.screens.findIndex(o => o.id === id);
+    update.screens[idx] = value;
+    onUpdate(update);
+  }
+
   function handleDragEnd(event: { active: any; over: any; }) {
     const { active, over } = event;
     setActiveId(null);
@@ -150,93 +250,9 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
   }
 
   const addNewScreen = () => {
-    const update = cloneDeep(model);
-    update.screens = [
-      {
-        id:    v4(),
-        items: [
-          {
-            id:       v4(),
-            alignX:   (1920 - 1600) / 2,
-            alignY:   100,
-            css,
-            height:   300,
-            width:    1600,
-            rotation: 0,
-            html,
-            font:     {
-              family:      'Cabin Condensed',
-              align:       'center',
-              weight:      500,
-              color:       '#ffffff',
-              size:        20,
-              borderColor: '#000000',
-              borderPx:    1,
-              shadow:      [],
-            },
-          },
-        ],
-        name:                'Title Screen',
-        type:                'custom',
-        spaceBetweenScreens: 'full-screen-between',
-        waitBetweenScreens:  10000,
-        speed:               null,
-      },
-      {
-        id:                  v4(),
-        type:                'events',
-        name:                'Events',
-        columns:             3,
-        excludeEvents:       [],
-        spaceBetweenScreens: null,
-        waitBetweenScreens:  null,
-        speed:               null,
-      },
-      {
-        id:                  v4(),
-        type:                'clips',
-        name:                'Clips',
-        play:                true,
-        period:              'stream',
-        periodValue:         2,
-        numOfClips:          3,
-        volume:              30,
-        spaceBetweenScreens: null,
-        waitBetweenScreens:  null,
-        speed:               null,
-      },
-      {
-        id:    v4(),
-        items: [
-          {
-            id:       v4(),
-            alignX:   1920 / 2,
-            alignY:   100,
-            css,
-            height:   300,
-            width:    400,
-            rotation: 0,
-            html:     'Thanks for watching!',
-            font:     {
-              family:      'PT Sans',
-              align:       'center',
-              weight:      500,
-              color:       '#ffffff',
-              size:        80,
-              borderColor: '#000000',
-              borderPx:    1,
-              shadow:      [],
-            },
-          },
-        ],
-        name:                'Ending Screen',
-        type:                'custom',
-        spaceBetweenScreens: 'full-screen-between',
-        waitBetweenScreens:  10000,
-        speed:               null,
-      },
-    ];
-    onUpdate(update);
+    // const update = cloneDeep(model);
+    // // update.screens = ;
+    // onUpdate(update);
     return;
   };
 
@@ -330,6 +346,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
           key={o.id}
           item={o}
           canvas={canvas}
+          onUpdate={(value) => handleScreenChange(o.id, value)}
           name={o.name.length > 0 ? o.name : '<unnamed>'}/>)}
       </SortableContext>
       <DragOverlay>
