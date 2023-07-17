@@ -43,7 +43,7 @@ func Loop() {
 		}
 		mutex.Unlock()
 
-		time.Sleep(time.Second / 3)
+		time.Sleep(time.Second * 5)
 	}
 }
 
