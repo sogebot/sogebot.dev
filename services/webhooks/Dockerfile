@@ -13,6 +13,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./webhook
 
 FROM alpine
 COPY --from=builder  /app/webhooks /bin/webhooks
-EXPOSE 3000
+EXPOSE 8080
+EXPOSE 8081
 
 CMD [ "/bin/webhooks" ]

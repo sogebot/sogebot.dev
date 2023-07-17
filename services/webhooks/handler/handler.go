@@ -18,6 +18,10 @@ import (
 	"strings"
 	"time"
 
+	"net/http/pprof"
+	_ "net/http/pprof"
+
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
@@ -232,7 +236,6 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	perSecond := time.Second / 3
 	timeout := time.Now().Add((time.Minute * 2) - 15*time.Second)
 
 	go Listen(userId)
@@ -263,7 +266,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 				return
 			} else {
 				// No event found for the user
-				time.Sleep(time.Second / time.Duration(perSecond))
+				time.Sleep(time.Second)
 			}
 		}
 	}
@@ -394,6 +397,7 @@ func Start() {
 		done := make(chan bool)
 
 		go func() {
+			go startPprof()
 			if err := ngrokTunnel(done); err != nil {
 				log.Fatal(err)
 			}
@@ -409,6 +413,7 @@ func Start() {
 		// )(loggerHandler)
 
 		go func() {
+			go startPprof()
 			if err := http.ListenAndServe(":8080", loggerHandler); err != nil {
 				log.Fatal(err)
 			}
@@ -416,5 +421,18 @@ func Start() {
 	}
 
 	commons.Log("Webhooks endpoint: " + EVENTSUB_URL)
+}
 
+func startPprof() {
+	router := mux.NewRouter()
+	router.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+	router.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+	router.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+	router.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+	router.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+	router.Handle("/debug/pprof/{cmd}", http.HandlerFunc(pprof.Index)) // special handling for Gorilla mux
+
+	if err := http.ListenAndServe(":8081", router); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"services/webhooks/commons"
@@ -27,13 +28,14 @@ func main() {
 
 	handler.Start()
 	go handler.Loop()
-	subscriptions.List(nil)
 	handleUsers(false)
 }
 
 func handleUsers(updatedOnly bool) {
 	var rows *sql.Rows
 	var err error
+
+	subscriptions.List(nil)
 
 	if updatedOnly {
 		rows, err = database.DB.Query(
@@ -157,14 +159,30 @@ func handleUsers(updatedOnly bool) {
 
 		for scope, data := range subscriptionsMap {
 			var wg sync.WaitGroup
-			wg.Add(len(data))
 			if strings.Contains(scopes, scope) {
+			OuterLoop:
 				for _, val := range data {
+					wg.Add(1)
+					for _, item := range subscriptions.SubscriptionList {
+						// condition to strings so we can check
+						condition1, err := json.Marshal(val.condition)
+						if err != nil {
+							fmt.Println("Error marshaling map to JSON:", err)
+							return
+						}
+						condition2, err := json.Marshal(item.Condition)
+						if err != nil {
+							fmt.Println("Error marshaling map to JSON:", err)
+							return
+						}
+						// check if already subscribed
+						if item.Type == val.scope && item.Version == val.version && string(condition2) == string(condition1) {
+							// skip
+							commons.Log("User " + userId + " already subscribed for " + val.scope + ".v" + val.version)
+							continue OuterLoop
+						}
+					}
 					go subscriptions.Create(&wg, userId, val.scope, val.version, val.condition)
-				}
-			} else {
-				for i := 0; i < len(data); i++ {
-					wg.Done()
 				}
 			}
 		}
