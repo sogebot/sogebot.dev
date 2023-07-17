@@ -11,8 +11,7 @@ import (
 	"services/webhooks/database"
 	"services/webhooks/handler"
 	"services/webhooks/token"
-	"strings"
-	"time"
+	"sync"
 )
 
 type Subscription struct {
@@ -37,7 +36,8 @@ type FollowCondition struct {
 	ModeratorUserID   string `json:"moderator_user_id"`
 }
 
-func Create(userId string, subscriptionType string, subscriptionVersion string, subscriptionCondition interface{}) {
+func Create(wg *sync.WaitGroup, userId string, subscriptionType string, subscriptionVersion string, subscriptionCondition interface{}) {
+	defer wg.Done()
 
 	var clientID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 	var secret string = os.Getenv("TWITCH_EVENTSUB_SECRET")
@@ -125,11 +125,6 @@ func Create(userId string, subscriptionType string, subscriptionVersion string, 
 			return
 		}
 		commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": " + string(body))
-		if strings.Contains(string(body), "Too Many Requests") {
-			time.Sleep(30 * time.Second)
-			commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": Retrying...")
-			Create(userId, subscriptionType, subscriptionVersion, subscriptionCondition)
-		}
 		return
 	}
 }

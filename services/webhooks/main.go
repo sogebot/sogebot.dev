@@ -14,8 +14,6 @@ import (
 
 	"database/sql"
 
-	_ "net/http/pprof"
-
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 )
@@ -159,24 +157,17 @@ func handleUsers(updatedOnly bool) {
 
 		for scope, data := range subscriptionsMap {
 			var wg sync.WaitGroup
-			done := make(chan bool)
+			wg.Add(len(data))
 			if strings.Contains(scopes, scope) {
 				for _, val := range data {
-					wg.Add(1)
-					go func(a struct {
-						scope     string
-						version   string
-						condition map[string]interface{}
-					}) {
-						defer wg.Done()
-						subscriptions.Create(userId, a.scope, a.version, a.condition)
-						commons.Log("User " + userId + " subscribed for " + a.scope + ".v" + a.version)
-						done <- true
-					}(val)
+					go subscriptions.Create(&wg, userId, val.scope, val.version, val.condition)
+				}
+			} else {
+				for i := 0; i < len(data); i++ {
+					wg.Done()
 				}
 			}
 		}
-		time.Sleep(time.Second / 2)
 	}
 
 	time.Sleep(10 * time.Second)
