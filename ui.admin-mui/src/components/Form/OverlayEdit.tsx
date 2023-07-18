@@ -6,10 +6,9 @@ import { LoadingButton } from '@mui/lab';
 import {
   Box, Button, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip,
 } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
-import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { set } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
@@ -155,6 +154,8 @@ export const OverlayEdit: React.FC = () => {
       const updatedItem = updatedItems.find(o => o.id.replace(/-/g, '') === moveableId);
       if (updatedItem) {
         set(updatedItem, path, value);
+      } else {
+        console.error('Updated item not found');
       }
       return {
         ...val,
@@ -346,7 +347,6 @@ export const OverlayEdit: React.FC = () => {
                     if (typeId === 'credits') {
                       (opts as Credits).screens = creditsDefaultScreens;
                     }
-                    console.log(setDefaultOpts({}, typeId));
                     const newItem = {
                       id:        itemId,
                       alignX:    0,

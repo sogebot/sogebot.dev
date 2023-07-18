@@ -1,8 +1,7 @@
 import {
   InputAdornment, Stack, TextField,
 } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import { CreditsScreenCustom } from '@sogebot/backend/src/database/entity/overlay';
+import { CreditsScreenCustom, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';

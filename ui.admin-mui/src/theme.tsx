@@ -54,6 +54,7 @@ Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
 
 export let theme = createTheme({
   components: {
+    MuiAccordion:      { defaultProps: {  elevation: 8 } },
     MuiFormControl:    { defaultProps: { variant: 'filled' } },
     MuiTableCell:      { styleOverrides: { sizeMedium: { padding: '4px' } } },
     MuiTextField:      { defaultProps: { variant: 'filled' } },

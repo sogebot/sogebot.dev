@@ -32,6 +32,7 @@ import React from 'react';
 import { v4 } from 'uuid';
 
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
+import { CreditsSettingsEvents } from './CreditsSettings/Events';
 import { FormNumericInput } from '../Input/Numeric';
 
 const css
@@ -61,8 +62,9 @@ const html
 
 export const creditsDefaultScreens = [
   {
-    id:    v4(),
-    items: [
+    id:     v4(),
+    height: 1080,
+    items:  [
       {
         id:       v4(),
         alignX:   (1920 - 1600) / 2,
@@ -84,38 +86,77 @@ export const creditsDefaultScreens = [
         },
       },
     ],
-    name:                'Title Screen',
-    type:                'custom',
-    spaceBetweenScreens: 250,
-    waitBetweenScreens:  10000,
-    speed:               null,
+    name:               'Title Screen',
+    type:               'custom',
+    waitBetweenScreens: 10000,
+    speed:              null,
   },
   {
-    id:                  v4(),
-    type:                'events',
-    name:                'Events',
-    columns:             3,
-    excludeEvents:       [],
-    spaceBetweenScreens: null,
-    waitBetweenScreens:  null,
-    speed:               null,
+    id:            v4(),
+    type:          'events',
+    name:          'Events',
+    columns:       3,
+    excludeEvents: [
+      'custom', 'promo', 'rewardredeem',
+    ],
+    waitBetweenScreens: null,
+    speed:              null,
+    headers:            {},
+    headerFont:         {
+      family:      'PT Sans',
+      align:       'left',
+      weight:      900,
+      color:       '#ffffff',
+      size:        50,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+      pl:          100,
+      pr:          0,
+      pb:          50,
+      pt:          100,
+    },
+    itemFont: {
+      family:      'PT Sans',
+      align:       'center',
+      weight:      500,
+      color:       '#ffffff',
+      size:        35,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+      pl:          0,
+      pr:          0,
+      pb:          20,
+      pt:          0,
+    },
+    highlightFont: {
+      family:      'PT Sans',
+      align:       'center',
+      weight:      900,
+      color:       '#FFD700',
+      size:        35,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+    },
   },
   {
-    id:                  v4(),
-    type:                'clips',
-    name:                'Clips',
-    play:                true,
-    period:              'stream',
-    periodValue:         2,
-    numOfClips:          3,
-    volume:              30,
-    spaceBetweenScreens: null,
-    waitBetweenScreens:  null,
-    speed:               null,
+    id:                 v4(),
+    type:               'clips',
+    name:               'Clips',
+    play:               true,
+    period:             'stream',
+    periodValue:        2,
+    numOfClips:         3,
+    volume:             30,
+    waitBetweenScreens: null,
+    speed:              null,
   },
   {
-    id:    v4(),
-    items: [
+    id:     v4(),
+    height: 1080,
+    items:  [
       {
         id:       v4(),
         alignX:   (1920 - 1600) / 2,
@@ -137,11 +178,10 @@ export const creditsDefaultScreens = [
         },
       },
     ],
-    name:                'Ending Screen',
-    type:                'custom',
-    spaceBetweenScreens: 'full-screen-between',
-    waitBetweenScreens:  10000,
-    speed:               null,
+    name:               'Ending Screen',
+    type:               'custom',
+    waitBetweenScreens: 10000,
+    speed:              null,
   },
 ] as Credits['screens'];
 
@@ -199,6 +239,7 @@ function SortableCard(props: {
               open={open}
               fullScreen>
               {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
+              {props.item.type === 'events' && <CreditsSettingsEvents model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               <Box sx={{ p: 1 }}>
                 <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
                   <Grid>
@@ -220,8 +261,6 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
-
-  const spaceBetweenScreensSelect = isNaN(Number(model.spaceBetweenScreens)) ? model.spaceBetweenScreens : 'pixels';
 
   function handleScreenChange(id: string, value: Credits['screens'][number]) {
     const update = cloneDeep(model);
@@ -273,45 +312,6 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
           )}
         </Select>
       </FormControl>
-
-      <FormNumericInput
-        min={0}
-        value={typeof model.spaceBetweenScreens === 'number' ? model.spaceBetweenScreens : 0}
-        label='Space between screens'
-        disabled={typeof model.spaceBetweenScreens !== 'number'}
-        InputProps={{
-          startAdornment: <InputAdornment position='start'>
-            <FormControl variant="standard" size='small' sx={{
-              '*::before': { border: '0px !important' },
-              position:    'relative',
-              top:         '5px',
-            }}>
-              <Select
-                MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-                label='Speed'
-                value={spaceBetweenScreensSelect}
-                onChange={(ev) => {
-                  const value = ev.target.value === 'pixels' ? 250 : ev.target.value;
-                  onUpdate({
-                    ...model, spaceBetweenScreens: value as typeof model.spaceBetweenScreens,
-                  });
-                }}
-              >
-                <MenuItem value={'pixels'}>Pixels</MenuItem>
-                <MenuItem value={'full-screen-between'}>Full screen between</MenuItem>
-                <MenuItem value={'none'}>None</MenuItem>
-              </Select>
-            </FormControl>
-          </InputAdornment>,
-          endAdornment: <InputAdornment position='end'>px</InputAdornment>,
-        }}
-        onChange={val => {
-          onUpdate({
-            ...model,
-            spaceBetweenScreens: val as number,
-          });
-        }}
-      />
 
       <FormNumericInput
         min={0}

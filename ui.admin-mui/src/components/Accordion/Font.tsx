@@ -5,7 +5,7 @@ import {
   Tab, Tabs, TextField, Typography,
 } from '@mui/material';
 import {
-  Countdown, Eventlist, Wordcloud,
+  Countdown, CreditsScreenEvents, Eventlist, Wordcloud,
 } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
@@ -49,7 +49,8 @@ type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
 export const AccordionFont = <T extends Randomizer['customizationFont']
 | Countdown['countdownFont']
 | Wordcloud['wordFont']
-| Eventlist['usernameFont']>(props: Props<T>) => {
+| Eventlist['usernameFont']
+| CreditsScreenEvents['headerFont']>(props: Props<T>) => {
   const accordionId = props.accordionId ?? 'font';
   const { open,
     onClick,
@@ -190,6 +191,62 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             value={model.borderPx}
             onChange={(_, newValue) => onChange({
               ...model, borderPx: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'pl' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.pl.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={200}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.pl}
+            onChange={(_, newValue) => onChange({
+              ...model, pl: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'pr' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.pr.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={200}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.pr}
+            onChange={(_, newValue) => onChange({
+              ...model, pr: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'pb' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.pb.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={200}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.pb}
+            onChange={(_, newValue) => onChange({
+              ...model, pb: newValue as number,
+            })}/>
+        </Stack>}
+
+        {'pt' in model && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.font.pt.name') }</FormLabel>
+          <Slider
+            step={1}
+            min={0}
+            max={200}
+            valueLabelFormat={(val) => `${val}px`}
+            valueLabelDisplay="on"
+            value={model.pt}
+            onChange={(_, newValue) => onChange({
+              ...model, pt: newValue as number,
             })}/>
         </Stack>}
         <Divider sx={{

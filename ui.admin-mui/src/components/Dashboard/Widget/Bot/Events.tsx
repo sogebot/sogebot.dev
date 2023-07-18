@@ -1,7 +1,7 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
-  Adjust, Cast, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, VolumeOff, VolumeUp,
+  Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
   Backdrop, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography,
@@ -93,7 +93,7 @@ function RenderRow(props: any) {
         {props.item.event === 'tip' && <MonetizationOn htmlColor={green[300]}/>}
         {props.item.event === 'resub' && <Icon size={1} path={mdiCrown} horizontal vertical color={blue[300]} rotate={180}/>}
         {props.item.event === 'sub' && <Icon size={1} path={mdiCrown} horizontal vertical color={lightBlue[300]} rotate={180}/>}
-        {props.item.event === 'raid' && <Cast htmlColor={lime[300]}/>}
+        {props.item.event === 'raid' && <TheaterComedy htmlColor={lime[300]}/>}
         {props.item.event === 'subgift' && <Redeem htmlColor={pink[300]}/>}
         {props.item.event === 'subcommunitygift' && <Redeem htmlColor={indigo[300]}/>}
         {props.item.event === 'cheer' && <Diamond htmlColor={yellow[300]}/>}

@@ -28,12 +28,13 @@ import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
 import { FormRewardInput } from '../../Input/Reward';
 
+export const events = ['follow', 'cheer', 'tip', 'sub', 'resub', 'subcommunitygift', 'subgift', 'raid', 'custom', 'rewardredeem', 'promo'];
+
 export const AlertsRegistryTesterAccordion: React.FC = () => {
   const [ open, setOpen ] = React.useState(true);
   const { translate } = useTranslation();
   const { configuration } = useAppSelector(state => state.loader);
 
-  const events = ['follow', 'cheer', 'tip', 'sub', 'resub', 'subcommunitygift', 'subgift', 'raid', 'custom', 'rewardredeem', 'promo'];
   const [ event, setEvent ] = React.useState(translate('registry.alerts.event.follow'));
   const selectedEvent = React.useMemo(() => {
     const idx = events.map(o => translate('registry.alerts.event.' + o)).findIndex(o => o === event);
