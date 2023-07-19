@@ -31,6 +31,7 @@ import { cloneDeep } from 'lodash';
 import React from 'react';
 import { v4 } from 'uuid';
 
+import { CreditsSettingsClips } from './CreditsSettings/Clips';
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
 import { CreditsSettingsEvents } from './CreditsSettings/Events';
 import { FormNumericInput } from '../Input/Numeric';
@@ -152,6 +153,48 @@ export const creditsDefaultScreens = [
     volume:             30,
     waitBetweenScreens: null,
     speed:              null,
+    gameFont:           {
+      family:      'PT Sans',
+      align:       'left',
+      weight:      500,
+      color:       '#ffffff',
+      size:        35,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+      pl:          40,
+      pr:          0,
+      pb:          0,
+      pt:          0,
+    },
+    titleFont: {
+      family:      'PT Sans',
+      align:       'left',
+      weight:      500,
+      color:       '#ffffff',
+      size:        60,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+      pl:          40,
+      pr:          0,
+      pb:          0,
+      pt:          30,
+    },
+    createdByFont: {
+      family:      'PT Sans',
+      align:       'left',
+      weight:      500,
+      color:       '#FFD700',
+      size:        30,
+      borderColor: '#000000',
+      borderPx:    10,
+      shadow:      [],
+      pl:          40,
+      pr:          0,
+      pb:          0,
+      pt:          0,
+    },
   },
   {
     id:     v4(),
@@ -240,6 +283,7 @@ function SortableCard(props: {
               fullScreen>
               {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               {props.item.type === 'events' && <CreditsSettingsEvents model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
+              {props.item.type === 'clips' && <CreditsSettingsClips model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               <Box sx={{ p: 1 }}>
                 <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
                   <Grid>
