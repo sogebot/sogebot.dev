@@ -113,7 +113,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
             </Tooltip>
           </Box>
 
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
+          <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
             <Stack spacing={0.5}>
               <TextField
                 sx={{ mb: 0.5 }}
