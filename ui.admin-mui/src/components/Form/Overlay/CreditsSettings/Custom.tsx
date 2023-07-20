@@ -1,12 +1,26 @@
 import {
+  DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors,
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
   BorderInnerTwoTone, BorderStyleTwoTone,
-  CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
+  CropFreeTwoTone, DragIndicatorTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
 } from '@mui/icons-material';
 import {
-  Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip,
+  Box, Button, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip,
 } from '@mui/material';
+import orange from '@mui/material/colors/orange';
 import { CreditsScreenCustom, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import { cloneDeep } from 'lodash';
 import set from 'lodash/set';
 import React from 'react';
 import Moveable from 'react-moveable';
@@ -14,7 +28,9 @@ import {
   useKey, useMouse, usePreviousImmediate,
 } from 'rooks';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
+import { cssWrapper } from './src/Templates';
 import { useValidator } from '../../../../hooks/useValidator';
 import theme from '../../../../theme';
 import { AccordionFont, loadFont } from '../../../Accordion/Font';
@@ -35,7 +51,77 @@ type Props = {
   onUpdate: (value: CreditsScreenCustom) => void;
 };
 
+function SortableCard(props: {
+  name: string,
+  id: string,
+  isDragging: boolean,
+  onClick?: () => void,
+  isSelected?: boolean,
+  item?: CreditsScreenCustom['items'][number],
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: props.id });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity:   props.isDragging ? 0 : 1,
+    transition,
+  };
+
+  return (
+    <Paper key={props.id} variant='outlined' onClick={() => props.onClick ? props.onClick() : null}
+      sx={{
+        userSelect:  'none',
+        transition:  'border 300ms',
+        width:       '100%',
+        borderColor: props.isSelected ? orange[700] : undefined,
+        '&:hover':   { borderColor: orange[700] },
+      }}
+      ref={setNodeRef} style={style} {...attributes}
+    >
+      <Stack direction='row' spacing={1} alignItems={'center'}>
+        <Box>
+          <IconButton {...listeners}><DragIndicatorTwoTone/></IconButton>
+        </Box>
+        <Box sx={{ width: '100%' }}>
+          {props.name}
+        </Box>
+      </Stack>
+    </Paper>
+  );
+}
+
 export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate }) => {
+  const [activeId, setActiveId] = React.useState<null | string>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  function handleDragEnd(event: { active: any; over: any; }) {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (active === null || !over) {
+      return;
+    }
+    if (active.id !== over.id) {
+      const update = cloneDeep(model);
+      update.items = arrayMove(update.items, update.items.findIndex(o => o.id === active.id), update.items.findIndex(o => o.id === over.id));
+      setItem(update);
+    }
+  }
+  function handleDragStart(event: { active: any; }) {
+    const { active } = event;
+    console.debug('credits::items::dragstart', active);
+    setActiveId(active.id);
+  }
+
   const [ accordion, setAccordion ] = React.useState('');
   const [ key, setKey ] = React.useState(Date.now());
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
@@ -160,6 +246,36 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
     setZoomRemoveButton(zoom);
   }, [ zoom ]);
 
+  const addNewItem = () => {
+    setItem(o => {
+      const update = cloneDeep(o.items);
+      update.push({
+        id:       v4(),
+        alignX:   0,
+        alignY:   0,
+        css:      cssWrapper,
+        height:   canvas.height,
+        width:    canvas.width,
+        rotation: 0,
+        html:     '',
+        font:     {
+          family:      'Cabin Condensed',
+          align:       'center',
+          weight:      500,
+          color:       '#ffffff',
+          size:        20,
+          borderColor: '#000000',
+          borderPx:    1,
+          shadow:      [],
+        },
+      });
+      return {
+        ...o,
+        items: update,
+      };
+    });
+  };
+
   return(<>
     <DialogContent sx={{
       p: 0, overflowX: 'hidden',
@@ -254,7 +370,42 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
                   });
                 }}
               />
+
+              <Divider variant='middle'/>
+
+              <DndContext
+                sensors={sensors}
+                modifiers={[restrictToVerticalAxis]}
+                onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
+              >
+                <SortableContext
+                  items={item.items}
+                  strategy={rectSortingStrategy}
+                >
+                  {item.items.map((o, idx) => <SortableCard
+                    isDragging={o.id === activeId}
+                    id={o.id}
+                    key={o.id}
+                    item={o}
+                    onClick={() => setMoveableId(moveableId === o.id.replace(/-/g, '') ? null : o.id.replace(/-/g, ''))}
+                    isSelected={moveableId === o.id.replace(/-/g, '')}
+                    name={`Item ${Number(idx + 1)}`}/>)}
+                </SortableContext>
+                <DragOverlay>
+                  {activeId ? (
+                    <SortableCard
+                      isDragging={false}
+                      id={activeId}
+                      key={activeId}
+                      name={`Item ${item.items.findIndex(it => it.id === activeId) + 1}`}/>
+                  ) : null }
+                </DragOverlay>
+              </DndContext>
+
+              <Button variant='contained' onClick={addNewItem} fullWidth>Add new item</Button>
             </Stack>
+
           </SimpleBar>
         </Grid>
         <Grid xs sx={{ height: '100%' }}

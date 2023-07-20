@@ -27,7 +27,8 @@ import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
 import { ClipsSettings } from './Overlay/ClipsSettings';
 import { CountdownSettings } from './Overlay/CountdownSettings';
-import { creditsDefaultScreens, CreditsSettings } from './Overlay/CreditsSettings';
+import { CreditsSettings } from './Overlay/CreditsSettings';
+import { creditsDefaultScreens } from './Overlay/CreditsSettings/src/DefaultScreens';
 import { EmotesComboSettings } from './Overlay/EmotesComboSettings';
 import { EmotesExplodeSettings } from './Overlay/EmotesExplodeSettings';
 import { EmotesFireworksSettings } from './Overlay/EmotesFireworksSettings';
@@ -49,7 +50,9 @@ import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
+import { getParentDelKeyStatus } from '../../store/overlaySlice';
 import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
@@ -134,7 +137,12 @@ export const OverlayEdit: React.FC = () => {
     width: selectedItem?.width ?? 0, height: selectedItem?.height ?? 0,
   }), [ selectedItem?.width, selectedItem?.height ]);
 
+  const isDeleteKeyDisabled = useAppSelector(getParentDelKeyStatus);
   useKey(['Delete'], () => {
+    if (isDeleteKeyDisabled) {
+      console.log('Parent del key disabled');
+      return;
+    }
     if (selectedItem) {
       setItem(o => ({
         ...o,

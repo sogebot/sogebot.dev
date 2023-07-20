@@ -4,6 +4,7 @@ import type { RootState } from './store';
 
 // Define a type for the slice state
 interface OverlayState {
+  isParentDeleteKeyDisabled: boolean;
   randomizerId: string;
   countdown: {
     [id: string]: 'time' | 'text' | undefined
@@ -24,9 +25,10 @@ interface OverlayState {
 
 // Define the initial state using that type
 const initialState: OverlayState = {
-  randomizerId: '',
-  countdown:    {},
-  stats:        {
+  isParentDeleteKeyDisabled: false,
+  randomizerId:              '',
+  countdown:                 {},
+  stats:                     {
     bits:        0,
     subscribers: 0,
     followers:   0,
@@ -45,6 +47,9 @@ export const overlaySlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    setParentDelKeyDisableStatus(state, action: PayloadAction<boolean>) {
+      state.isParentDeleteKeyDisabled = action.payload;
+    },
     setRandomizerId(state, action: PayloadAction<string>) {
       state.randomizerId = action.payload;
     },
@@ -90,6 +95,7 @@ export const overlaySlice = createSlice({
 });
 
 export const {
+  setParentDelKeyDisableStatus,
   setRandomizerId,
   setCountdownShow,
   statsUpdate,
@@ -98,6 +104,7 @@ export const {
 
 // Other code such as selectors can use the imported `RootState` type
 export const getRandomizerId = (state: RootState) => state.overlay.randomizerId;
+export const getParentDelKeyStatus = (state: RootState) => state.overlay.isParentDeleteKeyDisabled;
 export const selectOverlayCountdown = (state: RootState) => state.overlay.countdown;
 export const selectChatMessages = (state: RootState) => state.overlay.chat.messages;
 export const overlayGetStats = (state: RootState) => state.overlay.stats;

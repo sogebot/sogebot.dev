@@ -14,7 +14,12 @@ import { DragIndicatorTwoTone, SettingsTwoTone } from '@mui/icons-material';
 import {
   Box,
   Button,
+  Card,
+  CardActionArea,
+  CardContent,
   Dialog,
+  DialogActions,
+  DialogContent,
   FormControl,
   Grid,
   IconButton,
@@ -24,209 +29,21 @@ import {
   Paper,
   Select,
   Stack,
+  Typography,
 } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 
 import { CreditsSettingsClips } from './CreditsSettings/Clips';
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
 import { CreditsSettingsEvents } from './CreditsSettings/Events';
+import { screensList } from './CreditsSettings/src/ScreensList';
+import { setParentDelKeyDisableStatus } from '../../../store/overlaySlice';
 import { FormNumericInput } from '../Input/Numeric';
-
-const css
-= `
-/* Any customized css should be in #wrapped to not affect anything outside
-#wrapper {}
-*/
-
-#wrapper .title {
-  font-size: 2.5vw;
-  text-transform: uppercase;
-}
-#wrapper .game {
-  font-size: 4vw;
-  text-transform: uppercase;
-}
-#wrapper .thumbnail {
-  padding-top: 50px;
-}
-`;
-const html
-= `
-<div class="title">$title</div>
-<div class="game">$game</div>
-<img class="thumbnail" src="$thumbnail(200x266)" width="200"/>
-`;
-
-export const creditsDefaultScreens = [
-  {
-    id:     v4(),
-    height: 1080,
-    items:  [
-      {
-        id:       v4(),
-        alignX:   (1920 - 1600) / 2,
-        alignY:   100,
-        css,
-        height:   1015,
-        width:    1600,
-        rotation: 0,
-        html,
-        font:     {
-          family:      'Cabin Condensed',
-          align:       'center',
-          weight:      500,
-          color:       '#ffffff',
-          size:        20,
-          borderColor: '#000000',
-          borderPx:    1,
-          shadow:      [],
-        },
-      },
-    ],
-    name:               'Title Screen',
-    type:               'custom',
-    waitBetweenScreens: 10000,
-    speed:              null,
-  },
-  {
-    id:            v4(),
-    type:          'events',
-    name:          'Events',
-    columns:       3,
-    excludeEvents: [
-      'custom', 'promo', 'rewardredeem',
-    ],
-    waitBetweenScreens: null,
-    speed:              null,
-    headers:            {},
-    headerFont:         {
-      family:      'PT Sans',
-      align:       'left',
-      weight:      900,
-      color:       '#ffffff',
-      size:        50,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-      pl:          100,
-      pr:          0,
-      pb:          50,
-      pt:          100,
-    },
-    itemFont: {
-      family:      'PT Sans',
-      align:       'center',
-      weight:      500,
-      color:       '#ffffff',
-      size:        35,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-      pl:          0,
-      pr:          0,
-      pb:          20,
-      pt:          0,
-    },
-    highlightFont: {
-      family:      'PT Sans',
-      align:       'center',
-      weight:      900,
-      color:       '#FFD700',
-      size:        35,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-    },
-  },
-  {
-    id:                 v4(),
-    type:               'clips',
-    name:               'Clips',
-    play:               true,
-    period:             'stream',
-    periodValue:        2,
-    numOfClips:         3,
-    volume:             30,
-    waitBetweenScreens: null,
-    speed:              null,
-    gameFont:           {
-      family:      'PT Sans',
-      align:       'left',
-      weight:      500,
-      color:       '#ffffff',
-      size:        35,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-      pl:          40,
-      pr:          0,
-      pb:          0,
-      pt:          0,
-    },
-    titleFont: {
-      family:      'PT Sans',
-      align:       'left',
-      weight:      500,
-      color:       '#ffffff',
-      size:        60,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-      pl:          40,
-      pr:          0,
-      pb:          0,
-      pt:          30,
-    },
-    createdByFont: {
-      family:      'PT Sans',
-      align:       'left',
-      weight:      500,
-      color:       '#FFD700',
-      size:        30,
-      borderColor: '#000000',
-      borderPx:    10,
-      shadow:      [],
-      pl:          40,
-      pr:          0,
-      pb:          0,
-      pt:          0,
-    },
-  },
-  {
-    id:     v4(),
-    height: 1080,
-    items:  [
-      {
-        id:       v4(),
-        alignX:   (1920 - 1600) / 2,
-        alignY:   (1080 - 250) / 2,
-        css,
-        height:   185,
-        width:    1600,
-        rotation: 0,
-        html:     'Thanks for watching!',
-        font:     {
-          family:      'PT Sans',
-          align:       'center',
-          weight:      900,
-          color:       '#ffffff',
-          size:        130,
-          borderColor: '#000000',
-          borderPx:    10,
-          shadow:      [],
-        },
-      },
-    ],
-    name:               'Ending Screen',
-    type:               'custom',
-    waitBetweenScreens: 10000,
-    speed:              null,
-  },
-] as Credits['screens'];
 
 type Props = {
   model: Credits;
@@ -243,6 +60,7 @@ function SortableCard(props: {
   item?: Credits['screens'][number],
   canvas: { height: number, width: number } ,
   onUpdate?: (value: Credits['screens'][number]) => void;
+  onRemove?: () => void;
 }) {
   const {
     attributes,
@@ -259,6 +77,11 @@ function SortableCard(props: {
   };
 
   const [ open, setOpen ] = React.useState(false);
+
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    dispatch(setParentDelKeyDisableStatus(open));
+  }, [open]);
 
   return (
     <Paper key={props.id} variant='outlined' sx={{
@@ -284,13 +107,19 @@ function SortableCard(props: {
               {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               {props.item.type === 'events' && <CreditsSettingsEvents model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               {props.item.type === 'clips' && <CreditsSettingsClips model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
-              <Box sx={{ p: 1 }}>
-                <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+              <DialogActions sx={{ px: 2 }}>
+                <Grid container sx={{ height: '100%' }} justifyContent={'space-between'}>
+                  <Grid>
+                    <Button sx={{ width: 300 }} variant='contained' color='error' onClick={() => {
+                      props.onRemove ? props.onRemove() : null;
+                      setOpen(false);
+                    }}>Remove screen</Button>
+                  </Grid>
                   <Grid>
                     <Button sx={{ width: 150 }} onClick={() => setOpen(false)}>Close</Button>
                   </Grid>
                 </Grid>
-              </Box>
+              </DialogActions>
             </Dialog>
           </>}
         </Box>
@@ -301,6 +130,8 @@ function SortableCard(props: {
 
 export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) => {
   const [activeId, setActiveId] = React.useState<null | string>(null);
+  const [ openDialog, setOpenDialog ] = React.useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -310,6 +141,12 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
     const update = cloneDeep(model);
     const idx = update.screens.findIndex(o => o.id === id);
     update.screens[idx] = value;
+    onUpdate(update);
+  }
+
+  function handleScreenRemove(id: string) {
+    const update = cloneDeep(model);
+    update.screens = update.screens.filter(o => o.id !== id);
     onUpdate(update);
   }
 
@@ -332,11 +169,14 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
     setActiveId(active.id);
   }
 
-  const addNewScreen = () => {
-    // const update = cloneDeep(model);
-    // // update.screens = ;
-    // onUpdate(update);
-    return;
+  const addNewScreen = (key: keyof typeof screensList) => {
+    const update = cloneDeep(model);
+    console.log(screensList[key].settings);
+    update.screens.push({
+      ...screensList[key].settings as any,
+      id: v4(),
+    });
+    onUpdate(update);
   };
 
   return <>
@@ -372,7 +212,36 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
       />
     </Stack>
 
-    <Button sx={{ py: 1.5 }} fullWidth onClick={addNewScreen} variant='contained'>Add new screen</Button>
+    <Button sx={{ py: 1.5 }} fullWidth onClick={() => setOpenDialog(true)} variant='contained'>Add new screen</Button>
+
+    <Dialog open={openDialog} maxWidth="md" fullWidth>
+      <DialogContent>
+        <Grid container spacing={1}>
+          {Object.entries(screensList).map(([key, val]) => <Grid item xs={4} key={key}>
+            <Card>
+              <CardActionArea onClick={(ev) => {
+                ev.stopPropagation();
+                ev.preventDefault();
+                addNewScreen(key as keyof typeof screensList);
+                setOpenDialog(false);
+              }}>
+                <CardContent sx={{ height: '140px' }}>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {val.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {val.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>)}
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button sx={{ width: 150 }} onClick={() => setOpenDialog(false)}>Close</Button>
+      </DialogActions>
+    </Dialog>
 
     <DndContext
       sensors={sensors}
@@ -391,6 +260,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
           item={o}
           canvas={canvas}
           onUpdate={(value) => handleScreenChange(o.id, value)}
+          onRemove={() => handleScreenRemove(o.id)}
           name={o.name.length > 0 ? o.name : '<unnamed>'}/>)}
       </SortableContext>
       <DragOverlay>
