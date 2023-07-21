@@ -32,8 +32,8 @@ export const defaultHeaderValues: {
   tip:              'Tips',
 } as const;
 
-export const CreditsCustomEvents: React.FC<Props<CreditsScreenEvents>>
-= ({ item, active }) => {
+export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: () => void }>
+= ({ item, active, onLoaded }) => {
   const { configuration } = useAppSelector((state: any) => state.loader);
 
   const [ events, setEvents ] = React.useState<Event[]>([]);
@@ -53,6 +53,7 @@ export const CreditsCustomEvents: React.FC<Props<CreditsScreenEvents>>
       }
       setEvents(opts.events);
       setIsLoading(false);
+      onLoaded && onLoaded();
     });
   }, []);
 
@@ -76,7 +77,7 @@ export const CreditsCustomEvents: React.FC<Props<CreditsScreenEvents>>
     pb:            2,
   }}>
     {!isLoading && <>
-      {Object.entries(groupBy(events, 'event')).filter(data => !item.excludeEvents.includes(data[0] as any)).map(data => <>
+      {Object.entries(groupBy(events, 'event')).filter(data => !item.excludeEvents.includes(data[0] as any)).map(data => <React.Fragment key={data[0]}>
         <Typography sx={{
           textAlign:  item.headerFont.align,
           color:      item.headerFont.color,
@@ -94,7 +95,7 @@ export const CreditsCustomEvents: React.FC<Props<CreditsScreenEvents>>
           columnCount: item.columns,
           px:          10,
         }}>
-          {data[1].map(it => <Typography sx={{
+          {data[1].map((it, idx) => <Typography component='div' key={`${it.event}-${idx}`} sx={{
             textAlign:   item.itemFont.align,
             color:       item.itemFont.color,
             fontFamily:  item.itemFont.family,
@@ -237,7 +238,7 @@ export const CreditsCustomEvents: React.FC<Props<CreditsScreenEvents>>
             </Box>}
           </Typography>)}
         </Box>
-      </>) }
+      </React.Fragment>) }
     </>}
   </Box>;
 };

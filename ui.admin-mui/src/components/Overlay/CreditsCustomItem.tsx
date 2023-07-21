@@ -10,8 +10,8 @@ import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 
-export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][number]>>
-= ({ item, active }) => {
+export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][number]> & { onLoaded?: () => void }>
+= ({ item, active, onLoaded }) => {
   const [wrapper] = React.useState(shortid());
 
   const [ text, setText ] = React.useState('');
@@ -23,6 +23,7 @@ export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][numb
         console.error(err);
       } else {
         setText(parsed);
+        onLoaded && onLoaded();
       }
     });
   }, [active, item]);

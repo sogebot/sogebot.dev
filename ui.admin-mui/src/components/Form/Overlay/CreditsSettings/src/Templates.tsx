@@ -10,11 +10,11 @@ export const css
 ${cssWrapper}
 
 #wrapper .title {
-  font-size: 2.5vw;
+  font-size: 50px;
   text-transform: uppercase;
 }
 #wrapper .game {
-  font-size: 4vw;
+  font-size: 80px;
   text-transform: uppercase;
 }
 #wrapper .thumbnail {

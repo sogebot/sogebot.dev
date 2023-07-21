@@ -8,8 +8,8 @@ import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
 
-export const CreditsCustomClips: React.FC<Props<CreditsScreenClips>>
-= ({ item, active, width, height }) => {
+export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () => void }>
+= ({ item, active, width, height, onLoaded }) => {
   const [ isLoading, setIsLoading ] = React.useState(true);
   const [ clips, setClips ] = React.useState<Awaited<ReturnType<typeof getTopClips>>>([]);
 
@@ -46,7 +46,11 @@ export const CreditsCustomClips: React.FC<Props<CreditsScreenClips>>
         ...item,
       }, async (data) => {
         setClips(data);
+        if (data.length === 0) {
+          console.log('credits::clips', 'No clips found.');
+        }
         setIsLoading(false);
+        onLoaded && onLoaded();
       });
     } else {
       setClips([
@@ -62,8 +66,8 @@ export const CreditsCustomClips: React.FC<Props<CreditsScreenClips>>
   }, [item, active]);
 
   return <Box sx={{
-    width:         `${width}px`,
-    height:        `${height}px`,
+    width:         `${clips.length > 0 ? width : 0}px`,
+    height:        `${clips.length > 0 ? height : 0}px`,
     position:      'relative',
     overflow:      'visible',
     textTransform: 'none',
@@ -86,7 +90,7 @@ export const CreditsCustomClips: React.FC<Props<CreditsScreenClips>>
       Example
     </Box>}
     {!isLoading && <>
-      {clips.map((clip, idx) => <>
+      {clips.map((clip, idx) => <React.Fragment key={`clip-${idx}`}>
         <Box id={`clip-${idx}`}>
           <Typography sx={{
             textAlign:  item.titleFont.align,
@@ -134,7 +138,7 @@ export const CreditsCustomClips: React.FC<Props<CreditsScreenClips>>
             src={clip.mp4}
           />
         </Box>
-      </>)}
+      </React.Fragment>)}
     </>}
   </Box>;
 };

@@ -40,10 +40,6 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
   const fontSize = useAppSelector(state => state.overlay.chat.fontSize);
   const dispatch = useAppDispatch();
 
-  useIntervalWhen(() => {
-    console.log({ messages });
-  }, 1000, true, true);
-
   const moveNicoNico = React.useCallback((elementId: string) => {
     const element = document.getElementById(`nico-${elementId}`);
     if (element) {

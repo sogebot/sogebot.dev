@@ -3,16 +3,44 @@ import { v4 } from 'uuid';
 
 import { css, html } from './Templates';
 
+export const separator200 = {
+  id:                 v4(),
+  height:             200,
+  items:              [],
+  name:               'Separator (200px)',
+  type:               'custom',
+  waitBetweenScreens: null,
+  speed:              null,
+};
+export const separator500 = {
+  id:                 v4(),
+  height:             500,
+  items:              [],
+  name:               'Separator (500px)',
+  type:               'custom',
+  waitBetweenScreens: null,
+  speed:              null,
+};
+export const separator1000 = {
+  id:                 v4(),
+  height:             1000,
+  items:              [],
+  name:               'Separator (1000px)',
+  type:               'custom',
+  waitBetweenScreens: null,
+  speed:              null,
+};
+
 export const title = {
   id:     v4(),
-  height: 1080,
+  height: 550,
   items:  [
     {
       id:       v4(),
       alignX:   (1920 - 1600) / 2,
-      alignY:   100,
+      alignY:   25,
       css,
-      height:   1015,
+      height:   500,
       width:    1600,
       rotation: 0,
       html,
@@ -30,7 +58,7 @@ export const title = {
   ],
   name:               'Title Screen',
   type:               'custom',
-  waitBetweenScreens: 10000,
+  waitBetweenScreens: 0,
   speed:              null,
 };
 
@@ -52,7 +80,7 @@ export const events = {
     color:       '#ffffff',
     size:        50,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
     pl:          100,
     pr:          0,
@@ -66,7 +94,7 @@ export const events = {
     color:       '#ffffff',
     size:        35,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
     pl:          0,
     pr:          0,
@@ -80,7 +108,7 @@ export const events = {
     color:       '#FFD700',
     size:        35,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
   },
 };
@@ -103,7 +131,7 @@ export const clips = {
     color:       '#ffffff',
     size:        35,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
     pl:          40,
     pr:          0,
@@ -117,7 +145,7 @@ export const clips = {
     color:       '#ffffff',
     size:        60,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
     pl:          40,
     pr:          0,
@@ -131,7 +159,7 @@ export const clips = {
     color:       '#FFD700',
     size:        30,
     borderColor: '#000000',
-    borderPx:    10,
+    borderPx:    4,
     shadow:      [],
     pl:          40,
     pr:          0,
@@ -141,7 +169,11 @@ export const clips = {
 };
 
 export const creditsDefaultScreens = [
+  {
+    ...separator1000, id: v4(),
+  },
   title,
+  separator500,
   events,
   clips,
   {
@@ -164,14 +196,14 @@ export const creditsDefaultScreens = [
           color:       '#ffffff',
           size:        130,
           borderColor: '#000000',
-          borderPx:    10,
+          borderPx:    4,
           shadow:      [],
         },
       },
     ],
     name:               'Ending Screen',
     type:               'custom',
-    waitBetweenScreens: 10000,
+    waitBetweenScreens: 0,
     speed:              null,
   },
 ] as Credits['screens'];

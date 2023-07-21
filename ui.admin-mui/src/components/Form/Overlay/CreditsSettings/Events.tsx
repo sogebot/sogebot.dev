@@ -18,7 +18,7 @@ import { useValidator } from '../../../../hooks/useValidator';
 import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
 import { setZoomRemoveButton } from '../../../Moveable/RemoveButton';
-import { CreditsCustomEvents, defaultHeaderValues } from '../../../Overlay/CreditsEvents';
+import { CreditsEvents, defaultHeaderValues } from '../../../Overlay/CreditsEvents';
 import { FormNumericInput } from '../../Input/Numeric';
 import { events } from '../AlertSettings/tester';
 
@@ -206,8 +206,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
                 backgroundSize:     `20px 20px`, /* Must be a square */
                 backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
               }}>
-
-              <CreditsCustomEvents height={0} width={0} item={item} groupId={''} id={item.id}/>
+              <CreditsEvents height={0} width={0} item={item} groupId={''} id={item.id}/>
             </Paper>
           </Box>
         </Grid>

@@ -466,13 +466,8 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
                   border:          `0 !important`,
                   left:            `${o.alignX}px`,
                   top:             `${o.alignY}px`,
-                  fontWeight:      '900',
-                  fontSize:        `${20}px`,
-                  textTransform:   'uppercase',
                   userSelect:      'none',
                   cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
-                  lineHeight:      `${12}px`,
-                  '& small':       { fontSize: `${12}px` },
                   transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                 }}
               >

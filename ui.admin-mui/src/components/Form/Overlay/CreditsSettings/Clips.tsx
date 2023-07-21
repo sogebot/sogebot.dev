@@ -15,7 +15,7 @@ import { useValidator } from '../../../../hooks/useValidator';
 import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
 import { setZoomRemoveButton } from '../../../Moveable/RemoveButton';
-import { CreditsCustomClips } from '../../../Overlay/CreditsClips';
+import { CreditsClips } from '../../../Overlay/CreditsClips';
 import { FormNumericInput } from '../../Input/Numeric';
 
 let isPositionChanging = false;
@@ -204,7 +204,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
                 backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
               }}>
 
-              <CreditsCustomClips height={canvas.height} width={canvas.width} item={item} groupId={''} id={item.id} active={false}/>
+              <CreditsClips height={canvas.height} width={canvas.width} item={item} groupId={''} id={item.id} active={false}/>
             </Paper>
           </Box>
         </Grid>
