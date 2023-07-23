@@ -65,74 +65,100 @@ const (
 
 var SubscriptionList []Data
 
-func List(cursor *string) {
+func List() {
 	// Create an HTTP client
 	client := &http.Client{}
 
 	var TWITCH_EVENTSUB_CLIENTID string = os.Getenv("TWITCH_EVENTSUB_CLIENTID")
 
-	if cursor != nil {
-		commons.Debug("Getting list with cursor " + *cursor)
-	} else {
-		commons.Debug("Getting list without cursor")
-	}
-
-	url := "https://api.twitch.tv/helix/eventsub/subscriptions"
-	if cursor != nil {
-		url = url + "?after=" + *cursor
-	}
-
-	// Create a GET request
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
-	}
-
-	// Set request headers
-	token, err := token.Access()
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
-	}
-
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Client-Id", TWITCH_EVENTSUB_CLIENTID)
-
-	// Send the request
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	// Read the response body
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response:", err)
-		return
-	}
-
-	// Unmarshal the response body into a Response struct
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		fmt.Println("Error unmarshaling response:", err)
-		return
-	}
-	for _, value := range response.Data {
-		if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status == "authorization_revoked" {
-			commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
-			DeleteSubscription(value.ID, token)
+	var cursor *string
+	for {
+		if cursor != nil {
+			commons.Debug("Getting list with cursor " + *cursor)
 		} else {
-			SubscriptionList = append(SubscriptionList, value)
+			commons.Debug("Getting list without cursor")
 		}
-	}
 
-	if response.Pagination.Cursor != nil {
-		time.Sleep(time.Second)
-		List(response.Pagination.Cursor)
+		url := "https://api.twitch.tv/helix/eventsub/subscriptions"
+		if cursor != nil {
+			url = url + "?after=" + *cursor
+		}
+
+		// Create a GET request
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			fmt.Println("Error creating request:", err)
+			return
+		}
+
+		// Set request headers
+		token, err := token.Access()
+		if err != nil {
+			fmt.Println("Error creating request:", err)
+			return
+		}
+
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Client-Id", TWITCH_EVENTSUB_CLIENTID)
+
+		// Send the request
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("Error sending request:", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		// Read the response body
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("Error reading response:", err)
+			return
+		}
+
+		// Unmarshal the response body into a Response struct
+		var response Response
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			fmt.Println("Error unmarshaling response:", err)
+			return
+		}
+
+	OuterLoop:
+		for _, value := range response.Data {
+			if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status == "authorization_revoked" {
+				commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
+				DeleteSubscription(value.ID, token)
+			} else {
+				// check if subscription is new
+				for _, item := range SubscriptionList {
+					// condition to strings so we can check
+					condition1, err := json.Marshal(value.Condition)
+					if err != nil {
+						fmt.Println("Error marshaling map to JSON:", err)
+						return
+					}
+					condition2, err := json.Marshal(item.Condition)
+					if err != nil {
+						fmt.Println("Error marshaling map to JSON:", err)
+						return
+					}
+					// check if already subscribed
+					if item.Type == value.Type && item.Version == value.Version && string(condition2) == string(condition1) {
+						// skip
+						continue OuterLoop
+					}
+				}
+				SubscriptionList = append(SubscriptionList, value)
+			}
+		}
+
+		if response.Pagination.Cursor != nil {
+			time.Sleep(time.Second)
+			cursor = response.Pagination.Cursor
+		} else {
+			break
+		}
 	}
 }
 

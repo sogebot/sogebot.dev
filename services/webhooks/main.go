@@ -35,7 +35,7 @@ func handleUsers(updatedOnly bool) {
 	var rows *sql.Rows
 	var err error
 
-	subscriptions.List(nil)
+	subscriptions.List()
 
 	if updatedOnly {
 		rows, err = database.DB.Query(
