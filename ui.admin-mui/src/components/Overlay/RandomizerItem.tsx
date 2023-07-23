@@ -256,9 +256,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
 
               const segments = Array.from(document.getElementsByClassName('segment')).reverse();
               blinkElementWoFBackground(segments[index] as HTMLElement);
-              console.log(segments[index]);
             }
-            // TODO: get winner to blink and speak
           },
         });
       }
@@ -462,13 +460,13 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
                   data-value='item1'
                   style={{ background: `conic-gradient(${item.color} ${(360 / generateItems(currentRandomizer!.items).length) + 0.1}deg, transparent ${(360 / generateItems(currentRandomizer!.items).length)}deg calc(${(360 / generateItems(currentRandomizer!.items).length) + 0}deg))` }}
                   sx={{
-                    position: 'absolute',
-                    rotate:   `${idx * (360 / generateItems(currentRandomizer!.items).length)}deg`,
-                    width:    `${Math.min(width, height) - 4}px !important`,
-                    height:   `${Math.min(width, height) - 4}px !important`,
+                    position:  'absolute',
+                    transform: `rotate(${idx * (360 / generateItems(currentRandomizer!.items).length)}deg)`,
+                    width:     `${Math.min(width, height) - 4}px !important`,
+                    height:    `${Math.min(width, height) - 4}px !important`,
                   }}>
                   <Box sx={{
-                    rotate:          `${180 / generateItems(currentRandomizer!.items).length}deg`,
+                    transform:       `rotate(${180 / generateItems(currentRandomizer!.items).length}deg)`,
                     transformOrigin: '50% 100%',
                     color:           'white',
                     textAlign:       'center',
