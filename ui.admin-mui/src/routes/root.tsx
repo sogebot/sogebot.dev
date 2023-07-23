@@ -164,6 +164,7 @@ export default function Root() {
   const isMobile = useMobile();
 
   const [ unfold ] = useLocalstorageState('action_unfold', true);
+  const [ chatUnfold ] = useLocalstorageState('chat_unfold', true);
 
   useEffect(() => {
     setIndexPage(location.pathname === '/');
@@ -215,17 +216,28 @@ export default function Root() {
                 position: 'absolute', top: '0px', width: isMobile ? '100%' : 'calc(100% - 75px)', left: isMobile ? undefined : '70px',
               }} mr={0.2}>
                 <DashboardStats/>
-                <Grid container pt={0.5} pr={0.2} spacing={0.5}>
-                  <Grid item sm={12} md={6} xs={12}>
+                <Grid container pt={0.5} pr={0.2} spacing={0.5} sx={{
+                  flexFlow: 'nowrap', minWidth: 0,
+                }}>
+                  <Grid item
+                    sx={{ minWidth: 0 }}
+                    sm={chatUnfold ? 12 : true}
+                    md={chatUnfold ? 6 : true}
+                    xs={chatUnfold ? 12 : true}>
                     <DashboardWidgetBot/>
                   </Grid>
-                  <Grid item sm md xs>
+                  <Grid item
+                    sx={{ minWidth: 0 }}
+                    sm={chatUnfold ? true : 'auto'}
+                    md={chatUnfold ? true : 'auto'}
+                    xs={chatUnfold ? true : 'auto'}>
                     <DashboardWidgetTwitch/>
                   </Grid>
                   <Grid item
-                    sm={unfold ? 2 : undefined}
-                    md={unfold ? 2 : undefined}
-                    xs={unfold ? 12 : undefined}>
+                    sm={unfold ? 2 : 'auto'}
+                    md={unfold ? 2 : 'auto'}
+                    xs={unfold ? 12 : 'auto'}
+                    sx={{ minWidth: unfold ? '180px' : 0 }}>
                     <DashboardWidgetAction/>
                   </Grid>
                 </Grid>

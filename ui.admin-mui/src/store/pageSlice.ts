@@ -25,6 +25,10 @@ export interface PageState {
   permissions: Required<Permissions>[],
   scrollY: number,
   widgets: {
+    unfold: {
+      chat: boolean,
+      actions: boolean,
+    }
     events: {
       showFollows:             boolean,
       showBits:                boolean,
@@ -77,6 +81,10 @@ const initialState: PageState = {
   scrollY: 0,
 
   widgets: {
+    unfold: {
+      chat:    JSON.parse(localStorage.getItem('chat_unfold') ?? 'true'),
+      actions: JSON.parse(localStorage.getItem('action_unfold') ?? 'true'),
+    },
     events: {
       showFollows:             true,
       showBits:                true,
@@ -107,6 +115,15 @@ export const pageSlice = createSlice({
   name:     'page',
   initialState,
   reducers: {
+    toggleUnfold: (state: any, action: { payload: any }) => {
+      state.widgets[action.payload] = !state.widgets[action.payload];
+      if (action.payload === 'chat') {
+        localStorage.setItem('chat_unfold', JSON.stringify(state.widgets[action.payload]));
+      }
+      if (action.payload === 'actions') {
+        localStorage.setItem('actions_unfold', JSON.stringify(state.widgets[action.payload]));
+      }
+    },
     setWidgetsEvents: (state: any, action: { payload: any }) => {
       state.widgets.events = action.payload;
     },
@@ -117,9 +134,6 @@ export const pageSlice = createSlice({
       state.averageStats = action.payload;
     },
     setCurrentStats: (state: any, action: { payload: Record<string, any> }) => {
-      console.log({
-        state, action,
-      });
       state.currentStats = action.payload;
     },
     setPermissions: (state: any, action: { payload: Permissions[] }) => {
@@ -132,5 +146,5 @@ export const pageSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setPermissions, setAverageStats, setCurrentStats, setStreamOnline, setWidgetsEvents, setScrollY } = pageSlice.actions;
+export const { toggleUnfold, setPermissions, setAverageStats, setCurrentStats, setStreamOnline, setWidgetsEvents, setScrollY } = pageSlice.actions;
 export default pageSlice.reducer;
