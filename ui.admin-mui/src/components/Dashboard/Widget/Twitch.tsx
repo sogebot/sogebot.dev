@@ -1,4 +1,6 @@
-import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
+import {
+  SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone,
+} from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
   Box, Card, IconButton, Stack, Tab, Typography,
@@ -20,6 +22,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const [room, setRoom] = React.useState('');
   const { isStreamOnline } = useAppSelector(state => state.page);
   const [ unfold, setUnfold ] = useLocalstorageState('chat_unfold', true);
+  const [ split, setSplit ] = useLocalstorageState('chat_split', false);
 
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
@@ -70,6 +73,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
     setValue(newValue);
   };
 
+  React.useEffect(() => {
+    // set tab to 1
+    setValue('1');
+  }, [split]);
+
   return (
     <Card variant="outlined" sx={{ height: height + 'px' }} ref={ref}>
       <TabContext value={value}>
@@ -82,10 +90,13 @@ export const DashboardWidgetTwitch: React.FC = () => {
           <Stack direction="row" alignItems={'center'} sx={{ display: unfold ? undefined : 'none' }}>
             <Box width={'100%'} height={48}>
               <TabList onChange={handleChange} aria-label="lab API tabs example">
-                <Tab label={translate('widget-title-chat')} value="1" />
-                <Tab label={translate('widget-title-monitor')} value="2" />
+                <Tab label={split ? `${translate('widget-title-monitor')} / ${translate('widget-title-chat')}` : translate('widget-title-chat')} value="1" />
+                <Tab sx={{ display: !split ? 'inherit' : 'none' }}  label={translate('widget-title-monitor')} value="2" />
               </TabList>
             </Box>
+            <IconButton onClick={() => setSplit(!split)}>
+              <SplitscreenTwoTone/>
+            </IconButton>
             <IconButton onClick={() => setUnfold(false)}>
               <UnfoldLessTwoTone/>
             </IconButton>
@@ -111,28 +122,49 @@ export const DashboardWidgetTwitch: React.FC = () => {
         <Box sx={{
           position: 'relative', height: 'calc(100% - 48px);',
         }}>
-          <Box sx={{
-            ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', display: unfold ? undefined : 'none',
+          {split ? (<Box sx={{
+            height: '100%', width: '100%', display: unfold ? undefined : 'none',
           }}>
-            <iframe
-              frameBorder="0"
-              scrolling="no"
-              src={chatUrl}
-              width="100%"
-              height="100%"
-            />
-          </Box>
-          <Box key={`twitch-monitor-${timestamp}`} sx={{
-            ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
-          }}>
-            <iframe
-              frameBorder="0"
-              scrolling="no"
-              src={videoUrl}
-              width="100%"
-              height="100%"
-            />
-          </Box>
+            <Stack sx={{ height: '100%' }}>
+              <iframe
+                frameBorder="0"
+                scrolling="no"
+                src={videoUrl}
+                width="100%"
+                height="30%"
+              />
+              <iframe
+                frameBorder="0"
+                scrolling="no"
+                src={chatUrl}
+                width="100%"
+                height="100%"
+              />
+            </Stack>
+          </Box>)
+            : <><Box sx={{
+              ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', display: unfold ? undefined : 'none',
+            }}>
+              <iframe
+                frameBorder="0"
+                scrolling="no"
+                src={chatUrl}
+                width="100%"
+                height="100%"
+              />
+            </Box>
+            <Box key={`twitch-monitor-${timestamp}`} sx={{
+              ...(value === '2' ? classes.showTab : classes.hideTab), height: '100%', width: '100%',
+            }}>
+              <iframe
+                frameBorder="0"
+                scrolling="no"
+                src={videoUrl}
+                width="100%"
+                height="100%"
+              />
+            </Box>
+            </>}
         </Box>
       </TabContext>
     </Card>
