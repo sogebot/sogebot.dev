@@ -39,7 +39,7 @@ const layers = {
     description: 'Show clips created in defined timeframe, useful for intros/outros.',
   },
   credits: {
-    title:       'Outro Credits (WIP)',
+    title:       'Outro Credits',
     description: 'Customizable credits. Usually used in outro, shows games played, followers, subs, tips, clips created during current stream and more.',
   },
   carousel: {

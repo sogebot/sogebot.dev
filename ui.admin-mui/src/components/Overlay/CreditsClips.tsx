@@ -3,15 +3,23 @@ import { CreditsScreenClips } from '@sogebot/backend/dest/database/entity/overla
 import type { getTopClips } from '@sogebot/backend/dest/services/twitch/calls/getTopClips';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import React from 'react';
+import { v4 } from 'uuid';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
 
-export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () => void }>
-= ({ item, active, width, height, onLoaded }) => {
+const currentClipIdx = new Map<string, number>();
+
+export const CreditsClips: React.FC<Props<CreditsScreenClips> &
+{ play?: boolean,
+  onLoaded?: (shouldWait: boolean) => void,
+  onFinished?: () => void }>
+= ({ item, active, width, height, onLoaded, play, onFinished }) => {
+  const [ id ] = React.useState(v4());
   const [ isLoading, setIsLoading ] = React.useState(true);
   const [ clips, setClips ] = React.useState<Awaited<ReturnType<typeof getTopClips>>>([]);
+  const [ visibleClipIdx, setVisibleClipIdx ] = React.useState(0);
 
   const [ videoHeight, setVideoHeight ] = React.useState(0);
 
@@ -20,6 +28,35 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () 
     loadFont(item.titleFont.family);
     loadFont(item.createdByFont.family);
   }, [active, item]);
+
+  const playClip = () => {
+    const clipIdx = (currentClipIdx.get(id) ?? -1) + 1;
+    currentClipIdx.set(id, clipIdx);
+
+    console.log('credits::overlay::clip', 'Playing clip ' + clipIdx);
+
+    const videoPlayerId = `${id}-videoplayer-${clipIdx}`;
+    const el = document.getElementById(videoPlayerId) as HTMLVideoElement;
+    el.onended = () => {
+      if (clips[clipIdx + 1]) {
+        setVisibleClipIdx(clipIdx + 1);
+        setTimeout(() => {
+          playClip();
+        }, 1000);
+      } else {
+        onFinished && onFinished();
+      }
+    };
+    el.volume = item.volume / 100;
+    el.play();
+    console.log({ el });
+  };
+
+  React.useEffect(() => {
+    if (play) {
+      playClip();
+    }
+  }, [play, id]);
 
   React.useEffect(() => {
     setVideoHeight(0);
@@ -50,7 +87,7 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () 
           console.log('credits::clips', 'No clips found.');
         }
         setIsLoading(false);
-        onLoaded && onLoaded();
+        onLoaded && onLoaded(data.length > 0);
       });
     } else {
       setClips([
@@ -90,7 +127,13 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () 
       Example
     </Box>}
     {!isLoading && <>
-      {clips.map((clip, idx) => <React.Fragment key={`clip-${idx}`}>
+      {clips.map((clip, idx) => <Box
+        key={`clip-${idx}`}
+        sx={{
+          position:   'absolute',
+          opacity:    visibleClipIdx === idx ? 1 : 0,
+          transition: 'opacity 500ms',
+        }}>
         <Box id={`clip-${idx}`}>
           <Typography sx={{
             textAlign:  item.titleFont.align,
@@ -103,7 +146,8 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () 
             pb:         `${item.titleFont.pb}px`,
             pt:         `${item.titleFont.pt}px`,
             textShadow: [textStrokeGenerator(item.titleFont.borderPx, item.titleFont.borderColor), shadowGenerator(item.titleFont.shadow)].filter(Boolean).join(', '),
-          }}>{clip.title}</Typography>
+          }}>{clip.title}
+          </Typography>
           <Typography sx={{
             textAlign:  item.gameFont.align,
             color:      item.gameFont.color,
@@ -133,12 +177,13 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> & { onLoaded?: () 
           p: 4, margin: 'auto', width: '100%', textAlign: 'center', height: `${videoHeight}px`,
         }} id={`video-${idx}`}>
           <video
+            id={`${id}-videoplayer-${idx}`}
             style={{ height: '100%' }}
             onLoadedData={(ev) => ev.currentTarget.volume = item.volume / 100}
             src={clip.mp4}
           />
         </Box>
-      </React.Fragment>)}
+      </Box>)}
     </>}
   </Box>;
 };

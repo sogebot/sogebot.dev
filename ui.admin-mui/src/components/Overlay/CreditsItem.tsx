@@ -20,11 +20,13 @@ const speed = {
 
 const prevCumulativeHeight = new Map<string, number>();
 const currentScreenIdx = new Map<string, number>();
+const waitingForClipsToFinish = new Map<string, boolean>();
 
 export const CreditsItem: React.FC<Props<Credits>> = ({ item, width, height }) => {
   const [ isRolling, setIsRolling ] = React.useState(false);
   const [ screensHeight, setScreensHeight ] = React.useState<number[]>([]);
   const [ id ] = React.useState(v4());
+  const [ clipsScreenId, setClipScreenId ] = React.useState('');
 
   const [ screensLoaded, setScreensLoaded ] = React.useState(0);
 
@@ -48,6 +50,7 @@ export const CreditsItem: React.FC<Props<Credits>> = ({ item, width, height }) =
       console.log('credits::overlay', 'Rolling finished !!!');
       return;
     }
+
     if (!isRolling) {
       const el = document.getElementById(`screen-${currentScreenIdx.get(id) ?? 0}`);
       const container = document.getElementById(`container-${id}`);
@@ -99,13 +102,23 @@ export const CreditsItem: React.FC<Props<Credits>> = ({ item, width, height }) =
           y:          `${-cumulativeHeight}px`,
           duration:   duration / 1000,
           onComplete: () => {
-            // check if we need to wait
-            const waitBetweenScreens = item.screens[currentScreenIdx.get(id) ?? 0].waitBetweenScreens ?? item.waitBetweenScreens;
-            console.log('credits::overlay', `Waiting for ${waitBetweenScreens}ms.`);
-            setTimeout(() => {
-              setIsRolling(false);
-              roll();
-            }, waitBetweenScreens);
+            const checkIfComplete = () => {
+              // we need to wait until clips are finished
+              if (waitingForClipsToFinish.get(`${id}-${item.screens[(currentScreenIdx.get(id) ?? 0)].id}`)) {
+                setTimeout(() => setClipScreenId(item.screens[(currentScreenIdx.get(id) ?? 0)].id), 1000);
+                console.log('credits::overlay', 'Waiting for clips to finish !!!');
+                setTimeout(() => checkIfComplete(), 1000);
+                return;
+              }
+              // check if we need to wait
+              const waitBetweenScreens = item.screens[currentScreenIdx.get(id) ?? 0].waitBetweenScreens ?? item.waitBetweenScreens;
+              console.log('credits::overlay', `Waiting for ${waitBetweenScreens}ms.`);
+              setTimeout(() => {
+                setIsRolling(false);
+                roll();
+              }, waitBetweenScreens);
+            };
+            checkIfComplete();
           },
         });
       }
@@ -166,7 +179,20 @@ export const CreditsItem: React.FC<Props<Credits>> = ({ item, width, height }) =
         {screen.type === 'clips' && <Box sx={{
           width: `${width}px`, height: `fit-content`, position: 'relative',
         }}>
-          <CreditsClips height={height} width={width} item={screen} groupId={''} id={screen.id} active onLoaded={handleScreenLoaded}/>
+          <CreditsClips
+            play={screen.id === clipsScreenId}
+            height={height}
+            width={width}
+            item={screen}
+            groupId={''}
+            id={screen.id}
+            active
+            onLoaded={(shouldWait) => {
+              waitingForClipsToFinish.set(`${id}-${screen.id}`, shouldWait);
+              handleScreenLoaded();
+            }} onFinished={() => {
+              waitingForClipsToFinish.delete(`${id}-${screen.id}`);
+            }}/>
         </Box>}
       </Box>)}
     </Box>
