@@ -74,7 +74,7 @@ export const events = {
   speed:              null,
   headers:            {},
   headerFont:         {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'left',
     weight:      900,
     color:       '#ffffff',
@@ -88,7 +88,7 @@ export const events = {
     pt:          100,
   },
   itemFont: {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'center',
     weight:      500,
     color:       '#ffffff',
@@ -102,7 +102,7 @@ export const events = {
     pt:          0,
   },
   highlightFont: {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'center',
     weight:      900,
     color:       '#FFD700',
@@ -125,7 +125,7 @@ export const clips = {
   waitBetweenScreens: null,
   speed:              null,
   gameFont:           {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'left',
     weight:      500,
     color:       '#ffffff',
@@ -139,7 +139,7 @@ export const clips = {
     pt:          0,
   },
   titleFont: {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'left',
     weight:      500,
     color:       '#ffffff',
@@ -153,7 +153,7 @@ export const clips = {
     pt:          30,
   },
   createdByFont: {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     align:       'left',
     weight:      500,
     color:       '#FFD700',
@@ -190,7 +190,7 @@ export const creditsDefaultScreens = [
         rotation: 0,
         html:     'Thanks for watching!',
         font:     {
-          family:      'PT Sans',
+          family:      'Cabin Condensed',
           align:       'center',
           weight:      900,
           color:       '#ffffff',

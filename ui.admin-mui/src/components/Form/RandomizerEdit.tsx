@@ -100,7 +100,7 @@ const emptyItem: Partial<Randomizer> = {
     anchorY: 'middle',
   },
   customizationFont: {
-    family:      'PT Sans',
+    family:      'Cabin Condensed',
     weight:      500,
     size:        16,
     borderColor: '#000000',

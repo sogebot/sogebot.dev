@@ -63,7 +63,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
         height:          50,
       },
       customizationFont: {
-        family:      'PT Sans',
+        family:      'Cabin Condensed',
         weight:      500,
         color:       '#ffffff',
         size:        20,
