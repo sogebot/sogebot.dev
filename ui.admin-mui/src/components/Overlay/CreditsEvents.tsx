@@ -72,6 +72,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
     height:        '100%',
     position:      'relative',
     overflow:      'visible',
+    userSelect:    'none',
     textTransform: 'none',
     lineHeight:    'initial',
     pb:            2,
@@ -114,7 +115,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
             {it.event === 'cheer' && <Box sx={{ breakInside: 'avoid-column' }}>
               {it.username}
               {' '}
-              <DiamondTwoTone/>
+              <DiamondTwoTone sx={{ stroke: item.itemFont.borderPx > 0 ? item.itemFont.borderColor : undefined }}/>
               {' '}
               <Typography component='span' sx={{
                 textAlign:  item.highlightFont.align,
@@ -148,7 +149,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
             {it.event === 'raid' && <Box sx={{ breakInside: 'avoid-column' }}>
               {it.username}
               {' '}
-              <TheaterComedyTwoTone/>
+              <TheaterComedyTwoTone sx={{ stroke: item.itemFont.borderPx > 0 ? item.itemFont.borderColor : undefined }}/>
               {' '}
               <Typography component='span' sx={{
                 textAlign:  item.highlightFont.align,
@@ -189,7 +190,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
             {it.event === 'rewardredeem' && <Box sx={{ breakInside: 'avoid-column' }}>
               {it.username}
               {' '}
-              <KeyboardDoubleArrowRightTwoTone/>
+              <KeyboardDoubleArrowRightTwoTone sx={{ stroke: item.itemFont.borderPx > 0 ? item.itemFont.borderColor : undefined }}/>
               {' '}
               <Typography component='span' sx={{
                 textAlign:  item.highlightFont.align,
@@ -206,7 +207,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
             {it.event === 'subcommunitygift' && <Box sx={{ breakInside: 'avoid-column' }}>
               {it.username}
               {' '}
-              <KeyboardDoubleArrowRightTwoTone/>
+              <KeyboardDoubleArrowRightTwoTone sx={{ stroke: item.itemFont.borderPx > 0 ? item.itemFont.borderColor : undefined }}/>
               {' '}
               <Typography component='span' sx={{
                 textAlign:  item.highlightFont.align,
@@ -223,7 +224,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
             {it.event === 'subgift' && <Box sx={{ breakInside: 'avoid-column' }}>
               {it.values!.fromUsername}
               {' '}
-              <KeyboardDoubleArrowRightTwoTone/>
+              <KeyboardDoubleArrowRightTwoTone sx={{ stroke: item.itemFont.borderPx > 0 ? item.itemFont.borderColor : undefined }}/>
               {' '}
               <Typography component='span' sx={{
                 textAlign:  item.highlightFont.align,

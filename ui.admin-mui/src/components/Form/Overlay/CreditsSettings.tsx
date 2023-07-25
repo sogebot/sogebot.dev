@@ -35,13 +35,13 @@ import orange from '@mui/material/colors/orange';
 import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 
 import { CreditsSettingsClips } from './CreditsSettings/Clips';
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
 import { CreditsSettingsEvents } from './CreditsSettings/Events';
 import { screensList } from './CreditsSettings/src/ScreensList';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { setParentDelKeyDisableStatus } from '../../../store/overlaySlice';
 import { FormNumericInput } from '../Input/Numeric';
 
@@ -78,7 +78,7 @@ function SortableCard(props: {
 
   const [ open, setOpen ] = React.useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(setParentDelKeyDisableStatus(open));
   }, [open]);
