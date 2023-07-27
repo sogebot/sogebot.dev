@@ -143,6 +143,13 @@ export const OverlayEdit: React.FC = () => {
       console.log('Parent del key disabled');
       return;
     }
+
+    const focusedElement = document.activeElement;
+    if (focusedElement?.tagName === 'INPUT') {
+      console.log('Del key disabled, because we are focusing input');
+      return;
+    }
+
     if (selectedItem) {
       setItem(o => ({
         ...o,

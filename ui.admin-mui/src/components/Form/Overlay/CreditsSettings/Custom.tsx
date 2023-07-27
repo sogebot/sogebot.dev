@@ -163,6 +163,12 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
   const selectedItem = item.items.find(o => o.id.replace(/-/g, '') === moveableId);
 
   useKey(['Delete'], () => {
+    const focusedElement = document.activeElement;
+    if (focusedElement?.tagName === 'INPUT') {
+      console.log('Del key disabled, because we are focusing input');
+      return;
+    }
+
     if (selectedItem) {
       setItem(o => ({
         ...o,
