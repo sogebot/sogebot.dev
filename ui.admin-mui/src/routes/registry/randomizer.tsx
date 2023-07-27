@@ -51,6 +51,7 @@ import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
 import { setBulkCount } from '../../store/appbarSlice';
+import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 
 const PageRegistryRandomizer = () => {
   const dispatch = useAppDispatch();
@@ -109,7 +110,7 @@ const PageRegistryRandomizer = () => {
       ...item,
       isShown: false, // forcefully hide
       id:      v4(),
-      name:    item.name + ' (clone)',
+      name:    cloneIncrementName(item.name, items.map(o => o.name)),
       command: `!${Math.random().toString(36).substr(2, 5)}`,
     };
 
@@ -121,7 +122,7 @@ const PageRegistryRandomizer = () => {
         enqueueSnackbar('Randomizer cloned.');
         refresh();
       });
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar, refresh, items ]);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Randomizer>([
     {
@@ -242,6 +243,7 @@ const PageRegistryRandomizer = () => {
           <DataGrid
             rows={items}
             columns={columns}
+            getRowId={row => row.id}
           >
             <PermissionTypeProvider
               for={['permissionId']}

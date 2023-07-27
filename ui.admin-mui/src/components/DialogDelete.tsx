@@ -30,8 +30,8 @@ export const DialogDelete: React.FC<{
       }
     </DialogContent>
     <DialogActions>
-      <Button autoFocus fullWidth onClick={() => setOpen(false)}>Cancel</Button>
-      <Button fullWidth color="error" variant="contained" onClick={() => {
+      <Button fullWidth onClick={() => setOpen(false)}>Cancel</Button>
+      <Button autoFocus fullWidth color="error" variant="contained" onClick={() => {
         setOpen(false); onDelete();
       }}>Delete</Button>
     </DialogActions>

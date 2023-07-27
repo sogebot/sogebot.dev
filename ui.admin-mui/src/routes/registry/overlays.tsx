@@ -15,7 +15,9 @@ import {
   TableHeaderRow,
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
-import { ContentPasteTwoTone, Link } from '@mui/icons-material';
+import {
+  ContentCopyTwoTone, ContentPasteTwoTone, LinkTwoTone,
+} from '@mui/icons-material';
 import {
   CircularProgress,
   Dialog,
@@ -34,6 +36,7 @@ import React, {
 import { useLocation, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
@@ -46,6 +49,7 @@ import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
+import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 
 const generateLinkId = (server: string, id: string) => {
   return Buffer.from(JSON.stringify({
@@ -62,10 +66,11 @@ const PageRegistryOverlays = () => {
   const { translate } = useTranslation();
 
   const [ items, setItems ] = useState<Overlay[]>([]);
+  const [ cloningItems, setCloningItems ] = useState<string[]>([]);
 
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useAppSelector(state => state.appbar);
-  const [ selection, setSelection ] = useState<(string|number)[]>([]);
+  const [ selection, setSelection ] = useState<(number|string)[]>([]);
 
   const refresh = useCallback(async () => {
     await Promise.all([
@@ -95,7 +100,7 @@ const PageRegistryOverlays = () => {
     },
     {
       columnName:  'actions',
-      table:       { width: 4.5 * 43 },
+      table:       { width: 5.5 * 43 },
       sorting:     { sortingEnabled: false },
       translation: ' ',
       column:      {
@@ -107,8 +112,12 @@ const PageRegistryOverlays = () => {
             <IconButton
               LinkComponent={'a'}
               href={`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`} target="_blank">
-              <Link/>
+              <LinkTwoTone/>
             </IconButton>
+            {cloningItems.includes(row.id)
+              ? <CircularProgress size={24}/>
+              : <IconButton onClick={() => clone(row)}><ContentCopyTwoTone/></IconButton>
+            }
             <IconButton onClick={() => copy(`${window.location.origin}/overlays/${generateLinkId(server, row.id)}`)}><ContentPasteTwoTone/></IconButton>
             <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
           </Stack>,
@@ -157,6 +166,26 @@ const PageRegistryOverlays = () => {
     enqueueSnackbar(<div>Overlay link &nbsp;<strong>{link}</strong>&nbsp;copied to clipboard.</div>);
   }, [ enqueueSnackbar, server ]);
 
+  const clone = useCallback((item: Overlay) => {
+    const clonedItem = {
+      ...item,
+      name: cloneIncrementName(item.name, items.map(o => o.name)),
+      id:   v4(),
+    };
+
+    setCloningItems(it => [...it, item.id]);
+
+    getSocket('/registries/overlays').emit('generic::save', clonedItem, (err, data) => {
+      setCloningItems(it => it.filter(o => o !== item.id));
+      if (err || !data) {
+        enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
+        return console.error(err);
+      }
+      enqueueSnackbar(<div>Overlay <strong>{item.name}</strong> was successfully cloned into <strong>{clonedItem.name}</strong>.</div>, { variant: 'success' });
+      refresh();
+    });
+  }, [ enqueueSnackbar, refresh, items ]);
+
   const open = React.useMemo(() => !!(type
     && (
       (type === 'edit' && id)
@@ -186,6 +215,7 @@ const PageRegistryOverlays = () => {
           <DataGrid
             rows={items}
             columns={columns}
+            getRowId={row => row.id}
           >
             <SortingState
               defaultSorting={[{
