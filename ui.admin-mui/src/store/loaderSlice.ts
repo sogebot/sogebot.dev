@@ -11,6 +11,7 @@ export interface LoaderState {
   connectedToServer: boolean,
   showLoginWarning:  boolean,
   showCookieManager: boolean,
+  showDebugManager: boolean,
 
   drawerWidth:           number,
   message:               null,
@@ -36,6 +37,7 @@ const initialState: LoaderState = {
   connectedToServer: false,
   showLoginWarning:  false,
   showCookieManager: false,
+  showDebugManager:  false,
 
   drawerWidth:           65,
   message:               null,
@@ -116,10 +118,14 @@ export const loaderSlice = createSlice({
       console.debug(`toggleCookieManager`, action.payload);
       state.showCookieManager = action.payload;
     },
+    toggleDebugManager: (state: { showDebugManager: any }, action: { payload: boolean })=> {
+      console.debug(`toggleDebugManager`, action.payload);
+      state.showDebugManager = action.payload;
+    },
   },
 });
 
-export const { toggleCookieManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
 
 export const selectTranslationState = (state: RootState) => state.loader.translation;
 export const selectStateState = (state: RootState) => state.loader.state;

@@ -1,12 +1,11 @@
 import BuildIcon from '@mui/icons-material/Build';
-import CookieIcon from '@mui/icons-material/Cookie';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
-  Button, ListItem, ListItemIcon, Paper, Stack, Toolbar, Tooltip, Typography,
+  ListItem, ListItemIcon, Paper, Stack, Toolbar, Typography,
 } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -15,10 +14,9 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { MenuItemDeep } from './menuItemDeep';
-import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
-import { toggleCookieManager } from '../../store/loaderSlice';
 import customTheme, { theme } from '../../theme';
 import { UserMenu } from '../User/userMenu';
 
@@ -69,7 +67,6 @@ const LinkedListItem = function (props: LinkedListItemProps) {
 export default function NavDrawer() {
   const { translate } = useTranslation();
   const reducer = useAppSelector(state => state.loader);
-  const dispatch = useAppDispatch();
   const isMobile = useMobile();
 
   return (
@@ -134,11 +131,6 @@ export default function NavDrawer() {
             <MenuItemDeep icon={<QueryStatsIcon/>} title={translate('menu.stats')} category="stats"/>
           </ListItem>
         </List>
-        {!isMobile && <Tooltip title="Cookie management" placement='right'>
-          <Button color='light' sx={{ py: 2 }} onClick={() => dispatch(toggleCookieManager(true))}>
-            <CookieIcon/>
-          </Button>
-        </Tooltip>}
       </Stack>
     </Drawer>
   );

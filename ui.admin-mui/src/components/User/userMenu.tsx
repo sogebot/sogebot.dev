@@ -1,7 +1,8 @@
+import { CookieTwoTone, PestControlTwoTone } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {
-  Avatar, Button, Chip, Divider, Grid, IconButton, Typography,
+  Avatar, Button, Chip, Divider, Grid, IconButton, Tooltip, Typography,
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
@@ -10,9 +11,10 @@ import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
-import { useAppSelector } from '../../hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
+import { toggleCookieManager, toggleDebugManager } from '../../store/loaderSlice';
 import theme from '../../theme';
 
 export const UserMenu: React.FC = () => {
@@ -21,6 +23,7 @@ export const UserMenu: React.FC = () => {
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const isMobile = useMobile();
+  const dispatch = useAppDispatch();
 
   const { user } = useAppSelector(state => state.user);
   const { configuration } = useAppSelector(state => state.loader);
@@ -118,6 +121,20 @@ export const UserMenu: React.FC = () => {
                 );
               },
               )}
+            <Tooltip title="Debug management">
+              <IconButton onClick={() => dispatch(toggleDebugManager(true))} sx={{
+                position: 'absolute',
+                right:    `5px`,
+                top:      `25px`,
+              }}><PestControlTwoTone/></IconButton>
+            </Tooltip>
+            <Tooltip title="Cookie management">
+              <IconButton onClick={() => dispatch(toggleCookieManager(true))} sx={{
+                position: 'absolute',
+                right:    `45px`,
+                top:      `25px`,
+              }}><CookieTwoTone/></IconButton>
+            </Tooltip>
             <Divider sx={{ pt: 1 }}/>
 
             {viewer && <Grid container spacing={2} sx={{ pt: 1 }} width={400}>
