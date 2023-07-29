@@ -137,26 +137,26 @@ export const UserMenu: React.FC = () => {
             </Tooltip>
             <Divider sx={{ pt: 1 }}/>
 
-            {viewer && <Grid container spacing={2} sx={{ pt: 1 }} width={400}>
-              <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
+            {viewer && <Grid container spacing={2} sx={{ pt: 1 }}>
+              <Grid item xs={6} sm={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang).format(viewer.points ?? 0) }
                 <Typography fontWeight={100}>{ translate('points') }</Typography>
               </Grid>
-              <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
+              <Grid item xs={6} sm={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang).format(viewer.messages ?? 0) }
                 <Typography fontWeight={100}>{ translate('messages') }</Typography>
               </Grid>
-              <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
+              <Grid item xs={6} sm={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang).format(viewer.aggregatedBits) }
                 <Typography fontWeight={100}>{ translate('bits') }</Typography>
               </Grid>
-              <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
+              <Grid item xs={6} sm={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang, {
                   minimumFractionDigits: 2, maximumFractionDigits: 2,
                 }).format((viewer.watchedTime ?? 0) / 1000 / 60 / 60) } h
                 <Typography fontWeight={100}>{ translate('watched-time') }</Typography>
               </Grid>
-              <Grid item xs={4} textAlign='center' sx={{ pa: 1 }}>
+              <Grid item xs={6} sm={4} textAlign='center' sx={{ pa: 1 }}>
                 { Intl.NumberFormat(configuration.lang, {
                   style: 'currency', currency: configuration.currency,
                 }).format(viewer.aggregatedTips) }
