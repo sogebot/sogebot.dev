@@ -22,9 +22,10 @@ export const classes  = {
     position:   'absolute',
   },
   parent: {
-    position: 'relative',
-    zIndex:   0,
-    cursor:   'pointer',
+    position:   'relative',
+    zIndex:     0,
+    cursor:     'pointer',
+    userSelect: 'none',
   },
   greyColor:  { color: grey[700] },
   whiteColor: { color: 'white' },

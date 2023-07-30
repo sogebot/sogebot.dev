@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
+import { xor } from 'lodash';
 
 export interface PageState {
   averageStats:            Record<string, any>,
@@ -23,6 +24,7 @@ export interface PageState {
   },
   isStreamOnline: boolean,
   permissions: Required<Permissions>[],
+  hideStats: string[],
   scrollY: number,
   widgets: {
     unfold: {
@@ -77,6 +79,7 @@ const initialState: PageState = {
   },
   isStreamOnline: false,
   permissions:    [],
+  hideStats:      JSON.parse(localStorage.getItem('panel::hideStats') ?? '[]'),
 
   scrollY: 0,
 
@@ -115,6 +118,10 @@ export const pageSlice = createSlice({
   name:     'page',
   initialState,
   reducers: {
+    toggleStatsDisplay: (state, action: { payload: string }) => {
+      state.hideStats = xor(state.hideStats, [action.payload]);
+      localStorage.setItem('panel::hideStats', JSON.stringify(state.hideStats));
+    },
     toggleUnfold: (state: any, action: { payload: any }) => {
       state.widgets[action.payload] = !state.widgets[action.payload];
       if (action.payload === 'chat') {
@@ -146,5 +153,7 @@ export const pageSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleUnfold, setPermissions, setAverageStats, setCurrentStats, setStreamOnline, setWidgetsEvents, setScrollY } = pageSlice.actions;
+export const { toggleStatsDisplay, toggleUnfold, setPermissions,
+  setAverageStats, setCurrentStats, setStreamOnline,
+  setWidgetsEvents, setScrollY } = pageSlice.actions;
 export default pageSlice.reducer;
