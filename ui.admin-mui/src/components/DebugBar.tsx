@@ -22,12 +22,14 @@ export default function DebugBar() {
       setOpen(true);
     }
 
-    getSocket('/').emit('debug::get', (err, debugEnv) => {
-      if (err) {
-        return console.error(err);
-      }
-      setDebug(debugEnv);
-    });
+    if (connectedToServer) {
+      getSocket('/').emit('debug::get', (err, debugEnv) => {
+        if (err) {
+          return console.error(err);
+        }
+        setDebug(debugEnv);
+      });
+    }
   }, [showDebugManager, connectedToServer]);
 
   const setDebugEnv = React.useCallback(() => {
