@@ -1,7 +1,7 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
-  Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp,
+  Adjust, ChatTwoTone, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp,
 } from '@mui/icons-material';
 import {
   Backdrop, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography,
@@ -61,6 +61,9 @@ function RenderRow(props: any) {
     if (event.event === 'tip' && values.charityCampaignName) {
       t = translate(`eventlist-events.tipToCharity`);
     }
+    if (event.event === 'tip' && get(values, 'method', '') === 'hypeChat') {
+      t = translate(`eventlist-events.hypeChatTip`);
+    }
     const formattedAmount = Intl.NumberFormat(configuration.lang, {
       style: 'currency', currency: get(values, 'currency', 'USD'),
     }).format(get(values, 'amount', '0'));
@@ -90,7 +93,9 @@ function RenderRow(props: any) {
       <ListItemIcon>
         {props.item.event === 'follow' && <Favorite htmlColor={pink[400]}/>}
         {props.item.event === 'rewardredeem' && <Adjust htmlColor={orange[300]}/>}
-        {props.item.event === 'tip' && <MonetizationOn htmlColor={green[300]}/>}
+        {props.item.event === 'tip' && props.item.method === 'hypeChat'
+          ? <ChatTwoTone htmlColor={green[500]}/>
+          : <MonetizationOn htmlColor={green[300]}/>}
         {props.item.event === 'resub' && <Icon size={1} path={mdiCrown} horizontal vertical color={blue[300]} rotate={180}/>}
         {props.item.event === 'sub' && <Icon size={1} path={mdiCrown} horizontal vertical color={lightBlue[300]} rotate={180}/>}
         {props.item.event === 'raid' && <TheaterComedy htmlColor={lime[300]}/>}
