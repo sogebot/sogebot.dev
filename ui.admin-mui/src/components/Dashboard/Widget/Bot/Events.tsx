@@ -93,9 +93,11 @@ function RenderRow(props: any) {
       <ListItemIcon>
         {props.item.event === 'follow' && <Favorite htmlColor={pink[400]}/>}
         {props.item.event === 'rewardredeem' && <Adjust htmlColor={orange[300]}/>}
-        {props.item.event === 'tip' && props.item.method === 'hypeChat'
-          ? <ChatTwoTone htmlColor={green[500]}/>
-          : <MonetizationOn htmlColor={green[300]}/>}
+        {props.item.event === 'tip' && <>
+          {props.item.method === 'hypeChat'
+            ? <ChatTwoTone htmlColor={green[500]}/>
+            : <MonetizationOn htmlColor={green[300]}/>}
+        </>}
         {props.item.event === 'resub' && <Icon size={1} path={mdiCrown} horizontal vertical color={blue[300]} rotate={180}/>}
         {props.item.event === 'sub' && <Icon size={1} path={mdiCrown} horizontal vertical color={lightBlue[300]} rotate={180}/>}
         {props.item.event === 'raid' && <TheaterComedy htmlColor={lime[300]}/>}
