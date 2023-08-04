@@ -1,10 +1,13 @@
-import { CheckSharp } from '@mui/icons-material';
+import {
+  CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock,
+} from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Backdrop, Box, Button, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, TextField, Typography,
+  Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography,
 } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
+import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/src/helpers/constants';
 import { capitalize } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
@@ -17,8 +20,10 @@ import theme from '../../../theme';
 import { classes } from '../../styles';
 
 const filter = createFilterOptions<string>();
+const icon = <CheckBoxOutlineBlankTwoTone fontSize="small" />;
+const checkedIcon = <CheckBoxTwoTone fontSize="small" />;
 
-export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
+export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, contentClassificationLabels: string[], tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
   const [ loading, setLoading ] = React.useState(true);
   const [ titles, setTitles ] = React.useState<CacheTitlesInterface[]>([]);
@@ -27,6 +32,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   const [ titleInputValue, setTitleInputValue ] = React.useState(props.title);
 
   const [ selectedTags, setSelectedTags ] = React.useState(props.tags);
+  const [ selectedContentClassificationLabels, setSelectedContentClassificationLabels ] = React.useState(props.contentClassificationLabels);
 
   const [ isSearching, setIsSearching ] = React.useState(false);
   const [ isSaving, setIsSaving ] = React.useState(false);
@@ -71,11 +77,11 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   }, [titles]);
 
   const lastTitles = React.useMemo(() => {
-    const value = [] as {title: string, tags: string[]}[];
+    const value = [] as {title: string, tags: string[], content_classification_labels: string[]}[];
     for (const title of orderBy(titles, 'timestamp', 'desc').filter(o => o.game === inputValue)) {
       if (!value.find(o => o.title === title.title)) {
         value.push({
-          title: title.title, tags: title.tags,
+          title: title.title, tags: title.tags, content_classification_labels: title.content_classification_labels,
         });
       }
       if (value.length === 20) {
@@ -96,9 +102,10 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
     getSocket('/').emit('cleanupGameAndTitle');
 
     const emit = {
-      game:  inputValue,
-      title: titleInputValue,
-      tags:  selectedTags,
+      game:                        inputValue,
+      title:                       titleInputValue,
+      tags:                        selectedTags,
+      contentClassificationLabels: selectedContentClassificationLabels,
     };
 
     getSocket('/').emit('updateGameAndTitle', emit, () => {
@@ -235,6 +242,61 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
               {...params}/>
           }
         />
+        <Autocomplete
+          multiple
+          disableCloseOnSelect
+          options={Object.keys(CONTENT_CLASSIFICATION_LABELS)}
+          onChange={(_, value) => {
+            let labels = [];
+            if (props.contentClassificationLabels.includes('MatureGame')) {
+              labels.push('MatureGame');
+            }
+            labels = [...labels, ...value.filter(o => o !== 'MatureGame')];
+            setSelectedContentClassificationLabels(labels);
+          }}
+          renderOption={(p, option, { selected }) => (
+            <li {...p}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <Stack>
+                <Typography sx={{ fontWeight: 'bold' }}>{CONTENT_CLASSIFICATION_LABELS[option as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? option}</Typography>
+                <Typography variant='body2'>{CONTENT_CLASSIFICATION_LABELS[option as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.description ?? ''}</Typography>
+              </Stack>
+            </li>
+          )}
+          renderTags={(value: readonly string[], getTagProps) =>
+            value.map((option: string, index: number) => (
+              <Chip
+                size='small'
+                color="primary"
+                deleteIcon={option === 'MatureGame' ? <Lock/> : undefined}
+                label={CONTENT_CLASSIFICATION_LABELS[option as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? option}
+                {...getTagProps({ index })}
+                disabled={option === 'MatureGame'}
+                key={option} />
+            ))
+          }
+          value={selectedContentClassificationLabels}
+          renderInput={(params) =>
+            <TextField
+              label={capitalize('Content classification labels')}
+              variant="filled"
+              placeholder='Type to search'
+              helperText={<>
+                Mature-rated game label is automatically added by ESRB rating of Mature. More informations at
+                {' '}
+                <a href='https://safety.twitch.tv/s/article/Content-Classification-Guidelines?language=en_US' target="_blank">
+                  Content Classification Guidelines
+                </a>.
+              </>}
+              {...params}
+            />
+          }
+        />
 
         {loading
           ? <Grid container sx={{
@@ -249,7 +311,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
                     padding: '0px !important', ...classes.parent,
                   }} item key={game} xs={1} onMouseEnter={() => setHover(game)} onMouseLeave={() => setHover('')}>
                     <img style={{
-                      width: '100%', height: '100%', 
+                      width: '100%', height: '100%',
                     }} title={game} alt={game} src={(cacheGames.find(o => o.name === game)?.thumbnail || '').replace('{width}', '144').replace('{height}', '192')}/>
                     <Backdrop open={hover === game || inputValue === game} sx={classes.backdrop} onClick={() => setInputValue(game)}>
                       <CheckSharp/>
@@ -267,20 +329,34 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
                 {lastTitles.map((title) => {
                   return (
                     <ListItem
-                      sx={{ color: title.title === titleInputValue ? theme.palette.primary.main : 'inherit' }}
+                      sx={{
+                        borderColor: title.title === titleInputValue ? `${theme.palette.primary.main} !important` : 'inherit', borderLeft: '5px solid transparent',
+                      }}
                       disablePadding
                       key={title.title}>
                       <ListItemButton
-                        sx={{
-                          display: 'flex', flexDirection: 'column', alignItems: 'self-start',
-                        }}
+                        sx={{ display: 'block' }}
                         onClick={() => {
                           setTitleInputValue(title.title);
                           setSelectedTags(title.tags);
+
+                          let labels = [];
+                          if (props.contentClassificationLabels.includes('MatureGame')) {
+                            labels.push('MatureGame');
+                          }
+                          labels = [...labels, ...title.content_classification_labels.filter(o => o !== 'MatureGame')];
                         }}>
-                        <Typography>{title.title}</Typography>
                         <Box>
-                          {title.tags.map(tag => <Chip key={tag} size='small' label={tag} sx={{ mr: 1 }}/>)}
+                          <Typography component='span'>{title.title}</Typography>
+                          {' '}
+                          {title.tags.map((tag) => {
+                            return(<Typography component="span" key={tag} sx={{ color: theme.palette.primary.main }}>
+                            #{ tag.toLocaleLowerCase() }{'  '}
+                            </Typography>);
+                          })}
+                        </Box>
+                        <Box>
+                          {(title.content_classification_labels ?? []).filter(label => label !== 'MatureGame').map(label => <Chip key={label} size='small' label={CONTENT_CLASSIFICATION_LABELS[label as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? label} sx={{ mr: 1 }}/>)}
                         </Box>
                       </ListItemButton>
                     </ListItem>

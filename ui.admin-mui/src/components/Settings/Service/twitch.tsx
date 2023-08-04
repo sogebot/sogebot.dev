@@ -301,12 +301,6 @@ const PageSettingsModulesServiceTwitch: React.FC<{
         </FormGroup>
         <FormGroup sx={{ width: '100%' }}>
           <FormControlLabel
-            control={<Checkbox onChange={(_, checked) => handleChange('general.isTitleForced', checked)}
-              checked={settings.general.isTitleForced[0]} />}
-            label={translate('core.twitch.settings.isTitleForced')} />
-        </FormGroup>
-        <FormGroup sx={{ width: '100%' }}>
-          <FormControlLabel
             control={<Checkbox onChange={(_, checked) => handleChange('chat.sendWithMe', checked)}
               checked={settings.chat.sendWithMe[0]} />}
             label={translate('core.tmi.settings.sendWithMe')} />

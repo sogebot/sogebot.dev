@@ -1,9 +1,11 @@
+import { Lock } from '@mui/icons-material';
 import {
-  Backdrop, Grid, Paper, Skeleton,
+  Backdrop, Box, Chip, Grid, Paper, Skeleton,
   Typography,
 } from '@mui/material';
+import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/src/helpers/constants';
 import parse from 'html-react-parser';
-import { capitalize, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
 import { DashboardDialogSetGameAndTitle } from './Dialog/SetGameAndTitle';
@@ -25,6 +27,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
 
   const game = React.useMemo(() => currentStats.game, [currentStats.game]);
   const tags = React.useMemo(() => currentStats.tags, [currentStats.tags]);
+  const contentClassificationLabels = React.useMemo(() => currentStats.contentClassificationLabels, [currentStats.contentClassificationLabels]);
   const rawStatus = React.useMemo(() => currentStats.rawStatus, [currentStats.rawStatus]);
 
   React.useEffect(() => {
@@ -71,7 +74,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
   return (
     <Grid item xs={12} sm={12} md={12} lg={12} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Paper sx={{
-        p: 0.5, overflow: 'hidden', ...classes.parent,
+        px: 0.5, overflow: 'hidden', ...classes.parent,
       }}>
         <Grid container justifyContent={'left'}>
           <Grid item sm={12} xs={12}>
@@ -96,9 +99,11 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
                   </Typography>);
                 })}</Typography>
             }
-            <Typography color={theme.palette.grey[400]} variant='caption' sx={{
-              pt: 2, pa: 1,
-            }}>{ capitalize(translate('game')) }, { capitalize(translate('title')) }, { capitalize(translate('tags')) }</Typography>
+            <Box sx={{ py: 0.5 }}>{
+              contentClassificationLabels.map(label => <Chip icon={label === 'MatureGame' ? <Lock/> : undefined}size='small' sx={{ mx: 0.1 }} label={
+                CONTENT_CLASSIFICATION_LABELS[label as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? label
+              }/>)
+            }</Box>
           </Grid>
         </Grid>
         { game && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
@@ -106,7 +111,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
         </Backdrop>}
       </Paper>
 
-      {game && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawStatus || ''} tags={tags || []}/>}
+      {game && <DashboardDialogSetGameAndTitle open={open} setOpen={setOpen} game={game || ''} title={rawStatus || ''} contentClassificationLabels={contentClassificationLabels ?? []} tags={tags || []}/>}
     </Grid>
   );
 };

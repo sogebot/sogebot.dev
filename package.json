@@ -6,11 +6,11 @@
     "ui.public"
   ],
   "scripts": {
-    "postinstall": "patch-package || (exit 0)",
+    "postinstall": "custompatch || (exit 0)",
     "tunnel": "ssh -L 5432:community.sogebot.xyz:15432 root@community.sogebot.xyz"
   },
   "dependencies": {
-    "patch-package": "^6.4.7"
+    "custompatch": "1.0.22"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.2"
