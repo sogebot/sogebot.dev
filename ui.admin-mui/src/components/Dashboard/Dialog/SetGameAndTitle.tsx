@@ -1,5 +1,5 @@
 import {
-  CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock,
+  CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock, LockTwoTone,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -22,6 +22,7 @@ import { classes } from '../../styles';
 const filter = createFilterOptions<string>();
 const icon = <CheckBoxOutlineBlankTwoTone fontSize="small" />;
 const checkedIcon = <CheckBoxTwoTone fontSize="small" />;
+const lockIcon = <LockTwoTone fontSize="small" />;
 
 export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, contentClassificationLabels: string[], tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
@@ -257,8 +258,8 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           renderOption={(p, option, { selected }) => (
             <li {...p}>
               <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
+                icon={option === 'MatureGame' ? lockIcon : icon}
+                checkedIcon={option === 'MatureGame' ? lockIcon : checkedIcon}
                 style={{ marginRight: 8 }}
                 checked={selected}
               />
