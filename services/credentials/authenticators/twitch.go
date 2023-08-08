@@ -108,6 +108,11 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 		}
 		defer resp.Body.Close()
 
+		if resp.StatusCode == http.StatusBadRequest {
+			//  logging bad request error
+			log.Println("ERROR: " + string(body))
+		}
+
 		w.WriteHeader(resp.StatusCode)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, string(body))
@@ -147,6 +152,11 @@ func TwitchRefresh(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusBadRequest {
+		//  logging bad request error
+		log.Println("ERROR: " + string(body))
+	}
 
 	w.WriteHeader(resp.StatusCode)
 	w.Header().Set("Content-Type", "application/json")
