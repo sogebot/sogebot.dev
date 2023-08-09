@@ -2,11 +2,12 @@ package authenticators
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -102,7 +103,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 		resp, _ := client.Do(req)
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -119,11 +120,20 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var bannedTokens = []string{
+	"zxbmsprlp37ftqpyvhg69mde8vu80xaurhnq0hv0vot2lslwhq",
+}
+
 func TwitchRefresh(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	refreshToken := vars["token"]
 
-	// to do add banned tokens through pgsql
+	if slices.Contains(bannedTokens, refreshToken) {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprint(w, "Banned refresh token used.")
+		log.Println("User used banned token: " + refreshToken)
+		return
+	}
 
 	var TWITCH_CLIENTID, TWITCH_CLIENTSECRET, REDIRECTURI string
 	TWITCH_CLIENTID = os.Getenv("TWITCH_CLIENTID")
@@ -147,7 +157,7 @@ func TwitchRefresh(w http.ResponseWriter, r *http.Request) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, _ := client.Do(req)
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -155,7 +165,7 @@ func TwitchRefresh(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode == http.StatusBadRequest {
 		//  logging bad request error
-		log.Println("ERROR: " + string(body))
+		log.Println("ERROR|" + refreshToken + ": " + string(body))
 	}
 
 	w.WriteHeader(resp.StatusCode)
