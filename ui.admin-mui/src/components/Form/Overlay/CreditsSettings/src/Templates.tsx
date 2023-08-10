@@ -1,23 +1,20 @@
 export const cssWrapper
 = `
-/* Any customized css should be in #wrapped to not affect anything outside
-#wrapper {}
-*/
 `;
 
 export const css
 = `
 ${cssWrapper}
 
-#wrapper .title {
+.title {
   font-size: 50px;
   text-transform: uppercase;
 }
-#wrapper .game {
+.game {
   font-size: 80px;
   text-transform: uppercase;
 }
-#wrapper .thumbnail {
+.thumbnail {
   padding-top: 50px;
 }
 `;
