@@ -17,7 +17,32 @@ import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
-const stringToColour = (str: string) => {
+function shadeColor(color: string, percent: number) {
+  // https://stackoverflow.com/a/13532993
+  let R = parseInt(color.substring(1,3),16);
+  let G = parseInt(color.substring(3,5),16);
+  let B = parseInt(color.substring(5,7),16);
+
+  R = Math.floor(R * (100 + percent) / 100);
+  G = Math.floor(G * (100 + percent) / 100);
+  B = Math.floor(B * (100 + percent) / 100);
+
+  R = (R<255)?R:255;
+  G = (G<255)?G:255;
+  B = (B<255)?B:255;
+
+  R = Math.round(R);
+  G = Math.round(G);
+  B = Math.round(B);
+
+  const RR = ((R.toString(16).length==1)?'0'+R.toString(16):R.toString(16));
+  const GG = ((G.toString(16).length==1)?'0'+G.toString(16):G.toString(16));
+  const BB = ((B.toString(16).length==1)?'0'+B.toString(16):B.toString(16));
+
+  return '#'+RR+GG+BB;
+}
+
+export const stringToColour = (str: string) => {
   let hash = 0;
   str.split('').forEach(char => {
     hash = char.charCodeAt(0) + ((hash << 5) - hash);
@@ -27,7 +52,7 @@ const stringToColour = (str: string) => {
     const value = (hash >> (i * 8)) & 0xff;
     colour += value.toString(16).padStart(2, '0');
   }
-  return colour;
+  return shadeColor(colour, 70);
 };
 
 const marks = [
@@ -292,7 +317,7 @@ const PageStatsBits = () => {
       <XAxis dataKey="name" />
       <YAxis />
       <Tooltip content={<CustomTooltip />} />
-      { showChartCommands.map(command => <Line type="monotone" dataKey={command} stroke={stringToColour(command)} activeDot={{ r: 8 }} />)}
+      { showChartCommands.map(command => <Line type="step" dataKey={command} strokeWidth={2} stroke={stringToColour(command)} dot={false} activeDot={{ r: 8 }} />)}
     </LineChart>
 
     <Box sx={{

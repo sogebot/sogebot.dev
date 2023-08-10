@@ -118,7 +118,7 @@ const PageStatsBits = () => {
       <XAxis dataKey="name" />
       <YAxis />
       <Tooltip content={<CustomTooltip />} />
-      <Line type="monotone" dataKey="bits" stroke="#8884d8" activeDot={{ r: 8 }} />
+      <Line type="step" dataKey="bits" strokeWidth={2} stroke="#8884d8" dot={false} activeDot={{ r: 8 }} />
     </LineChart>
 
     {_data.filter(o => new Date(o.cheeredAt).getFullYear() === year).length > 0

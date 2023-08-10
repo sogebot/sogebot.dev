@@ -127,7 +127,7 @@ const PageStatsTips = () => {
       <XAxis dataKey="name" />
       <YAxis />
       <Tooltip content={<CustomTooltip />} />
-      <Line type="monotone" dataKey="tips" stroke="#8884d8" activeDot={{ r: 8 }} />
+      <Line type="step" dataKey="tips" strokeWidth={2} stroke="#8884d8" dot={false} activeDot={{ r: 8 }} />
     </LineChart>
 
     {_data.filter(o => new Date(o.tippedAt).getFullYear() === year).length > 0

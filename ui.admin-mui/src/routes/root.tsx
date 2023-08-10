@@ -80,6 +80,7 @@ const PageRegistryGallery = lazy(() => import('./registry/gallery'));
 const PageStatsBits = lazy(() => import('./stats/bits'));
 const PageStatsTips = lazy(() => import('./stats/tips'));
 const PageStatsCommandCount = lazy(() => import('./stats/commandcount'));
+const PageStatsProfiler = lazy(() => import('./stats/profiler'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
@@ -289,6 +290,7 @@ export default function Root() {
                     <Route path="/stats/bits" element={<PageStatsBits/>}/>
                     <Route path="/stats/tips" element={<PageStatsTips/>}/>
                     <Route path="/stats/commandcount" element={<PageStatsCommandCount/>}/>
+                    <Route path="/stats/profiler" element={<PageStatsProfiler/>}/>
 
                     <Route path="/" element={<span/>}/>
                     <Route path="*" element={<Error404/>}/>
