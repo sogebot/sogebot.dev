@@ -39,7 +39,7 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active, width, height })
     </script>
     </html>
     `;
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([html], { type: 'text/html;charset=UTF-8' });
     return window.URL.createObjectURL(blob);
   }, [text, item.css, item.javascript]);
 
