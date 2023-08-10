@@ -62,7 +62,7 @@ export const HTMLDialog: React.FC<Props> = ({ onChange, model }) => {
           width="100%"
           language={'html'}
           defaultValue={`<html>
-  <body id="#wrapper">
+  <body id="wrapper">
     ${model}
   </body>
 </html>`}
