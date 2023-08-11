@@ -1,9 +1,9 @@
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
-  Button, Dialog, DialogActions, DialogContent, Grid, IconButton, LinearProgress, List, ListItem, ListItemButton,
-  ListItemIcon,
-  ListItemText, ListSubheader, Popover, Stack, TextField, Typography,
+  Button, Dialog, DialogActions, DialogContent, Grid, IconButton, LinearProgress, List, ListItem,
+  ListItemButton,
+  ListItemIcon, ListItemText, ListSubheader, Popover, Stack, TextField, Typography,
 } from '@mui/material';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -37,9 +37,12 @@ import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
 import { ContentPasteTwoTone, DriveFileRenameOutlineTwoTone, LinkTwoTone } from '@mui/icons-material';
-import type { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
-import { v4 } from 'uuid';
+import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
+import shortid from 'shortid';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import { getSocket } from '../../helpers/socket';
+import { useValidator } from '../../hooks/useValidator';
+import { useSnackbar } from 'notistack';
 
 const leftPanelWidth = 352;
 
@@ -50,8 +53,8 @@ type File = {
 }
 
 
-const libSource = `
-declare function listenTo(listener: 'command', command: string, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
+const libSource =
+`declare function listenTo(listener: 'command', command: string, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
 declare function listenTo(listener: 'message', callback: (userId: string, userName: string) => void): void;
 
 declare const Twitch = {
@@ -68,6 +71,10 @@ declare const Permission = {
   accessTo(userId: string, permissionId: string): Promise<boolean>;
   list(): Promise<Permission[]>;
 }
+declare const Log = {
+  info(text: string): void,
+  warning(text: string): void
+}
 /**
  * Contains core permissions defined by bot
  * */
@@ -80,8 +87,6 @@ declare const permission = {
   VIEWERS:     '0efd7b1c-e460-4167-8e06-8aaf2c170311',
 } as const
 
-declare function info(text: string): void;
-declare function warning(text: string): void;
 declare function user(username: string): Promise<{ username: string, displayname: string, id: string, is: { follower: boolean, mod: boolean, online: boolean, subscriber: boolean, vip: boolean }}>
 declare function url(url: string, opts?: { method: 'POST' | 'GET', headers: object, data: object}): Promise<{ data: object, status: number, statusText: string}>
 declare function waitMs(miliseconds: number): Promise<undefined>
@@ -133,13 +138,14 @@ interface Permission {
 }
 `;
 
-
-
 export const PluginsEdit: React.FC = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator();
 
   const [ loading, setLoading ] = React.useState(true);
+  const [ saving, setSaving ] = React.useState(false);
 
   const [ fileType, setFileType ] = React.useState('code');
   const [ editFile, setEditFile ] = React.useState('');
@@ -147,41 +153,12 @@ export const PluginsEdit: React.FC = () => {
   const [newFilename, setNewFilename] = React.useState<{
     [id: string]: string
   }>({});
-  const [ plugin, setPlugin ] = React.useState<Plugin>({
-    id: v4(),
-    name: '',
-    enabled: true,
-    workflow: JSON.stringify({
-      code: [{
-        id: v4(),
-        name: 'this is source  code name',
-        source: `const settings = {
-  command: '!seppuku',
-  messageBroadcaster: '$sender tried to commit seppuku, but lost a sword.',
-  messageDefault: '$sender has committed seppuku.',
-  timeout: 10,
-}
-
-listenTo('command', settings.command, async (userState, ...commandArgs ) => {
-  const isCaster = await Permission.accessTo(userState.userId, permission.CASTERS);
-
-  Twitch.sendMessage(
-    isCaster
-      ? settings.messageBroadcaster
-      : settings.messageDefault
-  );
-
-  if (!isCaster) {
-    Twitch.timeout(userState.userName, settings.timeout)
-  }
-})`
-      }],
-      overlay: [],
-    }),
-    settings: null,
-  } as Plugin);
+  const [ plugin, setPlugin ] = React.useState<Plugin | null>(null);
   const updateFileName = React.useCallback((fId: string) => {
     setPlugin(pl => {
+      if (!pl) {
+        return pl;
+      }
       const workflow = JSON.parse(pl.workflow);
 
       const file = [...workflow.code, ...workflow.overlay].find((o: File) => o.id === fId);
@@ -194,6 +171,9 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
   }, [ newFilename ])
   const updateFileSource = React.useCallback((source: string) => {
     setPlugin(pl => {
+      if (!pl) {
+        return pl;
+      }
       const workflow = JSON.parse(pl.workflow);
 
       const file = [...workflow.code, ...workflow.overlay].find((o: File) => o.id === editFile);
@@ -204,6 +184,20 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
     })
     return true;
   }, [ editFile ])
+
+  const addNewFile = () => {
+    if (!plugin) {
+      return;
+    }
+
+    const workflow = JSON.parse(plugin.workflow);
+    workflow[fileType].push({
+      name: `unnamed file`,
+      source: '',
+      id: shortid()
+    })
+    setPlugin({...plugin, workflow: JSON.stringify(workflow)} as Plugin)
+  }
 
   const monaco = useMonaco();
   React.useEffect(() => {
@@ -241,14 +235,16 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
   }, [monaco, editFile]);
 
   const codeFiles = React.useMemo<File[]>(() => {
-    return JSON.parse(plugin.workflow).code
-  }, [ plugin.workflow ])
+    if (!plugin) {
+      return [];
+    }
+    return JSON.parse(plugin.workflow)[fileType]
+  }, [ plugin?.workflow, fileType ])
 
-  const overlayFiles = React.useMemo<File[]>(() => {
-    return JSON.parse(plugin.workflow).overlay
-  }, [ plugin.workflow ])
-
-  const openedFileSource = React.useMemo<File>(() => {
+  const openedFileSource = React.useMemo<File | null>(() => {
+    if (!plugin) {
+      return null;
+    }
     if (editFile === 'global.d.ts') {
       return {
         id: 'global.d.ts',
@@ -264,7 +260,7 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
         return file
       }
     }
-  }, [ plugin.workflow, editFile ])
+  }, [ plugin?.workflow, editFile ])
 
   const open = React.useMemo(() => !!(type
     && (
@@ -282,17 +278,74 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
   React.useEffect(() => {
     if (type === 'create') {
       setLoading(false);
+      setPlugin({
+        id: shortid(),
+        name: '',
+        enabled: true,
+        workflow: JSON.stringify({
+          code: [{
+            id: shortid(),
+            name: 'this is source  code name',
+            source: `const settings = {
+      command: '!seppuku',
+      messageBroadcaster: '$sender tried to commit seppuku, but lost a sword.',
+      messageDefault: '$sender has committed seppuku.',
+      timeout: 10,
     }
-  }, [ type, id ]);
 
-  const handleSave = React.useCallback(() => {
-    console.log({plugin});
-  }, [ plugin ]);
+    listenTo('command', settings.command, async (userState, ...commandArgs ) => {
+      const isCaster = await Permission.accessTo(userState.userId, permission.CASTERS);
 
-  const saving = false;
+      Twitch.sendMessage(
+        isCaster
+          ? settings.messageBroadcaster
+          : settings.messageDefault
+      );
+
+      if (!isCaster) {
+        Twitch.timeout(userState.userName, settings.timeout)
+      }
+    })`
+          }],
+          overlay: [],
+        }),
+        settings: null,
+      } as Plugin)
+    } else {
+      getSocket('/core/plugins').emit('generic::getOne', id, (err, item) => {
+        if (err) {
+          enqueueSnackbar(String(err), { action: 'error' });
+          console.error(err);
+        }
+        setPlugin(item);
+        setLoading(false)
+      })
+      console.log('loading')
+    }
+    reset();
+  }, [ type, id, reset ]);
+
+  React.useEffect(() => {
+    if (!loading && plugin) {
+      validate(Plugin, plugin);
+    }
+  }, [plugin, loading, validate]);
+
+  const handleSave = () => {
+    setSaving(true);
+    getSocket('/core/plugins').emit('generic::save', plugin, (err, savedItem) => {
+      if (err) {
+        showErrors(err as any);
+      } else {
+        enqueueSnackbar('Plugin saved.', { variant: 'success' });
+        navigate(`/registry/plugins/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
+      }
+      setSaving(false);
+    });
+  }
 
   return(<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
-    {loading ? <>
+    {(loading || !plugin) ? <>
       <LinearProgress />
       <DialogContent/>
     </>
@@ -305,7 +358,10 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
           <Grid sx={{
             p: 1, width: leftPanelWidth + 'px', pb: 0,
           }}>
+
+
               <TextField
+                {...propsError('name')}
                 sx={{ mb: 0.5 }}
                 label={'Name'}
                 defaultValue={plugin.name}
@@ -314,7 +370,7 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
               />
 
               <List
-                sx={{ width: '100%', bgcolor: 'background.paper', overflow: 'auto', height: 'calc(100vh - 200px)', p:0,
+                sx={{ width: '100%', bgcolor: 'background.paper', overflow: 'auto', height: `calc(100vh - 200px - ${fileType === 'definition' ? 0 : 36.5}px)`, p:0,
                 '& ul': { padding: 0 }, }}
                 subheader={<li />}
               >
@@ -331,90 +387,85 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
                     {fileType === 'definition' && <>
                       <ListItem
                         dense
-                        sx={{ px: '8px' }}>
+                        sx={{ px: '8px', py: 0 }}>
                         <ListItemButton sx={{ height: '48px' }} onClick={() => setEditFile('global.d.ts')} selected={'global.d.ts' === editFile}>
                           <ListItemText>global.d.ts</ListItemText >
                         </ListItemButton>
                       </ListItem>
                     </>}
 
-                    {fileType === 'code' && <>
-                      {codeFiles.map(file => <ListItem
-                        dense
-                        key={file.id}
-                        sx={{ px: '8px' }}>
-                        <ListItemButton onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
-                          <ListItemText>{file.name}</ListItemText >
-                          <ListItemIcon sx={{ minWidth: 'inherit' }}>
-                          <PopupState variant="popover" popupId="demo-popup-popover">
-                            {(popupState) => (
-                              <div>
-                                <IconButton  aria-label="rename" {...bindTrigger(popupState)} onClick={(ev) => {
-                                  newFilename[file.id] = file.name;
-                                  bindTrigger(popupState).onClick(ev);
-                                }}>
-                                  <DriveFileRenameOutlineTwoTone />
-                                </IconButton>
-                                <Popover
-                                  {...bindPopover(popupState)}
-                                  anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'center',
-                                  }}
-                                  transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'center',
-                                  }}
-                                >
-                                  <Stack direction='row' sx={{ p: 1, pt: 1.5 }} spacing={1}>
-                                    <TextField
-                                      defaultValue={file.name}
-                                      label="New filename"
-                                      size='small'
-                                      variant='outlined'
-                                      onKeyDown={(ev) => {
-                                        if (ev.key === 'Enter') {
-                                          ev.preventDefault()
-                                          updateFileName(file.id) && popupState.close()
-                                        }
-                                      }}
-                                      onChange={(ev) => setNewFilename(o => ({...o, [file.id]: ev.target.value ?? ''}))}
-                                      fullWidth
-                                    />
-                                    <Button size='small' onClick={() => updateFileName(file.id) && popupState.close()} disabled={!newFilename[file.id] || newFilename[file.id].length === 0}>Change</Button>
-                                  </Stack>
-                                </Popover>
-                              </div>
-                            )}
-                          </PopupState>
-
-                          </ListItemIcon>
-                        </ListItemButton>
-                      </ListItem>)}
-                    </>}
-
-                    {fileType === 'overlay' && <>
-                      {overlayFiles.map(file => <ListItem
-                        dense
-                        key={file.id}
-                        sx={{ px: '8px' }}
-                        secondaryAction={<Stack spacing={1} direction='row'>
+                    {fileType !== 'definition' && codeFiles.map(file => <ListItem
+                      dense
+                      key={file.id}
+                      sx={{ px: '8px', py: 0 }}>
+                      <ListItemButton onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
+                        <ListItemText>{file.name}</ListItemText >
+                        <ListItemIcon sx={{ minWidth: 'inherit' }}>
+                        <PopupState variant="popover" popupId="demo-popup-popover">
+                          {(popupState) => (
+                            <div>
+                              <IconButton  aria-label="rename" {...bindTrigger(popupState)} onClick={(ev) => {
+                                newFilename[file.id] = file.name;
+                                bindTrigger(popupState).onClick(ev);
+                              }}>
+                                <DriveFileRenameOutlineTwoTone />
+                              </IconButton>
+                              <Popover
+                                {...bindPopover(popupState)}
+                                anchorOrigin={{
+                                  vertical: 'bottom',
+                                  horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'center',
+                                }}
+                              >
+                                <Stack direction='row' sx={{ p: 1, pt: 1.5 }} spacing={1}>
+                                  <TextField
+                                    defaultValue={file.name}
+                                    label="New filename"
+                                    size='small'
+                                    variant='outlined'
+                                    onKeyDown={(ev) => {
+                                      if (ev.key === 'Enter') {
+                                        ev.preventDefault()
+                                        updateFileName(file.id) && popupState.close()
+                                      }
+                                    }}
+                                    onChange={(ev) => setNewFilename(o => ({...o, [file.id]: ev.target.value ?? ''}))}
+                                    fullWidth
+                                  />
+                                  <Button size='small' onClick={() => updateFileName(file.id) && popupState.close()} disabled={!newFilename[file.id] || newFilename[file.id].length === 0}>Change</Button>
+                                </Stack>
+                              </Popover>
+                            </div>
+                          )}
+                        </PopupState>
+                        </ListItemIcon>
+                        {fileType === 'overlay' && <>
+                        <ListItemIcon sx={{ minWidth: '40px' }}>
                           <IconButton edge="end" aria-label="comments">
                             <LinkTwoTone />
                           </IconButton>
+                          </ListItemIcon>
+                        <ListItemIcon sx={{ minWidth: '40px' }}>
                           <IconButton edge="end" aria-label="comments">
                             <ContentPasteTwoTone />
                           </IconButton>
-                        </Stack>
-                        }>
-                        <ListItemButton onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
-                          <ListItemText>{file.name}</ListItemText >
-                        </ListItemButton>
-                      </ListItem>)}
-                    </>}
+                          </ListItemIcon>
+                        </>}
+                      </ListItemButton>
+                    </ListItem>)}
                     </ul>
                   </li>
                 </List>
+                {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
+                  bgcolor: 'background.paper', borderTopLeftRadius: 0, borderTopRightRadius: 0,
+                  '&:hover': {
+                    bgcolor: '#ffa000', color: 'black'
+                  }
+                }}>Add new {fileType}</Button>}
           </Grid>
           <Grid xs sx={{
             height: '100%', backgroundColor: '#1e1e1e', p: 1,
@@ -442,7 +493,7 @@ listenTo('command', settings.command, async (userState, ...commandArgs ) => {
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>
         <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={loading}>Save</LoadingButton>
+          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
         </Grid>
       </Grid>
     </DialogActions>
