@@ -17,7 +17,12 @@ export default function DevelopmentAlert() {
         <Typography variant={'h5'} sx={{
           fontWeight: 'bold', pb: 2,
         }}>Development</Typography>
-        <Typography>This dashboard is still in heavy development and doesn't contain all features. You may expect 404 on some pages, which is expected. If you find any bugs on implemented pages, let me on discord know so it can be fixed as soon as possible.</Typography>
+        <Typography>This dashboard is still in heavy development and doesn't contain all features.</Typography>
+        <Typography sx={{ pt: 2 }}>Missing features:</Typography>
+        <ul>
+          <li>Plugins registry</li>
+          <li>Overlay registry</li>
+        </ul>
         <Typography sx={{ pt: 2 }}>Happy testing!</Typography>
 
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ pt: 2 }}>
