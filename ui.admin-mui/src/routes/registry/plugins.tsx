@@ -30,6 +30,7 @@ import { Plugin as RemotePlugin } from '../../../../services/plugins/export';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
+import { PluginsEdit } from '../../components/Form/PluginsEdit';
 import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
@@ -318,6 +319,7 @@ const PageRegistryPlugins = () => {
 
   return (
     <>
+      <PluginsEdit/>
       <Backdrop open={loading} >
         <CircularProgress color="inherit"/>
       </Backdrop>
