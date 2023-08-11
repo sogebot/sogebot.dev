@@ -99,7 +99,7 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active, width, height })
       height:   `${height}px`,
       position: 'absolute',
     }}/>
-    <iframe title="iframe-content" ref={iframeRef} src={iframeSrc} style={{
+    <iframe title="iframe-content" ref={iframeRef} src={iframeSrc} scrolling='no' style={{
       width: '100%', height: '100%', border: 0,
     }}/>
   </Box>;
