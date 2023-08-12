@@ -1,9 +1,10 @@
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
-  Button, Dialog, DialogActions, DialogContent, Grid, IconButton, LinearProgress, List, ListItem,
-  ListItemButton,
-  ListItemIcon, ListItemText, ListSubheader, Popover, Stack, TextField, Typography,
+  Button, Dialog, DialogActions, DialogContent,
+  Divider, Grid, IconButton, LinearProgress, List,
+  ListItem, ListItemButton, ListItemIcon, ListItemText ,
+  ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography,
 } from '@mui/material';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -36,13 +37,14 @@ import LODASH_string from '!raw-loader!@types/lodash/common/string.d.ts';
 import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
-import { ContentPasteTwoTone, DriveFileRenameOutlineTwoTone, LinkTwoTone } from '@mui/icons-material';
+import { ContentPasteTwoTone, DriveFileRenameOutlineTwoTone, LinkTwoTone, MenuTwoTone } from '@mui/icons-material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import shortid from 'shortid';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
 import { useSnackbar } from 'notistack';
+import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 
 const leftPanelWidth = 352;
 
@@ -79,18 +81,19 @@ declare const ListenTo: {
      */
     command(opts: { command: string, customArgSplitter?: (afterCommandText: string) => string[] }, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
     /**
-     *  Listen to any Twitch message
+     *  Listen to **ANY** Twitch message
      *  @param callback.userState contains userId and userName
+     *  @param callback.message contains full message
      * @example
      *
-     *    ListenTo.Twitch.message(userState => {
+     *    ListenTo.Twitch.message((userState, message) => {
      *
      *      // your function logic here
      *
      *    })
      *
      */
-    message(callback: (userState: { userId: string, userName: string }) => void): void,
+    message(callback: (userState: { userId: string, userName: string }, message: string) => void): void,
   },
 }
 
@@ -186,7 +189,29 @@ export const PluginsEdit: React.FC = () => {
   const [ saving, setSaving ] = React.useState(false);
 
   const [ fileType, setFileType ] = React.useState('code');
+  const [ contextMenuFile, setContextMenuFile ] = React.useState<File | null>(null);
   const [ editFile, setEditFile ] = React.useState('');
+
+  const [contextMenu, setContextMenu] = React.useState<{
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
+
+  const handleContextMenu = (event: React.MouseEvent, file: File) => {
+    event.preventDefault();
+    setContextMenuFile(file)
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null,
+    );
+  };
 
   const [newFilename, setNewFilename] = React.useState<{
     [id: string]: string
@@ -223,6 +248,17 @@ export const PluginsEdit: React.FC = () => {
     return true;
   }, [ editFile ])
 
+  const removeFile = (fileId: string) => {
+    if (!plugin) {
+      return;
+    }
+
+    const workflow = JSON.parse(plugin.workflow);
+    workflow.code = workflow.code.filter((o: File) => o.id !== fileId);
+    workflow.overlay = workflow.overlay.filter((o: File) => o.id !== fileId);
+    setPlugin({...plugin, workflow: JSON.stringify(workflow)} as Plugin)
+  }
+
   const addNewFile = () => {
     if (!plugin) {
       return;
@@ -230,7 +266,7 @@ export const PluginsEdit: React.FC = () => {
 
     const workflow = JSON.parse(plugin.workflow);
     workflow[fileType].push({
-      name: `unnamed file`,
+      name: cloneIncrementName(`unnamed file`, workflow[fileType].map((o: File) => o.name)),
       source: '',
       id: shortid()
     })
@@ -436,68 +472,91 @@ export const PluginsEdit: React.FC = () => {
                       dense
                       key={file.id}
                       sx={{ px: '8px', py: 0 }}>
-                      <ListItemButton onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
-                        <ListItemText>{file.name}</ListItemText >
-                        <ListItemIcon sx={{ minWidth: 'inherit' }}>
-                        <PopupState variant="popover" popupId="demo-popup-popover">
-                          {(popupState) => (
-                            <div>
-                              <IconButton  aria-label="rename" {...bindTrigger(popupState)} onClick={(ev) => {
-                                newFilename[file.id] = file.name;
-                                bindTrigger(popupState).onClick(ev);
-                              }}>
-                                <DriveFileRenameOutlineTwoTone />
-                              </IconButton>
-                              <Popover
-                                {...bindPopover(popupState)}
-                                anchorOrigin={{
-                                  vertical: 'bottom',
-                                  horizontal: 'center',
-                                }}
-                                transformOrigin={{
-                                  vertical: 'top',
-                                  horizontal: 'center',
-                                }}
-                              >
-                                <Stack direction='row' sx={{ p: 1, pt: 1.5 }} spacing={1}>
-                                  <TextField
-                                    defaultValue={file.name}
-                                    label="New filename"
-                                    size='small'
-                                    variant='outlined'
-                                    onKeyDown={(ev) => {
-                                      if (ev.key === 'Enter') {
-                                        ev.preventDefault()
-                                        updateFileName(file.id) && popupState.close()
-                                      }
-                                    }}
-                                    onChange={(ev) => setNewFilename(o => ({...o, [file.id]: ev.target.value ?? ''}))}
-                                    fullWidth
-                                  />
-                                  <Button size='small' onClick={() => updateFileName(file.id) && popupState.close()} disabled={!newFilename[file.id] || newFilename[file.id].length === 0}>Change</Button>
-                                </Stack>
-                              </Popover>
-                            </div>
-                          )}
-                        </PopupState>
-                        </ListItemIcon>
-                        {fileType === 'overlay' && <>
-                        <ListItemIcon sx={{ minWidth: '40px' }}>
-                          <IconButton edge="end" aria-label="comments">
-                            <LinkTwoTone />
-                          </IconButton>
-                          </ListItemIcon>
-                        <ListItemIcon sx={{ minWidth: '40px' }}>
-                          <IconButton edge="end" aria-label="comments">
-                            <ContentPasteTwoTone />
-                          </IconButton>
-                          </ListItemIcon>
-                        </>}
-                      </ListItemButton>
+                      <Tooltip title="Right click for menu" disableInteractive>
+                        <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
+                          <ListItemText>{file.name}</ListItemText >
+                          {fileType === 'overlay' && <>
+                          <ListItemIcon sx={{ minWidth: '40px' }}>
+                            <IconButton edge="end" aria-label="comments">
+                              <LinkTwoTone />
+                            </IconButton>
+                            </ListItemIcon>
+                          <ListItemIcon sx={{ minWidth: '40px' }}>
+                            <IconButton edge="end" aria-label="comments">
+                              <ContentPasteTwoTone />
+                            </IconButton>
+                            </ListItemIcon>
+                          </>}
+                        </ListItemButton>
+                      </Tooltip>
                     </ListItem>)}
                     </ul>
                   </li>
                 </List>
+
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={() => setContextMenu(null)}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null
+                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                      : undefined
+                  }
+                >
+                  <PopupState variant="popover" popupId="demo-popup-popover">
+                    {(popupState) => (
+                      <div>
+                        <MenuItem sx={{ mb: 1, width: '200px' }} dense onClick={(ev) => {
+                          if (!contextMenuFile) return;
+                          newFilename[contextMenuFile.id] = contextMenuFile.name;
+                          bindTrigger(popupState).onClick(ev);
+                        }}>Rename</MenuItem>
+                        <Popover
+                          {...bindPopover(popupState)}
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                          }}
+                        >
+                          {contextMenuFile && <Stack direction='row' sx={{ p: 1, pt: 1.5 }} spacing={1}>
+                            <TextField
+                              defaultValue={contextMenuFile.name}
+                              label="New filename"
+                              size='small'
+                              variant='outlined'
+                              onKeyDown={(ev) => {
+                                if (ev.key === 'Enter') {
+                                  ev.preventDefault()
+                                  updateFileName(contextMenuFile.id) && popupState.close()
+                                }
+                              }}
+                              onChange={(ev) => setNewFilename(o => ({...o, [contextMenuFile.id]: ev.target.value ?? ''}))}
+                              fullWidth
+                            />
+                            <Button size='small' onClick={() => {
+                              updateFileName(contextMenuFile.id);
+                              setContextMenu(null);
+                              popupState.close();
+                              }} disabled={!newFilename[contextMenuFile.id] || newFilename[contextMenuFile.id].length === 0}>Change</Button>
+                          </Stack>}
+                        </Popover>
+                      </div>
+                    )}
+                  </PopupState>
+
+                  <Divider />
+                  <MenuItem sx={{ mt: 1 }} dense onClick={() => {
+                    if (!contextMenuFile) return
+                    removeFile(contextMenuFile.id);
+                    setContextMenu(null);
+                  }}>Delete file</MenuItem>
+                </Menu>
+
                 {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
                   bgcolor: 'background.paper', borderTopLeftRadius: 0, borderTopRightRadius: 0,
                   '&:hover': {
