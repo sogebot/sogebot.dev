@@ -54,24 +54,62 @@ type File = {
 
 
 const libSource =
-`declare function listenTo(listener: 'command', command: string, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
-declare function listenTo(listener: 'message', callback: (userId: string, userName: string) => void): void;
+`/**
+ * ListenTo contains all usable listeners for Twitch and other available services.
+ */
+declare const ListenTo: {
+  /**
+   * Twitch listeners
+   */
+  Twitch: {
+    /**
+     * Listen to specified Twitch command
+     * @param opts.command command to listen to, e.g. '!myCustomCommand'
+     * @param opts.customArgSplitter defines custom splitter for args after command, by default split by empty space
+     * @param callback.userState contains userId and userName
+     * @param callback.commandArgs contains all args split by space or by opts.customArgSplitter
+     * @example
+     *
+     *    ListenTo.Twitch.command({ command: '!me' }, (userState, ....commandArgs) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    command(opts: { command: string, customArgSplitter?: (afterCommandText: string) => string[] }, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
+    /**
+     *  Listen to any Twitch message
+     *  @param callback.userState contains userId and userName
+     * @example
+     *
+     *    ListenTo.Twitch.message(userState => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    message(callback: (userState: { userId: string, userName: string }) => void): void,
+  },
+}
 
-declare const Twitch = {
+declare const Twitch: {
   /**
    * Bot will send message to chat
    * */
-  sendMessage(message:string): void;
+  sendMessage(message:string, sendAs?: 'bot' | 'broadcaster'): void;
+  sendReply(messageId: string, message:string, sendAs?: 'bot' | 'broadcaster'): void;
   timeout(userName: string, seconds: number): void;
 }
-declare const Permission = {
+declare const Permission: {
   /**
    * Check if user have access to this permissionId
    * */
   accessTo(userId: string, permissionId: string): Promise<boolean>;
   list(): Promise<Permission[]>;
 }
-declare const Log = {
+declare const Log: {
   info(text: string): void,
   warning(text: string): void
 }
