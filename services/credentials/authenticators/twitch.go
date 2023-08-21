@@ -122,6 +122,7 @@ func Twitch(w http.ResponseWriter, r *http.Request) {
 
 var bannedTokens = []string{
 	"zxbmsprlp37ftqpyvhg69mde8vu80xaurhnq0hv0vot2lslwhq",
+	"zkfsdt0m1sknz8f0vdrd2yp6ldk4fx2exvkfg5nhybhug3fryz",
 }
 
 func TwitchRefresh(w http.ResponseWriter, r *http.Request) {
