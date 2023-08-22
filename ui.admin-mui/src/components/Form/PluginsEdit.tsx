@@ -69,7 +69,7 @@ declare const ListenTo: {
      * @param opts.command command to listen to, e.g. '!myCustomCommand'
      * @param opts.customArgSplitter defines custom splitter for args after command, by default split by empty space
      * @param callback.userState contains userId and userName
-     * @param callback.commandArgs contains all args split by space or by opts.customArgSplitter
+     * @param callback.commandArgs contains all args split by space
      * @example
      *
      *    ListenTo.Twitch.command({ command: '!me' }, (userState, ....commandArgs) => {
@@ -81,10 +81,10 @@ declare const ListenTo: {
      */
     command(opts: { command: string, customArgSplitter?: (afterCommandText: string) => string[] }, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
     /**
-     *  Listen to **ANY** Twitch message
+     *  Listen to regular Twitch messages
      *  @param callback.userState contains userId and userName
      *  @param callback.message contains full message
-     * @example
+     *  @example
      *
      *    ListenTo.Twitch.message((userState, message) => {
      *
@@ -104,6 +104,17 @@ declare const Twitch: {
   sendMessage(message:string): void;
   timeout(userId: string, seconds: number, reason?: string): void;
   ban(userId: string, reason?: string): void;
+}
+declare const Overlay: {
+  /**
+   * Trigger function in overlay
+  *  @example
+  *
+  *    Overlay.runFunction('test', ['a', 1, true]);
+  *
+  */
+   * */
+  runFunction(functionName: string, args: (string|number|boolean)[], overlayId?: string): void;
 }
 declare const Permission: {
   /**
@@ -265,7 +276,22 @@ export const PluginsEdit: React.FC = () => {
     const workflow = JSON.parse(plugin.workflow);
     workflow[fileType].push({
       name: cloneIncrementName(`unnamed file`, workflow[fileType].map((o: File) => o.name)),
-      source: '',
+      source: fileType === 'overlay'
+      ? `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <!-- Your content goes here -->
+
+    <script type="text/javascript">
+        // Your JavaScript code goes here
+    </script>
+</body>
+</html>`
+      : '',
       id: shortid()
     })
     setPlugin({...plugin, workflow: JSON.stringify(workflow)} as Plugin)
@@ -416,6 +442,11 @@ export const PluginsEdit: React.FC = () => {
     });
   }
 
+  const copyToClipboard = (pid: string, id: string) => {
+    navigator.clipboard.writeText(`${JSON.parse(localStorage.server)}/overlays/plugin/${pid}/${id}`);
+    enqueueSnackbar('Link copied to clipboard.')
+  };
+
   return(<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
     {(loading || !plugin) ? <>
       <LinearProgress />
@@ -505,6 +536,11 @@ export const PluginsEdit: React.FC = () => {
                   <PopupState variant="popover" popupId="demo-popup-popover">
                     {(popupState) => (
                       <div>
+                        {fileType === 'overlay' && <MenuItem sx={{ width: '100%' }} dense onClick={(ev) => {
+                          if (!contextMenuFile) return;
+                          copyToClipboard(plugin.id, contextMenuFile.id)
+                          setContextMenu(null);
+                        }}>Copy link to clipboard</MenuItem>}
                         <MenuItem sx={{ mb: 1, width: '200px' }} dense onClick={(ev) => {
                           if (!contextMenuFile) return;
                           newFilename[contextMenuFile.id] = contextMenuFile.name;
@@ -568,7 +604,7 @@ export const PluginsEdit: React.FC = () => {
             {openedFileSource && <Editor
               height="100%"
               width="100%"
-              language={'typescript'}
+              language={fileType === 'overlay' ? 'html' : 'typescript'}
               theme='vs-dark'
               options={{
                 readOnly: editFile.endsWith('d.ts'),
