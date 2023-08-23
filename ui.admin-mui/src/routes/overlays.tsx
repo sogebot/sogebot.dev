@@ -4,7 +4,6 @@ import { Box } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useWindowSize } from 'rooks';
 
 import { AlertItem } from '../components/Overlay/AlertItem';
 import { ChatItem } from '../components/Overlay/ChatItem';
@@ -37,8 +36,6 @@ import { setConfiguration, setTranslation } from '../store/loaderSlice';
 export default function Overlays() {
   const { base64 } = useParams();
   const dispatch = useAppDispatch();
-
-  const { innerWidth, innerHeight } = useWindowSize();
 
   const [ overlay, setOverlay ] = React.useState<null | Overlay>(null);
   const [ loading, setLoading ] = React.useState(true);
@@ -117,8 +114,8 @@ export default function Overlays() {
       .filter(o => o.isVisible)
       .map(item => <Box key={item.id} sx={{
         position:  'absolute',
-        width:     `${item.opts.typeId === 'plugin' ? innerWidth : item.width}px`,
-        height:    `${item.opts.typeId === 'plugin' ? innerHeight : item.height}px`,
+        width:     item.opts.typeId === 'plugin' ? '100%' : `${item.width}px`,
+        height:    item.opts.typeId === 'plugin' ? '100%' : `${item.height}px`,
         left:      `${item.alignX}px`,
         top:       `${item.alignY}px`,
         transform: `rotate(${item.rotation ?? 0}deg)`,
@@ -150,8 +147,6 @@ export default function Overlays() {
         {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/overlays/plugin/${item.opts.pluginId}/${item.opts.overlayId}`} scrolling='0' frameBorder={0} style={{
           width: `100%`, height: `100%`,
         }} />}
-
-        {JSON.stringify(item)}
       </Box>,
       )
     }
