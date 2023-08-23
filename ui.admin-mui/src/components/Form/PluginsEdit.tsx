@@ -2,9 +2,10 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
   Button, Dialog, DialogActions, DialogContent,
-  Divider, Grid, IconButton, LinearProgress, List,
-  ListItem, ListItemButton, ListItemIcon, ListItemText ,
-  ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography,
+  Divider, Grid, LinearProgress, List,
+  ListItem, ListItemButton, ListItemText,
+  ListSubheader, Menu, MenuItem, Popover, Stack,
+  TextField, Tooltip, Typography,
 } from '@mui/material';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -37,7 +38,6 @@ import LODASH_string from '!raw-loader!@types/lodash/common/string.d.ts';
 import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 // @ts-ignore
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
-import { ContentPasteTwoTone, LinkTwoTone } from '@mui/icons-material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import shortid from 'shortid';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -60,6 +60,28 @@ const libSource =
  * ListenTo contains all usable listeners for Twitch and other available services.
  */
 declare const ListenTo: {
+  /**
+   * Register cron to trigger function in intervals
+   * @param cron cron schedule (seconds supported) - https://elmah.io/tools/cron-parser/
+   * @example Run cron every 5 seconds
+   *
+   *    ListenTo.Cron('0/5 * * * * *', () => {
+   *
+   *      // your function logic here
+   *
+   *    })
+   *
+   * @example Run cron every 5 minutes (notice seconds can be omitted)
+   *
+   *    ListenTo.Cron('0/5 * * * *', () => {
+   *
+   *      // your function logic here
+   *
+   *    })
+   *
+   */
+  Cron(cron: string, callback: () => void): void;
+
   /**
    * Twitch listeners
    */
@@ -113,7 +135,6 @@ declare const Overlay: {
   *    Overlay.runFunction('test', ['a', 1, true]);
   *
   */
-   * */
   runFunction(functionName: string, args: (string|number|boolean)[], overlayId?: string): void;
 }
 declare const Permission: {
@@ -339,6 +360,7 @@ export const PluginsEdit: React.FC = () => {
     return JSON.parse(plugin.workflow)[fileType]
   }, [ plugin?.workflow, fileType ])
 
+
   const openedFileSource = React.useMemo<File | null>(() => {
     if (!plugin) {
       return null;
@@ -366,6 +388,23 @@ export const PluginsEdit: React.FC = () => {
       || type === 'create'
     )
   ), [type, id]);
+
+  const openedFileType = React.useMemo(() => {
+    if (!plugin || editFile === 'global.d.ts') {
+      return 'code'
+    }
+
+    const workflow = JSON.parse(plugin.workflow);
+
+    for (const file of workflow.overlay) {
+      if (file.id === editFile) {
+        return 'overlay'
+      }
+    }
+
+    return 'code'
+  }, [ plugin?.workflow, editFile ])
+
 
   const handleClose = () => {
     setTimeout(() => {
@@ -442,8 +481,13 @@ export const PluginsEdit: React.FC = () => {
     });
   }
 
-  const copyToClipboard = (pid: string, id: string) => {
-    navigator.clipboard.writeText(`${JSON.parse(localStorage.server)}/overlays/plugin/${pid}/${id}`);
+  const copyToClipboard = (pluginId: string, overlayId: string) => {
+    const data = Buffer.from(JSON.stringify({
+      server: JSON.parse(localStorage.server),
+      pluginId,
+      overlayId,
+    })).toString('base64');
+    navigator.clipboard.writeText(`${location.origin}/overlays/${data}`);
     enqueueSnackbar('Link copied to clipboard.')
   };
 
@@ -504,18 +548,6 @@ export const PluginsEdit: React.FC = () => {
                       <Tooltip title="Right click for menu" disableInteractive>
                         <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
                           <ListItemText>{file.name}</ListItemText >
-                          {fileType === 'overlay' && <>
-                          <ListItemIcon sx={{ minWidth: '40px' }}>
-                            <IconButton edge="end" aria-label="comments">
-                              <LinkTwoTone />
-                            </IconButton>
-                            </ListItemIcon>
-                          <ListItemIcon sx={{ minWidth: '40px' }}>
-                            <IconButton edge="end" aria-label="comments">
-                              <ContentPasteTwoTone />
-                            </IconButton>
-                            </ListItemIcon>
-                          </>}
                         </ListItemButton>
                       </Tooltip>
                     </ListItem>)}
@@ -604,7 +636,7 @@ export const PluginsEdit: React.FC = () => {
             {openedFileSource && <Editor
               height="100%"
               width="100%"
-              language={fileType === 'overlay' ? 'html' : 'typescript'}
+              language={openedFileType === 'overlay' ? 'html' : 'typescript'}
               theme='vs-dark'
               options={{
                 readOnly: editFile.endsWith('d.ts'),

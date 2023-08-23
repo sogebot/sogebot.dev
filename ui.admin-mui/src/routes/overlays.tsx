@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import { useWindowSize } from 'rooks';
 
 import { AlertItem } from '../components/Overlay/AlertItem';
 import { ChatItem } from '../components/Overlay/ChatItem';
@@ -37,6 +38,8 @@ export default function Overlays() {
   const { base64 } = useParams();
   const dispatch = useAppDispatch();
 
+  const { innerWidth, innerHeight } = useWindowSize();
+
   const [ overlay, setOverlay ] = React.useState<null | Overlay>(null);
   const [ loading, setLoading ] = React.useState(true);
   const [ server, setServer ] = React.useState<null | string>(null);
@@ -49,7 +52,36 @@ export default function Overlays() {
       const data = JSON.parse(String(Buffer.from(base64, 'base64')));
       localStorage.server = JSON.stringify(data.server);
       setServer(data.server);
-      setId(data.id);
+
+      if (data.id) {
+        setId(data.id);
+      } else {
+        setOverlay({
+          id:     '',
+          name:   '',
+          canvas: {
+            width:  0,
+            height: 0,
+          },
+          items: [{
+            alignX:    0,
+            alignY:    0,
+            height:    0,
+            id:        '',
+            isVisible: true,
+            name:      '',
+            opts:      {
+              typeId: 'plugin', pluginId: data.pluginId, overlayId: data.overlayId,
+            },
+            rotation: 0,
+            width:    0,
+
+          }],
+        } as Overlay);
+        setLoading(false);
+        setId('plugin');
+        console.log('plugin');
+      }
     }
   }, [ base64 ]);
 
@@ -63,13 +95,19 @@ export default function Overlays() {
         new Promise(resolve => {
           getConfiguration().then(conf => dispatch(setConfiguration(conf))).finally(() => resolve(true));
         }),
-        new Promise(resolve => getSocket('/registries/overlays', true).emit('generic::getOne', id, (err, result) => {
-          if (err) {
-            return console.error(err);
+        new Promise(resolve => {
+          if (id === 'plugin') {
+            resolve(true);
+            return;
           }
-          setOverlay(result);
-          resolve(true);
-        })),
+          getSocket('/registries/overlays', true).emit('generic::getOne', id, (err, result) => {
+            if (err) {
+              return console.error(err);
+            }
+            setOverlay(result);
+            resolve(true);
+          });
+        }),
       ]).finally(() => setLoading(false));
     }
   }, [ server ]);
@@ -79,8 +117,8 @@ export default function Overlays() {
       .filter(o => o.isVisible)
       .map(item => <Box key={item.id} sx={{
         position:  'absolute',
-        width:     `${item.width}px`,
-        height:    `${item.height}px`,
+        width:     `${item.opts.typeId === 'plugin' ? innerWidth : item.width}px`,
+        height:    `${item.opts.typeId === 'plugin' ? innerHeight : item.height}px`,
         left:      `${item.alignX}px`,
         top:       `${item.alignY}px`,
         transform: `rotate(${item.rotation ?? 0}deg)`,
@@ -109,6 +147,11 @@ export default function Overlays() {
         {item.opts.typeId === 'randomizer' && <RandomizerItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/overlays/plugin/${item.opts.pluginId}/${item.opts.overlayId}`} scrolling='0' frameBorder={0} style={{
+          width: `100%`, height: `100%`,
+        }} />}
+
+        {JSON.stringify(item)}
       </Box>,
       )
     }
