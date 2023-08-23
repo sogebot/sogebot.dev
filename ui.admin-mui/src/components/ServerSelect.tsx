@@ -63,6 +63,10 @@ export const ServerSelect: React.FC = () => {
   }, [ message ]);
 
   useEffect(() => {
+    if (serverInputValue.startsWith('-- demo')) {
+      setInvalidURL(false);
+      return;
+    }
     try {
       new URL(serverInputValue);
       setInvalidURL(false);
@@ -86,6 +90,9 @@ export const ServerSelect: React.FC = () => {
 
   const handleConnect = (server: string) => {
     if (server) {
+      if (server.startsWith('-- demo')) {
+        server = 'https://demobot.sogebot.xyz';
+      }
       connecting = true;
       dispatch(setMessage(`Connecting to ${server}.`));
       console.log(`Connecting to ${server}`);
