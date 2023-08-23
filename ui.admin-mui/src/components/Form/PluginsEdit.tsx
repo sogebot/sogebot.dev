@@ -56,10 +56,19 @@ type File = {
 
 
 const libSource =
-`/**
+`
+type UserState = { userName: string, userId: string }
+/**
  * ListenTo contains all usable listeners for Twitch and other available services.
  */
 declare const ListenTo: {
+  Bot: {
+    /**
+     * Triggers when bot is started
+     */
+    started(callback: () => void): void,
+  }
+
   /**
    * Register cron to trigger function in intervals
    * @param cron cron schedule (seconds supported) - https://elmah.io/tools/cron-parser/
@@ -94,28 +103,107 @@ declare const ListenTo: {
      * @param callback.commandArgs contains all args split by space
      * @example
      *
-     *    ListenTo.Twitch.command({ command: '!me' }, (userState, ....commandArgs) => {
+     *    ListenTo.Twitch.onCommand({ command: '!me' }, (userState, ....commandArgs) => {
      *
      *      // your function logic here
      *
      *    })
      *
      */
-    command(opts: { command: string, customArgSplitter?: (afterCommandText: string) => string[] }, callback: (userState: { userId: string, userName: string }, ...commandArgs: string[]) => void): void;
+    onCommand(opts: { command: string }, callback: (userState: UserState, ...commandArgs: string[]) => void): void;
+    /**
+     *  Listen to Twitch subscription event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onSubscription((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onSubscription(callback: (userState: UserState, params: { method: string, subCumulativeMonths: number, tier: string }) => void): void,
     /**
      *  Listen to regular Twitch messages
      *  @param callback.userState contains userId and userName
      *  @param callback.message contains full message
      *  @example
      *
-     *    ListenTo.Twitch.message((userState, message) => {
+     *    ListenTo.Twitch.onMessage((userState, message) => {
      *
      *      // your function logic here
      *
      *    })
      *
      */
-    message(callback: (userState: { userId: string, userName: string }, message: string) => void): void,
+    onMessage(callback: (userState: UserState, message: string) => void): void,
+    /**
+     *  Listen to stream start event
+     *  @example
+     *
+     *    ListenTo.Twitch.onStreamStart(() => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onStreamStart(callback: () => void): void,
+    /**
+     *  Listen to stream stop event
+     *  @example
+     *
+     *    ListenTo.Twitch.onStreamStop(() => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onStreamStop(callback: () => void): void,
+    /**
+     *  Listen to chat cleared event
+     *  @example
+     *
+     *    ListenTo.Twitch.onChatClear(() => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onChatClear(callback: () => void): void,
+    /**
+     *  Listen to category change event
+     *  @param callback.category current category set
+     *  @param callback.oldCategory previous category
+     *  @example
+     *
+     *    ListenTo.Twitch.onCategoryChange((category, oldCategory) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onCategoryChange(callback: (category: string, oldCategory: string) => void): void,
+    /**
+     *  Listen to received bits/cheer event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.amount how many bits received
+     *  @param callback.message contains full message
+     *  @example
+     *
+     *    ListenTo.Twitch.onCheer((userState, amount, message) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onCheer(callback: (userState: UserState, amount: number, message: string) => void): void,
   },
 }
 
