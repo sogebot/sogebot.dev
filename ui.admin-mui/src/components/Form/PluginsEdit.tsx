@@ -112,12 +112,39 @@ declare const ListenTo: {
      */
     onCommand(opts: { command: string }, callback: (userState: UserState, ...commandArgs: string[]) => void): void;
     /**
+     *  Listen to Twitch follow event
+     *  @param callback.userState contains userId and userName
+     *  @example
+     *
+     *    ListenTo.Twitch.onFollow((userState) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onFollow(callback: (userState: UserState) => void): void,
+    /**
      *  Listen to Twitch subscription event
      *  @param callback.userState contains userId and userName
      *  @param callback.params contains additional data
      *  @example
      *
-     *    ListenTo.Twitch.onSubscription((userState, params) => {
+     *    ListenTo.Twitch.onRaid((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onRaid(callback: (userState: UserState, params: { hostViewers: number; event: string; timestamp: number; }) => void): void,
+    /**
+     *  Listen to Twitch resubscripton event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onResub((userState, params) => {
      *
      *      // your function logic here
      *
@@ -125,6 +152,34 @@ declare const ListenTo: {
      *
      */
     onSubscription(callback: (userState: UserState, params: { method: string, subCumulativeMonths: number, tier: string }) => void): void,
+    /**
+     *  Listen to Twitch resubscripton event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onResub((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onResub(callback: (userState: UserState, params: { subStreakShareEnabled: boolean; subStreak: number; subStreakName: string; subCumulativeMonthsName: string; message: string; subCumulativeMonths: number; tier: string; }) => void): void,
+    /**
+     *  Listen to Twitch reward redemption event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onRewardRedeem((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onRewardRedeem(callback: (userState: UserState, params: { rewardId: string; userInput: string; }) => void): void,
     /**
      *  Listen to regular Twitch messages
      *  @param callback.userState contains userId and userName
