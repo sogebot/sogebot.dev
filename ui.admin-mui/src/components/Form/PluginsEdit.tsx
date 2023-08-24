@@ -58,6 +58,16 @@ type File = {
 const libSource =
 `
 type UserState = { userName: string, userId: string }
+type AlertsCustomOptions = {
+  volume?: number;
+  alertDuration? : number;
+  textDelay? : number;
+  layout? : number;
+  messageTemplate? : string;
+  audioId? : string;
+  mediaId? : string;
+}
+
 /**
  * ListenTo contains all usable listeners for Twitch and other available services.
  */
@@ -364,6 +374,22 @@ declare const Permission: {
 declare const Log: {
   info(text: string): void,
   warning(text: string): void
+}
+
+declare const Alerts: {
+  trigger(uuid: string, name?: string, message?: string, customOptions?: AlertsCustomOptions): Promise<void>,
+}
+
+declare const Points: {
+  increment(userName: string, value: number): Promise<void>,
+  decrement(userName: string, value: number): Promise<void>
+}
+
+declare const Variable: {
+  loadFromDatabase(variableName: string): Promise<null | any>,
+  saveToDatabase(variableName: string, value: any): Promise<void>
+  setCustomVariable(variableName: string, value: any): Promise<void>
+  getCustomVariable(variableName: string): Promise<string>
 }
 /**
  * Contains core permissions defined by bot
