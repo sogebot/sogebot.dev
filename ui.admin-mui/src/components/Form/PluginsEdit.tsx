@@ -91,6 +91,23 @@ declare const ListenTo: {
    */
   Cron(cron: string, callback: () => void): void;
 
+  Generic: {
+    /**
+     *  Listen to Generic tip event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Generic.onTip((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onTip(callback: (userState: UserState, message: string, params: { isAnonymous: boolean; amount: string; currency: string; amountInBotCurrency: string; currencyInBot: string; }) => void): void,
+  };
+
   /**
    * Twitch listeners
    */
@@ -125,7 +142,7 @@ declare const ListenTo: {
      */
     onFollow(callback: (userState: UserState) => void): void,
     /**
-     *  Listen to Twitch subscription event
+     *  Listen to Twitch raid event
      *  @param callback.userState contains userId and userName
      *  @param callback.params contains additional data
      *  @example
@@ -166,6 +183,48 @@ declare const ListenTo: {
      *
      */
     onResub(callback: (userState: UserState, params: { subStreakShareEnabled: boolean; subStreak: number; subStreakName: string; subCumulativeMonthsName: string; message: string; subCumulativeMonths: number; tier: string; }) => void): void,
+    /**
+     *  Listen to Twitch reward redemption event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onRewardRedeem((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onRewardRedeem(callback: (userState: UserState, params: { rewardId: string; userInput: string; }) => void): void,
+    /**
+     *  Listen to Twitch reward subgift event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onSubGift((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onSubGift(callback: (userState: UserState, params: { recipient: string; tier: number }) => void): void,
+    /**
+     *  Listen to Twitch reward subgift event
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onSubCommunityGift((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onSubCommunityGift(callback: (userState: UserState, params: { count: number }) => void): void,
     /**
      *  Listen to Twitch reward redemption event
      *  @param callback.userState contains userId and userName
@@ -271,6 +330,22 @@ declare const Twitch: {
   ban(userId: string, reason?: string): void;
 }
 declare const Overlay: {
+  /**
+   * Trigger emote explosion in emote explosion overlay (not plugin overlay)
+  *  @example
+  *
+  *    Overlay.emoteExplosion(['Kappa', 'PogChamp']);
+  *
+  */
+  emoteExplosion(emotes: string[]): void;
+  /**
+   * Trigger emote firework in emote firework overlay (not plugin overlay)
+  *  @example
+  *
+  *    Overlay.emoteFirework(['Kappa', 'PogChamp']);
+  *
+  */
+  emoteFirework(emotes: string[]): void;
   /**
    * Trigger function in overlay
   *  @example
