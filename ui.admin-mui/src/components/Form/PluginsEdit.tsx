@@ -1,6 +1,7 @@
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
+  Box,
   Button, Dialog, DialogActions, DialogContent,
   Divider, Grid, LinearProgress, List,
   ListItem, ListItemButton, ListItemText,
@@ -17,6 +18,8 @@ import shortid from 'shortid';
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
+import { ExportDialog } from '../Plugin/ExportDialog';
+import { ImportDialog } from '../Plugin/ImportDialog';
 
 const leftPanelWidth = 352;
 
@@ -719,6 +722,15 @@ export const PluginsEdit: React.FC = () => {
           <Grid sx={{
             p: 1, width: leftPanelWidth + 'px', pb: 0,
           }}>
+            <Box sx={{ p: 1 }}>
+              <ExportDialog model={plugin}/>
+              <ImportDialog onImport={(items) => {
+                setPlugin(o => ({
+                  ...o, workflow: items,
+                } as Plugin));
+              }}/>
+            </Box>
+
             <TextField
               {...propsError('name')}
               sx={{ mb: 0.5 }}
