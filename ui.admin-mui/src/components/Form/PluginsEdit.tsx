@@ -548,17 +548,22 @@ export const PluginsEdit: React.FC = () => {
       allowNonTsExtensions: true,
       allowJs:              true,
       lib:                  ['es2021'],
-      importHelpers:        true,
-      declaration:          true,
-      'typeRoots':          ['./node_modules/@types'],
+    });
+    monaco?.languages.typescript.javascriptDefaults.setCompilerOptions({
+      allowNonTsExtensions: true,
+      allowJs:              true,
+      lib:                  ['es2021'],
     });
 
     // do conditional chaining
     const libUri = 'ts:filename/global.d.ts';
     try {
+      monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
+
       // When resolving definitions and references, the editor will try to use created models.
       // Creating a model for the library allows "peek definition/references" commands to work with the library.
-      monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, libUri);
+      monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
     } catch {
       null;
     }
