@@ -1,4 +1,4 @@
-import Editor, { useMonaco } from '@monaco-editor/react';
+import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
   Button, Dialog, DialogActions, DialogContent,
@@ -7,44 +7,16 @@ import {
   ListSubheader, Menu, MenuItem, Popover, Stack,
   TextField, Tooltip, Typography,
 } from '@mui/material';
+import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
+import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-// This is ugly hack but we need it to import lodash bindings
-/* eslint-disable */
-// @ts-ignore
-import LODASH_array from '!raw-loader!@types/lodash/common/array.d.ts';
-// @ts-ignore
-import LODASH_collection from '!raw-loader!@types/lodash/common/collection.d.ts';
-// @ts-ignore
-import LODASH_common from '!raw-loader!@types/lodash/common/common.d.ts';
-// @ts-ignore
-import LODASH_date from '!raw-loader!@types/lodash/common/date.d.ts';
-// @ts-ignore
-import LODASH_function from '!raw-loader!@types/lodash/common/function.d.ts';
-// @ts-ignore
-import LODASH_lang from '!raw-loader!@types/lodash/common/lang.d.ts';
-// @ts-ignore
-import LODASH_math from '!raw-loader!@types/lodash/common/math.d.ts';
-// @ts-ignore
-import LODASH_number from '!raw-loader!@types/lodash/common/number.d.ts';
-// @ts-ignore
-import LODASH_object from '!raw-loader!@types/lodash/common/object.d.ts';
-// @ts-ignore
-import LODASH_seq from '!raw-loader!@types/lodash/common/seq.d.ts';
-// @ts-ignore
-import LODASH_string from '!raw-loader!@types/lodash/common/string.d.ts';
-// @ts-ignore
-import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
-// @ts-ignore
-import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
-import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import shortid from 'shortid';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+
+import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
-import { useSnackbar } from 'notistack';
-import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 
 const leftPanelWidth = 352;
 
@@ -52,12 +24,10 @@ type File = {
   id: string;
   name: string;
   source: string;
-}
+};
 
-
-const libSource =
-`
-type UserState = { userName: string, userId: string }
+const libSource
+  = `type UserState = { userName: string, userId: string }
 type AlertsCustomOptions = {
   volume?: number;
   alertDuration? : number;
@@ -380,6 +350,15 @@ declare const Alerts: {
   trigger(uuid: string, name?: string, message?: string, customOptions?: AlertsCustomOptions): Promise<void>,
 }
 
+declare const User: {
+  getByUserId(userId: string): Promise<User>,
+  getByUserName(userName: string): Promise<User>,
+  getRandom: {
+    subscriber(onlineOnly: boolean): Promise<User>,
+    viewer(onlineOnly: boolean): Promise<User>,
+  }
+}
+
 declare const Points: {
   increment(userName: string, value: number): Promise<void>,
   decrement(userName: string, value: number): Promise<void>
@@ -402,13 +381,7 @@ declare const permission = {
   VIEWERS:     '0efd7b1c-e460-4167-8e06-8aaf2c170311',
 } as const
 
-declare function user(username: string): Promise<{ username: string, displayname: string, id: string, is: { follower: boolean, mod: boolean, online: boolean, subscriber: boolean, vip: boolean }}>
-declare function url(url: string, opts?: { method: 'POST' | 'GET', headers: object, data: object}): Promise<{ data: object, status: number, statusText: string}>
-declare function waitMs(miliseconds: number): Promise<undefined>
-declare function randomOnlineSubscriber(): Promise<User>
-declare function randomOnlineViewer(): Promise<User>
-declare function randomSubscriber(): Promise<User>
-declare function randomViewer(): Promise<User>
+declare function fetch(uri: string, config: AxiosRequestConfig): Promise<AxiosResponse<any, any>.data: any>
 
 declare var stream: {
   uptime: string,
@@ -449,7 +422,7 @@ interface User {
 
 interface Permission {
   id: string,
-  name: string.
+  name: string,
 }
 `;
 
@@ -459,12 +432,12 @@ export const PluginsEdit: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, reset, validate, haveErrors, showErrors } = useValidator();
 
-  const [ loading, setLoading ] = React.useState(true);
-  const [ saving, setSaving ] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
 
-  const [ fileType, setFileType ] = React.useState('code');
-  const [ contextMenuFile, setContextMenuFile ] = React.useState<File | null>(null);
-  const [ editFile, setEditFile ] = React.useState('');
+  const [fileType, setFileType] = React.useState('code');
+  const [contextMenuFile, setContextMenuFile] = React.useState<File | null>(null);
+  const [editFile, setEditFile] = React.useState('');
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -473,24 +446,23 @@ export const PluginsEdit: React.FC = () => {
 
   const handleContextMenu = (event: React.MouseEvent, file: File) => {
     event.preventDefault();
-    setContextMenuFile(file)
+    setContextMenuFile(file);
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6,
-          }
-        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-          // Other native context menus might behave different.
-          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-          null,
+          mouseX: event.clientX + 2,
+          mouseY: event.clientY - 6,
+        } : null,
+      // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+      // Other native context menus might behave different.
+      // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
     );
   };
 
   const [newFilename, setNewFilename] = React.useState<{
     [id: string]: string
   }>({});
-  const [ plugin, setPlugin ] = React.useState<Plugin | null>(null);
+  const [plugin, setPlugin] = React.useState<Plugin | null>(null);
   const updateFileName = React.useCallback((fId: string) => {
     setPlugin(pl => {
       if (!pl) {
@@ -502,10 +474,12 @@ export const PluginsEdit: React.FC = () => {
       if (file) {
         file.name = newFilename[fId];
       }
-      return {...pl, workflow: JSON.stringify(workflow)} as Plugin
-    })
+      return {
+        ...pl, workflow: JSON.stringify(workflow),
+      } as Plugin;
+    });
     return newFilename[fId] && newFilename[fId].length > 0;
-  }, [ newFilename ])
+  }, [newFilename]);
   const updateFileSource = React.useCallback((source: string) => {
     setPlugin(pl => {
       if (!pl) {
@@ -517,10 +491,12 @@ export const PluginsEdit: React.FC = () => {
       if (file) {
         file.source = source;
       }
-      return {...pl, workflow: JSON.stringify(workflow)} as Plugin
-    })
+      return {
+        ...pl, workflow: JSON.stringify(workflow),
+      } as Plugin;
+    });
     return true;
-  }, [ editFile ])
+  }, [editFile]);
 
   const removeFile = (fileId: string) => {
     if (!plugin) {
@@ -530,8 +506,10 @@ export const PluginsEdit: React.FC = () => {
     const workflow = JSON.parse(plugin.workflow);
     workflow.code = workflow.code.filter((o: File) => o.id !== fileId);
     workflow.overlay = workflow.overlay.filter((o: File) => o.id !== fileId);
-    setPlugin({...plugin, workflow: JSON.stringify(workflow)} as Plugin)
-  }
+    setPlugin({
+      ...plugin, workflow: JSON.stringify(workflow),
+    } as Plugin);
+  };
 
   const addNewFile = () => {
     if (!plugin) {
@@ -540,9 +518,9 @@ export const PluginsEdit: React.FC = () => {
 
     const workflow = JSON.parse(plugin.workflow);
     workflow[fileType].push({
-      name: cloneIncrementName(`unnamed file`, workflow[fileType].map((o: File) => o.name)),
+      name:   cloneIncrementName(`unnamed file`, workflow[fileType].map((o: File) => o.name)),
       source: fileType === 'overlay'
-      ? `<!DOCTYPE html>
+        ? `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -556,18 +534,23 @@ export const PluginsEdit: React.FC = () => {
     </script>
 </body>
 </html>`
-      : '',
-      id: shortid()
-    })
-    setPlugin({...plugin, workflow: JSON.stringify(workflow)} as Plugin)
-  }
+        : '',
+      id: shortid(),
+    });
+    setPlugin({
+      ...plugin, workflow: JSON.stringify(workflow),
+    } as Plugin);
+  };
 
-  const monaco = useMonaco();
-  React.useEffect(() => {
-    monaco?.languages.typescript.javascriptDefaults.setCompilerOptions({
+  function configureMonaco(monaco: Monaco): Monaco {
+    console.log('Configuring monaco');
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       allowNonTsExtensions: true,
       allowJs:              true,
-      lib:                  ['es2020'],
+      lib:                  ['es2021'],
+      importHelpers:        true,
+      declaration:          true,
+      'typeRoots':          ['./node_modules/@types'],
     });
 
     // do conditional chaining
@@ -575,35 +558,19 @@ export const PluginsEdit: React.FC = () => {
     try {
       // When resolving definitions and references, the editor will try to use created models.
       // Creating a model for the library allows "peek definition/references" commands to work with the library.
-      monaco?.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_index, '@types/lodash/index.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_common, '@types/lodash/common/common.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_array, '@types/lodash/common/array.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_collection, '@types/lodash/common/collection.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_date, '@types/lodash/common/date.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_function, '@types/lodash/common/function.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_lang, '@types/lodash/common/lang.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_math, '@types/lodash/common/math.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_number, '@types/lodash/common/number.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_object, '@types/lodash/common/object.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_seq, '@types/lodash/common/seq.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_string, '@types/lodash/common/string.d.ts');
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(LODASH_util, '@types/lodash/common/util.d.ts');
-
-      // bot typings
-      monaco?.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
+      monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
     } catch {
-      return;
+      null;
     }
-  }, [monaco, editFile]);
+    return monaco;
+  }
 
   const codeFiles = React.useMemo<File[]>(() => {
     if (!plugin) {
       return [];
     }
-    return JSON.parse(plugin.workflow)[fileType]
-  }, [ plugin?.workflow, fileType ])
-
+    return JSON.parse(plugin.workflow)[fileType];
+  }, [plugin?.workflow, fileType]);
 
   const openedFileSource = React.useMemo<File | null>(() => {
     if (!plugin) {
@@ -611,20 +578,20 @@ export const PluginsEdit: React.FC = () => {
     }
     if (editFile === 'global.d.ts') {
       return {
-        id: 'global.d.ts',
-        name: '',
+        id:     'global.d.ts',
+        name:   '',
         source: libSource,
-      }
+      };
     }
 
     const workflow = JSON.parse(plugin.workflow);
 
     for (const file of [...workflow.code, ...workflow.overlay]) {
       if (file.id === editFile) {
-        return file
+        return file;
       }
     }
-  }, [ plugin?.workflow, editFile ])
+  }, [plugin?.workflow, editFile]);
 
   const open = React.useMemo(() => !!(type
     && (
@@ -635,24 +602,23 @@ export const PluginsEdit: React.FC = () => {
 
   const openedFileType = React.useMemo(() => {
     if (!plugin || editFile === 'global.d.ts') {
-      return 'code'
+      return 'code';
     }
 
     const workflow = JSON.parse(plugin.workflow);
 
     for (const file of workflow.overlay) {
       if (file.id === editFile) {
-        return 'overlay'
+        return 'overlay';
       }
     }
 
-    return 'code'
-  }, [ plugin?.workflow, editFile ])
-
+    return 'code';
+  }, [plugin?.workflow, editFile]);
 
   const handleClose = () => {
     setTimeout(() => {
-      navigate(`/registry/plugins?server=${JSON.parse(localStorage.server)}`);
+      navigate(`/registry/plugins?server=${ JSON.parse(localStorage.server) }`);
     }, 200);
   };
 
@@ -660,13 +626,13 @@ export const PluginsEdit: React.FC = () => {
     if (type === 'create') {
       setLoading(false);
       setPlugin({
-        id: shortid(),
-        name: '',
-        enabled: true,
+        id:       shortid(),
+        name:     '',
+        enabled:  true,
         workflow: JSON.stringify({
           code: [{
-            id: shortid(),
-            name: 'this is source  code name',
+            id:     shortid(),
+            name:   'this is source  code name',
             source: `const settings = {
       command: '!seppuku',
       messageBroadcaster: '$sender tried to commit seppuku, but lost a sword.',
@@ -686,12 +652,12 @@ export const PluginsEdit: React.FC = () => {
       if (!isCaster) {
         Twitch.timeout(userState.userName, settings.timeout)
       }
-    })`
+    })`,
           }],
           overlay: [],
         }),
         settings: null,
-      } as Plugin)
+      } as Plugin);
     } else {
       getSocket('/core/plugins').emit('generic::getOne', id, (err, item) => {
         if (err) {
@@ -699,12 +665,11 @@ export const PluginsEdit: React.FC = () => {
           console.error(err);
         }
         setPlugin(item);
-        setLoading(false)
-      })
-      console.log('loading')
+        setLoading(false);
+      });
     }
     reset();
-  }, [ type, id, reset ]);
+  }, [type, id, reset]);
 
   React.useEffect(() => {
     if (!loading && plugin) {
@@ -719,11 +684,11 @@ export const PluginsEdit: React.FC = () => {
         showErrors(err as any);
       } else {
         enqueueSnackbar('Plugin saved.', { variant: 'success' });
-        navigate(`/registry/plugins/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
+        navigate(`/registry/plugins/edit/${ savedItem.id }?server=${ JSON.parse(localStorage.server) }`);
       }
       setSaving(false);
     });
-  }
+  };
 
   const copyToClipboard = (pluginId: string, overlayId: string) => {
     const data = Buffer.from(JSON.stringify({
@@ -731,14 +696,14 @@ export const PluginsEdit: React.FC = () => {
       pluginId,
       overlayId,
     })).toString('base64');
-    navigator.clipboard.writeText(`${location.origin}/overlays/${data}`);
-    enqueueSnackbar('Link copied to clipboard.')
+    navigator.clipboard.writeText(`${ location.origin }/overlays/${ data }`);
+    enqueueSnackbar('Link copied to clipboard.');
   };
 
-  return(<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
+  return (<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
     {(loading || !plugin) ? <>
       <LinearProgress />
-      <DialogContent/>
+      <DialogContent />
     </>
       : <DialogContent sx={{
         p: 0, overflowX: 'hidden',
@@ -749,130 +714,158 @@ export const PluginsEdit: React.FC = () => {
           <Grid sx={{
             p: 1, width: leftPanelWidth + 'px', pb: 0,
           }}>
+            <TextField
+              {...propsError('name')}
+              sx={{ mb: 0.5 }}
+              label={'Name'}
+              defaultValue={plugin.name}
+              onChange={(ev) => setPlugin(o => ({
+                ...o, name: ev.target.value ?? '',
+              } as Plugin))}
+              fullWidth
+            />
 
+            <List
+              sx={{
+                width:    '100%',
+                bgcolor:  'background.paper',
+                overflow: 'auto',
+                height:   `calc(100vh - 200px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                p:        0,
+                '& ul':   { padding: 0 },
+              }}
+              subheader={<li />}
+            >
+              <li key={`section-source-files`}>
+                <ul>
+                  <ListSubheader sx={{
+                    display: 'flex', justifyContent: 'space-between', py: 0.5, alignItems: 'center',
+                  }}>
+                    <Button fullWidth color={fileType === 'definition' ? 'primary' : 'light'} onClick={() => setFileType('definition')}>Definition</Button>
+                    <Typography sx={{ px: 2 }} variant='button'>/</Typography>
+                    <Button fullWidth color={fileType === 'code' ? 'primary' : 'light'} onClick={() => setFileType('code')}>Source</Button>
+                    <Typography sx={{ px: 2 }} variant='button'>/</Typography>
+                    <Button fullWidth color={fileType === 'overlay' ? 'primary' : 'light'} onClick={() => setFileType('overlay')}>Overlay</Button>
+                  </ListSubheader>
 
-              <TextField
-                {...propsError('name')}
-                sx={{ mb: 0.5 }}
-                label={'Name'}
-                defaultValue={plugin.name}
-                onChange={(ev) => setPlugin(o => ({...o, name: ev.target.value ?? '' } as Plugin))}
-                fullWidth
-              />
-
-              <List
-                sx={{ width: '100%', bgcolor: 'background.paper', overflow: 'auto', height: `calc(100vh - 200px - ${fileType === 'definition' ? 0 : 36.5}px)`, p:0,
-                '& ul': { padding: 0 }, }}
-                subheader={<li />}
-              >
-                <li key={`section-source-files`}>
-                  <ul>
-                    <ListSubheader sx={{ display: 'flex', justifyContent: 'space-between', py: 0.5, alignItems: 'center' }}>
-                      <Button fullWidth color={fileType === 'definition' ? 'primary' : 'light'} onClick={() => setFileType('definition')}>Definition</Button>
-                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                      <Button fullWidth color={fileType === 'code' ? 'primary' : 'light'} onClick={() => setFileType('code')}>Source</Button>
-                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                      <Button fullWidth color={fileType === 'overlay' ? 'primary' : 'light'} onClick={() => setFileType('overlay')}>Overlay</Button>
-                    </ListSubheader>
-
-                    {fileType === 'definition' && <>
-                      <ListItem
-                        dense
-                        sx={{ px: '8px', py: 0 }}>
-                        <ListItemButton sx={{ height: '48px' }} onClick={() => setEditFile('global.d.ts')} selected={'global.d.ts' === editFile}>
-                          <ListItemText>global.d.ts</ListItemText >
-                        </ListItemButton>
-                      </ListItem>
-                    </>}
-
-                    {fileType !== 'definition' && codeFiles.map(file => <ListItem
+                  {fileType === 'definition' && <>
+                    <ListItem
                       dense
-                      key={file.id}
-                      sx={{ px: '8px', py: 0 }}>
-                      <Tooltip title="Right click for menu" disableInteractive>
-                        <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
-                          <ListItemText>{file.name}</ListItemText >
-                        </ListItemButton>
-                      </Tooltip>
-                    </ListItem>)}
-                    </ul>
-                  </li>
-                </List>
+                      sx={{
+                        px: '8px', py: 0,
+                      }}>
+                      <ListItemButton sx={{ height: '48px' }} onClick={() => setEditFile('global.d.ts')} selected={'global.d.ts' === editFile}>
+                        <ListItemText>global.d.ts</ListItemText >
+                      </ListItemButton>
+                    </ListItem>
+                  </>}
 
-                <Menu
-                  open={contextMenu !== null}
-                  onClose={() => setContextMenu(null)}
-                  anchorReference="anchorPosition"
-                  anchorPosition={
-                    contextMenu !== null
-                      ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                      : undefined
+                  {fileType !== 'definition' && codeFiles.map(file => <ListItem
+                    dense
+                    key={file.id}
+                    sx={{
+                      px: '8px', py: 0,
+                    }}>
+                    <Tooltip title="Right click for menu" disableInteractive>
+                      <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
+                        <ListItemText>{file.name}</ListItemText >
+                      </ListItemButton>
+                    </Tooltip>
+                  </ListItem>)}
+                </ul>
+              </li>
+            </List>
+
+            <Menu
+              open={contextMenu !== null}
+              onClose={() => setContextMenu(null)}
+              anchorReference="anchorPosition"
+              anchorPosition={
+                contextMenu !== null
+                  ? {
+                    top: contextMenu.mouseY, left: contextMenu.mouseX,
                   }
-                >
-                  <PopupState variant="popover" popupId="demo-popup-popover">
-                    {(popupState) => (
-                      <div>
-                        {fileType === 'overlay' && <MenuItem sx={{ width: '100%' }} dense onClick={(ev) => {
-                          if (!contextMenuFile) return;
-                          copyToClipboard(plugin.id, contextMenuFile.id)
+                  : undefined
+              }
+            >
+              <PopupState variant="popover" popupId="demo-popup-popover">
+                {(popupState) => (
+                  <div>
+                    {fileType === 'overlay' && <MenuItem sx={{ width: '100%' }} dense onClick={() => {
+                      if (!contextMenuFile) {
+                        return;
+                      }
+                      copyToClipboard(plugin.id, contextMenuFile.id);
+                      setContextMenu(null);
+                    }}>Copy link to clipboard</MenuItem>}
+                    <MenuItem sx={{
+                      mb: 1, width: '200px',
+                    }} dense onClick={(ev) => {
+                      if (!contextMenuFile) {
+                        return;
+                      }
+                      newFilename[contextMenuFile.id] = contextMenuFile.name;
+                      bindTrigger(popupState).onClick(ev);
+                    }}>Rename</MenuItem>
+                    <Popover
+                      {...bindPopover(popupState)}
+                      anchorOrigin={{
+                        vertical:   'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical:   'top',
+                        horizontal: 'center',
+                      }}
+                    >
+                      {contextMenuFile && <Stack direction='row' sx={{
+                        p: 1, pt: 1.5,
+                      }} spacing={1}>
+                        <TextField
+                          defaultValue={contextMenuFile.name}
+                          label="New filename"
+                          size='small'
+                          variant='outlined'
+                          onKeyDown={(ev) => {
+                            if (ev.key === 'Enter') {
+                              ev.preventDefault();
+                              updateFileName(contextMenuFile.id) && popupState.close();
+                            }
+                          }}
+                          onChange={(ev) => setNewFilename(o => ({
+                            ...o, [contextMenuFile.id]: ev.target.value ?? '',
+                          }))}
+                          fullWidth
+                        />
+                        <Button size='small' onClick={() => {
+                          updateFileName(contextMenuFile.id);
                           setContextMenu(null);
-                        }}>Copy link to clipboard</MenuItem>}
-                        <MenuItem sx={{ mb: 1, width: '200px' }} dense onClick={(ev) => {
-                          if (!contextMenuFile) return;
-                          newFilename[contextMenuFile.id] = contextMenuFile.name;
-                          bindTrigger(popupState).onClick(ev);
-                        }}>Rename</MenuItem>
-                        <Popover
-                          {...bindPopover(popupState)}
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'center',
-                          }}
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
-                          }}
-                        >
-                          {contextMenuFile && <Stack direction='row' sx={{ p: 1, pt: 1.5 }} spacing={1}>
-                            <TextField
-                              defaultValue={contextMenuFile.name}
-                              label="New filename"
-                              size='small'
-                              variant='outlined'
-                              onKeyDown={(ev) => {
-                                if (ev.key === 'Enter') {
-                                  ev.preventDefault()
-                                  updateFileName(contextMenuFile.id) && popupState.close()
-                                }
-                              }}
-                              onChange={(ev) => setNewFilename(o => ({...o, [contextMenuFile.id]: ev.target.value ?? ''}))}
-                              fullWidth
-                            />
-                            <Button size='small' onClick={() => {
-                              updateFileName(contextMenuFile.id);
-                              setContextMenu(null);
-                              popupState.close();
-                              }} disabled={!newFilename[contextMenuFile.id] || newFilename[contextMenuFile.id].length === 0}>Change</Button>
-                          </Stack>}
-                        </Popover>
-                      </div>
-                    )}
-                  </PopupState>
+                          popupState.close();
+                        }} disabled={!newFilename[contextMenuFile.id] || newFilename[contextMenuFile.id].length === 0}>Change</Button>
+                      </Stack>}
+                    </Popover>
+                  </div>
+                )}
+              </PopupState>
 
-                  <Divider />
-                  <MenuItem sx={{ mt: 1 }} dense onClick={() => {
-                    if (!contextMenuFile) return
-                    removeFile(contextMenuFile.id);
-                    setContextMenu(null);
-                  }}>Delete file</MenuItem>
-                </Menu>
+              <Divider />
+              <MenuItem sx={{ mt: 1 }} dense onClick={() => {
+                if (!contextMenuFile) {
+                  return;
+                }
+                removeFile(contextMenuFile.id);
+                setContextMenu(null);
+              }}>Delete file</MenuItem>
+            </Menu>
 
-                {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
-                  bgcolor: 'background.paper', borderTopLeftRadius: 0, borderTopRightRadius: 0,
-                  '&:hover': {
-                    bgcolor: '#ffa000', color: 'black'
-                  }
-                }}>Add new {fileType}</Button>}
+            {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
+              bgcolor:              'background.paper',
+              borderTopLeftRadius:  0,
+              borderTopRightRadius: 0,
+              '&:hover':            {
+                bgcolor: '#ffa000', color: 'black',
+              },
+            }}>Add new {fileType}</Button>}
           </Grid>
           <Grid xs sx={{
             height: '100%', backgroundColor: '#1e1e1e', p: 1,
@@ -882,12 +875,11 @@ export const PluginsEdit: React.FC = () => {
               width="100%"
               language={openedFileType === 'overlay' ? 'html' : 'typescript'}
               theme='vs-dark'
-              options={{
-                readOnly: editFile.endsWith('d.ts'),
-              }}
+              options={{ readOnly: editFile.endsWith('d.ts') }}
               onChange={(value) => updateFileSource(value ?? '')}
               key={openedFileSource.id}
               defaultValue={openedFileSource.source}
+              beforeMount={configureMonaco}
             />}
           </Grid>
         </Grid>

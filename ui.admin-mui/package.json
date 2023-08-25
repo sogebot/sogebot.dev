@@ -41,6 +41,7 @@
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.0.9",
     "mdi-material-ui": "^7.7.0",
+    "monaco-editor": "^0.41.0",
     "moveable-helper": "^0.4.0",
     "mui-color-input": "^1.1.1",
     "notistack": "^3.0.1",
