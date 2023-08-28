@@ -12,6 +12,7 @@ import { green, red } from '@mui/material/colors';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { chunk, orderBy } from 'lodash';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 import { v4 } from 'uuid';
 
@@ -32,6 +33,8 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ search, setSearch ] = React.useState('');
   const [ loading, setLoading ] = React.useState(false);
   const [ importing, setImporting ] = React.useState<string[]>([]);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const [ remotePlugins, setRemotePlugins ] = React.useState<null | RemotePlugin[]>(null);
 
@@ -86,8 +89,9 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
         'content-type': 'application/json', authorization: `Bearer ${localStorage.code}`,
       },
     }).then(async ({ data }) => {
-      const files = Buffer.from(data.plugin, 'base64').toString('utf-8');
-      onImport(files);
+      onImport(data.plugin);
+      enqueueSnackbar('Plugin was imported successfully.');
+      setOpen(false);
     }).finally(() => {
       setImporting(val => val.filter(o => o !== value.id));
     });

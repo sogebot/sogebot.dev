@@ -14,14 +14,11 @@ import (
 func PutPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
 	vars := mux.Vars(r)
 
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/x-www-form-urlencoded" {
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	r.ParseForm()
-
-	t := time.Now()
 
 	var (
 		id          string
@@ -44,19 +41,19 @@ func PutPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *val
 		return
 	}
 
-	plugin := Plugin{
-		PluginStripped: &PluginStripped{
-			Id:             id,
-			Name:           name, // name is not changeable
-			Description:    r.FormValue("description"),
-			PublisherId:    r.Header.Get("userId"),
-			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        version + 1,
-			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []PluginVote{},
-		},
-		Plugin: r.FormValue("plugin"),
+	var plugin Plugin
+
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err = json.NewDecoder(r.Body).Decode(&plugin)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
+
+	t := time.Now()
+	plugin.PublishedAt = t.Format("2006-01-02T15:04:05.999Z")
+	plugin.PublisherId = r.Header.Get("userId")
 
 	err = validate.Struct(plugin)
 	if err != nil {
@@ -85,7 +82,7 @@ func PutPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *val
 		UPDATE "plugin"
 			SET "name"=$1, "description"=$2, "publisherId"=$3, "publishedAt"=$4, "plugin"=$5, "version"=$6, "compatibleWith"=$7
 		WHERE "id"=$8`,
-		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, plugin.Version, plugin.CompatibleWith, plugin.Id,
+		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, version+1, plugin.CompatibleWith, id,
 	)
 
 	if err != nil {

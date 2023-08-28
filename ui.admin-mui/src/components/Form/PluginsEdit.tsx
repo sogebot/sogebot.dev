@@ -638,30 +638,7 @@ export const PluginsEdit: React.FC = () => {
         name:     '',
         enabled:  true,
         workflow: JSON.stringify({
-          code: [{
-            id:     shortid(),
-            name:   'this is source  code name',
-            source: `const settings = {
-      command: '!seppuku',
-      messageBroadcaster: '$sender tried to commit seppuku, but lost a sword.',
-      messageDefault: '$sender has committed seppuku.',
-      timeout: 10,
-    }
-
-    listenTo('command', settings.command, async (userState, ...commandArgs ) => {
-      const isCaster = await Permission.accessTo(userState.userId, permission.CASTERS);
-
-      Twitch.sendMessage(
-        isCaster
-          ? settings.messageBroadcaster
-          : settings.messageDefault
-      );
-
-      if (!isCaster) {
-        Twitch.timeout(userState.userName, settings.timeout)
-      }
-    })`,
-          }],
+          code:    [],
           overlay: [],
         }),
         settings: null,
@@ -747,7 +724,7 @@ export const PluginsEdit: React.FC = () => {
                 width:    '100%',
                 bgcolor:  'background.paper',
                 overflow: 'auto',
-                height:   `calc(100vh - 200px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                height:   `calc(100vh - 256px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
                 p:        0,
                 '& ul':   { padding: 0 },
               }}

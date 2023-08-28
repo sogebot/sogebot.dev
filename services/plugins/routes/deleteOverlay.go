@@ -17,6 +17,16 @@ func DeleteOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		log.Fatal(err)
 	}
 
+	// delete votes
+	_, err = tx.Exec(`DELETE FROM "overlay_vote" WHERE "overlayId"=$1`, vars["id"])
+	if err != nil {
+		tx.Rollback()
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Print(err)
+		fmt.Fprint(w, "500 - Internal server error")
+		return
+	}
+
 	// delete overlay
 	res, err := tx.Exec(`DELETE FROM "overlay" WHERE "id"=$1 AND "publisherId"=$2`, vars["id"], r.Header.Get("userId"))
 	if err != nil {
@@ -38,16 +48,6 @@ func DeleteOverlay(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, "401 - Unauthorized")
 		tx.Rollback()
-		return
-	}
-
-	// delete votes
-	_, err = tx.Exec(`DELETE FROM "overlay_vote" WHERE "overlayId"=$1`, vars["id"])
-	if err != nil {
-		tx.Rollback()
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Print(err)
-		fmt.Fprint(w, "500 - Internal server error")
 		return
 	}
 

@@ -16,29 +16,27 @@ type Plugin struct {
 }
 
 func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *validator.Validate) {
-	headerContentTtype := r.Header.Get("Content-Type")
-	if headerContentTtype != "application/x-www-form-urlencoded" {
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
-	r.ParseForm()
 
-	t := time.Now()
+	var plugin Plugin
 
-	plugin := Plugin{
-		PluginStripped: &PluginStripped{
-			Name:           r.FormValue("name"),
-			Description:    r.FormValue("description"),
-			PublisherId:    r.Header.Get("userId"),
-			PublishedAt:    t.Format("2006-01-02T15:04:05.999Z"),
-			Version:        1,
-			CompatibleWith: r.FormValue("compatibleWith"),
-			Votes:          []PluginVote{},
-		},
-		Plugin: r.FormValue("plugin"),
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&plugin)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	err := validate.Struct(plugin)
+	t := time.Now()
+	plugin.PublishedAt = t.Format("2006-01-02T15:04:05.999Z")
+	plugin.PublisherId = r.Header.Get("userId")
+
+	err = validate.Struct(plugin)
 	if err != nil {
 		var errors []error
 		for _, err := range err.(validator.ValidationErrors) {
@@ -65,7 +63,7 @@ func PostPlugin(w http.ResponseWriter, r *http.Request, db *sql.DB, validate *va
 		INSERT INTO "plugin" ("name", "description", "publisherId", "publishedAt", "plugin", "version", "compatibleWith")
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING "id"`,
-		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, plugin.Version, plugin.CompatibleWith,
+		plugin.Name, plugin.Description, plugin.PublisherId, plugin.PublishedAt, plugin.Plugin, 1, plugin.CompatibleWith,
 	).Scan(&plugin.Id)
 
 	if err != nil || err == sql.ErrNoRows {

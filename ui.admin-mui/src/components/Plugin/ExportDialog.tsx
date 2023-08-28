@@ -95,13 +95,12 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     const toSave = {
       name,
       description,
-      items:          itemsToExport,
-      data:           {},
+      plugin:         itemsToExport,
       compatibleWith: (currentVersion ?? '').split('-')[0],
     } as {
       name: string;
       description: string,
-      items: typeof model.workflow,
+      plugin: string,
       data: Record<string, string>
       compatibleWith: string,
     };
@@ -117,8 +116,8 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       if (tab === 'new') {
         await axios.post(endpoint + '/plugins', {
           ...toSave,
-          items: JSON.stringify(toSave.items),
-          data:  JSON.stringify(toSave.data),
+          plugin: toSave.plugin,
+          data:   JSON.stringify(toSave.data),
         }, {
           headers: {
             authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
@@ -129,8 +128,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
         if (remotePlugin) {
           await axios.put(endpoint + '/plugins/' + remotePlugin.id, {
             ...toSave,
-            items: JSON.stringify(toSave.items),
-            data:  JSON.stringify(toSave.data),
+            plugin: toSave.plugin,
           }, {
             headers: {
               authorization: `Bearer ${localStorage.code}`, 'Content-Type': 'application/json',
