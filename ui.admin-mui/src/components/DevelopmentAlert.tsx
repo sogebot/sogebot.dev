@@ -20,7 +20,7 @@ export default function DevelopmentAlert() {
         <Typography>This dashboard is still in heavy development and doesn't contain all features.</Typography>
         <Typography sx={{ pt: 2 }}>Missing features:</Typography>
         <ul>
-          <li>Overlay registry</li>
+          <li>Alerts registry</li>
         </ul>
         <Typography sx={{ pt: 2 }}>Happy testing!</Typography>
 
