@@ -2,8 +2,8 @@ import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button, Dialog, DialogActions, DialogContent,
-  Divider, Grid, LinearProgress, List,
+  Button, Checkbox, Dialog, DialogActions, DialogContent,
+  Divider, FormControlLabel, Grid, LinearProgress, List,
   ListItem, ListItemButton, ListItemText,
   ListSubheader, Menu, MenuItem, Popover, Stack,
   TextField, Tooltip, Typography,
@@ -699,14 +699,24 @@ export const PluginsEdit: React.FC = () => {
           <Grid sx={{
             p: 1, width: leftPanelWidth + 'px', pb: 0,
           }}>
-            <Box sx={{ p: 1 }}>
-              <ExportDialog model={plugin}/>
-              <ImportDialog onImport={(items) => {
-                setPlugin(o => ({
-                  ...o, workflow: items,
-                } as Plugin));
-              }}/>
-            </Box>
+            <Stack sx={{ p: 1 }} direction='row'>
+              <Box sx={{ width: '100%' }}>
+                <ExportDialog model={plugin}/>
+                <ImportDialog onImport={(items) => {
+                  setPlugin(o => ({
+                    ...o, workflow: items,
+                  } as Plugin));
+                }}/>
+              </Box>
+              <FormControlLabel
+                value="end"
+                control={<Checkbox checked={plugin.enabled} onChange={(_, checked) => setPlugin(o => ({
+                  ...o, enabled: checked, 
+                }) as Plugin)} />}
+                label="Enabled"
+                labelPlacement="end"
+              />
+            </Stack>
 
             <TextField
               {...propsError('name')}
@@ -724,7 +734,7 @@ export const PluginsEdit: React.FC = () => {
                 width:    '100%',
                 bgcolor:  'background.paper',
                 overflow: 'auto',
-                height:   `calc(100vh - 256px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
                 p:        0,
                 '& ul':   { padding: 0 },
               }}
