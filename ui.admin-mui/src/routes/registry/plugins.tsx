@@ -91,11 +91,10 @@ const PageRegistryPlugins = () => {
   }, []);
 
   const deleteItem = useCallback((item: Plugin) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-      .finally(() => {
-        enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
-        refresh();
-      });
+    getSocket('/core/plugins').emit('generic::deleteById', item.id, () => {
+      enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
+      refresh();
+    });
   }, [ enqueueSnackbar, refresh ]);
 
   useEffect(() => {
