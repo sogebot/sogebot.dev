@@ -103,7 +103,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
               contentClassificationLabels.map(label => <Chip icon={label === 'MatureGame' ? <Lock/> : undefined}size='small' sx={{ mx: 0.1 }} label={
                 CONTENT_CLASSIFICATION_LABELS[label as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? label
               }/>)
-            }</Box>
+            }&nbsp;</Box>
           </Grid>
         </Grid>
         { game && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>

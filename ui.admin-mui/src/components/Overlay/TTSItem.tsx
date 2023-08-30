@@ -64,7 +64,7 @@ export const TTSItem: React.FC<Props<TTS>> = ({ item }) => {
     if (data.service === 0) {
     // RESPONSIVE VOICE
       (window as any).responsiveVoice.speak(data.text, item.voice, {
-        rate: item.rate, pitch: item.pitch, volume: item.volume,
+        rate: item.rate, pitch: item.pitch, volume: Math.max(item.volume, 1),
       });
     } else {
     // GOOGLE

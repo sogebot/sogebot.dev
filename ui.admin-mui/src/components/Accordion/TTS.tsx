@@ -75,6 +75,15 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   };
 
   React.useEffect(() => {
+    // check if voice is in list
+    if (!voices.includes(model.voice)) {
+      onChange({
+        ...model, voice: voices.find(o => o.toLowerCase().startsWith('en-us-standard') || o.toLowerCase().startsWith('english')),
+      });
+    }
+  }, [voices, model.voice ]);
+
+  React.useEffect(() => {
     if (service === 0) {
       getVoicesFromResponsiveVoice();
       if (model.voice === '') {
@@ -102,12 +111,12 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           if (isGlobal(model) && model) {
             if (service === 0) {
               window.responsiveVoice.speak(toSpeak.trim(), model.voice, {
-                rate: model.rate, pitch: model.pitch, volume: model.volume, onend: () => setTimeout(() => resolve(), 500),
+                rate: model.rate, pitch: model.pitch, volume: Math.min(model.volume, 1), onend: () => setTimeout(() => resolve(), 500),
               });
             } else {
               // Google TTS
               getSocket('/core/tts').emit('google::speak', {
-                rate: model.rate, pitch: model.pitch, volume: model.volume, voice: model.voice, text: text,
+                rate: model.rate, pitch: model.pitch, volume: Math.min(model.volume, 1), voice: model.voice, text: text,
               }, (err, b64mp3) => {
                 console.log({ b64mp3 });
                 if (err) {
