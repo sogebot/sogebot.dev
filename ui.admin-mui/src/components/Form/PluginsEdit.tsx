@@ -337,6 +337,14 @@ declare const Overlay: {
   *
   */
   runFunction(functionName: string, args: (string|number|boolean)[], overlayId?: string): void;
+  /**
+   * Trigger !tts in TTS Overlay
+  *  @example
+  *
+  *    Overlay.triggerTTSOverlay('My tts message');
+  *
+  */
+  triggerTTSOverlay(message: string): void;
 }
 declare const Permission: {
   /**
@@ -711,7 +719,7 @@ export const PluginsEdit: React.FC = () => {
               <FormControlLabel
                 value="end"
                 control={<Checkbox checked={plugin.enabled} onChange={(_, checked) => setPlugin(o => ({
-                  ...o, enabled: checked, 
+                  ...o, enabled: checked,
                 }) as Plugin)} />}
                 label="Enabled"
                 labelPlacement="end"
