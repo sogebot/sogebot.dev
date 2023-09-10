@@ -76,6 +76,12 @@ const DraggableComponent: React.FC<{
     setUpdateItem(update);
   }, [ updateItem ]);
 
+  const onLabelChange = React.useCallback((value: string) => {
+    const update = cloneDeep(updateItem);
+    update.options.label = value;
+    setUpdateItem(update);
+  }, [ updateItem ]);
+
   const onInputChange = React.useCallback((value: string) => {
     const update = cloneDeep(updateItem);
     if (update.type === 'command') {
@@ -161,6 +167,13 @@ const DraggableComponent: React.FC<{
                 }}>
                   <Grid container spacing={2} justifyContent='center'>
                     <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        variant='filled'
+                        label="Label"
+                        onChange={(event) => onLabelChange(event.target.value)}
+                        value={updateItem.options.label}
+                      />
                       {updateItem.type === 'command'
                         && <TextField
                           fullWidth
