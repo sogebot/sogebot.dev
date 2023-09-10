@@ -342,9 +342,9 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
 
     axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
-        setRandomizers(data.data.map((o: any) => ({
+        dispatch(setRandomizers(data.data.map((o: any) => ({
           id: o.id, label: o.name,
-        })));
+        }))));
       });
 
     getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
