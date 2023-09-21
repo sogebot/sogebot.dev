@@ -30,7 +30,7 @@ export const EmotesItem: React.FC<Props<Emotes>> = ({ item }) => {
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes');
+  getSocket('/core/emotes', true);
 
   React.useEffect(() => {
     model = item; // workaround for not picking up changes on active

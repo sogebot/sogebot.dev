@@ -19,7 +19,7 @@ export const EmotesComboItem: React.FC<Props<EmotesCombo>> = ({ item, active }) 
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes');
+  getSocket('/core/emotes', true);
 
   useIntervalWhen(() => {
     setCurrentTime(Date.now());

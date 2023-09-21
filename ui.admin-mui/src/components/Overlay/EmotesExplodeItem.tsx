@@ -21,7 +21,7 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes');
+  getSocket('/core/emotes', true);
 
   React.useEffect(() => {
     model = item; // workaround for explode not picking up changes on active

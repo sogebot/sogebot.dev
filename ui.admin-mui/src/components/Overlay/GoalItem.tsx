@@ -201,7 +201,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
   };
 
   useIntervalWhen(() => {
-    getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
+    getSocket('/integrations/tiltify', true).emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
   }, 30000, true, true);
 
   return <Box sx={{

@@ -21,7 +21,7 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes');
+  getSocket('/core/emotes', true);
 
   React.useEffect(() => {
     model = item; // workaround for firework not picking up changes on active
