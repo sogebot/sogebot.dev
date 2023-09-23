@@ -10,7 +10,6 @@ import { DashboardWidgetBotCustom } from './Bot/Custom';
 import { DashboardWidgetBotEvents } from './Bot/Events';
 import { DashboardWidgetBotQueue } from './Bot/Queue';
 import { DashboardWidgetBotRaffles } from './Bot/Raffles';
-import { DashboardWidgetBotSocial } from './Bot/Social';
 import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -50,9 +49,8 @@ export const DashboardWidgetBot: React.FC = () => {
             {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
             <Tab label={translate('widget-title-queue')} value="3" />
             <Tab label={translate('widget-title-raffles')} value="4"/>
-            <Tab label={translate('widget-title-social')} value="5" />
-            <Tab label={translate('menu.checklist')} value="6" />
-            <Tab label={translate('widget-title-custom')} value="7" />
+            <Tab label={translate('menu.checklist')} value="5" />
+            <Tab label={translate('widget-title-custom')} value="6" />
           </TabList>
         </Box>
         <Box sx={{
@@ -62,9 +60,8 @@ export const DashboardWidgetBot: React.FC = () => {
           <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotRaffles active={value === '4'}  sx={value === '4' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotSocial sx={value === '5' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotChecklist sx={value === '6' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotCustom sx={value === '7' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>
+          <DashboardWidgetBotCustom sx={value === '6' ? classes.showTab : classes.hideTab}/>
         </Box>
       </TabContext>
     </Card>
