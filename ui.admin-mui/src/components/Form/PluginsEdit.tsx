@@ -477,7 +477,10 @@ export const PluginsEdit: React.FC = () => {
             }}>Add new {fileType}</Button>}
           </Grid>
           <Grid xs sx={{
-            height: '100%', backgroundColor: '#1e1e1e', p: 1,
+            height:          '100%',
+            backgroundColor: '#1e1e1e',
+            p:               1,
+            width:           '1px', /* fixes editor width extending over 100% when ctrl+space is pressed */
           }}>
             {openedFileSource && <Editor
               height="100%"
