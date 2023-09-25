@@ -97,16 +97,17 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       'x-twitch-token':  localStorage.code,
       'x-twitch-userid': localStorage.userId,
     };
-    const validation = await axios.get(`${localStorage.serverUrl}/socket/validate`, { headers });
     console.group('isUserLoggedIn::bot::validation');
-    console.debug(JSON.stringify({
-      validation, headers,
-    }));
+    console.debug(JSON.stringify({ headers }));
+    const validation = await axios.get(`${localStorage.serverUrl}/socket/validate`, { headers });
+    console.debug(JSON.stringify({ validation }));
     console.groupEnd();
     localStorage[`${localStorage.server}::accessToken`] = validation.data.accessToken;
     localStorage[`${localStorage.server}::refreshToken`] = validation.data.refreshToken;
     localStorage[`${localStorage.server}::userType`] = validation.data.userType;
   } catch(e) {
+    console.error(e);
+    console.groupEnd();
     dispatch(showLoginWarning());
     dispatch(setMessage('You don\'t have access to this server.'));
     return;

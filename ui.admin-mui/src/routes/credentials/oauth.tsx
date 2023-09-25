@@ -38,10 +38,10 @@ const OAuth = () => {
       console.debug(JSON.stringify({
         twitchValidation, twitchHeaders,
       }));
-      console.groupEnd();
       localStorage.userId = twitchValidation.data.user_id;
       localStorage.clientId = twitchValidation.data.client_id;
       localStorage.code = code;
+      console.groupEnd();
       console.log(`Logged as ${twitchValidation.data.login}#${twitchValidation.data.user_id}`);
 
       const axiosData = await axios.get('https://api.twitch.tv/helix/users', {
