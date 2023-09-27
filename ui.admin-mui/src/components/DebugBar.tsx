@@ -61,6 +61,7 @@ export default function DebugBar() {
         fullWidth
         variant="outlined"
         value={debug}
+        onKeyDown={(ev) => ev.key === 'Enter' && setDebugEnv()}
         onChange={(event) => setDebug(event.target.value)}/>
     </DialogContent>
     <DialogActions>
