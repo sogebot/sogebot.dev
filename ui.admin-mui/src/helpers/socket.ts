@@ -50,9 +50,13 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
           cb({ token: localStorage.getItem(`${localStorage.server}::accessToken`) });
           break;
         } else {
+          if (continueOnUnauthorized) {
+            break;
+          }
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
       }
+      cb({ token: null });
     },
   }) as Socket;
 
