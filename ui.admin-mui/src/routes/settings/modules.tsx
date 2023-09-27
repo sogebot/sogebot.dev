@@ -27,7 +27,6 @@ import PageSettingsModulesCoreGeneral from '../../components/Settings/Core/gener
 import PageSettingsModulesCoreSocket from '../../components/Settings/Core/socket';
 import PageSettingsModulesCoreTTS from '../../components/Settings/Core/tts';
 import PageSettingsModulesCoreUI from '../../components/Settings/Core/ui';
-import PageSettingsModulesCoreUpdater from '../../components/Settings/Core/updater';
 import PageSettingsModulesGamesDuel from '../../components/Settings/Games/duel';
 import PageSettingsModulesGamesGamble from '../../components/Settings/Games/gamble';
 import PageSettingsModulesGamesHeist from '../../components/Settings/Games/heist';
@@ -106,7 +105,7 @@ const PageSettingsModules = () => {
             dense
           >
             {type === `core` && <>
-              {['dashboard', 'tts', 'emotes', 'currency', 'general', 'socket', 'updater', 'ui'].map(item => <ListItemButton
+              {['dashboard', 'tts', 'emotes', 'currency', 'general', 'socket', 'ui'].map(item => <ListItemButton
                 key={`core-${item}`}
                 selected={activeTab === `core-${item}`}
                 onClick={() => scrollTo(item)}
@@ -196,7 +195,6 @@ const PageSettingsModules = () => {
                 <PageSettingsModulesCoreCurrency onVisible={() => setActiveTab('core-currency')}/>
                 <PageSettingsModulesCoreGeneral onVisible={() => setActiveTab('core-general')}/>
                 <PageSettingsModulesCoreSocket onVisible={() => setActiveTab('core-socket')}/>
-                <PageSettingsModulesCoreUpdater onVisible={() => setActiveTab('core-updater')}/>
                 <PageSettingsModulesCoreUI onVisible={() => setActiveTab('core-ui')}/>
               </>}
               {type === `services` && <>
