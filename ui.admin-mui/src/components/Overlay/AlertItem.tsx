@@ -299,6 +299,7 @@ const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: s
   replacedText = reactStringReplace(replacedText, /(\{amount\})/g, () => String(runningAlert.amount));
   replacedText = reactStringReplace(replacedText, /(\{currency\})/g, () => runningAlert.currency);
   replacedText = reactStringReplace(replacedText, /(\{monthsName\})/g, () => runningAlert.monthsName);
+  replacedText = reactStringReplace(replacedText, /(<\/?br\/?>)/g, () => <br/>);
 
   return <Box sx={{
     fontFamily: encodeFont(runningAlert.alert.font ? runningAlert.alert.font.family : alert.font.family),
