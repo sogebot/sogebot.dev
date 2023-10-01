@@ -44,6 +44,7 @@ const layouts: Record<string, SxProps<Theme>> = {
       top:       '50%',
       left:      '50%',
       transform: 'translate(-50%, -50%) !important',
+      width:     '100vw',
     },
   },
   '4': {
