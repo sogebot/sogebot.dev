@@ -69,7 +69,13 @@ export const FormNumericInput: React.FC<{
       setPropsValue(displayEmpty ? '' : (min ?? 0));
       return;
     }
-    const val = Number(event.target.value);
+
+    if (event.target.value.length === 0) {
+      setPropsValue(min ?? 0);
+      return;
+    }
+    let val = Number(event.target.value);
+    val = isNaN(val) ? 0 : val;
     setPropsValue(val);
   }, []);
 
@@ -83,6 +89,7 @@ export const FormNumericInput: React.FC<{
     <TextField
       {...props}
       value={value}
+      sx={{ '& .MuiFilledInput-input': { p: props.label ? undefined : '10px !important' } }}
       onChange={onChangeHandler}
       inputProps={{ onKeyDown: keydownHandler }}
       InputLabelProps={{ shrink: displayEmpty ?? undefined }}

@@ -1,11 +1,12 @@
 import { ExpandMoreTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, FormLabel, IconButton, Link, Paper, Slider, Stack, Switch, Typography,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Fade, FormLabel, IconButton, Link, Slider, Stack, Switch, Typography,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
+import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import React from 'react';
@@ -22,13 +23,16 @@ declare global {
   }
 }
 
-type model = Randomizer['tts'] | TTS;
+type model = Randomizer['tts'] | TTS | Alerts['tts'];
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   model: model,
   open: string,
-  onClick: (value: string) => void;
+  onOpenChange: (value: string) => void;
   onChange: (value: any) => void;
+  alwaysShowLabelDetails?: boolean;
+  prepend?: React.ReactNode;
+  customLabelDetails?: React.ReactNode;
 };
 
 function isGlobal (value: Partial<Alert['items'][number]['tts']> | Required<Alert['tts']>): value is Required<Alert['tts']> {
@@ -42,7 +46,7 @@ function isGlobal (value: Partial<Alert['items'][number]['tts']> | Required<Aler
 export const AccordionTTS: React.FC<Props> = (props) => {
   const accordionId = 'tts';
   const { open,
-    onClick,
+    onOpenChange,
     onChange,
     model,
     ...accordionProps } = props;
@@ -62,7 +66,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   }, [ configuration]);
 
   const handleClick = () => {
-    onClick(open === accordionId ? '' : accordionId);
+    onOpenChange(open === accordionId ? '' : accordionId);
   };
 
   const getVoicesFromResponsiveVoice = () => {
@@ -75,8 +79,13 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   };
 
   React.useEffect(() => {
+    if (voices.length === 0) {
+      // voices not loaded yet
+      return;
+    }
     // check if voice is in list
     if (!voices.includes(model.voice)) {
+      console.log('Voice', model.voice, 'not in list, setting to default');
       onChange({
         ...model, voice: voices.find(o => o.toLowerCase().startsWith('en-us-standard') || o.toLowerCase().startsWith('english')),
       });
@@ -138,14 +147,15 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     <Helmet>
       {configuration.core.tts.responsiveVoiceKey.length > 0 && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`}></script>}
     </Helmet>
-    <Accordion {...accordionProps} disabled={props.disabled || !isConfigured} expanded={open === accordionId && !props.disabled && isConfigured}>
+    <Accordion {...accordionProps} disabled={props.disabled} expanded={open === accordionId && !props.disabled && isConfigured}>
       <AccordionSummary
-        expandIcon={<ExpandMoreTwoTone />}
+        expandIcon={isConfigured && <ExpandMoreTwoTone />}
         onClick={() => handleClick()}
         aria-controls="panel1a-content"
         id="panel1a-header"
+        sx={{ backgroundColor: !isConfigured ? theme.palette.error.dark : undefined }}
       >
-        {isConfigured && <>
+        {isConfigured ? <>
           {'enabled' in model && <Switch
             size='small'
             sx={{ mr: 1 }}
@@ -154,16 +164,27 @@ export const AccordionTTS: React.FC<Props> = (props) => {
             onChange={(_, val) => onChange({
               ...model, enabled: val,
             }) }/>}
-        </>}
-        <Typography>{ translate('registry.alerts.tts.setting') }</Typography>
 
-        {!isConfigured && <Paper sx={{
-          color: theme.palette.error.light, marginLeft: 'auto', px: 1, mr: 1,
-        }} elevation={0}>
+          <Typography sx={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
+          }}>
+            { translate('registry.alerts.tts.setting') }
+            <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
+              <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
+                {props.customLabelDetails
+                  ? props.customLabelDetails
+                  : model.voice
+                }
+              </Typography>
+            </Fade>
+          </Typography>
+        </> : <Typography>
         TTS is not properly set, go to{' '}<Link href="/settings/modules/core/tts">{' '}TTS settings</Link> and configure.
-        </Paper>}
+        </Typography>}
       </AccordionSummary>
       <AccordionDetails>
+        {props.prepend && props.prepend}
+
         {model.voice !== undefined && <Autocomplete
           value={model.voice}
           disableClearable
@@ -198,7 +219,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           }}
         />}
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
           <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
           <Slider
             step={0.01}

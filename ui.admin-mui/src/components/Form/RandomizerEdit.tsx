@@ -450,21 +450,21 @@ export const RandomizerEdit: React.FC = () => {
               model={item.position}
               disabled={item.type === 'wheelOfFortune'}
               open={expanded}
-              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onOpenChange={value => setExpanded(value)}
               onChange={(value) => handleValueChange('position', value)}
             />}
 
             {item.tts && <AccordionTTS
               model={item.tts}
               open={expanded}
-              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onOpenChange={value => setExpanded(value)}
               onChange={(value) => handleValueChange('tts', value)}
             />}
 
             {item.customizationFont && <AccordionFont
               model={item.customizationFont}
               open={expanded}
-              onClick={value => typeof value === 'string' && setExpanded(value)}
+              onOpenChange={value => setExpanded(value)}
               onChange={(value) => handleValueChange('customizationFont', value)}
             />}
 

@@ -99,7 +99,7 @@ export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
         accordionId='marathonFont'
         model={model.marathonFont}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, marathonFont: val,

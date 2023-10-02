@@ -21,7 +21,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   disableY?: boolean,
   disableAnchorY?: boolean,
   open: string,
-  onClick: (value: string) => void;
+  onOpenChange: (value: string) => void;
   onChange: (value: Position) => void;
 };
 
@@ -32,7 +32,7 @@ export const AccordionPosition: React.FC<Props> = (props) => {
     disableAnchorY,
     disableX,
     disableY,
-    onClick,
+    onOpenChange,
     onChange,
     model,
     ...accordionProps } = props;
@@ -43,7 +43,7 @@ export const AccordionPosition: React.FC<Props> = (props) => {
   const paperRef = React.useRef<any>();
 
   const handleClick = () => {
-    onClick(open === accordionId ? '' : accordionId);
+    onOpenChange(open === accordionId ? '' : accordionId);
   };
 
   const position = (value: typeof model, papRef: typeof paperRef, posRef: typeof anchorRef) => {

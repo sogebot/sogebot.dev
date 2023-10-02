@@ -19,7 +19,7 @@ export const TTSSettings: React.FC<Props> = ({ model, onUpdate }) => {
   return <>
     <Stack spacing={0.5}>
       <FormGroup sx={{
-        pt: 1, width: '100%', 
+        pt: 1, width: '100%',
       }}>
         <FormControlLabel
           control={<Checkbox checked={model.triggerTTSByHighlightedMessage || false}/>}
@@ -31,7 +31,7 @@ export const TTSSettings: React.FC<Props> = ({ model, onUpdate }) => {
       <AccordionTTS
         model={model}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, ...val,

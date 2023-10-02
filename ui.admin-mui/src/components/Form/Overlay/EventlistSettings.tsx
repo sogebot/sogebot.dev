@@ -137,7 +137,7 @@ export const EventlistSettings: React.FC<Props> = ({ model, onUpdate }) => {
       accordionId='eventFont'
       model={model.eventFont}
       open={open}
-      onClick={(val) => typeof val === 'string' && setOpen(val)}
+      onOpenChange={(val) => setOpen(val)}
       onChange={(val) => {
         onUpdate({
           ...model, eventFont: val,
@@ -151,7 +151,7 @@ export const EventlistSettings: React.FC<Props> = ({ model, onUpdate }) => {
       accordionId='usernameFont'
       model={model.usernameFont}
       open={open}
-      onClick={(val) => typeof val === 'string' && setOpen(val)}
+      onOpenChange={(val) => setOpen(val)}
       onChange={(val) => {
         onUpdate({
           ...model, usernameFont: val,

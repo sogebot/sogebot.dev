@@ -164,7 +164,9 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
 
   useKey(['Delete'], () => {
     const focusedElement = document.activeElement;
-    if (focusedElement?.tagName === 'INPUT') {
+    if (focusedElement?.tagName === 'INPUT'
+    || focusedElement?.tagName === 'TEXTAREA'
+    || focusedElement?.tagName === 'SELECT') {
       console.log('Del key disabled, because we are focusing input');
       return;
     }
@@ -623,7 +625,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
                 accordionId='customFont'
                 model={selectedItem.font}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   handleItemChange('font', val);
                 }}/>

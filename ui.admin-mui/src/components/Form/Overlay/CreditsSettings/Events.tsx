@@ -280,7 +280,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
                 accordionId='headerFont'
                 model={item.headerFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, headerFont: val,
@@ -292,7 +292,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
                 accordionId='itemFont'
                 model={item.itemFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, itemFont: val,
@@ -304,7 +304,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
                 accordionId='highlightFont'
                 model={item.highlightFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, highlightFont: val,

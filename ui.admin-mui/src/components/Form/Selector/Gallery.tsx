@@ -12,6 +12,8 @@ import { useLocalstorageState } from 'rooks';
 import { getSocket } from '../../../helpers/socket';
 import theme from '../../../theme';
 import { AudioButton } from '../../Audio/Button';
+import defaultImage from '../../Overlay/assets/alerts/default.gif';
+import defaultAudio from '../../Overlay/assets/alerts/default.mp3';
 
 export const normalizePath = (path: string) => {
   // remove . if path is empty
@@ -61,7 +63,7 @@ type Props = {
   volume?: number;
   button?: boolean;
   announce?: string;
-  onChange(value: string | null): void;
+  onChange(value: string | null, volume: number | null, type: string): void;
   onVolumeChange?(value: number | null): void;
 };
 
@@ -86,47 +88,58 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
     setOpen(false);
   };
 
+  const refresh = () => {
+    setFolder('/');
+
+    setLoading(true);
+    getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.debug('Loaded', _items);
+      setItems(_items
+        .filter(item => {
+          if (type === 'audio') {
+            return item.type.includes('audio') || item.type.includes('video');
+          } else {
+            return item.type.includes('image') || item.type.includes('video');
+          }
+        })
+        .map(item => ({
+          ...item,
+          folder: normalizePath(item.folder),
+        })));
+
+      // go to selected item folder
+      if (value) {
+        const currentItem = _items.find(o => o.id === value);
+        setFolder(currentItem?.folder ?? '/');
+      }
+
+      setLoading(false);
+    });
+  };
+
   React.useEffect(() => {
     if (open) {
-      setFolder('/');
-
-      setLoading(true);
-      getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.debug('Loaded', _items);
-        setItems(_items
-          .filter(item => {
-            if (type === 'audio') {
-              return item.type.includes('audio') || item.type.includes('video');
-            } else {
-              return item.type.includes('image') || item.type.includes('video');
-            }
-          })
-          .map(item => ({
-            ...item,
-            folder: normalizePath(item.folder),
-          })));
-
-        // go to selected item folder
-        if (value) {
-          const currentItem = _items.find(o => o.id === value);
-          setFolder(currentItem?.folder ?? '/');
-        }
-
-        setLoading(false);
-      });
+      refresh();
     }
   }, [ open ]);
+  React.useEffect(() => refresh(), []);
 
-  const selectedItem = items.find(o => o.id === value);
+  const isDefaultImage = value === '%default%';
+  const selectedItem = !isDefaultImage
+    ? items.find(o => o.id === value)
+    : {
+      id:   '%default%',
+      type: type,
+    };
 
   return <Box sx={{ width: '100%' }}>
     { button ? <Button onClick={handleClick}>{label}</Button>
-      : <Stack direction='row' alignItems={'center'}>
-        <Stack direction='row' sx={{ width: '170px' }} alignItems='center' spacing={2}>
+      : <Stack direction='column' alignItems={'center'}>
+        <Stack direction='row'sx={{ width: '100% ' }} alignItems='center' spacing={2}>
           <FormLabel>{label}</FormLabel>
           <IconButton onClick={handleClick} sx={{ borderRadius: 0 }}>
             <CollectionsTwoTone/>
@@ -135,14 +148,20 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
         { selectedItem ? <Box sx={{ pb: 0 }}>
           {selectedItem.type.includes('image') && <img
             alt=''
-            src={`${server}/gallery/${selectedItem.id}`}
+            src={isDefaultImage
+              ? defaultImage
+              : `${server}/gallery/${selectedItem.id}`}
             style={{
               height: '150px', maxWidth: '266px', objectFit: 'contain',
             }}
           />}
           {selectedItem.type.includes('video') && <video
             controls
-            onLoadedData={(ev) => ev.currentTarget.volume = 0.2}
+            onLoadedData={(ev) => ev.currentTarget.volume = volume ? volume / 100 : 0.2}
+            onVolumeChange={(ev) => {
+              onChange(selectedItem.id!, ev.currentTarget.volume * 100, selectedItem.type! as any);
+              onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100);
+            }}
             src={`${server}/gallery/${selectedItem.id}`}
             style={{
               height: '150px', maxWidth: '266px', objectFit: 'contain',
@@ -151,8 +170,13 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
           {selectedItem.type.includes('audio') && <audio
             controls
             onLoadedData={(ev) => ev.currentTarget.volume = volume ? volume / 100 : 0.2}
-            onVolumeChange={(ev) => onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100)}
-            src={`${server}/gallery/${selectedItem.id}`}
+            onVolumeChange={(ev) => {
+              onChange(selectedItem.id!, ev.currentTarget.volume * 100, selectedItem.type! as any);
+              onVolumeChange && onVolumeChange(ev.currentTarget.volume * 100);
+            }}
+            src={isDefaultImage
+              ? defaultAudio
+              : `${server}/gallery/${selectedItem.id}`}
             style={{ height: '20px' }}
           />}
         </Box> : <Typography>No item selected</Typography>}
@@ -248,10 +272,11 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
                   backgroundColor: value === item.id ? `${theme.palette.primary.main}55` : undefined,
                 }} onClick={() => {
                   if (value === item.id!) {
-                    onChange(null);
+                    onChange(null, null, 'image');
                     onVolumeChange && onVolumeChange(null);
                   } else {
-                    onChange(item.id!);
+                    console.log(item.id!, 20, item.type! as any);
+                    onChange(item.id!, 20, item.type! as any);
                     if (announce) {
                       enqueueSnackbar(announce);
                     }

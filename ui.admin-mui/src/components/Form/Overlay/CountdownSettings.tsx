@@ -255,7 +255,7 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
         accordionId='countdownFont'
         model={model.countdownFont}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, countdownFont: val,
@@ -267,7 +267,7 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
         accordionId='messageFont'
         model={model.messageFont}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, messageFont: val,

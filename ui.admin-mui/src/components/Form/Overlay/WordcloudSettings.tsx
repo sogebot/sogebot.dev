@@ -55,7 +55,7 @@ export const WordcloudSettings: React.FC<Props> = ({ model, onUpdate }) => {
       accordionId='wordFont'
       model={model.wordFont}
       open={open}
-      onClick={(val) => typeof val === 'string' && setOpen(val)}
+      onOpenChange={(val) => setOpen(val)}
       onChange={(val) => {
         onUpdate({
           ...model, wordFont: val,

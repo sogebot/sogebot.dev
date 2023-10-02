@@ -67,10 +67,6 @@ export const useFilter = <T,>(availableFilters: {
     }
   }, []);
 
-  React.useEffect(() => {
-    console.log({ newFilter });
-  }, [ newFilter ]);
-
   const handleBooleanChange = (columnName: string, event: React.ChangeEvent) => {
     setNewFilter({
       columnName: columnName as string,

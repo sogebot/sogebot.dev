@@ -13,8 +13,6 @@ export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][numb
 
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const iframeSrc = React.useMemo(() => {
-    console.log(item.font.family);
-
     // #wrapper is added for backward compatibility
     const html = `<html>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${item.font.family.replaceAll(' ', '+')}&display=swap">

@@ -8,8 +8,8 @@ export function setZoomDimensionViewable(value: number) {
 
 export const DimensionViewable = {
   name:   'dimensionViewable',
-  props:  {},
-  events: {},
+  props:  [],
+  events: [],
   render(moveable: MoveableManagerInterface<any, any>) {
     const rect = moveable.getRect();
 

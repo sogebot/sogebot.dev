@@ -272,7 +272,7 @@ const prepareMessageTemplate = (alert: Alert, runningAlert: RunningAlert, msg: s
           baffle('.obfuscate-' + item, {
             characters: runningAlert.alert.animationTextOptions.characters,
             speed:      runningAlert.alert.animationTextOptions.speed,
-          }).start().reveal(4000, 4000);
+          }).start().reveal(runningAlert.alert.animationTextOptions.maxTimeToDecrypt, runningAlert.alert.animationTextOptions.maxTimeToDecrypt);
         }
       });
     } else {

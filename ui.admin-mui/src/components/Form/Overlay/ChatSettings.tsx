@@ -403,7 +403,7 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
         accordionId='Font'
         model={model.font}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, font: val,

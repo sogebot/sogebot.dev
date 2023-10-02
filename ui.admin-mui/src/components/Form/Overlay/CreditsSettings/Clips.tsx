@@ -282,7 +282,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
                 accordionId='gameFont'
                 model={item.gameFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, gameFont: val,
@@ -294,7 +294,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
                 accordionId='titleFont'
                 model={item.titleFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, titleFont: val,
@@ -306,7 +306,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
                 accordionId='createdByFont'
                 model={item.createdByFont}
                 open={accordion}
-                onClick={(val) => typeof val === 'string' && setAccordion(val)}
+                onOpenChange={(val) => setAccordion(val)}
                 onChange={(val) => {
                   setItem({
                     ...item, createdByFont: val,

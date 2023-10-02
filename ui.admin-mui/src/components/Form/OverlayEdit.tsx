@@ -9,7 +9,8 @@ import {
 import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
-import { set } from 'lodash';
+import { useAtom, useAtomValue } from 'jotai';
+import { cloneDeep, set } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
@@ -20,8 +21,12 @@ import {
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
+import {
+  anItems, anMoveableId, anSelectedItem, anSelectedItemCanvas, anSelectedItemOpts, emptyItem,
+} from './atoms';
 import { AlertsRegistryTesterAccordion } from './Overlay/AlertSettings/tester';
 import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
+import { AlertsSettings } from './Overlay/AlertsSettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
 import { ClipsCarouselSettings } from './Overlay/ClipsCarouselSettings';
@@ -83,22 +88,13 @@ import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
-const emptyItem: Partial<Overlay> = {
-  canvas: {
-    height: 1080,
-    width:  1920,
-  },
-  name:  '',
-  items: [],
-};
-
 let isPositionChanging = false;
 document.addEventListener('mouseup', () => isPositionChanging = false);
 
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
+  const [ moveableId, setMoveableId ] = useAtom(anMoveableId);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
   const [ key, setKey ] = React.useState(Date.now());
@@ -130,12 +126,11 @@ export const OverlayEdit: React.FC = () => {
   const [boundsEnabled, setBoundsEnabled] = React.useState(false);
   const [snapEnabled, setSnapEnabled] = React.useState(true);
 
-  const [ item, setItem ] = React.useState<Overlay>(new Overlay(emptyItem));
+  const [ item, setItem ] = useAtom(anItems);
 
-  const selectedItem = React.useMemo(() => item.items.find(o => o.id.replace(/-/g, '') === moveableId), [ item, moveableId ]);
-  const selectedItemCanvas = React.useMemo(() => ({
-    width: selectedItem?.width ?? 0, height: selectedItem?.height ?? 0,
-  }), [ selectedItem?.width, selectedItem?.height ]);
+  const selectedItem = useAtomValue(anSelectedItem);
+  const selectedItemCanvas = useAtomValue(anSelectedItemCanvas);
+  const selectedItemOpts = useAtomValue(anSelectedItemOpts);
 
   const isDeleteKeyDisabled = useAppSelector(getParentDelKeyStatus);
   useKey(['Delete'], () => {
@@ -145,7 +140,9 @@ export const OverlayEdit: React.FC = () => {
     }
 
     const focusedElement = document.activeElement;
-    if (focusedElement?.tagName === 'INPUT') {
+    if (focusedElement?.tagName === 'INPUT'
+    || focusedElement?.tagName === 'TEXTAREA'
+    || focusedElement?.tagName === 'SELECT') {
       console.log('Del key disabled, because we are focusing input');
       return;
     }
@@ -163,12 +160,14 @@ export const OverlayEdit: React.FC = () => {
 
   const refresh = React.useCallback(() => setKey(Date.now()), [ setKey ]);
 
-  const handleItemChange = React.useCallback((path: string, value: any) => {
+  const handleItemChange = React.useCallback((changes: { [path: string]: any }) => {
     setItem((val) => {
-      const updatedItems = val.items;
+      const updatedItems = cloneDeep(val.items);
       const updatedItem = updatedItems.find(o => o.id.replace(/-/g, '') === moveableId);
       if (updatedItem) {
-        set(updatedItem, path, value);
+        for (const [path, value] of Object.entries(changes)) {
+          set(updatedItem, path, value);
+        }
       } else {
         console.error('Updated item not found');
       }
@@ -215,10 +214,13 @@ export const OverlayEdit: React.FC = () => {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
           navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
         } else {
-          console.log({
-            data, setDefaultOpts: setDefaultOpts({}, 'carousel'),
-          });
-          setItem(data);
+          const withDefaultValues = {
+            ...data,
+            items: data.items.map(it => ({
+              ...it, opts: setDefaultOpts(it.opts, it.opts.typeId),
+            })),
+          };
+          setItem(withDefaultValues);
           setLoading(false);
         }
       });
@@ -547,7 +549,7 @@ export const OverlayEdit: React.FC = () => {
                   }}
                   onRotateEnd={e => {
                     if (selectedItem) {
-                      handleItemChange('rotation', frame.rotate);
+                      handleItemChange({ 'rotation': frame.rotate });
                       // reset things
                       e.target.style.removeProperty('transform');
                       refresh();
@@ -555,10 +557,12 @@ export const OverlayEdit: React.FC = () => {
                   }}
                   onResizeEnd={e => {
                     if (selectedItem) {
-                      handleItemChange('width', Math.round((e.target as any).offsetWidth));
-                      handleItemChange('height', Math.round((e.target as any).offsetHeight));
-                      handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
-                      handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
+                      handleItemChange({
+                        'width':  Math.round((e.target as any).offsetWidth),
+                        'height': Math.round((e.target as any).offsetHeight),
+                        'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
+                        'alignY': Math.round(selectedItem.alignY + frame.translate[1]),
+                      });
                       // reset things
                       e.target.style.removeProperty('width');
                       e.target.style.removeProperty('height');
@@ -580,8 +584,10 @@ export const OverlayEdit: React.FC = () => {
                   }}
                   onDragEnd={(e) => {
                     if (selectedItem) {
-                      handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
-                      handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
+                      handleItemChange({
+                        'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
+                        'alignY': Math.round(selectedItem.alignY + frame.translate[1]),
+                      });
                       e.target.style.transform = `translate(0px, 0px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                       refresh();
                     }
@@ -614,87 +620,92 @@ export const OverlayEdit: React.FC = () => {
               maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
             }} autoHide={false}>
               <Settings model={selectedItem} onUpdate={(path, value) => {
-                handleItemChange(path, value);
+                handleItemChange({ [path]: value });
                 setTimeout(() => refresh(), 100);
               }}>
                 <Divider variant='middle'/>
-                {selectedItem.opts.typeId === 'randomizer' && <RandomizerSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'stats' && <StatsSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'credits' && <CreditsSettings canvas={selectedItemCanvas} model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'goal' && <GoalSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'clips' && <ClipsSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'eventlist' && <EventlistSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'countdown' && <CountdownSettings id={selectedItem.id} model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'emotes' && <EmotesSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'html' && <HTMLSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'marathon' && <MarathonSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'polls' && <PollsSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'tts' && <TTSSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'chat' && <ChatSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'url' && <UrlSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
-                {selectedItem.opts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItem.opts} onUpdate={(val) => {
-                  handleItemChange('opts', val);
-                }}/>}
+                {selectedItemOpts && <>
+                  {selectedItemOpts.typeId === 'alerts' && <AlertsSettings onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'randomizer' && <RandomizerSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'stats' && <StatsSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'credits' && <CreditsSettings canvas={selectedItemCanvas} model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'goal' && <GoalSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'clips' && <ClipsSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'clipscarousel' && <ClipsCarouselSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'carousel' && <ImageCarouselSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'eventlist' && <EventlistSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'countdown' && <CountdownSettings id={selectedItem.id} model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'stopwatch' && <StopwatchSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'emotescombo' && <EmotesComboSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'emotesexplode' && <EmotesExplodeSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'emotesfireworks' && <EmotesFireworksSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'emotes' && <EmotesSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'html' && <HTMLSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'marathon' && <MarathonSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'obswebsocket' && <OBSWebsocketSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'polls' && <PollsSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'tts' && <TTSSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'chat' && <ChatSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'url' && <UrlSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                  {selectedItemOpts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItemOpts} onUpdate={(val) => {
+                    handleItemChange({ 'opts': val });
+                  }}/>}
+                </>}
               </Settings>
 
               {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}
 
               {
                 selectedItem
-                  && ['countdown', 'stopwatch'].includes(selectedItem.opts.typeId)
-                  && <RestAPI id={selectedItem.id} opts={selectedItem.opts}/>
+                  && ['countdown', 'stopwatch'].includes(selectedItemOpts!.typeId)
+                  && <RestAPI id={selectedItem.id} opts={selectedItemOpts!}/>
               }
             </SimpleBar>
           </Grid>}

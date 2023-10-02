@@ -204,7 +204,7 @@ export const StopwatchSettings: React.FC<Props> = ({ model, onUpdate }) => {
         accordionId='stopwatchFont'
         model={model.stopwatchFont}
         open={open}
-        onClick={(val) => typeof val === 'string' && setOpen(val)}
+        onOpenChange={(val) => setOpen(val)}
         onChange={(val) => {
           onUpdate({
             ...model, stopwatchFont: val,

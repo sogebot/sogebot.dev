@@ -1,11 +1,11 @@
 import { AddTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Box, Button, Divider,
-  FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack,
-  Tab, Tabs, TextField, Typography,
+  Fade, FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider,
+  Stack, Tab, Tabs, TextField, Typography,
 } from '@mui/material';
 import {
-  Countdown, CreditsScreenEvents, Eventlist, Wordcloud,
+  Alerts, Countdown, CreditsScreenEvents, Eventlist, Wordcloud,
 } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
@@ -40,20 +40,24 @@ export function loadFont (value: string) {
 type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
   model: T,
   open: string,
-  onClick: (value: string) => void;
+  onOpenChange: (value: string) => void;
   onChange: (value: T) => void;
   disableExample?: boolean;
   label?: string;
   accordionId?: string;
+  alwaysShowLabelDetails?: boolean;
+  prepend?: React.ReactNode;
+  customLabelDetails?: React.ReactNode;
 };
 export const AccordionFont = <T extends Randomizer['customizationFont']
+| Alerts['globalFont1']
 | Countdown['countdownFont']
 | Wordcloud['wordFont']
 | Eventlist['usernameFont']
 | CreditsScreenEvents['headerFont']>(props: Props<T>) => {
   const accordionId = props.accordionId ?? 'font';
   const { open,
-    onClick,
+    onOpenChange,
     onChange,
     model,
     disableExample,
@@ -64,7 +68,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
   const [ shadowTab, setShadowTab ] = React.useState(0);
 
   const handleClick = () => {
-    onClick(open === accordionId ? '' : accordionId);
+    onOpenChange(open === accordionId ? '' : accordionId);
   };
 
   React.useEffect(() => {
@@ -78,11 +82,25 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
       aria-controls="panel1a-content"
       id="panel1a-header"
     >
-      <Typography>{ label ?? translate('registry.alerts.font.setting') }</Typography>
+      <Typography sx={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
+      }}>
+        { label ?? translate('registry.alerts.font.setting') }
+
+        <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
+          <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
+            {props.customLabelDetails
+              ? props.customLabelDetails
+              : <>{model.family} {'size' in model && `${model.size}px`}</>}
+          </Typography>
+        </Fade>
+      </Typography>
     </AccordionSummary>
     <AccordionDetails>
+      {props.prepend && props.prepend}
       <Stack spacing={0.5}>
         {'family' in model && <Autocomplete
+          sx={{ mx: '0px !important' }}
           value={model.family}
           disableClearable
           onChange={(ev, value) => onChange({
@@ -141,6 +159,16 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
           value={isHexColor(model.color) ? model.color : '#111111'}
           onChange={(_, value) => onChange({
             ...model, color: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
+          })} />}
+
+        {'highlightcolor' in model && model.highlightcolor !== null && <MuiColorInput
+          label={ translate('registry.alerts.font.highlightcolor.name') }
+          fullWidth
+          isAlphaHidden
+          format="hex"
+          value={isHexColor(model.highlightcolor) ? model.highlightcolor : '#111111'}
+          onChange={(_, value) => onChange({
+            ...model, highlightcolor: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
           })} />}
 
         {'borderColor' in model && <MuiColorInput
@@ -420,7 +448,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             width:      '90%',
           }}>
             <div style={{
-              overflow: 'visible !important;', textAlign: 'center',
+              overflow: 'visible !important', textAlign: 'center',
             }}>
               { exampleText }
             </div>

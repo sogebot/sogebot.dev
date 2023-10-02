@@ -395,7 +395,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
             disableExample
             open={accordionFontOpen && o.display !== 'custom' ? 'font' : ''}
             disabled={o.display === 'custom'}
-            onClick={() => setAccordionFontOpen(val => !val)}
+            onOpenChange={() => setAccordionFontOpen(val => !val)}
             model={o.customizationFont}
             onChange={val => {
               const flattenVal = flatten(val);

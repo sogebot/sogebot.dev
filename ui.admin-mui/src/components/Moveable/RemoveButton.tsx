@@ -10,8 +10,8 @@ export function setZoomRemoveButton(value: number) {
 
 export const RemoveButton = {
   name:   'removeButton',
-  props:  {},
-  events: {},
+  props:  [],
+  events: [],
   render(moveable: MoveableManagerInterface<any, any>) {
     const rect = moveable.getRect();
 
