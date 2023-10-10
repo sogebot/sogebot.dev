@@ -47,6 +47,7 @@ export const JavascriptDialog: React.FC<Props> = ({ onChange, model }) => {
           defaultValue={model}
           theme='vs-dark'
           onChange={value => onChange(value ?? '')}
+          options={{ wordWrap: 'on' }}
         />
       </DialogContent>
       <DialogActions>

@@ -1,8 +1,8 @@
 import Editor from '@monaco-editor/react';
 import {
+  Box,
   Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, PaperProps, Stack,
 } from '@mui/material';
-import { constrainedEditor } from 'constrained-editor-plugin/dist/esm/constrainedEditor';
 import React from 'react';
 import Draggable from 'react-draggable';
 
@@ -20,22 +20,6 @@ type Props = {
 };
 export const HTMLDialog: React.FC<Props> = ({ onChange, model }) => {
   const [ open, setOpen ] = React.useState(false);
-
-  const editorRef = React.useRef(null);
-  function handleEditorDidMount(editor: any, monaco: any) {
-    const restrictions = [];
-    editorRef.current = editor;
-    const constrainedInstance = constrainedEditor(monaco);
-    const m = editor.getModel();
-    constrainedInstance.initializeIn(editor);
-    console.log({ model: [4, 1, model.split('\n').length + 2, model.split('\n')[model.split('\n').length - 1].length + 1] });
-    restrictions.push({
-      range:          [4, 1, model.split('\n').length + 2, model.split('\n')[model.split('\n').length - 1].length + 1],
-      allowMultiline: true,
-      label:          'code',
-    });
-    constrainedInstance.addRestrictionsTo(m, restrictions);
-  }
 
   return <>
     <Stack direction='row' spacing={2} justifyContent='space-between' alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
@@ -57,27 +41,155 @@ export const HTMLDialog: React.FC<Props> = ({ onChange, model }) => {
         HTML
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
+        <Box className="monaco-editor no-user-select  showUnused showDeprecated vs-dark"
+          sx={{
+            background: 'repeating-linear-gradient( -45deg, #000000, #392222 0px)',
+            cursor:     'not-allowed',
+            userSelect: 'none',
+          }}>
+          <div className="margin" role="presentation" aria-hidden="true" style={{
+            position:  'absolute',
+            transform: 'translate3d(0px, 0px, 0px)',
+            contain:   'strict',
+            top:       '0px',
+            width:     '64px',
+            height:    '38px',
+          }}>
+            <div className="margin-view-zones" role="presentation" aria-hidden="true" style={{ position: 'absolute' }}></div>
+            <div className="margin-view-overlays" role="presentation" aria-hidden="true" style={{
+              position:      'absolute',
+              fontFamily:    'Consolas, "Courier New", monospace',
+              fontWeight:    'normal',
+              fontSize:      '14px',
+              lineHeight:    '19px',
+              letterSpacing: '0px',
+              width:         '64px',
+              height:        '540px',
+            }}>
+              <div style={{
+                position: 'absolute',top: '0px',width: '100%',height: '19px',
+              }}>
+                <div className="line-numbers" style={{
+                  left: '0px',width: '38px', color: 'red !important',
+                }}>1</div>
+                <div className="line-numbers" style={{
+                  left: '0px',width: '38px', top: '20px',
+                }}>2</div>
+              </div>
+            </div>
+          </div>
+          <Box className="vs-dark" sx={{
+            width:         '100%',
+            pl:            8,
+            height:        '19px',
+            fontFamily:    'Consolas, "Courier New", monospace',
+            fontWeight:    'normal',
+            fontSize:      '14px',
+            lineHeight:    '19px',
+            letterSpacing: '0px',
+          }}>
+            <span style={{ color: '#808073' }}>&lt;</span>
+            <span style={{ color: '#5199b8' }}>html</span>
+            <span style={{ color: '#808073' }}>&gt;</span>
+          </Box>
+          <Box sx={{
+            width:         '100%',
+            pl:            10,
+            height:        '19px',
+            fontFamily:    'Consolas, "Courier New", monospace',
+            fontWeight:    'normal',
+            fontSize:      '14px',
+            lineHeight:    '19px',
+            letterSpacing: '0px',
+          }}>
+            <span style={{ color: '#808073' }}>&lt;</span>
+            <span style={{ color: '#5199b8' }}>body{' '}
+              <span style={{ color: '#88dad8' }}>id</span>
+              <span style={{ color: '#808073' }}>=</span>
+              <span style={{ color: '#d38e6e' }}>"wrapper"</span>
+            </span>
+            <span style={{ color: '#808073' }}>&gt;</span>
+          </Box>
+        </Box>
+
         <Editor
           height="44vh"
           width="100%"
           language={'html'}
-          defaultValue={`<html>
-  <body id="wrapper">
-    ${model}
-  </body>
-</html>`}
+          defaultValue={model}
           theme='vs-dark'
-          onMount={handleEditorDidMount}
-          onChange={() => {
-            if (editorRef.current) {
-              const editor = (editorRef.current as any).getModel();
-              console.log({ editor });
-              const values = editor.getValueInEditableRanges();
-              onChange(values.code ?? '');
-              console.log({ values });
-            }
+          onChange={value => onChange(value ?? '')}
+          options={{
+            lineNumbers: num => String(num + 2),
+            wordWrap:    'on',
           }}
         />
+        <Box className="monaco-editor no-user-select  showUnused showDeprecated vs-dark"
+          sx={{
+            background: 'repeating-linear-gradient( -45deg, #000000, #392222 0px)',
+            cursor:     'not-allowed',
+            userSelect: 'none',
+          }}>
+          <div className="margin" role="presentation" aria-hidden="true" style={{
+            position:  'absolute',
+            transform: 'translate3d(0px, 0px, 0px)',
+            contain:   'strict',
+            top:       '0px',
+            width:     '64px',
+            height:    '38px',
+          }}>
+            <div className="margin-view-zones" role="presentation" aria-hidden="true" style={{ position: 'absolute' }}></div>
+            <div className="margin-view-overlays" role="presentation" aria-hidden="true" style={{
+              position:      'absolute',
+              fontFamily:    'Consolas, "Courier New", monospace',
+              fontWeight:    'normal',
+              fontSize:      '14px',
+              lineHeight:    '19px',
+              letterSpacing: '0px',
+              width:         '64px',
+              height:        '540px',
+            }}>
+              <div style={{
+                position: 'absolute',top: '0px',width: '100%',height: '19px',
+              }}>
+                <div className="line-numbers" style={{
+                  left: '0px',width: '38px', color: 'red !important',
+                }}>{model.split('\n').length + 3}</div>
+                <div className="line-numbers" style={{
+                  left: '0px',width: '38px', top: '20px',
+                }}>{model.split('\n').length + 4}</div>
+              </div>
+            </div>
+          </div>
+          <Box sx={{
+            width:         '100%',
+            pl:            10,
+            height:        '19px',
+            fontFamily:    'Consolas, "Courier New", monospace',
+            fontWeight:    'normal',
+            fontSize:      '14px',
+            lineHeight:    '19px',
+            letterSpacing: '0px',
+          }}>
+            <span style={{ color: '#808073' }}>&lt;/</span>
+            <span style={{ color: '#5199b8' }}>body</span>
+            <span style={{ color: '#808073' }}>&gt;</span>
+          </Box>
+          <Box className="vs-dark" sx={{
+            width:         '100%',
+            pl:            8,
+            height:        '19px',
+            fontFamily:    'Consolas, "Courier New", monospace',
+            fontWeight:    'normal',
+            fontSize:      '14px',
+            lineHeight:    '19px',
+            letterSpacing: '0px',
+          }}>
+            <span style={{ color: '#808073' }}>&lt;/</span>
+            <span style={{ color: '#5199b8' }}>html</span>
+            <span style={{ color: '#808073' }}>&gt;</span>
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpen(false)}>Close</Button>
