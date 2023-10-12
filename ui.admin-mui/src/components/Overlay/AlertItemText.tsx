@@ -23,12 +23,14 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
     let replacedText: React.ReactNode[] = [];
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
-      console.log({ match });
+      if (!match.groups) {
+        return;
+      }
       let animatedText: React.JSX.Element[] = [];
 
       if (variant.animationText === 'baffle') {
         const baffleId = shortid();
-        animatedText = [<span className={`obfuscate-${baffleId}`}>{match.groups!.text}</span>];
+        animatedText = [<span className={`obfuscate-${baffleId}`}>{match.groups.text}</span>];
         setTimeout(() => {
           baffle('.obfuscate-' + baffleId, {
             characters: variant.animationTextOptions.characters,
