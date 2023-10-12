@@ -157,7 +157,6 @@ export const alertList = {
         animationOutDuration: null,
         animationIn:          null,
         animationOut:         null,
-
       }, {
         id:                   '__id__',
         width:                160,
@@ -248,8 +247,7 @@ export const alertList = {
         type:       'custom',
         globalFont: 'globalFont1',
         font:       null,
-
-        html: `    <div id="__text__">
+        html:       `    <div id="__text__">
       <div class="main" >
         <div class="type"><span class="text">follow</span></div>
         <div class="name">{name}</div>

@@ -12,13 +12,15 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   BorderInnerTwoTone, BorderStyleTwoTone,
-  CropFreeTwoTone, DeleteTwoTone, DragIndicatorTwoTone, ExpandMore, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
+  CropFreeTwoTone, DeleteTwoTone, DragIndicatorTwoTone,
+  ExpandMore, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
 } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import {
   Accordion, AccordionDetails, AccordionSummary,
-  Box, Button, Card, CardActionArea, CardContent, Chip, Dialog, DialogActions,
-  DialogContent, Divider, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography,
+  Box, Button, Chip, DialogContent, Divider, FormControl,
+  Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
+  TextField, Tooltip, Typography,
 } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
@@ -43,6 +45,8 @@ import { AccordionDuration } from './Accordion/Duration';
 import { AccordionFilter } from './Accordion/Filter';
 import AlertSettingsAudio from './Audio';
 import AlertSettingsCustom from './Custom';
+import NewAlertDialog from './Dialog/newAlertDialog';
+import NewComponentDialog from './Dialog/newComponentDialog';
 import AlertSettingsGallery from './Gallery';
 import { alertList } from './src/alertList';
 import {
@@ -146,7 +150,6 @@ function SortableAccordion(props: {
 }
 
 export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
-  const [ alertDlgOpen, setAlertDlgOpen ] = React.useState(false);
   const [ selectedAlertId, setSelectedAlertId ] = useAtom(anSelectedAlertId);
   const [ selectedAlert, setSelectedAlert ] = useAtom(anSelectedAlert);
   const [ selectedVariantId, setSelectedVariant ] = useAtom(anSelectedVariantId);
@@ -224,55 +227,19 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const [boundsEnabled, setBoundsEnabled] = React.useState(false);
   const [snapEnabled, setSnapEnabled] = React.useState(true);
 
-  const [ items, setItems ] = React.useState<Alerts['items']>(model);
-  React.useEffect(() => {
-    onUpdate(items);
-  }, [ items ]);
-
-  React.useEffect(() => {
-    setSelectedAlert(items.find(o => o.id === selectedAlertId) ?? null);
-  }, [ selectedAlertId, items ]);
-
-  React.useEffect(() => {
-    // items to have snaps
-    const els: any[] = [];
-    for (const i of items) {
-      els.push(document.getElementById(i.id));
-    }
-    setElementGuidelines(els);
-
-    // set bounds
-    if (boundsEnabled) {
-      setBounds({
-        left:   0,
-        top:    0,
-        right:  canvas.width,
-        bottom: canvas.height,
-      });
-    } else {
-      setBounds(undefined);
-    }
-  }, [moveableId, items, boundsEnabled]);
-
-  const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
-    if (containerRef.current) {
-      if (!isZoomReset) {
-        // we need to reset zoom first
-        setZoom(1);
-        setPosition([50, 0]);
-        setTimeout(() => fitZoomOnScreen(true));
-        return;
+  const addNewComponent = (value: any) => {
+    setItems(it => {
+      const update = cloneDeep(it);
+      let updateItem = [];
+      if (selectedVariantId) {
+        updateItem = update.find(o => o.id === selectedAlertId)!.variants.find(o => o.id === selectedVariantId)!.items;
+      } else {
+        updateItem = update.find(o => o.id === selectedAlertId)!.items;
       }
-      const zoomHeight = ((containerRef.current.getBoundingClientRect().height - 40) / containerRef.current.scrollHeight);
-      const zoomWidth = ((containerRef.current.getBoundingClientRect().width - 40) / containerRef.current.scrollWidth);
-      setZoom(Math.min(zoomHeight, zoomWidth));
-    }
-  }, [containerRef.current]);
-
-  React.useEffect(() => {
-    setZoomDimensionViewable(zoom);
-    setZoomRemoveButton(zoom);
-  }, [ zoom ]);
+      updateItem.push(value);
+      return update;
+    });
+  };
 
   const addNewAlert = (type: keyof typeof alertList) => {
     console.log('alert', 'Adding new alert', type);
@@ -330,6 +297,56 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     update.push(newAlert);
     setItems(update);
   };
+
+  const [ items, setItems ] = React.useState<Alerts['items']>(model);
+  React.useEffect(() => {
+    onUpdate(items);
+  }, [ items ]);
+
+  React.useEffect(() => {
+    setSelectedAlert(items.find(o => o.id === selectedAlertId) ?? null);
+  }, [ selectedAlertId, items ]);
+
+  React.useEffect(() => {
+    // items to have snaps
+    const els: any[] = [];
+    for (const i of items) {
+      els.push(document.getElementById(i.id));
+    }
+    setElementGuidelines(els);
+
+    // set bounds
+    if (boundsEnabled) {
+      setBounds({
+        left:   0,
+        top:    0,
+        right:  canvas.width,
+        bottom: canvas.height,
+      });
+    } else {
+      setBounds(undefined);
+    }
+  }, [moveableId, items, boundsEnabled]);
+
+  const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
+    if (containerRef.current) {
+      if (!isZoomReset) {
+        // we need to reset zoom first
+        setZoom(1);
+        setPosition([50, 0]);
+        setTimeout(() => fitZoomOnScreen(true));
+        return;
+      }
+      const zoomHeight = ((containerRef.current.getBoundingClientRect().height - 40) / containerRef.current.scrollHeight);
+      const zoomWidth = ((containerRef.current.getBoundingClientRect().width - 40) / containerRef.current.scrollWidth);
+      setZoom(Math.min(zoomHeight, zoomWidth));
+    }
+  }, [containerRef.current]);
+
+  React.useEffect(() => {
+    setZoomDimensionViewable(zoom);
+    setZoomRemoveButton(zoom);
+  }, [ zoom ]);
 
   const handleItemDelete = React.useCallback(() => {
     setItems((val) => {
@@ -566,35 +583,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </Stack>
               </Paper>)}
 
-              <Button variant='contained' onClick={() => setAlertDlgOpen(true)} fullWidth>Add new alert</Button>
-              <Dialog open={alertDlgOpen} maxWidth="md" fullWidth>
-                <DialogContent>
-                  <Grid container spacing={1}>
-                    {Object.entries(alertList).map(([type, val]) => <Grid item xs={6} key={type}>
-                      <Card>
-                        <CardActionArea onClick={(ev) => {
-                          ev.stopPropagation();
-                          ev.preventDefault();
-                          addNewAlert(type as keyof typeof alertList);
-                          setAlertDlgOpen(false);
-                        }}>
-                          <CardContent sx={{ height: '90px' }}>
-                            <Typography gutterBottom variant="h5" component="div">
-                              {val.title}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {val.description}
-                            </Typography>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    </Grid>)}
-                  </Grid>
-                </DialogContent>
-                <DialogActions>
-                  <Button sx={{ width: 150 }} onClick={() => setAlertDlgOpen(false)}>Close</Button>
-                </DialogActions>
-              </Dialog>
+              <NewAlertDialog onAdd={addNewAlert}/>
             </Stack>
 
           </SimpleBar>
@@ -913,6 +902,8 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </DragOverlay>
               </DndContext>
             </Box>
+
+            <NewComponentDialog onAdd={addNewComponent}/>
           </SimpleBar>
         </Grid>}
       </Grid>
