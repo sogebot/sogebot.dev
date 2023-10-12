@@ -429,12 +429,16 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     setItems((val) => {
       const updatedItems = cloneDeep(val);
       for (const updatedItem of updatedItems) {
+        console.log(updatedItem);
         let itemToUpdate;
         if (!selectedVariantId) {
-          if (updatedItem.id !== value.id) {
-            continue;
-          } else {
-            itemToUpdate = updatedItem;
+          for (const variantItem of updatedItem.items) {
+            if (variantItem.id !== value.id) {
+              continue;
+            } else {
+              itemToUpdate = variantItem;
+              break;
+            }
           }
         } else {
           const variants = updatedItem.variants!;
@@ -449,7 +453,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             }
           }
         }
-
+        console.log({ itemToUpdate });
         if (itemToUpdate) {
           for (const valueKey of Object.keys(value)) {
             set(itemToUpdate, valueKey, value[valueKey as keyof typeof value]);
