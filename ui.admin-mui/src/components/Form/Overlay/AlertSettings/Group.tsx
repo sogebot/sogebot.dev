@@ -400,13 +400,27 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       setSelectedVariant(null);
     }
   }, [ selectedAlertVariant ]);
-  const selectedItem = React.useMemo(() => selectedAlertVariant?.items.find(o => o.id === moveableId), [ moveableId, selectedAlertVariant ]);
+  const selectedItem = selectedAlertVariant?.items.find(o => o.id === moveableId);
 
   React.useEffect(() => {
     if (selectedAlertVariant) {
       if (!selectedAlertVariant.items.find(o => o.id === moveableId)) {
         // deselect if moveable is not part of selected alert
         setMoveableId(null);
+      }
+
+      for (const item of selectedAlertVariant.items) {
+        // set styles
+        const element = document.getElementById(item.id);
+        if (!element) {
+          continue;
+        }
+
+        element.style.width = `${item.width}px`;
+        element.style.height = `${item.height}px`;
+        element.style.left = `${item.alignX}px`;
+        element.style.top = `${item.alignY}px`;
+        element.style.transform = `rotate(${ item.rotation ?? 0 }deg)`;
       }
     }
   }, [ selectedAlertVariant ]);
@@ -444,7 +458,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       }
       return updatedItems;
     });
-  }, [moveableId, selectedItem, selectedVariantId]);
+  }, [moveableId, selectedVariantId]);
 
   const handleItemChange = React.useCallback((changes: { [path: string]: any }) => {
     setItems((val) => {
@@ -455,14 +469,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
           if (itemToUpdate) {
             break;
           }
-
           if (!selectedVariantId) {
             itemToUpdate = updatedItem.items.find(o => o.id === selectedItem.id);
           } else {
             const variant = updatedItem.variants.find(o => o.id === selectedVariantId);
             if (!variant) {
-              break;
+              continue;
             }
+
             itemToUpdate = variant.items.find(o => o.id === selectedItem.id);
           }
         }
@@ -474,12 +488,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       }
       return updatedItems;
     });
-  }, [moveableId, selectedItem, selectedVariantId]);
-
-  const [ key, setKey ] = React.useState(Date.now());
-  React.useEffect(() => {
-    setKey(Date.now());
-  }, [ items ]);
+  }, [moveableId, selectedVariantId]);
 
   useKey(['Delete'], () => {
     const focusedElement = document.activeElement;
@@ -638,15 +647,10 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 elevation={0}
                 sx={{
                   position:        'absolute',
-                  width:           `${o.width}px`,
-                  height:          `${o.height}px`,
                   backgroundColor: `transparent`,
                   border:          `0 !important`,
-                  left:            `${o.alignX}px`,
-                  top:             `${o.alignY}px`,
                   userSelect:      'none',
                   cursor:          moveableId === o.id ? 'move' : 'pointer',
-                  transform:       `rotate(${ o.rotation ?? 0 }deg)`,
                 }}
               >
                 <Box key={`${o.id}-${JSON.stringify(o)}` /* force refresh on opts change */} sx={{
@@ -659,7 +663,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </Box>
               </Paper>)}
               {moveableId && <Moveable
-                key={`${moveableId}-${key}-${snapEnabled}`}
+                key={`${moveableId}-${snapEnabled}`}
                 ables={[DimensionViewable, RemoveButton]}
                 props={{
                   dimensionViewable: true, removeButton: true,
@@ -710,18 +714,13 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 rotationPosition={'top'}
                 rotatable={true}
                 throttleRotate={0}
-                onRotateStart={e => {
-                  e.set(frame.rotate);
-                }}
                 onRotate={e => {
-                  frame.rotate =  e.beforeRotate;
-                  e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
+                  e.target.style.transform = e.transform;
                 }}
-                onRotateEnd={e => {
+                onRotateEnd={(e) => {
+                  const rotate = Number(e.target.style.transform.replace('rotate(', '').replace('deg)', ''));
                   if (selectedItem) {
-                    handleItemChange({ 'rotation': frame.rotate });
-                    // reset things
-                    e.target.style.removeProperty('transform');
+                    handleItemChange({ 'rotation': rotate });
                   }
                 }}
                 onResizeEnd={e => {
@@ -732,10 +731,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                       'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
                       'alignY': Math.round(selectedItem.alignY + frame.translate[1]),
                     });
-                    // reset things
-                    e.target.style.removeProperty('width');
-                    e.target.style.removeProperty('height');
-                    e.target.style.removeProperty('transform');
                   }
                 }}
                 onResizeStart={e => {
@@ -750,13 +745,12 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   e.target.style.height = `${e.height}px`;
                   e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                 }}
-                onDragEnd={(e) => {
+                onDragEnd={() => {
                   if (selectedItem) {
                     handleItemChange({
                       'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
                       'alignY': Math.round(selectedItem.alignY + frame.translate[1]),
                     });
-                    e.target.style.transform = `translate(0px, 0px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                   }
                 }}
                 onDragStart={(e) => {
