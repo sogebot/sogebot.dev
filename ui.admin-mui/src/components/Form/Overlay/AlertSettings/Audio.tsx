@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import { AlertAudio } from '@sogebot/backend/src/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -8,6 +9,7 @@ import { FormSelectorGallery } from '../../Selector/Gallery';
 interface AlertSettingsAudioProps {
   model: AlertAudio
   onChange: (value: AlertAudio) => void
+  onDelete: () => void
 }
 
 const AlertSettingsAudio: React.FC<AlertSettingsAudioProps> = (props) => {
@@ -42,6 +44,7 @@ const AlertSettingsAudio: React.FC<AlertSettingsAudioProps> = (props) => {
         });
       }
       }/>
+    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
   </>
   );
 };

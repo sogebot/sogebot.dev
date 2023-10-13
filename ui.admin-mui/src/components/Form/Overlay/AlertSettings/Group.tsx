@@ -83,6 +83,7 @@ function SortableAccordion(props: {
   isSelected?: boolean,
   onSelect?: (id: string | null) => void,
   onUpdate?: (value: Alerts['items'][number]['items'][number]) => void
+  onDelete?: () => void
   item?: Alerts['items'][number]['items'][number],
 }) {
   const {
@@ -140,11 +141,11 @@ function SortableAccordion(props: {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate}/>}
-        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate}/>}
-        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate}/>}
-        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate}/>}
-        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate}/>}
+        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
       </AccordionDetails>
     </Accordion>
   );
@@ -891,6 +892,10 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                     id={o.id}
                     item={o}
                     onSelect={setMoveableId}
+                    onDelete={() => {
+                      handleItemDelete();
+                      setMoveableId(null);
+                    }}
                     onUpdate={(value) => {
                       handleItemReplace(value);
                     }}

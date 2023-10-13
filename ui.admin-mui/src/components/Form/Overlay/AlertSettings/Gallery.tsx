@@ -21,6 +21,7 @@ import { FormSelectorGallery } from '../../Selector/Gallery';
 interface AlertSettingsGalleryProps {
   model: AlertImage
   onChange: (value: AlertImage) => void
+  onDelete: () => void
 }
 
 const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
@@ -123,6 +124,8 @@ const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
           });
         }}>Use variant setting</Button>
       </Stack>}/>
+
+    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
   </>
   );
 };

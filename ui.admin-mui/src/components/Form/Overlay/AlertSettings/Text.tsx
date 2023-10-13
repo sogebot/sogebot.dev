@@ -15,6 +15,7 @@ import { anSelectedItemOpts } from '../../atoms';
 interface AlertSettingsTextProps {
   model: AlertText
   onChange: (value: AlertText) => void
+  onDelete: () => void
 }
 
 const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
@@ -106,6 +107,7 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
           });
         }}>Use variant setting</Button>
       </Stack>}/>
+    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
   </>
   );
 };
