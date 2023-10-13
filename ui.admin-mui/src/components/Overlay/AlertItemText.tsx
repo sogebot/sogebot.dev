@@ -100,9 +100,9 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
       ? item.animationInDuration ?? variant.animationInDuration
       : item.animationOutDuration ?? variant.animationOutDuration;
   }, [ timestamp, itemAnimationTriggered, endAnimationShouldPlay ]);
-  const animationDelay = React.useMemo(() => timestamp > 0
+  const animationDelay = React.useMemo(() => itemAnimationTriggered && !endAnimationShouldPlay
     ? item.animationDelay ?? 0
-    : 0, [ timestamp ]);
+    : 0, [ itemAnimationTriggered, endAnimationShouldPlay ]);
 
   return <Box
     sx={{
