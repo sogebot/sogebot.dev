@@ -4,11 +4,14 @@ import baffle from 'baffle';
 import React from 'react';
 import { Typewriter } from 'react-simple-typewriter';
 import reactStringReplace from 'react-string-replace';
+import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { speedOptions } from '../Form/Overlay/AlertSettings/Accordion/AnimationText';
+
+require('animate.css');
 
 const encodeFont = (font: string) => {
   return `'${font}'`;
@@ -17,13 +20,12 @@ const encodeFont = (font: string) => {
 const regexp = new RegExp(/\*(?<text>.*?)\*/g);
 
 export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'> }>
-= ({ item, width, height, parent, variant }) => {
+= ({ item, width, height, parent, variant, active }) => {
   const text = React.useMemo<React.ReactNode[]>(() => {
     const template = item.messageTemplate;
     let replacedText: React.ReactNode[] = [];
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
-      console.log({ match });
       let animatedText: React.JSX.Element[] = [];
 
       if (variant.animationText === 'baffle') {
@@ -55,15 +57,66 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
     return replacedText.length > 0 ? replacedText : [<span>{template}</span>];
   }, [item.messageTemplate, variant]);
 
-  return <Box sx={{
-    width:         '100%',
-    height:        '100%',
-    position:      'relative',
-    overflow:      'visible',
-    textTransform: 'none',
-    lineHeight:    'initial',
-  }}>
-    {/* we need to create overlay over iframe so it is visible but it cannot be clicked */}
+  const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
+
+  // countdown timer for item to be hidden
+  const [ timestamp, setTimestamp ] = React.useState<number>(variant.alertDuration);
+  useIntervalWhen(() => {
+    setTimestamp((t) => t - 100);
+  }, 100, timestamp > 0 && active);
+
+  const [ endAnimationShouldPlay, setEndAnimationShouldPlay ] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (active) {
+      setItemAnimationTriggered(true);
+    }
+
+    // reset timestamp
+    setTimestamp(variant.alertDuration);
+
+    if (!active && itemAnimationTriggered) {
+      setEndAnimationShouldPlay(true);
+      setTimeout(() => {
+        setEndAnimationShouldPlay(false);
+        setItemAnimationTriggered(false);
+      }, (item.animationOutDuration ?? variant.animationOutDuration) + 5000);
+    }
+  }, [ active, itemAnimationTriggered ]);
+
+  const animationType = React.useMemo(() => {
+    if (!itemAnimationTriggered) {
+      return 'none';
+    }
+    return !endAnimationShouldPlay
+      ? item.animationIn ?? variant.animationIn
+      : item.animationOut ?? variant.animationOut;
+  }, [ timestamp, itemAnimationTriggered, endAnimationShouldPlay ]);
+  const animationDuration = React.useMemo(() => {
+    if (!itemAnimationTriggered) {
+      return 0; // disable animations if not active
+    }
+    return !endAnimationShouldPlay
+      ? item.animationInDuration ?? variant.animationInDuration
+      : item.animationOutDuration ?? variant.animationOutDuration;
+  }, [ timestamp, itemAnimationTriggered, endAnimationShouldPlay ]);
+  const animationDelay = React.useMemo(() => timestamp > 0
+    ? item.animationDelay ?? 0
+    : 0, [ timestamp ]);
+
+  return <Box
+    sx={{
+      width:             '100%',
+      height:            '100%',
+      position:          'relative',
+      overflow:          'visible',
+      textTransform:     'none',
+      lineHeight:        'initial',
+      animationDuration: `${animationDuration}ms !important`,
+      animationDelay:    `${animationDelay}ms !important`,
+    }}
+    className={`animate__animated animate__${animationType}`}
+  >
     <Box sx={{
       width:      `${width}px`,
       height:     `${height}px`,

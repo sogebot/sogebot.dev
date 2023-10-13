@@ -16,9 +16,10 @@ import {
   ExpandMore, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
 } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
+import { LoadingButton } from '@mui/lab';
 import {
   Accordion, AccordionDetails, AccordionSummary,
-  Box, Button, Chip, DialogContent, Divider, FormControl,
+  Box, Chip, DialogContent, Divider, FormControl,
   Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
   TextField, Tooltip, Typography,
 } from '@mui/material';
@@ -159,6 +160,8 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
   const model = useAtomValue(anItems);
   const parent = useAtomValue(anSelectedItemOpts as Atom<Alerts>);
+
+  const [ animationTest, setAnimationTest ] = React.useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -446,7 +449,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     setItems((val) => {
       const updatedItems = cloneDeep(val);
       for (const updatedItem of updatedItems) {
-        console.log(updatedItem);
         let itemToUpdate;
         if (!selectedVariantId) {
           for (const variantItem of updatedItem.items) {
@@ -470,7 +472,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             }
           }
         }
-        console.log({ itemToUpdate });
         if (itemToUpdate) {
           for (const valueKey of Object.keys(value)) {
             set(itemToUpdate, valueKey, value[valueKey as keyof typeof value]);
@@ -649,9 +650,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 <Box key={`${o.id}-${JSON.stringify(o)}` /* force refresh on opts change */} sx={{
                   width: '100%', height: '100%',
                 }}>
-                  {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} />}
-                  {o.type === 'gallery' && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
-                  {o.type === 'text' && <AlertItemText parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert}/>}
+                  {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest} variant={selectedAlert}/>}
+                  {o.type === 'gallery' && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'text' && <AlertItemText parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
                 </Box>
               </Paper>)}
@@ -867,7 +868,12 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
             <Divider variant='middle' sx={{ my: 1 }}>Components</Divider>
 
-            <Button>Animation & sound test</Button>
+            <LoadingButton onClick={() => {
+              setAnimationTest(true);
+              setTimeout(() => {
+                setAnimationTest(false);
+              }, selectedAlert.alertDuration);
+            }} loading={animationTest}>Animation & sound test</LoadingButton>
 
             <Box key={`${selectedVariantId}-${selectedAlertId}`}>
               <DndContext
