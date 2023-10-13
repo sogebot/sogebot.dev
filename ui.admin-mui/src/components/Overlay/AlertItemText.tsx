@@ -23,14 +23,12 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
     let replacedText: React.ReactNode[] = [];
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
-      if (!match.groups) {
-        return;
-      }
+      console.log({ match });
       let animatedText: React.JSX.Element[] = [];
 
       if (variant.animationText === 'baffle') {
         const baffleId = shortid();
-        animatedText = [<span className={`obfuscate-${baffleId}`}>{match.groups.text}</span>];
+        animatedText = [<span className={`obfuscate-${baffleId}`}>{match[1]}</span>];
         setTimeout(() => {
           baffle('.obfuscate-' + baffleId, {
             characters: variant.animationTextOptions.characters,
@@ -39,16 +37,15 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
         }, 200);
       } else if (variant.animationText === 'typewriter') {
         // empty word to make sure that delay is used
-        console.log('Delay', (idx) * 5000);
-        animatedText = [<Typewriter words={['', match.groups!.text]} loop={1} cursor cursorStyle='_' delaySpeed={idx * 1000}/>];
+        animatedText = [<Typewriter words={['', match[1]]} loop={1} cursor cursorStyle='_' delaySpeed={idx * 1000}/>];
       } else {
-        animatedText = match.groups!.text.split('').map((char, index) => <div
+        animatedText = match[1].split('').map((char, index) => <div
           className={`animate__animated animate__infinite animate__${variant.animationText}  animate__${variant.animationTextOptions.speed}`}
           style={{
             animationDelay: (index * 50) + 'ms',
             display:        'inline-block',
           }}>
-          { char === ' ' ? '&nbsp;' : char }
+          { char === ' ' ? <Box sx={{ pr: '0.25em' }}/> : char }
         </div>);
       }
 
@@ -56,7 +53,7 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
       );
     });
     return replacedText.length > 0 ? replacedText : [<span>{template}</span>];
-  }, [item, parent, variant]);
+  }, [item.messageTemplate, variant]);
 
   return <Box sx={{
     width:         '100%',
