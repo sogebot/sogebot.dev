@@ -5,6 +5,7 @@ import {
   IconButton, Stack, Typography,
 } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
+import chunk from 'lodash/chunk';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState , useRefElement } from 'rooks';
@@ -90,14 +91,18 @@ const PageRegistryGallery = () => {
 
     for (const file of filesUpload) {
       try {
-        const b64data = (await getBase64FromUrl(URL.createObjectURL(file)));
-        await new Promise((resolve) => {
-          getSocket('/overlays/gallery').emit('gallery::upload', [
-            file.name,
-            {
-              folder, b64data, id: shortid(),
-            }], resolve);
-        });
+        const chunkSize = 512 * 1024;
+        const id = shortid();
+        for (const b64dataArr of chunk((await getBase64FromUrl(URL.createObjectURL(file))), chunkSize)) {
+          const b64data = b64dataArr.join('');
+          await new Promise((resolve) => {
+            getSocket('/overlays/gallery').emit('gallery::upload', [
+              file.name,
+              {
+                folder, b64data, id,
+              }], resolve);
+          });
+        }
         enqueueSnackbar(<div>File <strong>{file.name}</strong> was uploaded successfully to folder <strong>{folder}</strong></div>, { variant: 'success' });
       } catch (e) {
         if (e instanceof Error) {

@@ -97,27 +97,23 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       const i = 0;
       for (const [key, item] of Object.entries(gallery)) {
         console.log('Uploading gallery item', key);
-        const imageId = shortid();
-        console.log({
-          id:      imageId,
-          folder:  '/overlays',
-          b64data: String(item),
-        });
-        await new Promise((resolve) => {
-          getSocket('/overlays/gallery').emit('gallery::upload', [
-            `${data.name} #${i}`,
-            {
-              id:      imageId,
-              folder:  '/overlays',
-              b64data: String(item),
-            }], resolve);
-        });
-
+        const chunkSize = 512 * 1024;
+        const id = shortid();
+        for (const b64dataArr of chunk(String(item), chunkSize)) {
+          const b64data = b64dataArr.join('');
+          await new Promise((resolve) => {
+            getSocket('/overlays/gallery').emit('gallery::upload', [
+              `${data.name} #${i}`,
+              {
+                folder: '/overlays', b64data, id,
+              }], resolve);
+          });
+        }
         for (const it of items) {
           if (it.opts.typeId === 'html') {
-            it.opts.html = it.opts.html.replaceAll(key, `${server}/gallery/${imageId}`);
-            it.opts.css = it.opts.css.replaceAll(key, `${server}/gallery/${imageId}`);
-            it.opts.javascript = it.opts.javascript.replaceAll(key, `${server}/gallery/${imageId}`);
+            it.opts.html = it.opts.html.replaceAll(key, `${server}/gallery/${id}`);
+            it.opts.css = it.opts.css.replaceAll(key, `${server}/gallery/${id}`);
+            it.opts.javascript = it.opts.javascript.replaceAll(key, `${server}/gallery/${id}`);
           }
         }
       }
