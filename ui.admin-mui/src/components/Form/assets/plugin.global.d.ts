@@ -382,7 +382,9 @@ declare const stream: {
   maxViewers: number,
   newChatters: number,
   game: string,
-  status: string
+  status: string,
+  channelDisplayName: string,
+  channelUserName: string,
 };
 
 interface User {
