@@ -347,8 +347,8 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
   useIntervalWhen(() => {
     setTimestamp(Date.now());
 
-    if (activeUntil - timestamp < -2000 && emitData) {
-      console.log('= Freeing up alert 2 second after finished');
+    if (activeUntil - timestamp < (selectedGroup?.animationOutDuration ? -selectedGroup.animationOutDuration : -2000) && emitData) {
+      console.log(`= Freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
       setActiveUntil(0);
     }
   }, 100);
