@@ -1,9 +1,15 @@
-import { Button, Stack } from '@mui/material';
+import {
+  Alert, Button, Stack,
+} from '@mui/material';
 import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
 
+import { AccordionEmotes } from './Accordion/Emotes';
+import { AccordionFilter } from './Accordion/Filter';
+import { anSelectedAlert } from './src/atoms';
+import { rules } from './src/rules';
 import { AccordionFont } from '../../../Accordion/Font';
 import { anSelectedItemOpts } from '../../atoms';
 import { CSSDialog } from '../HTMLSettings/css';
@@ -21,6 +27,7 @@ const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
   const [ accordion, setAccordion ] = React.useState('');
 
   const parent = useAtomValue(anSelectedItemOpts as Atom<Alerts>);
+  const selectedAlert = useAtomValue(anSelectedAlert);
 
   const isParent = item.font === null;
 
@@ -31,6 +38,8 @@ const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
   }, [ item ]);
 
   return (<>
+    <Alert icon={false} severity="warning" sx={{ mb: 2 }}>Custom item doesn't have any animations, you will need to use your own CSS styles to do it</Alert>
+
     <AccordionFont open={accordion}
       alwaysShowLabelDetails
       onOpenChange={setAccordion} model={item.font ?? parent[item.globalFont]}
@@ -53,6 +62,22 @@ const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
         }}>Global 2</Button>
       </Stack>}
     />
+
+    <AccordionEmotes open={accordion} onOpenChange={setAccordion} model={item.allowEmotes ?? {
+      twitch: false, ffz: false, bttv: false,
+    }} onChange={(allowEmotes) => setItem({
+      ...item, allowEmotes,
+    })}/>
+
+    <AccordionFilter
+      model={item.enabledWhen}
+      open={accordion}
+      rules={rules(selectedAlert?.hooks[0] ?? null)}
+      onOpenChange={setAccordion} onChange={(filter) => {
+        setItem({
+          ...item, enabledWhen: filter,
+        });
+      }}/>
 
     <HTMLDialog model={item.html} onChange={value => setItem({
       ...item, html: value ?? '',

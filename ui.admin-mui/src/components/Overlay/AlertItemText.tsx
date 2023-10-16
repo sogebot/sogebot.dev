@@ -1,13 +1,15 @@
 import { Box } from '@mui/material';
 import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
+import { get, some } from 'lodash';
 import React from 'react';
 import { Typewriter } from 'react-simple-typewriter';
 import reactStringReplace from 'react-string-replace';
-import { useIntervalWhen } from 'rooks';
+import { useIntervalWhen, useSessionstorageState } from 'rooks';
 import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
+import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { speedOptions } from '../Form/Overlay/AlertSettings/Accordion/AnimationText';
 
@@ -23,6 +25,22 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
 = ({ item, width, height, parent, variant, active }) => {
   const [ curIdx, setCurIdx ] = React.useState(0);
 
+  const [ emotesCache, setEmotesCache ] = useSessionstorageState<{
+    code: string;
+    type: 'twitch' | 'twitch-sub' | 'ffz' | 'bttv' | '7tv';
+    urls: { '1': string; '2': string; '3': string };
+  }[]>('emotes::cache', []);
+
+  React.useEffect(() => {
+    getSocket('/core/emotes', true).emit('getCache', (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      setEmotesCache(data);
+      console.debug('= Emotes loaded');
+    });
+  }, []);
+
   useIntervalWhen(() => {
     if (item.messageTemplate.split('|')[curIdx + 1]) {
       setCurIdx((idx) => idx + 1);
@@ -32,6 +50,10 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
   }, variant.alertDuration / item.messageTemplate.split('|').length);
 
   const text = React.useMemo<React.ReactNode[]>(() => {
+    if (emotesCache.length === 0 && some(item.allowEmotes)) {
+      return [];
+    }
+
     const template = item.messageTemplate.split('|')[curIdx];
     let replacedText: React.ReactNode[] = [];
 
@@ -61,11 +83,30 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
         </div>);
       }
 
-      replacedText = reactStringReplace(replacedText.length === 0 ? template : replacedText, match[0], () => <span style={{ color: item.font ? item.font.highlightcolor : parent[item.globalFont].highlightcolor }}>{animatedText}</span>,
-      );
+      replacedText = reactStringReplace(replacedText.length === 0 ? template : replacedText, match[0], () => <span style={{ color: item.font ? item.font.highlightcolor : parent[item.globalFont].highlightcolor }}>{animatedText}</span>);
     });
-    return replacedText.length > 0 ? replacedText : [<span>{template}</span>];
-  }, [item.messageTemplate, variant, curIdx]);
+
+    const output = replacedText.length > 0 ? replacedText : [<span>{template}</span>];
+
+    console.log('============ Replacing emotes');
+    for (let i = 0; i < output.length; i++) {
+      if (typeof output[i] !== 'string') {
+        continue;
+      }
+      const outputString = String(output[i]);
+      // checking emotes
+      for (const emote of emotesCache) {
+        if (get(item, `allowEmotes.${emote.type}`, false)) {
+          if (outputString.includes(emote.code)) {
+            output[i] = reactStringReplace(output[i] as React.ReactNode[], emote.code, () => <img src={emote.urls[3]} style={{
+              position: 'relative', top: '0.1rem', height: item.font ? item.font.size : parent[item.globalFont].size, width: 'auto',
+            }}/>);
+          }
+        }
+      }
+    }
+    return output;
+  }, [item.messageTemplate, variant, curIdx, emotesCache]);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
 

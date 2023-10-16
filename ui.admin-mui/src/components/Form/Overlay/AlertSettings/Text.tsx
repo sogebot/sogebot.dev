@@ -7,8 +7,11 @@ import React from 'react';
 import { AccordionAnimationIn } from './Accordion/AnimationIn';
 import { AccordionAnimationOut } from './Accordion/AnimationOut';
 import { AccordionDelay } from './Accordion/Delay';
+import { AccordionEmotes } from './Accordion/Emotes';
+import { AccordionFilter } from './Accordion/Filter';
 import { AccordionMessageTemplate } from './Accordion/MessageTemplate';
-import { anSelectedAlertVariant } from './src/atoms';
+import { anSelectedAlert, anSelectedAlertVariant } from './src/atoms';
+import { rules } from './src/rules';
 import { AccordionFont } from '../../../Accordion/Font';
 import { anSelectedItemOpts } from '../../atoms';
 
@@ -24,6 +27,7 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
 
   const parent = useAtomValue(anSelectedItemOpts as Atom<Alerts>);
   const variant = useAtomValue(anSelectedAlertVariant);
+  const selectedAlert = useAtomValue(anSelectedAlert);
 
   const isParent = item.font === null;
 
@@ -35,6 +39,11 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
   return (<>
     <AccordionMessageTemplate open={accordion} onOpenChange={setAccordion} model={item.messageTemplate} onChange={(messageTemplate) => setItem({
       ...item, messageTemplate,
+    })}/>
+    <AccordionEmotes open={accordion} onOpenChange={setAccordion} model={item.allowEmotes ?? {
+      twitch: false, ffz: false, bttv: false,
+    }} onChange={(allowEmotes) => setItem({
+      ...item, allowEmotes,
     })}/>
     <AccordionFont open={accordion}
       alwaysShowLabelDetails
@@ -107,6 +116,16 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
           });
         }}>Use variant setting</Button>
       </Stack>}/>
+
+    <AccordionFilter
+      model={item.enabledWhen}
+      open={accordion}
+      rules={rules(selectedAlert?.hooks[0] ?? null)}
+      onOpenChange={setAccordion} onChange={(filter) => {
+        setItem({
+          ...item, enabledWhen: filter,
+        });
+      }}/>
     <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
   </>
   );

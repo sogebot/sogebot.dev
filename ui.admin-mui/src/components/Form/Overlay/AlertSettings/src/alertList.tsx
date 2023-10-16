@@ -49,6 +49,9 @@ const defaultText = (messageTemplate: string) => ({
   animationOutDuration: null,
   animationIn:          null,
   animationOut:         null,
+  allowEmotes:          {
+    twitch: false, ffz: false, bttv: false,
+  },
 });
 
 const defaultMessage = {
@@ -68,6 +71,9 @@ const defaultMessage = {
   animationOutDuration: null,
   animationIn:          null,
   animationOut:         null,
+  allowEmotes:          {
+    twitch: true, ffz: true, bttv: true,
+  },
 };
 
 const defaultTTS = (ttsTemplate: string) => ({
@@ -200,16 +206,20 @@ export const alertList = {
         ttsTemplate: '{name} tipped you with {amount}{currency}! {message}',
         enabledWhen: null,
       }, {
-        id:         '__id__',
-        width:      700,
-        height:     100,
-        alignX:     '__center__',
-        alignY:     '__center__',
-        rotation:   0,
-        type:       'custom',
-        globalFont: 'globalFont1',
-        font:       null,
-        html:       `    <div id="__text__">
+        id:          '__id__',
+        width:       700,
+        height:      100,
+        alignX:      '__center__',
+        alignY:      '__center__',
+        rotation:    0,
+        type:        'custom',
+        allowEmotes: {
+          twitch: false, ffz: false, bttv: false,
+        },
+        enabledWhen: null,
+        globalFont:  'globalFont1',
+        font:        null,
+        html:        `    <div id="__text__">
       <div class="main" >
         <div class="type"><span class="text">follow</span></div>
         <div class="name">{name}</div>
