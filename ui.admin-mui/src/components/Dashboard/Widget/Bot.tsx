@@ -1,9 +1,10 @@
+import { OpenInNewTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Box, Card, Tab,
+  Box, Card, IconButton, Tab,
 } from '@mui/material';
 import React from 'react';
-import { useIntervalWhen } from 'rooks';
+import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
 import { DashboardWidgetBotChecklist } from './Bot/Checklist';
 import { DashboardWidgetBotCustom } from './Bot/Custom';
@@ -18,6 +19,7 @@ import { classes } from '../../styles';
 
 export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useAppSelector((state: any) => state.loader);
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { translate } = useTranslation();
 
   const [value, setValue] = React.useState('1');
@@ -38,20 +40,39 @@ export const DashboardWidgetBot: React.FC = () => {
     setValue(newValue);
   };
 
+  const popoutURL = (process.env.PUBLIC_URL !== '/' ? window.location.origin + '/' : process.env.PUBLIC_URL) + 'popout/widget/bot?server=' + server;
+  const isPopout = window.location.href.includes('/popout/widget/bot');
+
   return (
     <Card variant="outlined" sx={{ height: height + 'px' }} ref={ref}>
       <TabContext value={value}>
         <Box sx={{
-          borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
+          borderBottom:    1,
+          borderColor:     'divider',
+          backgroundColor: theme.palette.grey[900],
+          height:          '48px',
         }}>
-          <TabList onChange={handleChange} variant='scrollable' scrollButtons="auto">
-            <Tab label={translate('widget-title-eventlist')} value="1" />
-            {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
-            <Tab label={translate('widget-title-queue')} value="3" />
-            <Tab label={translate('widget-title-raffles')} value="4"/>
-            <Tab label={translate('menu.checklist')} value="5" />
-            <Tab label={translate('widget-title-custom')} value="6" />
-          </TabList>
+          <Box height={48} sx={{
+            display: 'flex', alignItems: 'center',
+          }}>
+            <TabList onChange={handleChange} variant='scrollable' scrollButtons="auto" sx={{ flexGrow: 1 }}>
+              <Tab label={translate('widget-title-eventlist')} value="1" />
+              {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
+              <Tab label={translate('widget-title-queue')} value="3" />
+              <Tab label={translate('widget-title-raffles')} value="4"/>
+              <Tab label={translate('menu.checklist')} value="5" />
+              <Tab label={translate('widget-title-custom')} value="6" />
+            </TabList>
+            {!isPopout && <IconButton sx={{ height: '40px' }}
+              target="popup"
+              onClick={(ev) => {
+                ev.preventDefault();
+                window.open(popoutURL, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+              } }
+              href={popoutURL}>
+              <OpenInNewTwoTone/>
+            </IconButton>}
+          </Box>
         </Box>
         <Box sx={{
           position: 'relative', height: 'calc(100% - 48px);',

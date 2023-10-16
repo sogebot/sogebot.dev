@@ -87,20 +87,20 @@ export const DashboardWidgetTwitch: React.FC = () => {
           backgroundColor: theme.palette.grey[900],
           height:          '48px',
         }}>
-          <Stack direction="row" alignItems={'center'} sx={{ display: unfold ? undefined : 'none' }}>
-            <Box width={'100%'} height={48}>
-              <TabList onChange={handleChange} aria-label="lab API tabs example">
-                <Tab label={split ? `${translate('widget-title-monitor')} / ${translate('widget-title-chat')}` : translate('widget-title-chat')} value="1" />
-                <Tab sx={{ display: !split ? 'inherit' : 'none' }}  label={translate('widget-title-monitor')} value="2" />
-              </TabList>
-            </Box>
-            <IconButton onClick={() => setSplit(!split)}>
+          <Box width={'100%'} height={48} sx={{
+            display: unfold ? 'flex' : 'none', alignItems: 'center',
+          }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example" sx={{ flexGrow: 1 }}>
+              <Tab label={split ? `${translate('widget-title-monitor')} / ${translate('widget-title-chat')}` : translate('widget-title-chat')} value="1" />
+              <Tab sx={{ display: !split ? 'inherit' : 'none' }}  label={translate('widget-title-monitor')} value="2" />
+            </TabList>
+            <IconButton onClick={() => setSplit(!split)} sx={{ height: '40px' }}>
               <SplitscreenTwoTone/>
             </IconButton>
-            <IconButton onClick={() => setUnfold(false)}>
+            <IconButton onClick={() => setUnfold(false)} sx={{ height: '40px' }}>
               <UnfoldLessTwoTone/>
             </IconButton>
-          </Stack>
+          </Box>
           <IconButton onClick={() => setUnfold(true)} sx={{
             display: !unfold ? undefined : 'none', mt: 0.5,
           }}>

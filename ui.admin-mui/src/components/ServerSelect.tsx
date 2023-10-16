@@ -34,7 +34,14 @@ const checkURLValidity = (serverURL: string) => {
 
 let connecting = false;
 
-export const ServerSelect: React.FC = () => {
+type ServerSelectProps = {
+  /*
+   * Hides connection dialog, usable in popouts
+  */
+  passive?: boolean;
+};
+
+export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
   const dispatch = useAppDispatch();
   const query = useQuery();
   const isMobile = useMobile();
@@ -192,7 +199,7 @@ export const ServerSelect: React.FC = () => {
     setTimeout(() => setCopied(false), 1000);
   };
 
-  return (<Dialog open={open} hideBackdrop sx={{ zIndex: 0 }} fullScreen={isMobile}>
+  return (<Dialog open={open && !props.passive} hideBackdrop sx={{ zIndex: 0 }} fullScreen={isMobile}>
     <DialogTitle sx={{
       display:        'flex',
       flexDirection:  'column',

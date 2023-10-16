@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const Credentials = lazy(() => import('./routes/credentials'));
+const Popout = lazy(() => import('./routes/popout'));
 const Root = lazy(() => import('./routes/root'));
 const Overlays = lazy(() => import('./routes/overlays'));
 import { store } from './store/store';
@@ -26,13 +27,17 @@ const router = createBrowserRouter([
     element: <Overlays/>,
   },
   {
+    path:    '/popout/*',
+    element: <Popout/>,
+  },
+  {
     path:    '/*',
     element: <Root />,
   },
 ], { basename: process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : undefined });
 
 root.render(
-  <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+  <SnackbarProvider maxSnack={3} autoHideDuration={1500}>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

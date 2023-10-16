@@ -1,7 +1,7 @@
 import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import {
-  Box, Card, IconButton, Stack, Tab, Typography,
+  Box, Card, IconButton, Tab, Typography,
 } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
@@ -64,19 +64,19 @@ export const DashboardWidgetAction: React.FC = () => {
           backgroundColor: theme.palette.grey[900],
           height:          '48px',
         }}>
-          <Stack direction="row" alignItems={'center'} sx={{ display: unfold ? undefined : 'none' }}>
-            <Box width={'100%'} height={48}>
-              <TabList onChange={handleChange}>
-                <Tab label="Actions" value="1" />
-              </TabList>
-            </Box>
+          <Box height={48} sx={{
+            display: 'flex', alignItems: 'center',
+          }}>
+            <TabList onChange={handleChange} sx={{ flexGrow: 1 }}>
+              <Tab label="Actions" value="1" />
+            </TabList>
             <DashboardWidgetBotDialogActionsEdit onClose={React.useCallback(() => setTimestamp(Date.now()), [])}/>
-            <IconButton onClick={() => setUnfold(false)}>
+            <IconButton onClick={() => setUnfold(false)} sx={{ height: '40px' }}>
               <UnfoldLessTwoTone/>
             </IconButton>
-          </Stack>
+          </Box>
           <IconButton onClick={() => setUnfold(true)} sx={{
-            display: !unfold ? undefined : 'none', mt: 0.5,
+            display: !unfold ? undefined : 'none', mt: 0.5, height: '40px',
           }}>
             <UnfoldMoreTwoTone/>
           </IconButton>
