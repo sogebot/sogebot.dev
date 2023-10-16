@@ -21,6 +21,7 @@ import {
   Accordion, AccordionDetails, AccordionSummary,
   Box, Chip, DialogContent, Divider, FormControl,
   Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
+  Switch,
   TextField, Tooltip, Typography,
 } from '@mui/material';
 import orange from '@mui/material/colors/orange';
@@ -484,6 +485,33 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     });
   }, [moveableId, selectedVariantId]);
 
+  const setEnable = React.useCallback((variantId: string | null, checked: boolean) => {
+    setItems((val) => {
+      const updatedItems = cloneDeep(val);
+      console.log({ selectedAlertId });
+      if (selectedAlertId) {
+        let itemToUpdate;
+        for (const updatedItem of updatedItems) {
+          if (itemToUpdate) {
+            break;
+          }
+          if (!variantId) {
+            itemToUpdate = updatedItem.id === selectedAlertId ? updatedItem : undefined;
+          } else {
+            itemToUpdate = updatedItem.variants.find(o => o.id === variantId);
+            if (!itemToUpdate) {
+              continue;
+            }
+          }
+        }
+        if (itemToUpdate) {
+          set(itemToUpdate, 'enabled', checked);
+        }
+      }
+      return updatedItems;
+    });
+  }, [ selectedAlertId ]);
+
   const handleItemChange = React.useCallback((changes: { [path: string]: any }) => {
     setItems((val) => {
       const updatedItems = cloneDeep(val);
@@ -806,7 +834,13 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
               px:              1,
               py:              0.5,
             }} variant='outlined' onClick={() => setSelectedVariant(null)}>
-              <Stack direction='row' sx={{ alignItems: 'center' }}>
+              <Stack direction='row' sx={{ alignItems: 'center' }} key={selectedAlertId}>
+                <Switch
+                  sx={{ mr: 1 }}
+                  size='small'
+                  checked={selectedAlert.enabled !== false}
+                  onClick={(ev) => ev.stopPropagation()}
+                  onChange={(_, checked) => setEnable(null, checked)}/>
                 <Typography sx={{ width: '100%' }}>Main</Typography>
                 <IconButton onClick={() => clone(selectedAlert)}><ContentCopyTwoToneIcon/></IconButton>
               </Stack>
@@ -818,8 +852,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 color:           selectedVariantId === k.id ? '#fff' : undefined,
                 px:              1,
                 py:              0.5,
-              }} key={k.id} variant='outlined' onClick={() => setSelectedVariant(k.id)}>
-                <Stack direction='row' sx={{ alignItems: 'center' }}>
+              }} key={`${selectedAlertId}-${k.id}-${idx}`} variant='outlined' onClick={() => setSelectedVariant(k.id)}>
+                <Stack direction='row' sx={{ alignItems: 'center' }} key={`${selectedAlertId}-${idx}`}>
+                  <Switch
+                    sx={{ mr: 1 }}
+                    size='small'
+                    checked={k.enabled !== false}
+                    onClick={(ev) => ev.stopPropagation()}
+                    onChange={(_, checked) => setEnable(k.id, checked)}/>
                   <Typography sx={{ width: '100%' }}>Variant {idx + 1}</Typography>
                   <IconButton color='error' onClick={() => deleteVariant(k)}><DeleteTwoTone/></IconButton>
                   <IconButton onClick={() => clone(k)}><ContentCopyTwoToneIcon/></IconButton>
