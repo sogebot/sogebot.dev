@@ -1,12 +1,5 @@
 import {
-  Box,
-  Button,
-  CircularProgress,
-  InputAdornment,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
+  Box, Button, CircularProgress, InputAdornment, Paper, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -94,10 +87,6 @@ const PageSettingsModulesImportNightbot: React.FC<{
         }}
       />
     </Paper>
-
-    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-
-    </Stack>
   </Box>
   );
 };
