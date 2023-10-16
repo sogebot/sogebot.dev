@@ -35,6 +35,10 @@ func main() {
 		authenticators.GoogleRefresh(w, r)
 	}).Methods(http.MethodPost)
 
+	router.HandleFunc("/nightbot", func(w http.ResponseWriter, r *http.Request) {
+		authenticators.Nightbot(w, r)
+	}).Methods(http.MethodGet)
+
 	router.HandleFunc("/donationalerts", func(w http.ResponseWriter, r *http.Request) {
 		authenticators.DonationAlerts(w, r)
 	}).Methods(http.MethodGet)

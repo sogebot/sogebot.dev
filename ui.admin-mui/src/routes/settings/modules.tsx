@@ -32,6 +32,7 @@ import PageSettingsModulesGamesGamble from '../../components/Settings/Games/gamb
 import PageSettingsModulesGamesHeist from '../../components/Settings/Games/heist';
 import PageSettingsModulesGamesModules from '../../components/Settings/Games/modules';
 import PageSettingsModulesGamesRoulette from '../../components/Settings/Games/roulette';
+import PageSettingsModulesImportNightbot from '../../components/Settings/Import/nightbot';
 import PageSettingsModulesIntegrationsDiscord from '../../components/Settings/Integrations/discord';
 import PageSettingsModulesIntegrationsDonatello from '../../components/Settings/Integrations/donatello';
 import PageSettingsModulesIntegrationsDonationAlerts from '../../components/Settings/Integrations/donationalerts';
@@ -180,6 +181,18 @@ const PageSettingsModules = () => {
                 </Typography>} />
               </ListItemButton>)}
             </>}
+
+            {type === `import` && <>
+              {['nightbot'].map(item => <ListItemButton
+                key={`import-${item}`}
+                selected={activeTab === `import-${item}`}
+                onClick={() => scrollTo(item)}
+              >
+                <ListItemText primary={<Typography variant='h6' sx={{ fontSize: '16px !important' }}>
+                  {translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}
+                </Typography>} />
+              </ListItemButton>)}
+            </>}
           </List>
         </Grid>
         <Grid item xs>
@@ -238,6 +251,10 @@ const PageSettingsModules = () => {
                 <PageSettingsModulesGamesGamble onVisible={() => setActiveTab('games-gamble')}/>
                 <PageSettingsModulesGamesHeist onVisible={() => setActiveTab('games-heist')}/>
                 <PageSettingsModulesGamesRoulette onVisible={() => setActiveTab('games-roulette')}/>
+              </>
+              }
+              {type === `import` && <>
+                <PageSettingsModulesImportNightbot onVisible={() => setActiveTab('import-nightbot')}/>
               </>
               }
               <Box sx={{

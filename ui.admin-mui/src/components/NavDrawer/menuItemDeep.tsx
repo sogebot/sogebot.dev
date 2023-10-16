@@ -3,6 +3,7 @@ import {
   ListItemIcon, Menu, MenuItem, Stack, Typography,
 } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
+import capitalize from 'lodash/capitalize';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -166,7 +167,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
           horizontal: isMobile ? 'center' : 'left',
         }}
       >
-        {['core', 'services', 'systems', 'integrations', 'games'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
+        {['core', 'services', 'systems', 'integrations', 'games', 'import'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
           textDecoration: 'none', color: 'white',
         }}>
           <MenuItem sx={{ fontSize: '14px' }}
@@ -175,7 +176,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
             }}
             selected={isItemActive({
               id: item, enabled: true,
-            })}>{translate('menu.' + item).startsWith('{') ? item : translate('menu.' + item)}</MenuItem>
+            })}>{translate('menu.' + item).startsWith('{') ? capitalize(item) : translate('menu.' + item)}</MenuItem>
         </Link>,
         )}
       </Menu>

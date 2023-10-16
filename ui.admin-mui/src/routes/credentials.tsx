@@ -5,6 +5,7 @@ import Credentials404 from './404';
 import DonationAlerts from './credentials/donationalerts';
 import Google from './credentials/google';
 import Login from './credentials/login';
+import Nightbot from './credentials/nightbot';
 import OAuth from './credentials/oauth';
 import Spotify from './credentials/spotify';
 import Streamlabs from './credentials/streamlabs';
@@ -15,6 +16,7 @@ import Twitch from './credentials/twitch';
 export default function Credentials() {
   return <>
     <Routes>
+      <Route path='nightbot' element={<Nightbot/>}/>
       <Route path='donationalerts' element={<DonationAlerts/>}/>
       <Route path='google' element={<Google/>}/>
       <Route path='login' element={<Login/>}/>
