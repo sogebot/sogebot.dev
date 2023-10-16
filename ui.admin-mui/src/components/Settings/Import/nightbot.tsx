@@ -43,7 +43,6 @@ const PageSettingsModulesImportNightbot: React.FC<{
       if (!accessToken) {
         return;
       }
-      console.log('nightbot', { accessToken });
       setUserLoadInProgress(true);
       const response = await axios.get('https://api.nightbot.tv/1/me', { headers: { Authorization: 'Bearer ' + accessToken } });
       if (response.status !== 200) {
@@ -51,11 +50,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
       } else {
         setUser(`${response.data.user.displayName}#${response.data.user._id}`);
       }
-      console.log(response.data);
       setUserLoadInProgress(false);
-    // GET /1/me HTTP/1.1
-    // Authorization: Bearer access_token
-    // Host: api.nightbot.tv
     }
     getUserData();
   }, [ accessToken ]);
