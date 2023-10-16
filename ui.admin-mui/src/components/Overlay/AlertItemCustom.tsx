@@ -2,35 +2,18 @@ import { Box } from '@mui/material';
 import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { get, orderBy } from 'lodash';
 import React from 'react';
-import { useSessionstorageState } from 'rooks';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 
 const encodeFont = (font: string) => {
   return `'${font}'`;
 };
+const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
 export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts }>
 = ({ item, width, height, parent, active }) => {
-  const [ emotesCache, setEmotesCache ] = useSessionstorageState<{
-    code: string;
-    type: 'twitch' | 'twitch-sub' | 'ffz' | 'bttv' | '7tv';
-    urls: { '1': string; '2': string; '3': string };
-  }[]>('emotes::cache', []);
-
-  React.useEffect(() => {
-    getSocket('/core/emotes', true).emit('getCache', (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-      setEmotesCache(data);
-      console.debug('= Emotes loaded');
-    });
-  }, []);
-
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const iframeSrc = React.useMemo(() => {
     let text = item.html.replace(' ', '\n\n');
