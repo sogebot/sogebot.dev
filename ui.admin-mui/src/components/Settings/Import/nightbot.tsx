@@ -65,7 +65,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  return (<Box ref={ref} id="roulette">
+  return (<Box ref={ref} id="nightbot">
     <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
 
     <Paper elevation={1} sx={{ p: 1 }}>
