@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
+import { useAtomValue } from 'jotai';
 import { get } from 'lodash';
 import React from 'react';
 import { Typewriter } from 'react-simple-typewriter';
@@ -8,6 +9,7 @@ import reactStringReplace from 'react-string-replace';
 import { useIntervalWhen } from 'rooks';
 import shortid from 'shortid';
 
+import { anEmitData } from './AlertItem/atom';
 import type { Props } from './ChatItem';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { speedOptions } from '../Form/Overlay/AlertSettings/Accordion/AnimationText';
@@ -25,6 +27,8 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
 = ({ item, width, height, parent, variant, active }) => {
   const [ curIdx, setCurIdx ] = React.useState(0);
 
+  const emitData = useAtomValue(anEmitData);
+
   useIntervalWhen(() => {
     if (item.messageTemplate.split('|')[curIdx + 1]) {
       setCurIdx((idx) => idx + 1);
@@ -34,7 +38,20 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
   }, variant.alertDuration / item.messageTemplate.split('|').length);
 
   const text = React.useMemo<React.ReactNode[]>(() => {
-    const template = item.messageTemplate.split('|')[curIdx];
+    let template = item.messageTemplate.split('|')[curIdx];
+
+    if (emitData) {
+      console.log('= Replacing values');
+      template = template
+        .replace(/\{name\}/g, emitData.name)
+        .replace(/\{game\}/g, emitData.game || '')
+        .replace(/\{recipient\}/g, emitData.recipient || '')
+        .replace(/\{amount\}/g, String(emitData.amount))
+        .replace(/\{monthsName\}/g, emitData.monthsName)
+        .replace(/\{currency\}/g, emitData.currency)
+        .replace(/\{message\}/g, emitData.message);
+    }
+
     let replacedText: React.ReactNode[] = [];
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
@@ -86,7 +103,7 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
       }
     }
     return output;
-  }, [item.messageTemplate, variant, curIdx]);
+  }, [item.messageTemplate, variant, curIdx, emitData]);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
 

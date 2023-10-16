@@ -5,11 +5,13 @@ import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { itemsToEvalPart } from '@sogebot/ui-helpers/queryFilter';
+import { useAtom } from 'jotai';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
+import { anEmitData } from './AlertItem/atom';
 import { AlertItemAudio } from './AlertItemAudio';
 import { AlertItemCustom } from './AlertItemCustom';
 import { AlertItemImage } from './AlertItemImage';
@@ -228,16 +230,7 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
 
   const [ emitDataList, setEmitDataList ] = React.useState<NonNullable<typeof emitData>[]>([]);
 
-  const [ emitData, setEmitData] = React.useState<null | EmitData & {
-    id: string;
-    isTTSMuted: boolean;
-    isSoundMuted: boolean;
-    TTSService: number;
-    TTSKey: string;
-    caster: UserInterface | null;
-    user: UserInterface | null;
-    recipientUser: UserInterface | null;
-  }>(null);
+  const [ emitData, setEmitData] = useAtom(anEmitData);
   const emitDataRef = React.useRef(emitData);
   React.useEffect(() => {
     emitDataRef.current = emitData;

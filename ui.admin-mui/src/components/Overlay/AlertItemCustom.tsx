@@ -1,8 +1,10 @@
 import { Box } from '@mui/material';
 import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
+import { useAtomValue } from 'jotai';
 import { get, orderBy } from 'lodash';
 import React from 'react';
 
+import { anEmitData } from './AlertItem/atom';
 import type { Props } from './ChatItem';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
@@ -14,9 +16,23 @@ const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(session
 
 export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts }>
 = ({ item, width, height, parent, active }) => {
+  const emitData = useAtomValue(anEmitData);
+
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const iframeSrc = React.useMemo(() => {
-    let text = item.html.replace(' ', '\n\n');
+    let text = item.html;
+
+    if (emitData) {
+      console.log('= Replacing values');
+      text = text
+        .replace(/\{name\}/g, emitData.name)
+        .replace(/\{game\}/g, emitData.game || '')
+        .replace(/\{recipient\}/g, emitData.recipient || '')
+        .replace(/\{amount\}/g, String(emitData.amount))
+        .replace(/\{monthsName\}/g, emitData.monthsName)
+        .replace(/\{currency\}/g, emitData.currency)
+        .replace(/\{message\}/g, emitData.message);
+    }
 
     for (const emote of orderBy(emotesCache, 'code', 'asc')) {
       if (get(item, `allowEmotes.${emote.type}`, false)) {
