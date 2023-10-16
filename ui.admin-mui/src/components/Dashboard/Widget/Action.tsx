@@ -65,7 +65,7 @@ export const DashboardWidgetAction: React.FC = () => {
           height:          '48px',
         }}>
           <Box height={48} sx={{
-            display: 'flex', alignItems: 'center',
+            display: unfold ? 'flex' : 'none', alignItems: 'center',
           }}>
             <TabList onChange={handleChange} sx={{ flexGrow: 1 }}>
               <Tab label="Actions" value="1" />
