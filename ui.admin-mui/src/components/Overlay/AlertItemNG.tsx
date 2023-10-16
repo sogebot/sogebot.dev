@@ -578,6 +578,7 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
       left:      `${it.alignX}px`,
       top:       `${it.alignY}px`,
       transform: `rotate(${ it.rotation ?? 0 }deg)`,
+      opacity:   activeUntil - timestamp >= 0 ? 1 : 0,
     }}>
       {/* {it.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>} */}
       {(selectedGroupMain && it.type === 'text') && <AlertItemText parent={item} height={it.height} width={it.width} id={it.id} item={it} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
