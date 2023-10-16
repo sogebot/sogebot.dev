@@ -250,7 +250,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     const update = cloneDeep(items) as Alerts['items'];
     const it = alertList[type].item;
 
-    const calculateAlignY = (height: number, itemType: 'gallery' | 'text' | 'text2' | 'audio' | 'tts' | 'custom') => {
+    const calculateAlignY = (height: number, itemType: string) => {
       switch(itemType) {
         case 'text':
           return canvas.height - canvas.height / 2.25;
@@ -264,7 +264,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       }
     };
 
-    const calculateWidth = (width: number, itemType: 'gallery' | 'text' | 'audio' | 'tts' | 'custom') => {
+    const calculateWidth = (width: number, itemType: string) => {
       switch(itemType) {
         case 'text':
           return canvas.width - canvas.width / 3;
@@ -284,14 +284,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       filter:               it.filter,
       alertDuration:        it.alertDuration,
       animationInDuration:  it.animationInDuration,
-      animationIn:          it.animationIn,
+      animationIn:          it.animationIn as any,
       animationOutDuration: it.animationOutDuration,
-      animationOut:         it.animationOut,
-      animationText:        it.animationText,
-      animationTextOptions: it.animationTextOptions,
+      animationOut:         it.animationOut as any,
+      animationText:        it.animationText as any,
+      animationTextOptions: it.animationTextOptions as any,
       variants:             [...it.variants as any],
       items:                [...it.items.map(o => ({
-        ...o,
+        ...(o as any),
         id:     shortid.generate(),
         width:  calculateWidth(o.width, o.type),
         alignX: canvas.width / 2 - calculateWidth(o.width, o.type) / 2,

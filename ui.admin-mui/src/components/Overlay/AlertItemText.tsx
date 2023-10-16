@@ -21,8 +21,18 @@ const regexp = new RegExp(/\*(?<text>.*?)\*/g);
 
 export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'> }>
 = ({ item, width, height, parent, variant, active }) => {
+  const [ curIdx, setCurIdx ] = React.useState(0);
+
+  useIntervalWhen(() => {
+    if (item.messageTemplate.split('|')[curIdx + 1]) {
+      setCurIdx((idx) => idx + 1);
+    } else {
+      setCurIdx(0);
+    }
+  }, variant.alertDuration / item.messageTemplate.split('|').length);
+
   const text = React.useMemo<React.ReactNode[]>(() => {
-    const template = item.messageTemplate;
+    const template = item.messageTemplate.split('|')[curIdx];
     let replacedText: React.ReactNode[] = [];
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
@@ -55,7 +65,7 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
       );
     });
     return replacedText.length > 0 ? replacedText : [<span>{template}</span>];
-  }, [item.messageTemplate, variant]);
+  }, [item.messageTemplate, variant, curIdx]);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
 
