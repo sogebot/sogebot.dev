@@ -105,6 +105,7 @@ const defaultAlerts = {
 
 const defaultItemValues = (cur: string) => ({
   name:                 `Default ${cur} alert`,
+  enabled:              true,
   hooks:                [cur],
   id:                   '__id__',
   weight:               1,
@@ -129,6 +130,7 @@ export const alertList = {
     title:       'Empty alert',
     description: 'You can define your own screen how you like!',
     item:        {
+      enabled:  true,
       id:       '__id__',
       name:     'Empty alert',
       weight:   1,
@@ -167,6 +169,7 @@ export const alertList = {
     title:       'Tip alert with custom component',
     description: 'Add tip alert with custom component',
     item:        {
+      enabled:              true,
       name:                 'Custom tip alert',
       id:                   '__id__',
       hooks:                ['tip'],

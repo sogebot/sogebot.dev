@@ -6,6 +6,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { AlertItem } from '../components/Overlay/AlertItem';
+import { AlertItemNG } from '../components/Overlay/AlertItemNG';
 import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
 import { ClipsItem } from '../components/Overlay/ClipsItem';
@@ -121,6 +122,7 @@ export default function Overlays() {
         transform: `rotate(${item.rotation ?? 0}deg)`,
       }}>
         {item.opts.typeId === 'alertsRegistry' && <AlertItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
+        {item.opts.typeId === 'alerts' && <AlertItemNG key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'chat' && <ChatItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'countdown' && <CountdownItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'credits' && <CreditsItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}

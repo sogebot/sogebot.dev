@@ -280,6 +280,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       id:                   shortid(),
       hooks:                [...it.hooks as any],
       name:                 it.name,
+      enabled:              it.enabled,
       weight:               it.weight,
       filter:               it.filter,
       alertDuration:        it.alertDuration,
