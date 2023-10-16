@@ -791,7 +791,10 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 onChange={(event) => handleAlertChange({ hooks: [event.target.value as any] })}
                 value={selectedAlert.hooks}
               >
-                {['follow', 'tip'].map(o => (<MenuItem key={o} value={o}>{capitalize(o)}</MenuItem>))}
+                {[
+                  'follow', 'sub', 'resub', 'subgift', 'subcommunitygift', 'raid',
+                  'custom', 'promo', 'tip', 'cheer', 'rewardredeem',
+                ].map(o => (<MenuItem key={o} value={o}>{capitalize(o)}</MenuItem>))}
               </Select>
             </FormControl>
             <Divider variant='middle' sx={{ my: 1 }}>Variants</Divider>
