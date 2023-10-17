@@ -388,7 +388,7 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
         top:             `${o.alignY}px`,
         transform:       `rotate(${ o.rotation ?? 0 }deg)`,
         opacity:         0,
-        transition:      `opacity 500ms`,
+        transition:      `opacity 200ms`,
         transitionDelay: `${'animationDelay' in o ? o.animationDelay : 0}ms`,
       }}>
         {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={activeUntil - timestamp >= 0} variant={selectedGroupMain!}/>}

@@ -49,7 +49,7 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts }>
       #wrapper {
         text-align:  ${item.font ? item.font.align : parent[item.globalFont].align};
         color:       ${item.font ? item.font.color : parent[item.globalFont].color};
-        font-family: ${encodeFont(item.font ? item.font.family : parent[item.globalFont].family)} !important};
+        font-family: ${encodeFont(item.font ? item.font.family : parent[item.globalFont].family)} !important;
         font-weight: ${item.font ? item.font.weight : parent[item.globalFont].weight};
         font-size:   ${item.font ? item.font.size : parent[item.globalFont].size}px !important;
         text-shadow:  ${[
