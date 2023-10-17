@@ -33,6 +33,8 @@ export const AlertsSettings: React.FC<Props> = ({ onUpdate }) => {
   const model = useAtomValue(anSelectedItemOpts as Atom<Alerts>);
   const canvas = useAtomValue(anSelectedItemCanvas);
 
+  const [ changes, setChanges ] = React.useState<Alerts['items'] | null>(null);
+
   const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(setParentDelKeyDisableStatus(open));
@@ -70,16 +72,24 @@ export const AlertsSettings: React.FC<Props> = ({ onUpdate }) => {
       open={open}
       fullScreen>
       <AlertSettingsGroup canvas={canvas} onUpdate={(items) => {
-        onUpdate({
-          ...model, items: items,
-        });
+        setChanges(items);
       }}/>
       <DialogActions sx={{ px: 2 }}>
         <Grid container sx={{ height: '100%' }} justifyContent={'space-between'}>
           <Grid>
           </Grid>
           <Grid>
-            <Button sx={{ width: 150 }} onClick={() => setOpen(false)}>Close</Button>
+            <Button color='error' sx={{ width: 150 }} onClick={() => {
+              setOpen(false);
+            }}>Discard</Button>
+            <Button sx={{ width: 150 }} onClick={() => {
+              if (changes) {
+                onUpdate({
+                  ...model, items: changes,
+                });
+              }
+              setOpen(false);
+            }}>Close</Button>
           </Grid>
         </Grid>
       </DialogActions>
