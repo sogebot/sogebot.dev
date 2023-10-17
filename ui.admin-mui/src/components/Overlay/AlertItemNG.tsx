@@ -311,7 +311,15 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
     const selected = possibleAlertsWithRandomCount[Math.floor(Math.random() * possibleAlertsWithRandomCount.length)];
     for (const it of selected.items) {
       setTimeout(() => {
-        document.getElementById(it.id)!.style.opacity = '1';
+        const retry = () => {
+          const el = document.getElementById(it.id);
+          if (el) {
+            el.style.opacity = '1';
+          } else {
+            setTimeout(() => retry(), 10);
+          }
+        };
+        retry();
       }, 10);
     }
     return selected;
