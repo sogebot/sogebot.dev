@@ -65,29 +65,38 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  const [playlist, setPlaylist] = React.useState(null);
+  const [playlist, setPlaylist] = React.useState([]);
 
   const importPlaylist = async () => {
     const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=100`);
     // NOTE: key is the name of the path entry to the resource we want
+    //       For just the playlist, this is fine. If we add more resources
+    //       this key will need to be dynamic
     const key = 'playlist';
 
     // NOTE: This is a type error that I need help with
     const fetchResource = async (acc: [], url: URL) => {
       const page = await axios.get(url.href, { headers: { Authorization: 'Bearer ' + accessToken } });
       // NOTE: total number of items in the resource
-      // NOTE: I think a default of 100 is safe, to ensure requesting exactly 1 page of data
+      // NOTE: I think a default of 1 is safe, to ensure requesting exactly 1 page of data
       //       Default of zero can result in infinitely looping -> Error 429
-      // const total = page.data._total ? page.data._total : 100;
+      //       That may be a problem somewhere else instead of here
+      // const total = page.data._total ? page.data._total : 1;
+      // NOTE: Hardcoding this just because my playlist is over 1,000 songs
       const total = 300;
 
       // NOTE: Resources with multiple items are returned in an array
       //       We need to spread it to prevent nesting arrays in our accumulated result
+      // NOTE: This breaks if the endpoint returns a single item, such as `/me`
       // NOTE: this is a type error that I need help with
       acc.push(...page.data[key]);
 
       if (acc.length >= total) {
-        return acc;
+        // NOTE: We probably need just the "track" key
+        //       There is some other metadata like createdAt. Maybe
+        //       useful for some sorting/filtering by the end user if
+        //       they want to preserve the original order of additions
+        return acc.map(e => e.track);
       }
 
       // NOTE: This may not be necessary to calculate by converting between types, if
@@ -108,7 +117,6 @@ const PageSettingsModulesImportNightbot: React.FC<{
   return (
     <Box ref={ref} id="nightbot">
       <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
-
       <Paper elevation={1} sx={{ p: 1 }}>
         {userLoadInProgress}
         <TextField
@@ -129,7 +137,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
         />
         <Container>
           <Button color="primary" variant="contained" onClick={importPlaylist}>Import</Button>
-          <TextField disabled fullWidth variant='filled' label='Playlist' value={playlist ? JSON.stringify(playlist, null, 2) : 'Click Import!'}/>
+          <pre>{JSON.stringify(playlist, null, 2)}</pre>
         </Container>
 
       </Paper>
