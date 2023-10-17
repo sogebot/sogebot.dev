@@ -3,8 +3,8 @@ import {
   ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
 } from '@mui/icons-material';
 import {
-  Box,
-  Button, Card, CardActions, CardContent, Chip, CircularProgress, Dialog , DialogActions, DialogContent, DialogTitle,
+  Box, Button,
+  ButtonGroup, Card, CardActions, CardContent, Chip, CircularProgress, Dialog , DialogActions, DialogContent, DialogTitle,
   FormControl,
   IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography,
 } from '@mui/material';
@@ -12,6 +12,7 @@ import { green, red } from '@mui/material/colors';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
+import { atom, useAtomValue } from 'jotai';
 import { chunk, orderBy } from 'lodash';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
@@ -28,6 +29,19 @@ type Props = {
 
 const endpoint = 'https://registry.sogebot.xyz';
 
+const fetchLocalOverlays = async () => {
+  return new Promise<Overlay[]>((resolve, reject) => {
+    getSocket('/registries/overlays', true).emit('generic::getAll', (err, result) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resolve(result);
+    });
+  });
+};
+const overlaysAtom = atom(fetchLocalOverlays());
+
 export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ open, setOpen ] = React.useState(false);
   const [ page, setPage ] = React.useState(1);
@@ -39,6 +53,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
+  const localOverlays = useAtomValue(overlaysAtom);
 
   const [, startTransition] = React.useTransition();
 
@@ -70,6 +85,11 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
         .finally(() => setLoading(false));
     }
   }, [ open ]);
+
+  const importLocalOverlay = (value: Overlay['items'][number]) => {
+    console.log({ value });
+    onImport([ value ]);
+  };
 
   const importOverlay = (value: RemoteOverlay) => {
     console.log('Importing', value);
@@ -204,6 +224,8 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
     });
   };
 
+  const [ type, setType ] = React.useState('remote');
+
   return <>
     <Tooltip title="Import">
       <IconButton onClick={() => setOpen(true)}><DownloadTwoTone/></IconButton>
@@ -220,87 +242,122 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       Import Overlay
       </DialogTitle>
       <DialogContent>
-        <Stack direction='row' spacing={0.5}>
-          <Box sx={{ flexGrow: 1 }}>
-            <TextField label="Search" fullWidth onChange={(ev) => setSearch(ev.currentTarget.value ?? '')}/>
-          </Box>
-          <FormControl>
-            <InputLabel id="type-select-label">Order</InputLabel>
-            <Select
-              label="Order"
-              labelId="type-select-label"
-              value={order}
-              onChange={(ev) => setOrder(ev.target.value)}
-            >
-              <MenuItem value='votes'>Votes</MenuItem>
-              <MenuItem value='publishedAt'>Creation date</MenuItem>
-              <MenuItem value='importedCount'>Downloads</MenuItem>
-            </Select>
-          </FormControl>
-          <Box>
-            <Button variant='contained' color='dark' sx={{ height: '100%' }} onClick={() => setOrderAsc(!orderAsc)}>
-              {!orderAsc ? <ExpandMoreTwoTone/> : <ExpandLessTwoTone/>}
-            </Button>
-          </Box>
-        </Stack>
-        { pagedRemoteOverlays?.map(o => <Card sx={{ my: 0.25 }} key={o.id}>
-          <CardContent sx={{ pb: 0 }}>
-            <Typography color="text.secondary" variant='h6' sx={{ pb: 1 }}>
-              {o.name}
-            </Typography>
-            <Typography variant="body2">
-              {HTMLReactParser(o.description.replace(/\n/g, '<br/>'))}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Stack direction='row' spacing={1} alignItems='center'>
-              <Stack direction={'row'} alignItems='center' textAlign='left' spacing={0.5}>
-                <IconButton disabled={importing.includes(o.id)} onClick={() => importOverlay(o)}>
-                  {importing.includes(o.id)
-                    ? <CircularProgress size={24}/>
-                    : <DownloadTwoTone/>
-                  }
-                </IconButton>
-                <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{o.importedCount}</Typography>
-              </Stack>
+        <ButtonGroup sx={{ pb: 1 }}>
+          <Button fullWidth variant={type === 'remote' ? 'contained' : undefined} color='light' onClick={() => setType('remote')}>Remote</Button>
+          <Button fullWidth variant={type === 'local' ? 'contained' : undefined} color='light' onClick={() => setType('local')}>Local</Button>
+        </ButtonGroup>
+        {type === 'remote' && <>
+          <Stack direction='row' spacing={0.5}>
+            <Box sx={{ flexGrow: 1 }}>
+              <TextField label="Search" fullWidth onChange={(ev) => setSearch(ev.currentTarget.value ?? '')}/>
+            </Box>
+            <FormControl>
+              <InputLabel id="type-select-label">Order</InputLabel>
+              <Select
+                label="Order"
+                labelId="type-select-label"
+                value={order}
+                onChange={(ev) => setOrder(ev.target.value)}
+              >
+                <MenuItem value='votes'>Votes</MenuItem>
+                <MenuItem value='publishedAt'>Creation date</MenuItem>
+                <MenuItem value='importedCount'>Downloads</MenuItem>
+              </Select>
+            </FormControl>
+            <Box>
+              <Button variant='contained' color='dark' sx={{ height: '100%' }} onClick={() => setOrderAsc(!orderAsc)}>
+                {!orderAsc ? <ExpandMoreTwoTone/> : <ExpandLessTwoTone/>}
+              </Button>
+            </Box>
+          </Stack>
+          { pagedRemoteOverlays?.map(o => <Card sx={{ my: 0.25 }} key={o.id}>
+            <CardContent sx={{ pb: 0 }}>
+              <Typography color="text.secondary" variant='h6' sx={{ pb: 1 }}>
+                {o.name}
+              </Typography>
+              <Typography variant="body2">
+                {HTMLReactParser(o.description.replace(/\n/g, '<br/>'))}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Stack direction='row' spacing={1} alignItems='center'>
+                <Stack direction={'row'} alignItems='center' textAlign='left' spacing={0.5}>
+                  <IconButton disabled={importing.includes(o.id)} onClick={() => importOverlay(o)}>
+                    {importing.includes(o.id)
+                      ? <CircularProgress size={24}/>
+                      : <DownloadTwoTone/>
+                    }
+                  </IconButton>
+                  <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{o.importedCount}</Typography>
+                </Stack>
 
-              <Chip size='small' label={`v${o.version}`}/>
-              <Chip size='small' label={<strong>{o.compatibleWith}</strong>} color='warning'/>
-              <Chip size='small' variant='outlined' label={dayjs(o.publishedAt).format('LL LTS')}/>
+                <Chip size='small' label={`v${o.version}`}/>
+                <Chip size='small' label={<strong>{o.compatibleWith}</strong>} color='warning'/>
+                <Chip size='small' variant='outlined' label={dayjs(o.publishedAt).format('LL LTS')}/>
 
-              <Stack direction={'row'} alignItems='center' textAlign='center' spacing={0.5}>
-                <IconButton sx={{
-                  '&:hover':  { color: red[400] },
-                  transition: 'all 200ms',
-                  color:      votedThumbsDown(o.votes) ? red[400] : 'inherit',
-                }} onClick={() => handleThumbsDownClick(o)}>
-                  {votedThumbsDown(o.votes)
-                    ? <ThumbDown/>
-                    : <ThumbDownTwoTone/>
-                  }
-                </IconButton>
-                <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{calculateVotes(o.votes)}</Typography>
-                <IconButton sx={{
-                  '&:hover':  { color: green[400] },
-                  transition: 'all 200ms',
-                  color:      votedThumbsUp(o.votes) ? green[400] : 'inherit',
-                }} onClick={() => handleThumbsUpClick(o)}>
-                  {votedThumbsUp(o.votes)
-                    ? <ThumbUp/>
-                    : <ThumbUpTwoTone/>
-                  }
-                </IconButton>
+                <Stack direction={'row'} alignItems='center' textAlign='center' spacing={0.5}>
+                  <IconButton sx={{
+                    '&:hover':  { color: red[400] },
+                    transition: 'all 200ms',
+                    color:      votedThumbsDown(o.votes) ? red[400] : 'inherit',
+                  }} onClick={() => handleThumbsDownClick(o)}>
+                    {votedThumbsDown(o.votes)
+                      ? <ThumbDown/>
+                      : <ThumbDownTwoTone/>
+                    }
+                  </IconButton>
+                  <Typography component='span' variant='body2' sx={{ minWidth: 50 }}>{calculateVotes(o.votes)}</Typography>
+                  <IconButton sx={{
+                    '&:hover':  { color: green[400] },
+                    transition: 'all 200ms',
+                    color:      votedThumbsUp(o.votes) ? green[400] : 'inherit',
+                  }} onClick={() => handleThumbsUpClick(o)}>
+                    {votedThumbsUp(o.votes)
+                      ? <ThumbUp/>
+                      : <ThumbUpTwoTone/>
+                    }
+                  </IconButton>
+                </Stack>
               </Stack>
-            </Stack>
-          </CardActions>
-        </Card>)}
+            </CardActions>
+          </Card>)}
+        </>}
+        {type === 'local' && <>
+          { localOverlays.map(o => <Card sx={{ my: 0.25 }} key={o.id}>
+            <CardContent sx={{ pb: 0 }}>
+              <Typography color="text.secondary" variant='h6' sx={{ pb: 1 }}>
+                {o.name} <Typography component='span' variant='caption'>{o.id}</Typography>
+              </Typography>
+
+              {o.items.map((item, idx) => <Box key={idx} sx={{
+                p:         0.3,
+                px:        1,
+                '&:hover': { backgroundColor: 'rgba(130,130,130,0.1)' },
+              }}>
+                <Stack direction='row' sx={{
+                  alignItems: 'center', justifyContent: 'space-between',
+                }}>
+                  <Typography variant="body2" component='div'>
+                    {item.name}{' '}
+                    <Typography component='span' variant='caption'>
+                      {item.opts.typeId}
+                    </Typography>
+                  </Typography>
+                  <IconButton disabled={importing.includes(o.id)} onClick={() => importLocalOverlay(item)}>
+                    <DownloadTwoTone/>
+                  </IconButton>
+                </Stack>
+              </Box>)}
+            </CardContent>
+          </Card>)}
+        </>}
       </DialogContent>
       <DialogActions>
-        <Box sx={{
+        {type === 'remote' && <Box sx={{
           flexGrow: 1, justifyContent: 'center', display: 'flex',
         }}>
           <Pagination count={Math.ceil((filteredRemoteOverlays ?? []).length / 5) || 1} page={page} onChange={(_ev, val) => setPage(val)}/>
-        </Box>
+        </Box>}
         <Button onClick={() => setOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>
