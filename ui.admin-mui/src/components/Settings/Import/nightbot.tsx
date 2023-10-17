@@ -1,5 +1,5 @@
 import {
-  Box, Button, CircularProgress, InputAdornment, Paper, TextField, Typography,
+  Box, Button, CircularProgress, Container, InputAdornment, Paper, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -65,29 +65,75 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  return (<Box ref={ref} id="nightbot">
-    <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
+  const [playlist, setPlaylist] = React.useState(null);
 
-    <Paper elevation={1} sx={{ p: 1 }}>
-      {userLoadInProgress}
-      <TextField
-        disabled
-        fullWidth
-        variant='filled'
-        value={userLoadInProgress ? 'Loading user data...' : user}
-        label={translate('integrations.lastfm.settings.username')}
-        InputProps={{
-          startAdornment: userLoadInProgress && <InputAdornment position="start"><CircularProgress size={20}/></InputAdornment>,
-          endAdornment:   <InputAdornment position="end">
-            { user !== 'Not Authorized'
-              ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-              : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
-            }
-          </InputAdornment>,
-        }}
-      />
-    </Paper>
-  </Box>
+  const importPlaylist = async () => {
+    const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=100`);
+    // NOTE: key is the name of the path entry to the resource we want
+    const key = 'playlist';
+
+    // NOTE: This is a type error that I need help with
+    const fetchResource = async (acc: [], url: URL) => {
+      const page = await axios.get(url.href, { headers: { Authorization: 'Bearer ' + accessToken } });
+      // NOTE: total number of items in the resource
+      // NOTE: I think a default of 100 is safe, to ensure requesting exactly 1 page of data
+      //       Default of zero can result in infinitely looping -> Error 429
+      // const total = page.data._total ? page.data._total : 100;
+      const total = 300;
+
+      // NOTE: Resources with multiple items are returned in an array
+      //       We need to spread it to prevent nesting arrays in our accumulated result
+      // NOTE: this is a type error that I need help with
+      acc.push(...page.data[key]);
+
+      if (acc.length >= total) {
+        return acc;
+      }
+
+      // NOTE: This may not be necessary to calculate by converting between types, if
+      //       we don't use the `new URL()` constructor.
+      const currentOffset = Number(url.searchParams.get('offset') || 0);
+      const limit = Number(url.searchParams.get('limit') || 0);
+      const newOffset = currentOffset + limit;
+      // NOTE: Setting the search/query params could be done by just building a url as a string
+      //       I ended up with this mostly because I don't know how to use the type system well yet
+      url.searchParams.set('offset', newOffset.toString());
+
+      return await fetchResource(acc, url);
+    };
+
+    setPlaylist(await fetchResource([], firstUrl));
+  };
+
+  return (
+    <Box ref={ref} id="nightbot">
+      <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
+
+      <Paper elevation={1} sx={{ p: 1 }}>
+        {userLoadInProgress}
+        <TextField
+          disabled
+          fullWidth
+          variant='filled'
+          value={userLoadInProgress ? 'Loading user data...' : user}
+          label={translate('integrations.lastfm.settings.username')}
+          InputProps={{
+            startAdornment: userLoadInProgress && <InputAdornment position="start"><CircularProgress size={20}/></InputAdornment>,
+            endAdornment:   <InputAdornment position="end">
+              { user !== 'Not Authorized'
+                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+              }
+            </InputAdornment>,
+          }}
+        />
+        <Container>
+          <Button color="primary" variant="contained" onClick={importPlaylist}>Import</Button>
+          <TextField disabled fullWidth variant='filled' label='Playlist' value={playlist ? JSON.stringify(playlist, null, 2) : 'Click Import!'}/>
+        </Container>
+
+      </Paper>
+    </Box>
   );
 };
 
