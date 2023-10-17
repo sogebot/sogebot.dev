@@ -15,9 +15,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  useKey, useMouse, usePreviousImmediate,
-} from 'rooks';
+import { useKey } from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
@@ -88,9 +86,6 @@ import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
-let isPositionChanging = false;
-document.addEventListener('mouseup', () => isPositionChanging = false);
-
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -98,10 +93,6 @@ export const OverlayEdit: React.FC = () => {
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
   const [ key, setKey ] = React.useState(Date.now());
-
-  const { x, y } = useMouse();
-  const mouseX = usePreviousImmediate(x);
-  const mouseY = usePreviousImmediate(y);
 
   const containerRef = React.useRef<HTMLDivElement>();
 
@@ -111,14 +102,7 @@ export const OverlayEdit: React.FC = () => {
   });
 
   const [ position, setPosition ] = React.useState([50, 0]);
-
-  React.useEffect(() => {
-    if (isPositionChanging && x && y && mouseX && mouseY) {
-      setPosition(pos => {
-        return [pos[0] + ((x - mouseX) / zoom), pos[1] + ((y - mouseY) / zoom)];
-      });
-    }
-  }, [x, y, mouseY, mouseX, zoom]);
+  const [ isPositionChanging, setPositionChanging ] = React.useState(false);
 
   const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
@@ -394,8 +378,22 @@ export const OverlayEdit: React.FC = () => {
               e.stopPropagation();
               e.preventDefault();
             }}>
-            <Box id="container"
-              onMouseDown={() => isPositionChanging = true}
+            <Box id="container" className="positionHandler"
+              onMouseMove={(e) => {
+                if (e.buttons === 1) {
+                  const target = e.target as HTMLElement;
+                  if (target.classList.contains('positionHandler')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setPosition(o => [o[0] + (e.movementX / zoom), o[1] + (e.movementY / zoom)]);
+                    setPositionChanging(true);
+                  }
+                } else {
+                  if (isPositionChanging){
+                    setPositionChanging(false);
+                  }
+                }
+              }}
               onWheel={(e) => {
                 setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
               }}
@@ -405,10 +403,11 @@ export const OverlayEdit: React.FC = () => {
                 height:          '100%',
                 position:        'relative',
                 overflow:        'hidden',
-                cursor:          isPositionChanging ? 'grabbing' : 'grab',
+                cursor:          'grab',
                 p:               5,
               }}  ref={containerRef}>
               <Paper
+                className="positionHandler"
                 sx={{
                   height:          `${item.canvas.height}px`,
                   width:           `${item.canvas.width}px`,

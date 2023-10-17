@@ -34,9 +34,7 @@ import {
 } from 'lodash';
 import React from 'react';
 import Moveable from 'react-moveable';
-import {
-  useKey, useMouse, usePreviousImmediate,
-} from 'rooks';
+import { useKey } from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
@@ -67,9 +65,6 @@ import { AlertItemCustom } from '../../../Overlay/AlertItemCustom';
 import { AlertItemImage } from '../../../Overlay/AlertItemImage';
 import { AlertItemText } from '../../../Overlay/AlertItemText';
 import { anSelectedItemOpts } from '../../atoms';
-
-let isPositionChanging = false;
-document.addEventListener('mouseup', () => isPositionChanging = false);
 
 type Props = {
   canvas: { width: number, height: number },
@@ -204,9 +199,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
 
-  const { x, y } = useMouse();
-  const mouseX = usePreviousImmediate(x);
-  const mouseY = usePreviousImmediate(y);
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
 
   const containerRef = React.useRef<HTMLDivElement>();
@@ -217,14 +209,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   });
 
   const [ position, setPosition ] = React.useState([50, 0]);
-
-  React.useEffect(() => {
-    if (isPositionChanging && x && y && mouseX && mouseY) {
-      setPosition(pos => {
-        return [pos[0] + ((x - mouseX) / zoom), pos[1] + ((y - mouseY) / zoom)];
-      });
-    }
-  }, [x, y, mouseY, mouseX, zoom]);
+  const [ isPositionChanging, setPositionChanging ] = React.useState(false);
 
   const [bounds, setBounds] = React.useState<undefined | { top: number, left: number, right: number, bottom: number }>({
     top: 0, left: 0, right: 0, bottom: 0,
@@ -654,8 +639,22 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             e.stopPropagation();
             e.preventDefault();
           }}>
-          <Box id="container"
-            onMouseDown={() => isPositionChanging = true}
+          <Box id="container" className="positionHandler"
+            onMouseMove={(e) => {
+              if (e.buttons === 1) {
+                const target = e.target as HTMLElement;
+                if (target.classList.contains('positionHandler')) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setPosition(o => [o[0] + (e.movementX / zoom), o[1] + (e.movementY / zoom)]);
+                  setPositionChanging(true);
+                }
+              } else {
+                if (isPositionChanging){
+                  setPositionChanging(false);
+                }
+              }
+            }}
             onWheel={(e) => {
               setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
             }}
@@ -669,6 +668,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
               p:               5,
             }}  ref={containerRef}>
             <Paper
+              className="positionHandler"
               sx={{
                 height:          `${canvas.height}px`,
                 width:           `${canvas.width}px`,
@@ -829,7 +829,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
         </Grid>
         {(selectedAlert && selectedAlertVariant) && <Grid sx={{
           backgroundColor: '#1e1e1e', p: 1, width: `400px`,
-        }}>
+        }} key={selectedAlert.id}>
           <SimpleBar style={{
             maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
           }} autoHide={false}>
@@ -837,7 +837,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
               fullWidth
               variant="filled"
               required
-              value={selectedAlert.name}
+              defaultValue={selectedAlert.name}
               label={translate('registry.alerts.name.name')}
               onChange={(event) => handleAlertChange({ 'name': event.target.value })}
             />
