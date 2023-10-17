@@ -384,7 +384,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     });
   }, [selectedAlertId, selectedVariantId]);
 
-  const clone = (item: Alerts['items'][number] | Alerts['items'][number]['variants'][number]) => {
+  const cloneVariant = (item: Alerts['items'][number] | Alerts['items'][number]['variants'][number]) => {
     const variant: Alerts['items'][number]['variants'][number] = cloneDeep(item);
     // generate new ids
     variant.id = shortid();
@@ -402,6 +402,27 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
         }
       }
       return updatedItems;
+    });
+  };
+
+  const deleteGroup = (item: Alerts['items'][number]) => {
+    setItems((val) => cloneDeep(val).filter(o => o.id !== item.id));
+  };
+
+  const cloneGroup = (item: Alerts['items'][number]) => {
+    setItems((val) => {
+      const newItem = cloneDeep(item);
+      newItem.id = shortid();
+      newItem.name = `Copy of ${newItem.name}`;
+      for (const it of newItem.items) {
+        it.id = shortid();
+      }
+      for (const variant of newItem.variants) {
+        for (const it of variant.items) {
+          it.id = shortid();
+        }
+      }
+      return [...val, newItem];
     });
   };
 
@@ -604,14 +625,22 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   color:           selectedAlertId === o.id ? '#fff' : undefined,
                 }}
               >
-                <Stack spacing={0.2}>
-                  <Typography sx={{ width: '100%' }}>
-                    {o.name}
-                  </Typography>
-                  <Box>
-                    {o.hooks.map(hook => <Chip sx={{ mr: 0.5 }} size='small' label={hook} key={hook}/>)}
+                <Box sx={{ display: 'flex' }} justifyContent='space-around'>
+                  <Stack spacing={0.2} sx={{ width: '100%' }}>
+                    <Typography sx={{ width: '100%' }}>
+                      {o.name}
+                    </Typography>
+                    <Box>
+                      {o.hooks.map(hook => <Chip sx={{ mr: 0.5 }} size='small' label={hook} key={hook}/>)}
+                    </Box>
+                  </Stack>
+                  <Box sx={{
+                    width: '107px', display: 'flex', alignSelf: 'center', justifyContent: 'space-between',
+                  }}>
+                    <IconButton color='error' sx={{ height: '40px' }} onClick={() => deleteGroup(o)}><DeleteTwoTone/></IconButton>
+                    <IconButton sx={{ height: '40px' }} onClick={() => cloneGroup(o)}><ContentCopyTwoToneIcon/></IconButton>
                   </Box>
-                </Stack>
+                </Box>
               </Paper>)}
 
               <NewAlertDialog onAdd={addNewAlert}/>
@@ -842,7 +871,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   onClick={(ev) => ev.stopPropagation()}
                   onChange={(_, checked) => setEnable(null, checked)}/>
                 <Typography sx={{ width: '100%' }}>Main</Typography>
-                <IconButton onClick={() => clone(selectedAlert)}><ContentCopyTwoToneIcon/></IconButton>
+                <IconButton onClick={() => cloneVariant(selectedAlert)}><ContentCopyTwoToneIcon/></IconButton>
               </Stack>
             </Paper>
             {selectedAlert.variants.map((k, idx) =>
@@ -862,7 +891,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                     onChange={(_, checked) => setEnable(k.id, checked)}/>
                   <Typography sx={{ width: '100%' }}>Variant {idx + 1}</Typography>
                   <IconButton color='error' onClick={() => deleteVariant(k)}><DeleteTwoTone/></IconButton>
-                  <IconButton onClick={() => clone(k)}><ContentCopyTwoToneIcon/></IconButton>
+                  <IconButton onClick={() => cloneVariant(k)}><ContentCopyTwoToneIcon/></IconButton>
                 </Stack>
               </Paper>,
             )}
