@@ -681,8 +681,8 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   width: '100%', height: '100%',
                 }}>
                   {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest} variant={selectedAlert}/>}
-                  {o.type === 'gallery' && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
-                  {o.type === 'text' && <AlertItemText parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'gallery' && <AlertItemImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'text' && <AlertItemText test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
                 </Box>
               </Paper>)}

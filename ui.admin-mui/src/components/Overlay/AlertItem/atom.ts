@@ -12,3 +12,7 @@ export const anEmitData = atom<null | EmitData & {
   user: UserInterface | null;
   recipientUser: UserInterface | null;
 }>(null);
+
+export const anExpectedSoundCount = atom(0);
+export const anFinishedSoundCount = atom(0);
+export const anWaitingForTTS = atom(false);

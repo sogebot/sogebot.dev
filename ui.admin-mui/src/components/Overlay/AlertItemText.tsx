@@ -23,12 +23,11 @@ const encodeFont = (font: string) => {
 const regexp = new RegExp(/\*(?<text>.*?)\*/g);
 const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
-export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'> }>
-= ({ item, width, height, parent, variant, active }) => {
+export const AlertItemText: React.FC<Props<AlertText> & { test?: boolean; parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'> }>
+= ({ item, width, height, parent, variant, active, test }) => {
   const [ curIdx, setCurIdx ] = React.useState(0);
 
   const emitData = useAtomValue(anEmitData);
-
   useIntervalWhen(() => {
     if (item.messageTemplate.split('|')[curIdx + 1]) {
       setCurIdx((idx) => idx + 1);
@@ -125,9 +124,13 @@ export const AlertItemText: React.FC<Props<AlertText> & { parent: Alerts, varian
 
     if (!active && itemAnimationTriggered) {
       setEndAnimationShouldPlay(true);
+
       setTimeout(() => {
-        setEndAnimationShouldPlay(false);
-        setItemAnimationTriggered(false);
+        if (test) {
+          console.log('= Resetting animation');
+          setEndAnimationShouldPlay(false);
+          setItemAnimationTriggered(false);
+        }
       }, (item.animationOutDuration ?? variant.animationOutDuration) + 5000);
     }
   }, [ active, itemAnimationTriggered ]);

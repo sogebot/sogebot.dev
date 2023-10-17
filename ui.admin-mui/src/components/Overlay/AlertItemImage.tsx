@@ -6,8 +6,8 @@ import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import defaultImage from './assets/alerts/default.gif';
 import type { Props } from './ChatItem';
 
-export const AlertItemImage: React.FC<Props<AlertImage> & {variant: Omit<Alerts['items'][number], 'variants'>}>
-= ({ item, width, height, active, variant }) => {
+export const AlertItemImage: React.FC<Props<AlertImage> & {test?: boolean, variant: Omit<Alerts['items'][number], 'variants'>}>
+= ({ item, width, height, active, variant, test }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const videoPlayer = useRef<HTMLVideoElement>(null);
@@ -39,11 +39,14 @@ export const AlertItemImage: React.FC<Props<AlertImage> & {variant: Omit<Alerts[
         videoPlayer.current?.pause();
       }, item.animationOutDuration ?? variant.animationOutDuration);
       setTimeout(() => {
-        setEndAnimationShouldPlay(false);
-        setItemAnimationTriggered(false);
+        if (test) {
+          console.log('= Resetting animation');
+          setEndAnimationShouldPlay(false);
+          setItemAnimationTriggered(false);
+        }
       }, (item.animationOutDuration ?? variant.animationOutDuration) + 5000);
     }
-  }, [ active, itemAnimationTriggered ]);
+  }, [ active, itemAnimationTriggered, test ]);
 
   const animationType = React.useMemo(() => {
     if (!itemAnimationTriggered) {

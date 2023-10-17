@@ -1,9 +1,12 @@
-import { Button, Stack } from '@mui/material';
+import {
+  Alert, Button, Stack,
+} from '@mui/material';
 import { Alerts,  AlertTTS } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
 
+import { AccordionDelay } from './Accordion/Delay';
 import { AccordionFilter } from './Accordion/Filter';
 import { AccordionTTSTemplate } from './Accordion/TTSTemplate';
 import { anSelectedAlert } from './src/atoms';
@@ -32,6 +35,8 @@ const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
   }, [ item ]);
 
   return (<>
+    <Alert icon={false} severity="warning" sx={{ mb: 2 }}>TTS will speak after all audio components finished playing. If you need additional delay, set it in this component settings.</Alert>
+
     <AccordionTTSTemplate open={accordion} onOpenChange={setAccordion} model={item.ttsTemplate} onChange={(ttsTemplate) => setItem({
       ...item, ttsTemplate,
     })}/>
@@ -55,6 +60,11 @@ const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
         }}>Use global setting</Button>
       </Stack>}/>
 
+    <AccordionDelay
+      label={'Speak delay'}
+      max={60} model={item.speakDelay ?? 0} onOpenChange={(v) => setAccordion(v)} open={accordion} onChange={speakDelay => setItem({
+        ...item, speakDelay,
+      })}/>
     <AccordionFilter
       model={item.enabledWhen}
       open={accordion}

@@ -5,17 +5,22 @@ import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { itemsToEvalPart } from '@sogebot/ui-helpers/queryFilter';
-import { useAtom } from 'jotai';
+import {
+  useAtom, useAtomValue, useSetAtom,
+} from 'jotai';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
-import { anEmitData } from './AlertItem/atom';
+import {
+  anEmitData, anExpectedSoundCount, anFinishedSoundCount, anWaitingForTTS,
+} from './AlertItem/atom';
 import { AlertItemAudio } from './AlertItemAudio';
 import { AlertItemCustom } from './AlertItemCustom';
 import { AlertItemImage } from './AlertItemImage';
 import { AlertItemText } from './AlertItemText';
+import { AlertItemTTS } from './AlertItemTTS';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
@@ -336,20 +341,30 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
       setActiveUntil(Date.now() + (selectedGroup?.alertDuration ?? 0));
     }
   }, [ selectedGroup ]);
+
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
+  const waitingForTTS = useAtomValue(anWaitingForTTS);
   useIntervalWhen(() => {
     setTimestamp(Date.now());
 
+    if (waitingForTTS) {
+      console.log(`= waiting for TTS to finish`);
+      return;
+    }
     if (activeUntil - timestamp < (selectedGroup?.animationOutDuration ? -selectedGroup.animationOutDuration : -2000) && emitData) {
       console.log(`= Freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
       setActiveUntil(0);
     }
   }, 100);
 
+  const setExpectedSoundCount = useSetAtom(anExpectedSoundCount);
+  const setFinishedSoundCount = useSetAtom(anFinishedSoundCount);
   React.useEffect(() => {
     if (activeUntil === 0) {
       console.log('= Resetting emit data');
       setEmitData(null);
+      setExpectedSoundCount(-1); // setting to -1
+      setFinishedSoundCount(0);
     }
   }, [ activeUntil ]);
 
@@ -376,10 +391,11 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
         transition:      `opacity 500ms`,
         transitionDelay: `${'animationDelay' in o ? o.animationDelay : 0}ms`,
       }}>
-        {(selectedGroupMain && o.type === 'audio') && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={activeUntil - timestamp >= 0} variant={selectedGroupMain!}/>}
+        {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={activeUntil - timestamp >= 0} variant={selectedGroupMain!}/>}
         {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'text' && processFilter(emitData!, o.enabledWhen)) && <AlertItemText parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'custom' && processFilter(emitData!, o.enabledWhen)) && <AlertItemCustom parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
+        {(selectedGroupMain && o.type === 'tts' && processFilter(emitData!, o.enabledWhen) && !emitData!.isSoundMuted && !emitData!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
       </Box>)}
     </Box>}
   </Box>;

@@ -1,8 +1,10 @@
 import { Box } from '@mui/material';
 import { AlertAudio, Alerts } from '@sogebot/backend/src/database/entity/overlay';
+import { useAtom, useSetAtom } from 'jotai';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import { anExpectedSoundCount, anFinishedSoundCount } from './AlertItem/atom';
 import defaultAudio from './assets/alerts/default.mp3';
 import type { Props } from './ChatItem';
 
@@ -13,6 +15,8 @@ export const AlertItemAudio: React.FC<Props<AlertAudio> & {variant: Omit<Alerts[
   const [ canPlay, setCanPlay ] = React.useState(false);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
+  const [finishedSoundCount, setFinishedSoundCount] = useAtom(anFinishedSoundCount);
+
   React.useEffect(() => {
     if (active) {
       setItemAnimationTriggered(true);
@@ -30,6 +34,11 @@ export const AlertItemAudio: React.FC<Props<AlertAudio> & {variant: Omit<Alerts[
       audioRef.current?.play();
     }
   }, [canPlay, itemAnimationTriggered]);
+
+  const setExpectedSoundCount = useSetAtom(anExpectedSoundCount);
+  React.useEffect(() => {
+    setExpectedSoundCount((count) => count === -1 ? 1 : count + 1);
+  }, []);
 
   return <Box sx={{
     width:         '100%',
@@ -50,6 +59,7 @@ export const AlertItemAudio: React.FC<Props<AlertAudio> & {variant: Omit<Alerts[
       overflow:       'hidden',
     }}>
       <audio
+        onEnded={() => setFinishedSoundCount(finishedSoundCount + 1)}
         ref={ref => {
           if (ref) {
             audioRef.current = ref;
