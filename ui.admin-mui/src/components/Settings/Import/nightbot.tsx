@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
+import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -67,8 +68,9 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const [playlist, setPlaylist] = React.useState([]);
 
-  const importPlaylist = async () => {
-    const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=100`);
+  const fetchPlaylist = async () => {
+    // TODO: Increase `limit` to 100 for prod
+    const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=5`);
     // NOTE: key is the name of the path entry to the resource we want
     //       For just the playlist, this is fine. If we add more resources
     //       this key will need to be dynamic
@@ -83,7 +85,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
       //       That may be a problem somewhere else instead of here
       // const total = page.data._total ? page.data._total : 1;
       // NOTE: Hardcoding this just because my playlist is over 1,000 songs
-      const total = 300;
+      const total = 5;
 
       // NOTE: Resources with multiple items are returned in an array
       //       We need to spread it to prevent nesting arrays in our accumulated result
@@ -111,7 +113,34 @@ const PageSettingsModulesImportNightbot: React.FC<{
       return await fetchResource(acc, url);
     };
 
-    setPlaylist(await fetchResource([], firstUrl));
+    const pl =  await fetchResource([], firstUrl);
+    setPlaylist(pl);
+
+    return pl;
+  };
+
+  const importPlaylist = async () => {
+    const videos = await fetchPlaylist();
+
+    videos.forEach(async (video) => {
+      console.log('video id is: ', video.providerId);
+      await new Promise((resolve, reject) => {
+        getSocket('/systems/songs').emit(
+          'import.video',
+          {
+            playlist:  video.providerId as string,
+            forcedTag: 'nightbot-import',
+          },
+          (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve('resolved');
+            }
+          },
+        );
+      });
+    });
   };
 
   return (
@@ -136,7 +165,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
           }}
         />
         <Container>
-          <Button color="primary" variant="contained" onClick={importPlaylist}>Import</Button>
+          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
           <pre>{JSON.stringify(playlist, null, 2)}</pre>
         </Container>
 
