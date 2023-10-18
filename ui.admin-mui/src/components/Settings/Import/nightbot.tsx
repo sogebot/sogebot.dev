@@ -68,6 +68,15 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const [playlist, setPlaylist] = React.useState([]);
 
+  type NightbotPlaylistVideo = {
+    artist: string,
+    duration: number,
+    provider: string,
+    providerId: string,
+    title: string,
+    url: string
+  };
+
   const fetchPlaylist = async () => {
     // TODO: Increase `limit` to 100 for prod
     const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=5`);
@@ -76,9 +85,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
     //       this key will need to be dynamic
     const key = 'playlist';
 
-    // NOTE: This is a type error that I need help with
-    const fetchResource = async (acc: [], url: URL) => {
-      const page = await axios.get(url.href, { headers: { Authorization: 'Bearer ' + accessToken } });
+    const fetchResource = async (acc: NightbotPlaylistVideo[], url: URL): Promise<T> => {
+      const response = await axios.get(url.href, { headers: { Authorization: 'Bearer ' + accessToken } });
       // NOTE: total number of items in the resource
       // NOTE: I think a default of 1 is safe, to ensure requesting exactly 1 page of data
       //       Default of zero can result in infinitely looping -> Error 429
@@ -86,31 +94,39 @@ const PageSettingsModulesImportNightbot: React.FC<{
       // const total = page.data._total ? page.data._total : 1;
       // NOTE: Hardcoding this just because my playlist is over 1,000 songs
       const total = 5;
-
-      // NOTE: Resources with multiple items are returned in an array
-      //       We need to spread it to prevent nesting arrays in our accumulated result
-      // NOTE: This breaks if the endpoint returns a single item, such as `/me`
-      // NOTE: this is a type error that I need help with
-      acc.push(...page.data[key]);
-
-      if (acc.length >= total) {
-        // NOTE: We probably need just the "track" key
-        //       There is some other metadata like createdAt. Maybe
-        //       useful for some sorting/filtering by the end user if
-        //       they want to preserve the original order of additions
-        return acc.map(e => e.track);
-      }
-
       // NOTE: This may not be necessary to calculate by converting between types, if
       //       we don't use the `new URL()` constructor.
       const currentOffset = Number(url.searchParams.get('offset') || 0);
       const limit = Number(url.searchParams.get('limit') || 0);
       const newOffset = currentOffset + limit;
-      // NOTE: Setting the search/query params could be done by just building a url as a string
-      //       I ended up with this mostly because I don't know how to use the type system well yet
-      url.searchParams.set('offset', newOffset.toString());
 
-      return await fetchResource(acc, url);
+      switch (response.status) {
+        case 200:
+          // NOTE: Resources with multiple items are returned in an array
+          //       We need to spread it to prevent nesting arrays in our accumulated result
+          // NOTE: This breaks on any other endpoint now
+          // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
+          acc.push(...response.data[key].map(e => e.track));
+
+          if (acc.length >= total) {
+            return acc;
+          }
+
+          // NOTE: Setting the search/query params could be done by just building a url as a string
+          //       I ended up with this mostly because I don't know how to use the type system well yet
+          url.searchParams.set('offset', newOffset.toString());
+
+          return await fetchResource(acc, url);
+        case 429:
+          console.log('ERROR 429! - ', response.statusText);
+          // TODO: This isn't really handling the error, need to look for retry-time?
+          return acc;
+        default:
+          enqueueSnackbar('Something went wrong.', { variant: 'error' });
+          // TODO: Should we cancel importing instead? Or just let the import
+          //       make a best effort attempt?
+          return acc;
+      }
     };
 
     const pl =  await fetchResource([], firstUrl);
@@ -120,19 +136,24 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   const importPlaylist = async () => {
+    // TODO: `fetchPlaylist` should probably just return the simplified array of IDs
     const videos = await fetchPlaylist();
 
-    videos.forEach(async (video) => {
+    videos.forEach(async (video: NightbotPlaylistVideo) => {
       console.log('video id is: ', video.providerId);
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
           'import.video',
           {
-            playlist:  video.providerId as string,
+            playlist:  video.providerId,
             forcedTag: 'nightbot-import',
           },
           (err) => {
             if (err) {
+              // FIXME: This seems to be unreachable.
+              //        If we fix that, this could potentially generate
+              //        hundreds of notifications.
+              enqueueSnackbar('Video failed to import.', { variant: 'error' });
               reject(err);
             } else {
               resolve('resolved');
@@ -141,6 +162,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
         );
       });
     });
+    // TODO: We just assume overall success, since no error is thrown
+    enqueueSnackbar('Playlist import succeeded.', { variant: 'success' });
   };
 
   return (
