@@ -62,7 +62,7 @@ const processFilter = (emitData: EmitData, filter: Filter): boolean => {
   return true;
 };
 
-export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
+export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
 
   getSocket('/core/emotes', true); // init socket
@@ -414,7 +414,9 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
       }}>
         {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={activeUntil - timestamp >= 0} variant={selectedGroupMain!}/>}
         {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'text' && processFilter(emitData!, o.enabledWhen)) && <AlertItemText parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'text' && processFilter(emitData!, o.enabledWhen)) && <AlertItemText canvas={{
+          width, height, 
+        }} parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'custom' && processFilter(emitData!, o.enabledWhen)) && <AlertItemCustom parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
         {(selectedGroupMain && o.type === 'tts' && processFilter(emitData!, o.enabledWhen) && !emitData!.isSoundMuted && !emitData!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
       </Box>)}

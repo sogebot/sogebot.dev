@@ -1,6 +1,7 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, FormControl, InputAdornment, InputLabel, MenuItem, Select, Typography,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade,
+  FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Typography,
 } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -9,10 +10,10 @@ import { useTranslation } from '../../../../../hooks/useTranslation';
 import { FormNumericInput } from '../../../Input/Numeric';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: { animationOut: string, animationOutDuration: number },
+  model: { animationOut: string, animationOutDuration: number, animationOutWindowBoundaries?: boolean },
   open: string,
   onOpenChange: (value: string) => void;
-  onChange: (value: { animationOut: string, animationOutDuration: number }) => void;
+  onChange: (value: { animationOut: string, animationOutDuration: number, animationOutWindowBoundaries?: boolean }) => void;
   alwaysShowLabelDetails?: boolean;
   prepend?: React.ReactNode;
   customLabelDetails?: React.ReactNode;
@@ -105,6 +106,12 @@ export const AccordionAnimationOut: React.FC<Props> = (props) => {
             });
           }
         }}/>
+
+      <FormControlLabel sx={{ pt: 1 }} control={
+        <Checkbox defaultChecked={model.animationOutWindowBoundaries || false}
+          onChange={(_, checked) => onChange({
+            ...model, animationOutWindowBoundaries: checked,
+          })}/>} label={'Set animation boundaries to whole canvas'} />
     </AccordionDetails>
   </Accordion>;
 };

@@ -16,6 +16,8 @@ import { speedOptions } from '../Form/Overlay/AlertSettings/Accordion/AnimationT
 
 require('animate.css');
 
+import '../../styles/animations.css';
+
 const encodeFont = (font: string) => {
   return `'${font}'`;
 };
@@ -23,7 +25,10 @@ const encodeFont = (font: string) => {
 const regexp = new RegExp(/\*(?<text>.*?)\*/g);
 const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
-export const AlertItemText: React.FC<Props<AlertText> & { test?: boolean; parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'> }>
+export const AlertItemText: React.FC<Props<AlertText> & {
+  test?: boolean; parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'>,
+  canvas: { width: number, height: number }
+}>
 = ({ item, width, height, parent, variant, active, test }) => {
   const [ curIdx, setCurIdx ] = React.useState(0);
 
@@ -139,9 +144,21 @@ export const AlertItemText: React.FC<Props<AlertText> & { test?: boolean; parent
     if (!itemAnimationTriggered) {
       return 'none';
     }
-    return !endAnimationShouldPlay
+    const animation = !endAnimationShouldPlay
       ? item.animationIn ?? variant.animationIn
       : item.animationOut ?? variant.animationOut;
+
+    const animationBoundaries = !endAnimationShouldPlay
+      ? variant.animationInWindowBoundaries
+      : variant.animationOutWindowBoundaries;
+
+    if (animationBoundaries) {
+      if (animation.startsWith('slideIn') || animation.startsWith('slideOut')) {
+        return `${animation}Window`;
+      }
+    }
+
+    return animation;
   }, [ timestamp, itemAnimationTriggered, endAnimationShouldPlay ]);
   const animationDuration = React.useMemo(() => {
     if (!itemAnimationTriggered) {

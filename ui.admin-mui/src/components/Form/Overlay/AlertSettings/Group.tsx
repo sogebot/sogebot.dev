@@ -720,7 +720,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 }}>
                   {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest} variant={selectedAlert}/>}
                   {o.type === 'gallery' && <AlertItemImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
-                  {o.type === 'text' && <AlertItemText test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'text' && <AlertItemText canvas={canvas} test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
                 </Box>
               </Paper>)}
@@ -971,14 +971,16 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
             <AccordionAnimationIn model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
               handleAlertChange({
-                'animationIn':         val.animationIn,
-                'animationInDuration': val.animationInDuration,
+                'animationIn':                 val.animationIn,
+                'animationInDuration':         val.animationInDuration,
+                'animationInWindowBoundaries': val.animationInWindowBoundaries,
               });
             }}/>
             <AccordionAnimationOut model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
               handleAlertChange({
-                'animationOut':         val.animationOut,
-                'animationOutDuration': val.animationOutDuration,
+                'animationOut':                 val.animationOut,
+                'animationOutDuration':         val.animationOutDuration,
+                'animationOutWindowBoundaries': val.animationOutWindowBoundaries,
               });
             }}/>
             <AccordionAnimationText model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {

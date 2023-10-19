@@ -52,9 +52,21 @@ export const AlertItemImage: React.FC<Props<AlertImage> & {test?: boolean, varia
     if (!itemAnimationTriggered) {
       return 'none';
     }
-    return !endAnimationShouldPlay
+    const animation = !endAnimationShouldPlay
       ? item.animationIn ?? variant.animationIn
       : item.animationOut ?? variant.animationOut;
+
+    const animationBoundaries = !endAnimationShouldPlay
+      ? variant.animationInWindowBoundaries
+      : variant.animationOutWindowBoundaries;
+
+    if (animationBoundaries) {
+      if (animation.startsWith('slideIn') || animation.startsWith('slideOut')) {
+        return `${animation}Window`;
+      }
+    }
+
+    return animation;
   }, [ timestamp, itemAnimationTriggered, endAnimationShouldPlay ]);
   const animationDuration = React.useMemo(() => {
     if (!itemAnimationTriggered) {
