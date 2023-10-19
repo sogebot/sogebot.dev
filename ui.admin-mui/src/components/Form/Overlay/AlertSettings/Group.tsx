@@ -44,6 +44,7 @@ import { AccordionAnimationText } from './Accordion/AnimationText';
 import { AccordionDuration } from './Accordion/Duration';
 import { AccordionFilter } from './Accordion/Filter';
 import { AccordionReward } from './Accordion/Reward';
+import { AccordionTTSTemplate } from './Accordion/TTSTemplate';
 import AlertSettingsAudio from './Audio';
 import AlertSettingsCustom from './Custom';
 import NewAlertDialog from './Dialog/newAlertDialog';
@@ -374,6 +375,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     const variant: Alerts['items'][number]['variants'][number] = cloneDeep(item);
     // generate new ids
     variant.id = shortid();
+    variant.variantName = null; // remove name
     for (const it of variant.items) {
       it.id = shortid();
     }
@@ -871,7 +873,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   checked={selectedAlert.enabled !== false}
                   onClick={(ev) => ev.stopPropagation()}
                   onChange={(_, checked) => setEnable(null, checked)}/>
-                <Typography sx={{ width: '100%' }}>Main</Typography>
+                <Typography sx={{ width: '100%' }}>
+                  { selectedAlert.variantName ?? 'Main' }
+                </Typography>
                 <IconButton onClick={() => cloneVariant(selectedAlert)}><ContentCopyTwoToneIcon/></IconButton>
               </Stack>
             </Paper>
@@ -890,7 +894,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                     checked={k.enabled !== false}
                     onClick={(ev) => ev.stopPropagation()}
                     onChange={(_, checked) => setEnable(k.id, checked)}/>
-                  <Typography sx={{ width: '100%' }}>Variant {idx + 1}</Typography>
+                  <Typography sx={{ width: '100%' }}>
+                    {k.variantName ?? `Variant ${idx + 1}`}
+                  </Typography>
                   <IconButton color='error' onClick={() => deleteVariant(k)}><DeleteTwoTone/></IconButton>
                   <IconButton onClick={() => cloneVariant(k)}><ContentCopyTwoToneIcon/></IconButton>
                 </Stack>
@@ -898,6 +904,17 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             )}
 
             <Divider variant='middle' sx={{ my: 1 }}>Settings</Divider>
+
+            <AccordionTTSTemplate
+              label={translate('registry.alerts.title.name')}
+              model={selectedAlertVariant.variantName ?? ''}
+              open={accordionId}
+              onOpenChange={setAccordionId} onChange={(val) => {
+                handleAlertChange({ 'variantName': val.length > 0 ? val : null });
+              }}
+              helperText={translate('registry.alerts.title.placeholder')}
+              placeholder=''
+              customLabelDetails={<>{selectedAlertVariant.variantName}</>}/>
 
             <AccordionReward
               label={'Trigger by reward'}

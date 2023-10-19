@@ -3,6 +3,7 @@ import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography,
 } from '@mui/material';
 import React from 'react';
+import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
@@ -15,7 +16,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionMessageTemplate: React.FC<Props> = (props) => {
-  const accordionId = 'messageTemplate';
+  const [accordionId] = React.useState(shortid());
   const { open,
     onOpenChange,
     onChange,

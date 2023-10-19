@@ -34,7 +34,7 @@ export const speedOptions = [
 ] as const ;
 
 export const AccordionAnimationText: React.FC<Props> = (props) => {
-  const accordionId = 'animationText';
+  const [accordionId] = React.useState(shortid());
   const { open,
     onOpenChange,
     onChange: onChangeProps,

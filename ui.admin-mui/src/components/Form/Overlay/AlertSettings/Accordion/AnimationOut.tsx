@@ -3,6 +3,7 @@ import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, FormControl, InputAdornment, InputLabel, MenuItem, Select, Typography,
 } from '@mui/material';
 import React from 'react';
+import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 import { FormNumericInput } from '../../../Input/Numeric';
@@ -29,7 +30,7 @@ const animationOutOptions = [
 ];
 
 export const AccordionAnimationOut: React.FC<Props> = (props) => {
-  const accordionId = 'animationOut';
+  const [accordionId] = React.useState(shortid());
   const { open,
     onOpenChange,
     onChange,

@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import React from 'react';
+import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
@@ -15,7 +16,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionProfanity: React.FC<Props> = (props) => {
-  const accordionId = 'profanity';
+  const [accordionId] = React.useState(shortid());
   const { open,
     onOpenChange,
     onChange,
