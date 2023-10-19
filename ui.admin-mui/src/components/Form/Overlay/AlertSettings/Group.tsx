@@ -69,6 +69,8 @@ import { AlertItemImage } from '../../../Overlay/AlertItemImage';
 import { AlertItemText } from '../../../Overlay/AlertItemText';
 import { anSelectedItemOpts } from '../../atoms';
 
+let disabledMouseMove = false;
+
 type Props = {
   canvas: { width: number, height: number },
   onUpdate: (value: Alerts['items']) => void;
@@ -645,6 +647,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
           }}>
           <Box id="container" className="positionHandler"
             onMouseMove={(e) => {
+              if (disabledMouseMove) {
+                return;
+              }
               if (e.buttons === 1) {
                 const target = e.target as HTMLElement;
                 if (target.classList.contains('positionHandler')) {
@@ -771,16 +776,22 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 rotationPosition={'top'}
                 rotatable={true}
                 throttleRotate={0}
+                onRotateStart={e => {
+                  disabledMouseMove = true;
+                  e.set(frame.rotate);
+                }}
                 onRotate={e => {
                   e.target.style.transform = e.transform;
                 }}
                 onRotateEnd={(e) => {
+                  disabledMouseMove = false;
                   const rotate = Number(e.target.style.transform.replace('rotate(', '').replace('deg)', ''));
                   if (selectedItem) {
                     handleItemChange({ 'rotation': rotate });
                   }
                 }}
                 onResizeEnd={e => {
+                  disabledMouseMove = false;
                   if (selectedItem) {
                     handleItemChange({
                       'width':  Math.round((e.target as any).offsetWidth),
@@ -791,6 +802,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   }
                 }}
                 onResizeStart={e => {
+                  disabledMouseMove = true;
                   e.setOrigin(['%', '%']);
                   e.dragStart && e.dragStart.set(frame.translate);
                 }}
@@ -803,6 +815,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                 }}
                 onDragEnd={() => {
+                  disabledMouseMove = false;
                   if (selectedItem) {
                     handleItemChange({
                       'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
@@ -811,6 +824,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   }
                 }}
                 onDragStart={(e) => {
+                  disabledMouseMove = true;
                   if (e.clientY < e.target.getBoundingClientRect().top) {
                     // disable drag if clicking outside of the box
                     // checking currently only top side of moveable

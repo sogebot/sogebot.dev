@@ -92,6 +92,8 @@ const generateLinkId = (server: string, id: string) => {
   })).toString('base64');
 };
 
+let disabledMouseMove = false;
+
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
@@ -396,6 +398,9 @@ export const OverlayEdit: React.FC = () => {
             }}>
             <Box id="container" className="positionHandler"
               onMouseMove={(e) => {
+                if (disabledMouseMove) {
+                  return;
+                }
                 if (e.buttons === 1) {
                   const target = e.target as HTMLElement;
                   if (target.classList.contains('positionHandler')) {
@@ -556,6 +561,7 @@ export const OverlayEdit: React.FC = () => {
                   rotatable={true}
                   throttleRotate={0}
                   onRotateStart={e => {
+                    disabledMouseMove = true;
                     e.set(frame.rotate);
                   }}
                   onRotate={e => {
@@ -563,6 +569,7 @@ export const OverlayEdit: React.FC = () => {
                     e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
                   }}
                   onRotateEnd={e => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({ 'rotation': frame.rotate });
                       // reset things
@@ -571,6 +578,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onResizeEnd={e => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({
                         'width':  Math.round((e.target as any).offsetWidth),
@@ -586,6 +594,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onResizeStart={e => {
+                    disabledMouseMove = true;
                     e.setOrigin(['%', '%']);
                     e.dragStart && e.dragStart.set(frame.translate);
                   }}
@@ -598,6 +607,7 @@ export const OverlayEdit: React.FC = () => {
                     e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                   }}
                   onDragEnd={(e) => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({
                         'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
@@ -608,6 +618,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onDragStart={(e) => {
+                    disabledMouseMove = true;
                     if (e.clientY < e.target.getBoundingClientRect().top) {
                       // disable drag if clicking outside of the box
                       // checking currently only top side of moveable
