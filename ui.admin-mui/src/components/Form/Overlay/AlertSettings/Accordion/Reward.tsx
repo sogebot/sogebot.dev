@@ -3,8 +3,8 @@ import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, Typography,
 } from '@mui/material';
 import { useAtomValue } from 'jotai';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 import { rewardsAtom } from '../../../../../atoms';
 import { FormRewardInput } from '../../../Input/Reward';
@@ -19,7 +19,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionReward: React.FC<Props> = (props) => {
-  const [ accordionId ] = React.useState(shortid());
+  const [ accordionId ] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,

@@ -136,12 +136,10 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
     head.appendChild(style);
   }, []);
 
+  // need to be done only for parryable alerts
   const haveAvailableAlert = (emitData: EmitData) => {
     if (emitData) {
       let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData.event as any));
-      if (emitData.event === 'rewardredeem') {
-        possibleAlerts = (possibleAlerts as any).filter((o: any) => o.rewardId === emitData.rewardId);
-      }
 
       if (possibleAlerts.length === 0) {
         console.log('alert', 'No valid alerts found for hook:', emitData.event);
@@ -278,6 +276,10 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
     let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData.event as any));
     if (emitData.event === 'rewardredeem') {
       possibleAlerts = (possibleAlerts as any).filter((o: any) => o.rewardId === emitData.rewardId);
+    }
+
+    if (emitData.event === 'custom') {
+      console.log('alert', 'Received custom event', emitData);
     }
 
     if (possibleAlerts.length === 0) {

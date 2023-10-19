@@ -3,8 +3,8 @@ import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Checkbox, Fade, FormControlLabel, FormGroup, FormLabel, Slider, Typography,
 } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
@@ -16,7 +16,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionParry: React.FC<Props> = (props) => {
-  const [accordionId] = React.useState(shortid());
+  const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,

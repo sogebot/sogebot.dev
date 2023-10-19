@@ -1,16 +1,16 @@
 import { Box, ScopedCssBaseline } from '@mui/material';
 import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
 
 export const ImageCarouselItem: React.FC<Props<Carousel>> = ({ item, active, height, width }) => {
   const [ index, setIndex ] = React.useState(-1);
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
-  const [ threadId ] = React.useState(shortid());
+  const [ threadId ] = React.useState(nanoid());
 
   React.useEffect(() => {
     if (index === -1 && (item.images ?? []).length > 0) {

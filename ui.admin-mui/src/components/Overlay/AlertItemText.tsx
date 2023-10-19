@@ -3,11 +3,11 @@ import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay'
 import baffle from 'baffle';
 import { useAtomValue } from 'jotai';
 import { get } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { Typewriter } from 'react-simple-typewriter';
 import reactStringReplace from 'react-string-replace';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import { anEmitData } from './AlertItem/atom';
 import type { Props } from './ChatItem';
@@ -57,7 +57,7 @@ export const AlertItemText: React.FC<Props<AlertText> & { test?: boolean; parent
       let animatedText: React.JSX.Element[] = [];
 
       if (variant.animationText === 'baffle') {
-        const baffleId = shortid();
+        const baffleId = nanoid();
         animatedText = [<span className={`obfuscate-${baffleId}`}>{match[1]}</span>];
         setTimeout(() => {
           baffle('.obfuscate-' + baffleId, {

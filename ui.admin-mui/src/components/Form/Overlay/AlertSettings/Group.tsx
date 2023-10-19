@@ -32,10 +32,10 @@ import {
 import {
   capitalize, cloneDeep, set,
 } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useKey } from 'rooks';
-import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
 import { AccordionAnimationIn } from './Accordion/AnimationIn';
@@ -43,6 +43,7 @@ import { AccordionAnimationOut } from './Accordion/AnimationOut';
 import { AccordionAnimationText } from './Accordion/AnimationText';
 import { AccordionDuration } from './Accordion/Duration';
 import { AccordionFilter } from './Accordion/Filter';
+import { AccordionResponseFilter } from './Accordion/ResponseFilter';
 import { AccordionReward } from './Accordion/Reward';
 import { AccordionTTSTemplate } from './Accordion/TTSTemplate';
 import AlertSettingsAudio from './Audio';
@@ -265,7 +266,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     };
 
     const newAlert: Alerts['items'][number] = {
-      id:                   shortid(),
+      id:                   nanoid(),
       hooks:                [...it.hooks as any],
       name:                 it.name,
       enabled:              it.enabled,
@@ -281,7 +282,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       variants:             [...it.variants as any],
       items:                [...it.items.map(o => ({
         ...(o as any),
-        id:     shortid.generate(),
+        id:     nanoid(),
         width:  calculateWidth(o.width, o.type),
         alignX: canvas.width / 2 - calculateWidth(o.width, o.type) / 2,
         alignY: calculateAlignY(o.height, o.type === 'text' && o.globalFont === 'globalFont2' ? 'text2' : o.type),
@@ -374,10 +375,10 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const cloneVariant = (item: Alerts['items'][number] | Alerts['items'][number]['variants'][number]) => {
     const variant: Alerts['items'][number]['variants'][number] = cloneDeep(item);
     // generate new ids
-    variant.id = shortid();
+    variant.id = nanoid();
     variant.variantName = null; // remove name
     for (const it of variant.items) {
-      it.id = shortid();
+      it.id = nanoid();
     }
     'variants' in variant && delete variant.variants;
     console.log('Cloning', item);
@@ -400,14 +401,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const cloneGroup = (item: Alerts['items'][number]) => {
     setItems((val) => {
       const newItem = cloneDeep(item);
-      newItem.id = shortid();
+      newItem.id = nanoid();
       newItem.name = `Copy of ${newItem.name}`;
       for (const it of newItem.items) {
-        it.id = shortid();
+        it.id = nanoid();
       }
       for (const variant of newItem.variants) {
         for (const it of variant.items) {
-          it.id = shortid();
+          it.id = nanoid();
         }
       }
       return [...val, newItem];
@@ -904,6 +905,13 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             )}
 
             <Divider variant='middle' sx={{ my: 1 }}>Settings</Divider>
+
+            { selectedAlert.hooks[0] === 'custom' && <AccordionResponseFilter
+              model={selectedAlertVariant.id}
+              open={accordionId}
+              onOpenChange={setAccordionId}
+            />
+            }
 
             <AccordionTTSTemplate
               label={translate('registry.alerts.title.name')}

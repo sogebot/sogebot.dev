@@ -9,11 +9,14 @@ import {
   FormLabel, IconButton, InputAdornment, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Switch, TextField, Typography,
 } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
+import { Alerts } from '@sogebot/backend/dest/database/entity/overlay';
+import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import React, { useRef } from 'react';
 
 import { AdditionalGridFormResponse } from './Response';
 import getAccessToken from '../../../getAccessToken';
+import { getSocket } from '../../../helpers/socket';
 import theme from '../../../theme';
 import layout1 from '../assets/layout1.png';
 import layout2 from '../assets/layout2.png';
@@ -38,6 +41,8 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   disableFilter,
   disableExecution }) => {
   const [ alerts, setAlerts ] = React.useState<Alert[] | null>(null);
+  const [ overlays, setOverlays ] = React.useState<Overlay[]>([]);
+
   const [ loading, setLoading ] = React.useState(true);
   const [ propsValue, setPropsValue ] = React.useState(value);
 
@@ -58,6 +63,24 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
     axios.get<Alert[]>(`${JSON.parse(localStorage.server)}/api/registries/alerts/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => setAlerts(res.data))
       .finally(() => setLoading(false));
+
+    getSocket('/registries/overlays').emit('generic::getAll', (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        // filter data to overlays only with alert item with custom hook
+        setOverlays(data.filter((o) => {
+          // first check if there is any alert item
+          const itemsWithAlerts = o.items.filter(b => b.opts.typeId === 'alerts');
+          if (itemsWithAlerts.length === 0) {
+            return false;
+          }
+          // second check if alert item contains custom hook
+          const containsCustomHook = itemsWithAlerts.filter(b => (b.opts as Alerts).items.filter(c => c.hooks[0] === 'custom'));
+          return containsCustomHook.length > 0;
+        }));
+      }
+    });
   }, []);
 
   React.useEffect(() => {
@@ -70,6 +93,25 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       });
     }
   }, [ selectedItemId, options, propsValue ]);
+
+  const getAllVariantsOfAlertItems = (items: Alerts['items']) => {
+    const variants = [];
+    for (const item of items) {
+      if (item.hooks[0] === 'custom') {
+        item.variantName ??= 'Main';
+        // add main variant
+        variants.push(item);
+        // add sub variants
+        let idx = 1;
+        for (const variant of item.variants) {
+          variant.variantName ??= 'Variant ' + idx;
+          variants.push(variant);
+          idx++;
+        }
+      }
+    }
+    return variants;
+  };
 
   return <>
     <FormControl fullWidth variant="filled" >
@@ -87,6 +129,13 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
           ...alert.items.filter(o => o.type === 'custom').map(item => <MenuItem key={item.id} value={item.id}>
             {item.title} <Typography variant='caption' component='small'>{item.id}</Typography>
           </MenuItem>),
+        ]))}
+        {overlays.map(overlay => ([
+          <ListSubheader>{overlay.name} <Typography variant='caption' component='small'>{overlay.id}</Typography></ListSubheader>,
+          ...overlay.items.filter(o => o.opts.typeId === 'alerts')
+            .map(item => getAllVariantsOfAlertItems((item.opts as Alerts).items)
+              .map(o => <MenuItem key={o.id} value={o.id}>{o.variantName} <Typography variant='caption' component='small'>{o.id}</Typography></MenuItem>),
+            ),
         ]))}
       </Select>
       <Fade in={loading}><LinearProgress /></Fade>

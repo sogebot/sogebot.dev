@@ -7,12 +7,12 @@ import {
 } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import { cloneDeep } from 'lodash';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect , useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -20,7 +20,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 const createInitialItem = async () => {
   const response = await fetch(`${JSON.parse(localStorage.server)}/assets/obswebsocket-code.txt`);
   return new OBSWebsocket({
-    id:   shortid(),
+    id:   nanoid(),
     name: '',
     code: await response.text(),
   });

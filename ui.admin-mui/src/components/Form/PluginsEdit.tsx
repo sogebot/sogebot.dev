@@ -10,10 +10,10 @@ import {
 } from '@mui/material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import shortid from 'shortid';
 
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 import { getSocket } from '../../helpers/socket';
@@ -143,7 +143,7 @@ export const PluginsEdit: React.FC = () => {
 </body>
 </html>`
         : '',
-      id: shortid(),
+      id: nanoid(),
     });
     setPlugin({
       ...plugin, workflow: JSON.stringify(workflow),
@@ -239,7 +239,7 @@ export const PluginsEdit: React.FC = () => {
     if (type === 'create') {
       setLoading(false);
       setPlugin({
-        id:       shortid(),
+        id:       nanoid(),
         name:     '',
         enabled:  true,
         workflow: JSON.stringify({

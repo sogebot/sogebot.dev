@@ -3,15 +3,15 @@ import {
 } from '@mui/material';
 import { EmotesCombo } from '@sogebot/backend/dest/database/entity/overlay';
 import { random } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
 export const EmotesComboItem: React.FC<Props<EmotesCombo>> = ({ item, active }) => {
-  const [ containerId ] = React.useState(`emotes-combo-` + shortid());
+  const [ containerId ] = React.useState(`emotes-combo-` + nanoid());
   const [ count, setCount ] = React.useState(0);
   const [ url, setURL ] = React.useState<null | string>(null);
   const [ updatedAt, setUpdatedAt ] = React.useState(Date.now());

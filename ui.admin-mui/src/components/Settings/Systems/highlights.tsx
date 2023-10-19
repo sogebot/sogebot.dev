@@ -12,9 +12,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { nanoid } from 'nanoid';
 import React, { useCallback, useEffect } from 'react';
 import { useRefElement } from 'rooks';
-import shortid from 'shortid';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -47,7 +47,7 @@ const PageSettingsModulesSystemsHighlights: React.FC<{
   const handleItemAdd = useCallback(() => {
     const update = { ...settings };
     update.urls.urls[0].push({
-      url:       window.origin + '/highlights/' + shortid.generate(),
+      url:       window.origin + '/highlights/' + nanoid(),
       clip:      false,
       highlight: false,
     });

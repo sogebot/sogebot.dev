@@ -1,39 +1,34 @@
-import { ExpandMoreTwoTone } from '@mui/icons-material';
+import { ContentCopyTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography,
+  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, IconButton, InputAdornment, TextField, Typography,
 } from '@mui/material';
 import { nanoid } from 'nanoid';
+import { useSnackbar } from 'notistack';
 import React from 'react';
-
-import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   model: string,
-  open: string,
-  label?: string,
   onOpenChange: (value: string) => void;
-  onChange: (value: string) => void;
+  open: string,
 };
 
-export const AccordionMessageTemplate: React.FC<Props> = (props) => {
+export const AccordionResponseFilter: React.FC<Props> = (props) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
-    onChange,
-    model,
-    label,
     ...accordionProps } = props;
-
-  const { translate } = useTranslation();
 
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);
   };
 
-  const [ value, setValue ] = React.useState(model);
-  React.useEffect(() => {
-    onChange(value);
-  }, [ value ]);
+  const triggerAlertResponseFilter = `$triggerAlert(${props.model})`;
+
+  const copy = () => {
+    navigator.clipboard.writeText(`${triggerAlertResponseFilter}`);
+    enqueueSnackbar(<div>Response filter copied to clipboard.</div>);
+  };
 
   return <Accordion {...accordionProps} expanded={open === accordionId && !props.disabled}>
     <AccordionSummary
@@ -45,7 +40,7 @@ export const AccordionMessageTemplate: React.FC<Props> = (props) => {
       <Typography sx={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
       }}>
-        {label ? label : translate('registry.alerts.messageTemplate.name')}
+        Response filter
 
         <Fade in={open !== accordionId}>
           <Typography component='div' variant='caption' sx={{
@@ -55,7 +50,7 @@ export const AccordionMessageTemplate: React.FC<Props> = (props) => {
             whiteSpace:   'nowrap',
             maxWidth:     '180px',
           }}>
-            {value}
+            {triggerAlertResponseFilter}
           </Typography>
         </Fade>
       </Typography>
@@ -63,13 +58,16 @@ export const AccordionMessageTemplate: React.FC<Props> = (props) => {
     <AccordionDetails>
       <TextField
         fullWidth
-        value={value}
-        multiline
-        sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
-        placeholder={translate('registry.alerts.messageTemplate.placeholder')}
-        helperText={translate('registry.alerts.messageTemplate.help')}
-        onChange={ev => {
-          setValue(ev.currentTarget.value);
+        disabled
+        value={triggerAlertResponseFilter}
+        helperText="Be careful, not all variables may be available if triggered by response filter"
+        sx={{ '& .MuiFilledInput-input': { p: '10px' } }}
+        InputProps={{
+          endAdornment: <InputAdornment position='end'>
+            <IconButton onClick={copy}>
+              <ContentCopyTwoTone/>
+            </IconButton>
+          </InputAdornment>,
         }}
       />
     </AccordionDetails>

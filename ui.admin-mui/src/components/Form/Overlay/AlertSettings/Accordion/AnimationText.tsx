@@ -5,9 +5,9 @@ import {
 } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { Typewriter } from 'react-simple-typewriter';
-import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 import { FormNumericInput } from '../../../Input/Numeric';
@@ -34,14 +34,14 @@ export const speedOptions = [
 ] as const ;
 
 export const AccordionAnimationText: React.FC<Props> = (props) => {
-  const [accordionId] = React.useState(shortid());
+  const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange: onChangeProps,
     model,
     ...accordionProps } = props;
   const { translate } = useTranslation();
-  const [ baffleId, setBaffleId ] = React.useState(shortid());
+  const [ baffleId, setBaffleId ] = React.useState(nanoid());
 
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);
@@ -49,7 +49,7 @@ export const AccordionAnimationText: React.FC<Props> = (props) => {
 
   const onChange = (value: Props['model']) => {
     if (value.animationText === 'baffle') {
-      const newId = shortid();
+      const newId = nanoid();
       setBaffleId(newId);
       setTimeout(() => {
         baffle('.obfuscate-' + newId, {

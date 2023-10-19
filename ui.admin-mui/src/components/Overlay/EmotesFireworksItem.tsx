@@ -4,9 +4,9 @@ import gsap from 'gsap';
 import {
   cloneDeep, random, sample,
 } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import type { Props } from './ChatItem';
@@ -16,7 +16,7 @@ let model: EmotesFireworks;
 const ids: string[] = [];
 
 export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) => {
-  const [ containerId ] = React.useState(`emotes-fireworks-` + shortid());
+  const [ containerId ] = React.useState(`emotes-fireworks-` + nanoid());
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   // initialize sockets

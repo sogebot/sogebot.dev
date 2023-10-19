@@ -2,8 +2,8 @@ import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography,
 } from '@mui/material';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
@@ -19,7 +19,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionTTSTemplate: React.FC<Props> = (props) => {
-  const [accordionId] = React.useState(shortid());
+  const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,
@@ -72,8 +72,7 @@ export const AccordionTTSTemplate: React.FC<Props> = (props) => {
         value={value}
         helperText={props.helperText ?? translate('registry.alerts.ttsTemplate.help')}
         placeholder={props.placeholder ?? translate('registry.alerts.ttsTemplate.placeholder')}
-        multiline
-        sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
+        sx={{ '& .MuiFilledInput-input': { p: '10px' } }}
         onChange={ev => {
           setValue(ev.currentTarget.value);
         }}

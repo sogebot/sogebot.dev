@@ -3,9 +3,9 @@ import {
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
 
@@ -50,7 +50,7 @@ const Google = () => {
         setProgress(false);
       }
     } else {
-      localStorage.googleOauthState = shortid();
+      localStorage.googleOauthState = nanoid();
       location.href = `https://credentials.sogebot.xyz/google/?state=${localStorage.googleOauthState}`;
     }
   }, [server]);

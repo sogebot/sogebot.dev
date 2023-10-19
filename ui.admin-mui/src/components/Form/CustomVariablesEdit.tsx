@@ -17,6 +17,7 @@ import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback,
@@ -25,7 +26,6 @@ import React, {
 } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -232,7 +232,7 @@ export const CustomVariablesEdit: React.FC = () => {
       return;
     }
     handleValueChange('urls', [ ...item.urls, {
-      id:           shortid(),
+      id:           nanoid(),
       POST:         false,
       GET:          false,
       showResponse: false,

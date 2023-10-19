@@ -2,9 +2,9 @@ import { Box } from '@mui/material';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
@@ -19,7 +19,7 @@ let lastSave = Date.now();
 export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, groupId }) => {
   const [ model, setModel ] = React.useState(item);
   const [ isReady, setReady ] = React.useState(false);
-  const [ threadId ] = React.useState(shortid());
+  const [ threadId ] = React.useState(nanoid());
 
   const enabled = React.useMemo(() => {
     return isReady && (active ?? false) && model.isStartedOnSourceLoad;

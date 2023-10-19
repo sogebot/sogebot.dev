@@ -2,8 +2,8 @@ import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, InputAdornment, Typography,
 } from '@mui/material';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 import { FormNumericInput } from '../../../Input/Numeric';
 
@@ -20,7 +20,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionDuration: React.FC<Props> = (props) => {
-  const [ accordionId ] = React.useState(shortid());
+  const [ accordionId ] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,

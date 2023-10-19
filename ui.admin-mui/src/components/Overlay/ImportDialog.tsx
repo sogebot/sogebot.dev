@@ -9,14 +9,17 @@ import {
   IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
+import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { atom, useAtomValue } from 'jotai';
-import { chunk, orderBy } from 'lodash';
+import {
+  chunk, cloneDeep, orderBy,
+} from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
@@ -87,8 +90,29 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   }, [ open ]);
 
   const importLocalOverlay = (value: Overlay['items'][number]) => {
-    console.log({ value });
-    onImport([ value ]);
+    // we need to change old ids to new ones
+    const newValue = cloneDeep(value);
+    newValue.id = nanoid();
+    if (newValue.opts.typeId === 'alerts') {
+      const flattenedNewValue = flatten(newValue);
+      for (const key of Object.keys(flattenedNewValue)) {
+        console.log(key);
+        if (key.endsWith('id')) {
+          flattenedNewValue[key] = nanoid();
+        }
+        if (key === 'opts.items') {
+          for (const item of flattenedNewValue[key]) {
+            item.id = nanoid();
+            for (const variant of item.variants) {
+              variant.id = nanoid();
+            }
+          }
+        }
+      }
+      onImport([ unflatten(flattenedNewValue) as any ]);
+    } else {
+      onImport([ value ]);
+    }
   };
 
   const importOverlay = (value: RemoteOverlay) => {
@@ -118,7 +142,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       for (const [key, item] of Object.entries(gallery)) {
         console.log('Uploading gallery item', key);
         const chunkSize = 512 * 1024;
-        const id = shortid();
+        const id = nanoid();
         for (const b64dataArr of chunk(String(item), chunkSize)) {
           const b64data = b64dataArr.join('');
           await new Promise((resolve) => {

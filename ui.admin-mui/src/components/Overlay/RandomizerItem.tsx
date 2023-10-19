@@ -6,10 +6,10 @@ import { Mutex } from 'async-mutex';
 import axios from 'axios';
 import gsap from 'gsap';
 import { random } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
 import { getContrastColor } from '../../colors';
@@ -119,7 +119,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
 
   const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
   const [ randomizers, setRandomizers ] = React.useState<Randomizer[]>([]);
-  const [ threadId ] = React.useState(shortid());
+  const [ threadId ] = React.useState(nanoid());
 
   // simple randomizer
   const [ simpleIndex, setSimpleIndex ] = React.useState(0);

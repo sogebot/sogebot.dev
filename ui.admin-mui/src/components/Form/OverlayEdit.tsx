@@ -11,12 +11,12 @@ import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
 import { useAtom, useAtomValue } from 'jotai';
 import { cloneDeep, set } from 'lodash';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useKey, useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
 import {
@@ -359,7 +359,7 @@ export const OverlayEdit: React.FC = () => {
                 } as Overlay))}
                 onAdd={(typeId) => {
                   setItem(o => {
-                    const itemId = shortid();
+                    const itemId = nanoid();
                     const opts = setDefaultOpts({}, typeId);
                     if (typeId === 'credits') {
                       (opts as Credits).screens = creditsDefaultScreens;
