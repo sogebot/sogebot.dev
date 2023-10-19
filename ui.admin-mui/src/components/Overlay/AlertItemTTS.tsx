@@ -19,7 +19,10 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
   const setTTSWaiting = useSetAtom(anWaitingForTTS);
 
   const speak = async () => {
+    console.log('Speaking TTS');
     if (!emitData) {
+      // no data
+      setTTSWaiting(false);
       return;
     }
     console.log('= Replacing values');

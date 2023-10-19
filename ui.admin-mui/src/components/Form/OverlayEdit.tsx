@@ -15,7 +15,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useKey } from 'rooks';
+import { useKey, useLocalstorageState } from 'rooks';
 import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
@@ -86,8 +86,15 @@ import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
+const generateLinkId = (server: string, id: string) => {
+  return Buffer.from(JSON.stringify({
+    server, id,
+  })).toString('base64');
+};
+
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { id } = useParams();
   const [ moveableId, setMoveableId ] = useAtom(anMoveableId);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
@@ -235,6 +242,15 @@ export const OverlayEdit: React.FC = () => {
 
   const handleClose = () => {
     navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
+  };
+
+  const copy = React.useCallback((link: string) => {
+    navigator.clipboard.writeText(`${link}`);
+    enqueueSnackbar(<div>Overlay link copied to clipboard.</div>);
+  }, [ enqueueSnackbar, server ]);
+
+  const handleLinkCopy = () => {
+    copy(`${window.location.origin}/overlays/${generateLinkId(server, id!)}`);
   };
 
   const handleSave = React.useCallback(() => {
@@ -714,6 +730,9 @@ export const OverlayEdit: React.FC = () => {
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid sx={{ mr: 'auto' }}>
+          <Button sx={{ width: 150 }} onClick={handleLinkCopy}>overlay link</Button>
+        </Grid>
         <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>

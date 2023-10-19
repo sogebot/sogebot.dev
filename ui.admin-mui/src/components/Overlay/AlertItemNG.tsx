@@ -63,6 +63,8 @@ const processFilter = (emitData: EmitData, filter: Filter): boolean => {
 };
 
 export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
+  const [ activeUntil, setActiveUntil ] = React.useState(0);
+
   getSocket('/core/emotes', true); // init socket
 
   const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
@@ -143,7 +145,9 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
 
       if (possibleAlerts.length === 0) {
         console.log('alert', 'No valid alerts found for hook:', emitData.event);
+        console.log('alert', 'Throwing away emit data');
         setActiveUntil(0);
+        setEmitData(null);
         return;
       }
 
@@ -278,7 +282,9 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
 
     if (possibleAlerts.length === 0) {
       console.log('alert', 'No valid alerts found for hook:', emitData.event);
+      console.log('alert', 'Throwing away emit data');
       setActiveUntil(0);
+      setEmitData(null);
       return;
     }
 
@@ -322,6 +328,8 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
         retry();
       }, 10);
     }
+
+    console.log('Selected alert', selected);
     return selected;
   }, [item, emitData]);
 
@@ -343,10 +351,13 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item }) => {
     }
   }, [selectedGroup, item]);
 
-  const [ activeUntil, setActiveUntil ] = React.useState(0);
   React.useEffect(() => {
     if (selectedGroup) {
       setActiveUntil(Date.now() + (selectedGroup?.alertDuration ?? 0));
+      // check if any audio component is present
+      if (!selectedGroup.items.find(o => o.type === 'audio')) {
+        setExpectedSoundCount(0);
+      }
     }
   }, [ selectedGroup ]);
 

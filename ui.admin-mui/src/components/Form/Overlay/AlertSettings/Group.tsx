@@ -43,6 +43,7 @@ import { AccordionAnimationOut } from './Accordion/AnimationOut';
 import { AccordionAnimationText } from './Accordion/AnimationText';
 import { AccordionDuration } from './Accordion/Duration';
 import { AccordionFilter } from './Accordion/Filter';
+import { AccordionReward } from './Accordion/Reward';
 import AlertSettingsAudio from './Audio';
 import AlertSettingsCustom from './Custom';
 import NewAlertDialog from './Dialog/newAlertDialog';
@@ -897,6 +898,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             )}
 
             <Divider variant='middle' sx={{ my: 1 }}>Settings</Divider>
+
+            <AccordionReward
+              label={'Trigger by reward'}
+              model={selectedAlertVariant.rewardId ?? ''}
+              open={accordionId}
+              onOpenChange={setAccordionId} onChange={(val) => {
+                handleAlertChange({ 'rewardId': val });
+              }}/>
 
             <AccordionDuration
               label={translate('registry.alerts.variant.name')}

@@ -4,10 +4,12 @@ import {
   IconButton, InputAdornment, InputLabel,
   MenuItem, Select, Typography,
 } from '@mui/material';
+import { useAtom } from 'jotai';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 
+import { rewardsAtom } from '../../../atoms';
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -23,7 +25,7 @@ export const FormRewardInput: React.FC<{
   const [ propsValue, setPropsValue ] = React.useState(value || null);
 
   const [ progress, setProgress ] = React.useState(false);
-  const [ rewards, setRewards ] = React.useState<{ id: string, name: string }[]>([]);
+  const [ rewards, setRewards ] = useAtom(rewardsAtom);
 
   const selectedReward = React.useMemo(() => {
     return rewards.find(o => o.id === propsValue);
