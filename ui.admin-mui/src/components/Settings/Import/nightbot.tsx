@@ -94,18 +94,26 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   const fetchPlaylist = async () => {
-    const url = 'https://api.nightbot.tv/1/song_requests/playlist';
-    const ax = axios.create({ headers: { Authorization: 'Bearer ' + accessToken } });
+    // NOTE: This sets up a way to cancel requests
+    const controller = new AbortController();
+    const ax = axios.create({
+      signal:  controller.signal,
+      headers: { Authorization: 'Bearer ' + accessToken },
+    });
 
-    ax.interceptors.response.use((response) => {
-      return response;
+    // NOTE: This attempts to jump in when the request is bad
+    //       Do NOT handle 429 like this? Just self-impose rate limits?
+    ax.interceptors.request.use((config) => {
+      return config;
     }, (error) => {
       enqueueSnackbar('Something went wrong.', { variant: 'error' });
-      console.log('Maybe 429: ', error.request);
-      return;
-      // NOTE: Maybe we want to do something more useful for the user?
-      //       Maybe we just throw this away?
-      // return Promise.reject(error);
+      console.log('[Bad request] - ', error);
+      // NOTE: Isn't it too late to abort here because by now we already
+      //       have an error response to handle instead?
+      //       The desire is to cascade through any pending requests
+      //       and abort them all, but I don't think this works
+      controller.abort();
+      return Promise.reject(error);
     });
 
     // NOTE: key is the name of the path entry to the resource we want
@@ -113,38 +121,33 @@ const PageSettingsModulesImportNightbot: React.FC<{
     //       this key will need to be dynamic
     const key = 'playlist';
 
-    const params = {
-      offset: 0,
-      limit:  100,
-    };
-    const fetchResource = async (acc: PlaylistItemTrack[]): Promise<T> => {
-      console.log('entered fetching');
+    const fetchResource = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
       // NOTE: This breaks on any other endpoint now
       // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
-      const response = await ax.get(url, { params });
+      const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, {
+        signal:  controller.signal,
+        headers: { Authorization: 'Bearer ' + accessToken },
+      });
 
+      // NOTE: This appeases the type checker when mapping over `data[key]`
       const data: ApiResponse = response.data;
 
       // NOTE: I think a default of 0 is safe, to ensure requesting exactly 1 page of data
       const total = data._total ?? 0;
-      console.log('total: ', total);
 
       // NOTE: Resources with multiple items are returned in an array
       //       Fix this if we expand the importer to other endpoints
       const tracks = data[key].map((e) => e.track);
 
-      // TODO: I'd prefer not to mutate this stuff in-place
+      // TODO: I'd prefer not to mutate this accumulator in-place
       if (acc.push(...tracks) >= total) {
         return acc;
       }
 
-      // TODO: I'd prefer not to mutate this stuff in-place
-      params.offset = Number(params.offset) + 100;
-
-      return await fetchResource(acc);
+      return await fetchResource(acc, offset + 100);
     };
 
-    const pl = await fetchResource([]);
+    const pl = await fetchResource([], 0);
     setPlaylist(pl);
 
     return pl;
@@ -152,9 +155,13 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const importPlaylist = async () => {
     // TODO: `fetchPlaylist` should probably just return the simplified array of IDs
-    const videos = await fetchPlaylist();
+    const videos: PlaylistItemTrack[] = await fetchPlaylist();
 
-    videos.forEach(async (video: PlaylistItemTrack) => {
+    videos.filter((track) => {
+      // TODO: Nightbot supports SoundCloud also
+      //       Should we cover that case?
+      track.provider === 'youtube'
+    }).forEach(async (video) => {
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
           'import.video',
@@ -164,11 +171,11 @@ const PageSettingsModulesImportNightbot: React.FC<{
           },
           (err) => {
             if (err) {
-              // FIXME: This seems to be unreachable.
-              //        If we fix that, this could potentially generate
+              // FIXME: This could potentially generate
               //        hundreds of notifications.
-              enqueueSnackbar('Video failed to import.', { variant: 'error' });
-              console.error('error: ', video.providerId );
+              // enqueueSnackbar('Video failed to import.', { variant: 'error' });
+              // TODO: The `filter()` above prevents us getting here on my playlist
+              console.error('error: ', video.url );
               reject(err);
             } else {
               resolve('resolved');
@@ -203,7 +210,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
           }}
         />
         <Container>
-          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={fetchPlaylist}>Import</Button>
+          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
           <pre>{JSON.stringify(playlist, null, 2)}</pre>
         </Container>
 
