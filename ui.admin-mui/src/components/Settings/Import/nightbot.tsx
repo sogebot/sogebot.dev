@@ -68,68 +68,83 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const [playlist, setPlaylist] = React.useState([]);
 
-  type NightbotPlaylistVideo = {
-    artist: string,
-    duration: number,
-    provider: string,
-    providerId: string,
-    title: string,
-    url: string
+  type PlaylistItemTrack = {
+    providerId: string;
+    provider: string;
+    duration: number;
+    title: string;
+    artist: string;
+    url: string;
+  };
+
+  type PlaylistItem = {
+    track: PlaylistItemTrack;
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type ApiResponse = {
+    status: number;
+    _sort: { 'date': 'asc' | 'desc' };
+    _limit: number;
+    _offset: number;
+    _total: number;
+    playlist: PlaylistItem[];
   };
 
   const fetchPlaylist = async () => {
-    // TODO: Increase `limit` to 100 for prod
-    const firstUrl = new URL(`https://api.nightbot.tv/1/song_requests/playlist?offset=0&limit=5`);
+    const url = 'https://api.nightbot.tv/1/song_requests/playlist';
+    const ax = axios.create({ headers: { Authorization: 'Bearer ' + accessToken } });
+
+    ax.interceptors.response.use((response) => {
+      return response;
+    }, (error) => {
+      enqueueSnackbar('Something went wrong.', { variant: 'error' });
+      console.log('Maybe 429: ', error.request);
+      return;
+      // NOTE: Maybe we want to do something more useful for the user?
+      //       Maybe we just throw this away?
+      // return Promise.reject(error);
+    });
+
     // NOTE: key is the name of the path entry to the resource we want
     //       For just the playlist, this is fine. If we add more resources
     //       this key will need to be dynamic
     const key = 'playlist';
 
-    const fetchResource = async (acc: NightbotPlaylistVideo[], url: URL): Promise<T> => {
-      const response = await axios.get(url.href, { headers: { Authorization: 'Bearer ' + accessToken } });
-      // NOTE: total number of items in the resource
-      // NOTE: I think a default of 1 is safe, to ensure requesting exactly 1 page of data
-      //       Default of zero can result in infinitely looping -> Error 429
-      //       That may be a problem somewhere else instead of here
-      // const total = page.data._total ? page.data._total : 1;
-      // NOTE: Hardcoding this just because my playlist is over 1,000 songs
-      const total = 5;
-      // NOTE: This may not be necessary to calculate by converting between types, if
-      //       we don't use the `new URL()` constructor.
-      const currentOffset = Number(url.searchParams.get('offset') || 0);
-      const limit = Number(url.searchParams.get('limit') || 0);
-      const newOffset = currentOffset + limit;
+    const params = {
+      offset: 0,
+      limit:  100,
+    };
+    const fetchResource = async (acc: PlaylistItemTrack[]): Promise<T> => {
+      console.log('entered fetching');
+      // NOTE: This breaks on any other endpoint now
+      // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
+      const response = await ax.get(url, { params });
 
-      switch (response.status) {
-        case 200:
-          // NOTE: Resources with multiple items are returned in an array
-          //       We need to spread it to prevent nesting arrays in our accumulated result
-          // NOTE: This breaks on any other endpoint now
-          // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
-          acc.push(...response.data[key].map(e => e.track));
+      const data: ApiResponse = response.data;
 
-          if (acc.length >= total) {
-            return acc;
-          }
+      // NOTE: I think a default of 0 is safe, to ensure requesting exactly 1 page of data
+      const total = data._total ?? 0;
+      console.log('total: ', total);
 
-          // NOTE: Setting the search/query params could be done by just building a url as a string
-          //       I ended up with this mostly because I don't know how to use the type system well yet
-          url.searchParams.set('offset', newOffset.toString());
+      // NOTE: Resources with multiple items are returned in an array
+      //       Fix this if we expand the importer to other endpoints
+      const tracks = data[key].map((e) => e.track);
 
-          return await fetchResource(acc, url);
-        case 429:
-          console.log('ERROR 429! - ', response.statusText);
-          // TODO: This isn't really handling the error, need to look for retry-time?
-          return acc;
-        default:
-          enqueueSnackbar('Something went wrong.', { variant: 'error' });
-          // TODO: Should we cancel importing instead? Or just let the import
-          //       make a best effort attempt?
-          return acc;
+      // TODO: I'd prefer not to mutate this stuff in-place
+      if (acc.push(...tracks) >= total) {
+        return acc;
       }
+
+      // TODO: I'd prefer not to mutate this stuff in-place
+      params.offset = Number(params.offset) + 100;
+
+      return await fetchResource(acc);
     };
 
-    const pl =  await fetchResource([], firstUrl);
+    const pl = await fetchResource([]);
     setPlaylist(pl);
 
     return pl;
@@ -139,8 +154,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     // TODO: `fetchPlaylist` should probably just return the simplified array of IDs
     const videos = await fetchPlaylist();
 
-    videos.forEach(async (video: NightbotPlaylistVideo) => {
-      console.log('video id is: ', video.providerId);
+    videos.forEach(async (video: PlaylistItemTrack) => {
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
           'import.video',
@@ -154,6 +168,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
               //        If we fix that, this could potentially generate
               //        hundreds of notifications.
               enqueueSnackbar('Video failed to import.', { variant: 'error' });
+              console.error('error: ', video.providerId );
               reject(err);
             } else {
               resolve('resolved');
@@ -188,7 +203,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
           }}
         />
         <Container>
-          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
+          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={fetchPlaylist}>Import</Button>
           <pre>{JSON.stringify(playlist, null, 2)}</pre>
         </Container>
 
