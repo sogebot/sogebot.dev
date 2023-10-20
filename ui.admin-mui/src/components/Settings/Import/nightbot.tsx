@@ -1,5 +1,5 @@
 import {
-  Box, Button, CircularProgress, Container, InputAdornment, Paper, TextField, Typography,
+  Box, Button, CircularProgress, InputAdornment, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -66,8 +66,6 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  const [playlist, setPlaylist] = React.useState([]);
-
   type PlaylistItemTrack = {
     providerId: string;
     provider: string;
@@ -124,9 +122,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
         },
       );
 
-      const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, {
-        headers: { Authorization: 'Bearer ' + accessToken },
-      });
+      const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, { headers: { Authorization: 'Bearer ' + accessToken } });
 
       const data: PlaylistPage = response.data;
       const tracks = data.playlist.map((e) => e.track);
@@ -139,10 +135,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
       return await fetchResource(acc, offset + 100);
     };
 
-    const pl = await fetchResource([], 0);
-    setPlaylist(pl);
+    return await fetchResource([], 0);
 
-    return pl;
   };
 
   const importPlaylist = async () => {
@@ -179,7 +173,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   return (
-    <Box ref={ref} id="nightbot">
+    <Box ref={ref} id='nightbot'>
       <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
       <Paper elevation={1} sx={{ p: 1 }}>
         {userLoadInProgress}
@@ -190,19 +184,16 @@ const PageSettingsModulesImportNightbot: React.FC<{
           value={userLoadInProgress ? 'Loading user data...' : user}
           label={translate('integrations.lastfm.settings.username')}
           InputProps={{
-            startAdornment: userLoadInProgress && <InputAdornment position="start"><CircularProgress size={20}/></InputAdornment>,
-            endAdornment:   <InputAdornment position="end">
-              { user !== 'Not Authorized'
-                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
-              }
+            endAdornment: <InputAdornment position='end'> { user !== 'Not Authorized'
+              ? <Button color='error' variant='contained' onClick={revoke}>Revoke</Button>
+              : <Button color='success' variant='contained' onClick={authorize}>Authorize</Button>
+            }
             </InputAdornment>,
           }}
         />
-        <Container>
-          <Button color="primary" variant="contained" disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
-          <pre>{JSON.stringify(playlist, null, 2)}</pre>
-        </Container>
+        <Stack direction='row-reverse'>
+          <Button color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
+        </Stack>
 
       </Paper>
     </Box>
