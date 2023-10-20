@@ -1,5 +1,5 @@
 import {
-  Box, Button, CircularProgress, InputAdornment, Paper, Stack, TextField, Typography,
+  Box, Button, InputAdornment, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -141,12 +141,12 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const importPlaylist = async () => {
     const videos: PlaylistItemTrack[] = await fetchPlaylist();
-
-    videos.filter((track) => {
-      // TODO: Nightbot supports SoundCloud also
-      //       Should we cover that case?
+    const ytVideos = videos.filter((track) => {
       track.provider === 'youtube';
-    }).forEach(async (video) => {
+    });
+
+    let failCount = 0;
+    for (const video of ytVideos) {
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
           'import.video',
@@ -156,11 +156,10 @@ const PageSettingsModulesImportNightbot: React.FC<{
           },
           (err) => {
             if (err) {
-              // FIXME: This could potentially generate
-              //        hundreds of notifications.
-              // enqueueSnackbar('Video failed to import.', { variant: 'error' });
+              // FIXME: Ensure this counter works.
               // TODO: The `filter()` above prevents us getting here on my playlist
-              console.error('error: ', video.url );
+              console.error('error: ', video.url);
+              failCount += 1;
               reject(err);
             } else {
               resolve('resolved');
@@ -168,7 +167,12 @@ const PageSettingsModulesImportNightbot: React.FC<{
           },
         );
       });
-    });
+    }
+
+    if (failCount > 0) {
+      enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'error' });
+    }
+
     enqueueSnackbar('Playlist import completed.', { variant: 'success' });
   };
 
