@@ -142,11 +142,11 @@ function SortableAccordion(props: {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
       </AccordionDetails>
     </Accordion>
   );

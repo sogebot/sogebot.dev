@@ -2,6 +2,7 @@ import {
   ClearTwoTone, ExpandMoreTwoTone, VolumeUpTwoTone,
 } from '@mui/icons-material';
 import {
+  Alert as AlertElement,
   Collapse,
   Divider,
   Fade,
@@ -124,22 +125,45 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
         onChange={(ev) => setSelectedItemId(ev.target.value)}
       >
         <MenuItem value=''>Please select item</MenuItem>
+
         {alerts?.filter(o => o.items.filter(b => b.type === 'custom').length > 0).map(alert => ([
           <ListSubheader>{alert.name} <Typography variant='caption' component='small'>{alert.id}</Typography></ListSubheader>,
           ...alert.items.filter(o => o.type === 'custom').map(item => <MenuItem key={item.id} value={item.id}>
-            {item.title} <Typography variant='caption' component='small'>{item.id}</Typography>
+            <Typography sx={{ fontWeight: 'bold' }} component='span'>
+              {item.title}
+
+              <Typography sx={{
+                fontWeight: 'normal', fontSize: '12px', fontStyle: 'italic', pl: 1,
+              }} component='span'>
+                {item.id}
+              </Typography>
+            </Typography>
           </MenuItem>),
         ]))}
         {overlays.map(overlay => ([
           <ListSubheader>{overlay.name} <Typography variant='caption' component='small'>{overlay.id}</Typography></ListSubheader>,
           ...overlay.items.filter(o => o.opts.typeId === 'alerts')
             .map(item => getAllVariantsOfAlertItems((item.opts as Alerts).items)
-              .map(o => <MenuItem key={o.id} value={o.id}>{o.variantName} <Typography variant='caption' component='small'>{o.id}</Typography></MenuItem>),
+              .map(o => <MenuItem key={o.id} value={o.id}>
+                <Typography sx={{ fontWeight: 'bold' }} component='span'>
+                  {o.variantName}
+
+                  <Typography sx={{
+                    fontWeight: 'normal', fontSize: '12px', fontStyle: 'italic', pl: 1,
+                  }} component='span'>
+                    {o.id}
+                  </Typography>
+                </Typography>
+              </MenuItem>),
             ),
         ]))}
       </Select>
       <Fade in={loading}><LinearProgress /></Fade>
     </FormControl>
+
+    <AlertElement severity='error'>
+      You are using soon to be deprecated alerts registry, please update to alerts overlays
+    </AlertElement>
 
     <Collapse in={expand}>
       <Stack direction='row' spacing={1}>

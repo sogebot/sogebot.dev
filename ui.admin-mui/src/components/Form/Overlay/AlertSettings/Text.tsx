@@ -18,7 +18,7 @@ import { anSelectedItemOpts } from '../../atoms';
 interface AlertSettingsTextProps {
   model: AlertText
   onChange: (value: AlertText) => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
@@ -29,6 +29,10 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
   const variant = useAtomValue(anSelectedAlertVariant);
   const selectedAlert = useAtomValue(anSelectedAlert);
 
+  console.log({
+    parent, variant, selectedAlert,
+  });
+
   const isParent = item.font === null;
 
   React.useEffect(() => {
@@ -36,7 +40,7 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
       props.onChange(item);
     }
   }, [ item ]);
-  return (<>
+  return (parent && variant) && (<>
     <AccordionMessageTemplate open={accordion} onOpenChange={setAccordion} model={item.messageTemplate} onChange={(messageTemplate) => setItem({
       ...item, messageTemplate,
     })}/>
@@ -126,8 +130,8 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
           ...item, enabledWhen: filter,
         });
       }}/>
-    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
-  </>
+
+    {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}  </>
   );
 };
 

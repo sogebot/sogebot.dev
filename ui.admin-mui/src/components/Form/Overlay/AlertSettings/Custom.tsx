@@ -19,7 +19,7 @@ import { JavascriptDialog } from '../HTMLSettings/javascript';
 interface AlertSettingsCustomProps {
   model: AlertCustom
   onChange: (value: AlertCustom) => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
@@ -89,8 +89,7 @@ const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
       ...item, javascript: value ?? '',
     })}/>
 
-    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
-  </>
+    {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}  </>
   );
 };
 
