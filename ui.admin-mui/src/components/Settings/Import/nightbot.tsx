@@ -84,7 +84,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     updatedAt: string;
   };
 
-  type ApiResponse = {
+  type PlaylistPage = {
     status: number;
     _sort: { date: 'asc' | 'desc' };
     _limit: number;
@@ -94,26 +94,21 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   const fetchPlaylist = async () => {
-    // NOTE: This sets up a way to cancel requests
-    const ax = axios.create();
-
-    // NOTE: key is the name of the path entry to the resource we want
-    //       For just the playlist, this is fine. If we add more resources
-    //       this key will need to be dynamic
-    const key = 'playlist';
-
     const fetchResource = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
-      const controller = new AbortController();
+      // NOTE: This sets up a way to cancel requests
+      //       It just seems laborious and suboptimal, if it even works.
+      const ax = axios.create();
       const maxRetries = 3;
       let retries = 0;
+
       ax.interceptors.response.use(
         (response) => {
-          console.log('made a response!');
           return response;
         },
         (error) => {
+          // TODO: Does this count as error handling lol
           if (error.response.status === 429 && retries < maxRetries) {
-            retries++;
+            retries += 1;
             console.log('Received a 429 error. Retrying after a delay...');
             return new Promise((resolve) => {
               setTimeout(() => {
@@ -121,33 +116,23 @@ const PageSettingsModulesImportNightbot: React.FC<{
               }, 10000);
             });
           } else if (error.response.status >= 500 && error.response.status < 600) {
-            console.log(`Received a ${error.response.status} error from the server.`);
+            console.error(`Error === ${error.response.status}`);
           } else {
-            // NOTE: Does this do anything really?
-            controller.abort(`Error !== 429 or 5XX: ${error.response.status}`);
+            console.error(`Error !== 429 or 5XX: ${error.response.status}`);
           }
           return Promise.reject(error);
         },
       );
 
-      // NOTE: This breaks on any other endpoint now
-      // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
       const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, {
-        signal:  controller.signal,
         headers: { Authorization: 'Bearer ' + accessToken },
       });
 
-      const data: ApiResponse = response.data;
-
-      // NOTE: I think a default of 0 is safe, to ensure requesting exactly 1 page of data
-      const total = data._total ?? 0;
-
-      // NOTE: Resources with multiple items are returned in an array
-      //       Fix this if we expand the importer to other endpoints
-      const tracks = data[key].map((e) => e.track);
+      const data: PlaylistPage = response.data;
+      const tracks = data.playlist.map((e) => e.track);
 
       // TODO: I'd prefer not to mutate this accumulator in-place
-      if (acc.push(...tracks) >= total) {
+      if (acc.push(...tracks) >= data._total ?? 0) {
         return acc;
       }
 
@@ -190,8 +175,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
         );
       });
     });
-    // TODO: We just assume overall success, since no error is thrown
-    enqueueSnackbar('Playlist import succeeded.', { variant: 'success' });
+    enqueueSnackbar('Playlist import completed.', { variant: 'success' });
   };
 
   return (
