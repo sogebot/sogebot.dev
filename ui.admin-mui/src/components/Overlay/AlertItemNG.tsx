@@ -279,7 +279,26 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     }
 
     if (emitData.event === 'custom') {
-      console.log('alert', 'Received custom event', emitData);
+      possibleAlerts = (possibleAlerts as any).filter((o: any) => o.hooks[0] === 'custom');
+      // find correct variant or main
+      for (const alert of possibleAlerts) {
+        if (alert.id === emitData.alertId) {
+          console.log('alerts', 'Selected variant', alert);
+          return alert;
+        }
+        if ('variants' in alert) {
+          for (const variant of alert.variants) {
+            if (variant.id === emitData.alertId) {
+              console.log('alerts', 'Selected variant', variant);
+              return variant;
+            }
+          }
+        }
+      }
+      console.log('alert', 'No valid alerts found for this custom command.');
+      setEmitData(null);
+      setActiveUntil(0);
+      return;
     }
 
     if (possibleAlerts.length === 0) {
@@ -305,6 +324,7 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     if (possibleAlerts.length === 0) {
       console.log('alert', 'No valid alerts found after filter');
       setActiveUntil(0);
+      setEmitData(null);
       return;
     }
 
@@ -357,7 +377,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
 
   React.useEffect(() => {
     if (selectedGroup) {
-      console.log({ alertDuration });
       setActiveUntil(Date.now() + alertDuration);
       // check if any audio component is present
       if (!selectedGroup.items.find(o => o.type === 'audio')) {
