@@ -86,7 +86,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   type ApiResponse = {
     status: number;
-    _sort: { 'date': 'asc' | 'desc' };
+    _sort: { date: 'asc' | 'desc' };
     _limit: number;
     _offset: number;
     _total: number;
@@ -95,26 +95,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const fetchPlaylist = async () => {
     // NOTE: This sets up a way to cancel requests
-    const controller = new AbortController();
-    const ax = axios.create({
-      signal:  controller.signal,
-      headers: { Authorization: 'Bearer ' + accessToken },
-    });
-
-    // NOTE: This attempts to jump in when the request is bad
-    //       Do NOT handle 429 like this? Just self-impose rate limits?
-    ax.interceptors.request.use((config) => {
-      return config;
-    }, (error) => {
-      enqueueSnackbar('Something went wrong.', { variant: 'error' });
-      console.log('[Bad request] - ', error);
-      // NOTE: Isn't it too late to abort here because by now we already
-      //       have an error response to handle instead?
-      //       The desire is to cascade through any pending requests
-      //       and abort them all, but I don't think this works
-      controller.abort();
-      return Promise.reject(error);
-    });
+    const ax = axios.create();
 
     // NOTE: key is the name of the path entry to the resource we want
     //       For just the playlist, this is fine. If we add more resources
@@ -122,6 +103,33 @@ const PageSettingsModulesImportNightbot: React.FC<{
     const key = 'playlist';
 
     const fetchResource = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
+      const controller = new AbortController();
+      const maxRetries = 3;
+      let retries = 0;
+      ax.interceptors.response.use(
+        (response) => {
+          console.log('made a response!');
+          return response;
+        },
+        (error) => {
+          if (error.response.status === 429 && retries < maxRetries) {
+            retries++;
+            console.log('Received a 429 error. Retrying after a delay...');
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                resolve(ax(error.config));
+              }, 10000);
+            });
+          } else if (error.response.status >= 500 && error.response.status < 600) {
+            console.log(`Received a ${error.response.status} error from the server.`);
+          } else {
+            // NOTE: Does this do anything really?
+            controller.abort(`Error !== 429 or 5XX: ${error.response.status}`);
+          }
+          return Promise.reject(error);
+        },
+      );
+
       // NOTE: This breaks on any other endpoint now
       // NOTE: We probably could dispatch to a handler on the `key` aka the resource type
       const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, {
@@ -129,7 +137,6 @@ const PageSettingsModulesImportNightbot: React.FC<{
         headers: { Authorization: 'Bearer ' + accessToken },
       });
 
-      // NOTE: This appeases the type checker when mapping over `data[key]`
       const data: ApiResponse = response.data;
 
       // NOTE: I think a default of 0 is safe, to ensure requesting exactly 1 page of data
@@ -154,13 +161,12 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   const importPlaylist = async () => {
-    // TODO: `fetchPlaylist` should probably just return the simplified array of IDs
     const videos: PlaylistItemTrack[] = await fetchPlaylist();
 
     videos.filter((track) => {
       // TODO: Nightbot supports SoundCloud also
       //       Should we cover that case?
-      track.provider === 'youtube'
+      track.provider === 'youtube';
     }).forEach(async (video) => {
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
