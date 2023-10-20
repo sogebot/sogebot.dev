@@ -353,9 +353,12 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     }
   }, [selectedGroup, item]);
 
+  const alertDuration = emitData?.customOptions?.alertDuration ?? selectedGroup?.alertDuration ?? 0;
+
   React.useEffect(() => {
     if (selectedGroup) {
-      setActiveUntil(Date.now() + (selectedGroup?.alertDuration ?? 0));
+      console.log({ alertDuration });
+      setActiveUntil(Date.now() + alertDuration);
       // check if any audio component is present
       if (!selectedGroup.items.find(o => o.type === 'audio')) {
         setExpectedSoundCount(0);
@@ -389,6 +392,10 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     }
   }, [ activeUntil ]);
 
+  const returnItemData = React.useCallback(<T extends Alerts['items'][number] | Alerts['items'][number]['variants'][number]['items'][number]>(o: T) => {
+    return emitData?.customOptions?.components?.[o.id] ?? o;
+  }, [ emitData ]);
+
   return <Box sx={{
     width:         '100%',
     height:        '100%',
@@ -412,13 +419,19 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
         transition:      `opacity 200ms`,
         transitionDelay: `${'animationDelay' in o ? o.animationDelay : 0}ms`,
       }}>
-        {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={activeUntil - timestamp >= 0} variant={selectedGroupMain!}/>}
-        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} active={activeUntil - timestamp >= 0} variant={{
+          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
+        }}/>}
+        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={{
+          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
+        }} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'text' && processFilter(emitData!, o.enabledWhen)) && <AlertItemText canvas={{
-          width, height, 
-        }} parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedGroupMain!} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData!, o.enabledWhen)) && <AlertItemCustom parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
-        {(selectedGroupMain && o.type === 'tts' && processFilter(emitData!, o.enabledWhen) && !emitData!.isSoundMuted && !emitData!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
+          width, height,
+        }} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={{
+          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
+        }} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData!, o.enabledWhen)) && <AlertItemCustom parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
+        {(selectedGroupMain && o.type === 'tts' && processFilter(emitData!, o.enabledWhen) && !emitData!.isSoundMuted && !emitData!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
       </Box>)}
     </Box>}
   </Box>;
