@@ -91,47 +91,41 @@ const PageSettingsModulesImportNightbot: React.FC<{
     playlist: PlaylistItem[];
   };
 
-  const fetchPlaylist = async () => {
-    const fetchResource = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
-      const url = 'https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset=';
-      let maxRetries = 3;
+  const fetchPlaylist = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
+    const url = 'https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset=';
+    let maxRetries = 3;
 
-      try {
-        const response = await axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } });
+    try {
+      const response = await axios.get(url + offset, { headers: { Authorization: 'Bearer ' + accessToken } });
+      const data: PlaylistPage = response.data;
+      const tracks = data.playlist.map((e) => e.track);
 
-        const data: PlaylistPage = response.data;
-        const tracks = data.playlist.map((e) => e.track);
-
-        // TODO: I'd prefer not to mutate this accumulator in-place
-        if (acc.push(...tracks) >= data._total ?? 0) {
-          return acc;
-        }
-
-        return await fetchResource(acc, offset + 100);
-      } catch (error: any) {
-        // TODO: Does this count as error handling lol
-        if (error.response.status === 429 && maxRetries !== 0) {
-          maxRetries -= 1;
-          console.error('Received a 429 error. Retrying after a delay...');
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } }));
-            }, 1000);
-          });
-        } else if (error.response.status >= 500 && error.response.status < 600) {
-          console.error(`Error === ${error.response.status}`);
-        } else {
-          console.error(`Error !== 429 or 5XX: ${error.response.status}`);
-        }
+      if (acc.push(...tracks) >= data._total ?? 0) {
+        return acc;
       }
-    };
 
-    return await fetchResource([], 0);
-
+      return await fetchPlaylist(acc, offset + 100);
+    } catch (error: any) {
+      if (error.response.status === 429 && maxRetries !== 0) {
+        maxRetries -= 1;
+        console.error('Received a 429 error. Retrying after a delay...');
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } }));
+          }, 1000);
+        });
+      } else if (error.response.status >= 500 && error.response.status < 600) {
+        enqueueSnackbar('Remote server error.', { variant: 'error' });
+        console.error(`Error === ${error.response.status}`);
+      } else {
+        enqueueSnackbar('Remote server error.', { variant: 'error' });
+        console.error(`Error !== 429 or 5XX: ${error.response.status}`);
+      }
+    }
   };
 
   const importPlaylist = async () => {
-    const videos: PlaylistItemTrack[] = await fetchPlaylist();
+    const videos: PlaylistItemTrack[] = await fetchPlaylist([], 0);
     const ytVideos = videos.filter((track) => {
       track.provider === 'youtube';
     });
@@ -147,10 +141,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
           },
           (err) => {
             if (err) {
-              // FIXME: Ensure this counter works.
-              // TODO: The `filter()` above prevents us getting here on my playlist
-              console.error('error: ', video.url);
               failCount += 1;
+              console.error('error: ', video.url);
               reject(err);
             } else {
               resolve('resolved');
