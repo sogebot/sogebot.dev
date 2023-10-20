@@ -93,46 +93,37 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const fetchPlaylist = async () => {
     const fetchResource = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
-      // NOTE: This sets up a way to cancel requests
-      //       It just seems laborious and suboptimal, if it even works.
-      const ax = axios.create();
-      const maxRetries = 3;
-      let retries = 0;
+      const url = 'https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset=';
+      let maxRetries = 3;
 
-      ax.interceptors.response.use(
-        (response) => {
-          return response;
-        },
-        (error) => {
-          // TODO: Does this count as error handling lol
-          if (error.response.status === 429 && retries < maxRetries) {
-            retries += 1;
-            console.log('Received a 429 error. Retrying after a delay...');
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                resolve(ax(error.config));
-              }, 10000);
-            });
-          } else if (error.response.status >= 500 && error.response.status < 600) {
-            console.error(`Error === ${error.response.status}`);
-          } else {
-            console.error(`Error !== 429 or 5XX: ${error.response.status}`);
-          }
-          return Promise.reject(error);
-        },
-      );
+      try {
+        const response = await axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } });
 
-      const response = await ax.get('https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset='+offset, { headers: { Authorization: 'Bearer ' + accessToken } });
+        const data: PlaylistPage = response.data;
+        const tracks = data.playlist.map((e) => e.track);
 
-      const data: PlaylistPage = response.data;
-      const tracks = data.playlist.map((e) => e.track);
+        // TODO: I'd prefer not to mutate this accumulator in-place
+        if (acc.push(...tracks) >= data._total ?? 0) {
+          return acc;
+        }
 
-      // TODO: I'd prefer not to mutate this accumulator in-place
-      if (acc.push(...tracks) >= data._total ?? 0) {
-        return acc;
+        return await fetchResource(acc, offset + 100);
+      } catch (error: any) {
+        // TODO: Does this count as error handling lol
+        if (error.response.status === 429 && maxRetries !== 0) {
+          maxRetries -= 1;
+          console.error('Received a 429 error. Retrying after a delay...');
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } }));
+            }, 1000);
+          });
+        } else if (error.response.status >= 500 && error.response.status < 600) {
+          console.error(`Error === ${error.response.status}`);
+        } else {
+          console.error(`Error !== 429 or 5XX: ${error.response.status}`);
+        }
       }
-
-      return await fetchResource(acc, offset + 100);
     };
 
     return await fetchResource([], 0);
