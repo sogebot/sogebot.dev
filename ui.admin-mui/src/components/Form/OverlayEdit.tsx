@@ -373,8 +373,8 @@ export const OverlayEdit: React.FC = () => {
                       isVisible: true,
                       name:      '',
                       rotation:  0,
-                      height:    typeId === 'credits' ? item.canvas.height : 200,
-                      width:     typeId === 'credits' ? item.canvas.width : 200,
+                      height:    typeId === 'credits' || typeId === 'alerts' ? item.canvas.height : 200,
+                      width:     typeId === 'credits' || typeId === 'alerts' ? item.canvas.width : 200,
                       opts,
                     } as Overlay['items'][number];
 

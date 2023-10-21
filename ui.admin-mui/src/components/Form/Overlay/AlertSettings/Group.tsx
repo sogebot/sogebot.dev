@@ -68,6 +68,7 @@ import { AlertItemCustom } from '../../../Overlay/AlertItemCustom';
 import { AlertItemImage } from '../../../Overlay/AlertItemImage';
 import { AlertItemText } from '../../../Overlay/AlertItemText';
 import { anSelectedItemOpts } from '../../atoms';
+import { Settings } from '../Settings';
 
 let disabledMouseMove = false;
 
@@ -203,6 +204,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
+  const [ key, setKey ] = React.useState(Date.now());
 
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
 
@@ -550,6 +552,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
           }
         }
       }
+      setTimeout(() => {
+        setKey(Date.now());
+      }, 10);
       return updatedItems;
     });
   }, [moveableId, selectedVariantId]);
@@ -725,7 +730,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </Box>
               </Paper>)}
               {moveableId && <Moveable
-                key={`${moveableId}-${snapEnabled}`}
+                key={`${moveableId}-${key}-${snapEnabled}`}
                 ables={[DimensionViewable, RemoveButton]}
                 props={{
                   dimensionViewable: true, removeButton: true,
@@ -1036,6 +1041,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </DragOverlay>
               </DndContext>
             </Box>
+
+            {selectedItem && <Box sx={{ pb: 2 }}>
+              <Divider variant='middle' sx={{ my: 1 }}>Component position</Divider>
+
+              <Settings model={selectedItem} onUpdate={(path, value) => {
+                handleItemChange({ [path]: value });
+              }}/>
+            </Box>}
 
             <NewComponentDialog onAdd={addNewComponent}/>
           </SimpleBar>

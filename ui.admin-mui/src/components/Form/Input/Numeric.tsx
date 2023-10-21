@@ -1,4 +1,7 @@
-import { TextField, TextFieldProps } from '@mui/material';
+import { AddTwoTone, RemoveTwoTone } from '@mui/icons-material';
+import {
+  Box, Button, ButtonGroup, TextField, TextFieldProps,
+} from '@mui/material';
 import React, {
   ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useState,
 } from 'react';
@@ -89,10 +92,72 @@ export const FormNumericInput: React.FC<{
     <TextField
       {...props}
       value={value}
-      sx={{ '& .MuiFilledInput-input': { p: props.label ? undefined : '10px !important' } }}
+      sx={{
+        '& .MuiFilledInput-input': { p: props.label ? undefined : '10px !important' },
+        '&:hover .MuiBox-root':    { opacity: 1 },
+      }}
       onChange={onChangeHandler}
       inputProps={{ onKeyDown: keydownHandler }}
       InputLabelProps={{ shrink: displayEmpty ?? undefined }}
+      InputProps={{
+        ...props.InputProps,
+        inputMode:    'numeric',
+        endAdornment: <>
+          <Box
+            sx={{
+              display:    'flex',
+              '& > *':    { m: 1 },
+              opacity:    0,
+              transition: 'all 100ms',
+            }}
+          >
+            <ButtonGroup
+              orientation="vertical"
+              aria-label="vertical outlined button group"
+              color='light'
+            >
+              <Button size='small' onClick={() => {
+                const newValue = (value ?? 0) + 1;
+                if (typeof min === 'number' && newValue < min) {
+                  setPropsValue(min);
+                  return;
+                }
+                if (typeof max === 'number'  && newValue > max) {
+                  setPropsValue(max);
+                  return;
+                }
+                setPropsValue(newValue);
+              }}
+              sx={{
+                padding:  0,
+                minWidth: '10px !important',
+                '& svg':  {
+                  width: '0.7em', height: '0.7em',
+                },
+              }}><AddTwoTone /></Button>
+              <Button size='small' onClick={() => {
+                const newValue = (value ?? 0) - 1;
+                if (typeof min === 'number' && newValue < min) {
+                  setPropsValue(min);
+                  return;
+                }
+                if (typeof max === 'number'  && newValue > max) {
+                  setPropsValue(max);
+                  return;
+                }
+                setPropsValue(newValue);
+              }} sx={{
+                padding:  0,
+                minWidth: '10px !important',
+                '& svg':  {
+                  width: '0.7em', height: '0.7em',
+                },
+              }}><RemoveTwoTone /></Button>
+            </ButtonGroup>
+          </Box>
+          {props.InputProps?.endAdornment}
+        </>,
+      }}
     />
   );
 };
