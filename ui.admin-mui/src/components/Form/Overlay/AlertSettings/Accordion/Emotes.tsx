@@ -4,6 +4,7 @@ import {
   Checkbox, Fade, FormControlLabel, FormGroup, Typography,
 } from '@mui/material';
 import { AlertText } from '@sogebot/backend/src/database/entity/overlay';
+import { nanoid } from 'nanoid';
 import React from 'react';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
@@ -16,7 +17,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
 };
 
 export const AccordionEmotes: React.FC<Props> = (props) => {
-  const accordionId = 'emotes';
+  const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,

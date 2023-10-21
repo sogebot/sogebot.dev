@@ -17,9 +17,9 @@ import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import Jabber from 'jabber';
 import { isEqual } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
-import shortid from 'shortid';
 
 import {
   DAY, HOUR, MINUTE, SECOND,
@@ -82,7 +82,7 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
     const userName = jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase();
     const longMessage = Math.random() <= 0.1;
     const emotes = Math.random() <= 1 ? `<span class="simpleChatImage"><img src='https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0' class="emote" alt="Kappa" title="Kappa"/></span>`.repeat(Math.round(Math.random() * 5)) : '';
-    const id = shortid();
+    const id = nanoid();
 
     let message = jabber.createParagraph(1 + Math.ceil(Math.random() * (longMessage ? 3 : 10))) + emotes;
     if (lang === 'cs') {

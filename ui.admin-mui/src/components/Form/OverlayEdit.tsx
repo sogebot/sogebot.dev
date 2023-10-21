@@ -11,12 +11,12 @@ import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
 import { useAtom, useAtomValue } from 'jotai';
 import { cloneDeep, set } from 'lodash';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useKey } from 'rooks';
-import shortid from 'shortid';
+import { useKey, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import {
@@ -86,8 +86,17 @@ import { TTSItem } from '../Overlay/TTSItem';
 import { UrlItem } from '../Overlay/UrlItem';
 import { WordcloudItem } from '../Overlay/WordcloudItem';
 
+const generateLinkId = (server: string, id: string) => {
+  return Buffer.from(JSON.stringify({
+    server, id,
+  })).toString('base64');
+};
+
+let disabledMouseMove = false;
+
 export const OverlayEdit: React.FC = () => {
   const navigate = useNavigate();
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { id } = useParams();
   const [ moveableId, setMoveableId ] = useAtom(anMoveableId);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
@@ -237,6 +246,15 @@ export const OverlayEdit: React.FC = () => {
     navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
   };
 
+  const copy = React.useCallback((link: string) => {
+    navigator.clipboard.writeText(`${link}`);
+    enqueueSnackbar(<div>Overlay link copied to clipboard.</div>);
+  }, [ enqueueSnackbar, server ]);
+
+  const handleLinkCopy = () => {
+    copy(`${window.location.origin}/overlays/${generateLinkId(server, id!)}`);
+  };
+
   const handleSave = React.useCallback(() => {
     setSaving(true);
     getSocket('/registries/overlays').emit('generic::save', item, (err, data) => {
@@ -343,7 +361,7 @@ export const OverlayEdit: React.FC = () => {
                 } as Overlay))}
                 onAdd={(typeId) => {
                   setItem(o => {
-                    const itemId = shortid();
+                    const itemId = nanoid();
                     const opts = setDefaultOpts({}, typeId);
                     if (typeId === 'credits') {
                       (opts as Credits).screens = creditsDefaultScreens;
@@ -355,8 +373,8 @@ export const OverlayEdit: React.FC = () => {
                       isVisible: true,
                       name:      '',
                       rotation:  0,
-                      height:    typeId === 'credits' ? item.canvas.height : 200,
-                      width:     typeId === 'credits' ? item.canvas.width : 200,
+                      height:    typeId === 'credits' || typeId === 'alerts' ? item.canvas.height : 200,
+                      width:     typeId === 'credits' || typeId === 'alerts' ? item.canvas.width : 200,
                       opts,
                     } as Overlay['items'][number];
 
@@ -380,6 +398,9 @@ export const OverlayEdit: React.FC = () => {
             }}>
             <Box id="container" className="positionHandler"
               onMouseMove={(e) => {
+                if (disabledMouseMove) {
+                  return;
+                }
                 if (e.buttons === 1) {
                   const target = e.target as HTMLElement;
                   if (target.classList.contains('positionHandler')) {
@@ -540,6 +561,7 @@ export const OverlayEdit: React.FC = () => {
                   rotatable={true}
                   throttleRotate={0}
                   onRotateStart={e => {
+                    disabledMouseMove = true;
                     e.set(frame.rotate);
                   }}
                   onRotate={e => {
@@ -547,6 +569,7 @@ export const OverlayEdit: React.FC = () => {
                     e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
                   }}
                   onRotateEnd={e => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({ 'rotation': frame.rotate });
                       // reset things
@@ -555,6 +578,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onResizeEnd={e => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({
                         'width':  Math.round((e.target as any).offsetWidth),
@@ -570,6 +594,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onResizeStart={e => {
+                    disabledMouseMove = true;
                     e.setOrigin(['%', '%']);
                     e.dragStart && e.dragStart.set(frame.translate);
                   }}
@@ -582,6 +607,7 @@ export const OverlayEdit: React.FC = () => {
                     e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                   }}
                   onDragEnd={(e) => {
+                    disabledMouseMove = false;
                     if (selectedItem) {
                       handleItemChange({
                         'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
@@ -592,6 +618,7 @@ export const OverlayEdit: React.FC = () => {
                     }
                   }}
                   onDragStart={(e) => {
+                    disabledMouseMove = true;
                     if (e.clientY < e.target.getBoundingClientRect().top) {
                       // disable drag if clicking outside of the box
                       // checking currently only top side of moveable
@@ -714,6 +741,9 @@ export const OverlayEdit: React.FC = () => {
     <Divider/>
     <Box sx={{ p: 1 }}>
       <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
+        <Grid sx={{ mr: 'auto' }}>
+          <Button sx={{ width: 150 }} onClick={handleLinkCopy}>overlay link</Button>
+        </Grid>
         <Grid>
           <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
         </Grid>

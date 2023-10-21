@@ -1,15 +1,22 @@
 import {
   InputAdornment, Stack, TextField,
 } from '@mui/material';
-import { CreditsScreenCustom, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
+import { FormNumericInput } from '../Input/Numeric';
 
 type Props = {
-  model: Overlay['items'][number] | CreditsScreenCustom['items'][number];
+  model: {
+    name?: string;
+    rotation: number;
+    width: number;
+    height: number;
+    alignX: number;
+    alignY: number;
+  };
   onUpdate: (path: string, value: any) => void;
-  children: React.ReactNode
+  children?: React.ReactNode
 };
 
 export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
@@ -24,75 +31,59 @@ export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {
         value={model.name || ''}
         onChange={(ev) => onUpdate('name', ev.currentTarget.value ?? '')}
       />}
-
-      <TextField
+      <FormNumericInput
         label={'Rotate'}
         fullWidth
         variant="filled"
         value={model.rotation ?? 0}
         InputProps={{ endAdornment: <InputAdornment position='end'>deg</InputAdornment> }}
-        type="number"
-        onChange={(ev) => {
-          if (!isNaN(Number(ev.currentTarget.value))) {
-            onUpdate('rotation',  Number(ev.currentTarget.value));
-          }
+        onChange={(val) => {
+          onUpdate('rotation',  val);
         }}
       />
 
       <Stack direction='row' spacing={0.5}>
-        <TextField
+        <FormNumericInput
           label={'Width'}
           fullWidth
           variant="filled"
-          value={model.width}
+          value={model.width ?? 0}
           InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
-          type="number"
-          onChange={(ev) => {
-            if (!isNaN(Number(ev.currentTarget.value))) {
-              onUpdate('width',  Number(ev.currentTarget.value));
-            }
+          onChange={(val) => {
+            onUpdate('width',  val);
           }}
         />
-        <TextField
+        <FormNumericInput
           label={'Height'}
           fullWidth
           variant="filled"
-          value={model.height}
+          value={model.height ?? 0}
           InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
-          type="number"
-          onChange={(ev) => {
-            if (!isNaN(Number(ev.currentTarget.value))) {
-              onUpdate('height',  Number(ev.currentTarget.value));
-            }
+          onChange={(val) => {
+            onUpdate('height',  val);
           }}
         />
       </Stack>
 
       <Stack direction='row' spacing={0.5}>
-        <TextField
+        <FormNumericInput
           label={'X'}
           fullWidth
           variant="filled"
-          value={model.alignX}
+          value={model.alignX ?? 0}
           InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
-          type="number"
-          onChange={(ev) => {
-            if (!isNaN(Number(ev.currentTarget.value))) {
-              onUpdate('alignX',  Number(ev.currentTarget.value));
-            }
+          onChange={(val) => {
+            onUpdate('alignX',  val);
           }}
         />
-        <TextField
+        <FormNumericInput
           label={'Y'}
           fullWidth
-          type="number"
           variant="filled"
-          value={model.alignY}
+          value={model.alignY ?? 0}
           InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
-          onChange={(ev) => {
-            if (!isNaN(Number(ev.currentTarget.value))) {
-              onUpdate('alignY',  Number(ev.currentTarget.value));
-            }
+          onChange={(val) => {
+            onUpdate('alignY',  val);
           }}
         />
       </Stack>

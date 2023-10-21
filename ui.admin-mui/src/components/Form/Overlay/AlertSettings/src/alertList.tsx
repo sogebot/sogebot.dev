@@ -101,7 +101,7 @@ const defaultAlerts = {
   tip:              { items: [defaultAudio, defaultImage, defaultText('*{name}* tipped *{amount}{currency}*!'), defaultMessage, defaultTTS('{message}')] },
   cheer:            { items: [defaultAudio, defaultImage, defaultText('*{name}* cheered! x*{amount}*'), defaultMessage, defaultTTS('{message}')] },
   rewardredeem:     { items: [defaultAudio, defaultImage, defaultText('*{name}* was redeemed by *{recipient}*!')] },
-  custom:           { items: [defaultAudio, defaultImage, defaultText('*{name}* was redeemed by *{recipient}* for x*{amount}*!')] },
+  custom:           { items: [defaultAudio, defaultImage] },
 };
 
 const defaultItemValues = (cur: string) => ({

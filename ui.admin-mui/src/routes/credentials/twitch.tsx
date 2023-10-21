@@ -3,9 +3,9 @@ import {
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
 
@@ -38,7 +38,7 @@ const Twitch = () => {
 
       if (type) {
         // redirect if we set type
-        localStorage.twitchOauthState = type + shortid();
+        localStorage.twitchOauthState = type + nanoid();
         location.href = `${serviceUrl}?state=${localStorage.twitchOauthState}`;
         return;
       }

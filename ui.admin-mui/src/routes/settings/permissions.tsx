@@ -31,6 +31,7 @@ import {
   capitalize,
   cloneDeep, orderBy, sortBy,
 } from 'lodash';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, {
   useCallback, useEffect, useMemo, useState,
@@ -38,7 +39,6 @@ import React, {
 import {
   useLocation, useNavigate, useParams,
 } from 'react-router-dom';
-import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
@@ -161,7 +161,7 @@ const PageSettingsPermissions = () => {
   const addNewPermissionGroup = useCallback(() => {
     const data = new Permissions({
       id:                 v4(),
-      name:               shortid.generate(),
+      name:               nanoid(),
       isCorePermission:   false,
       isWaterfallAllowed: true,
       automation:         'none',

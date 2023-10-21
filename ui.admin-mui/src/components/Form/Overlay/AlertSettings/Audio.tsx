@@ -9,7 +9,7 @@ import { FormSelectorGallery } from '../../Selector/Gallery';
 interface AlertSettingsAudioProps {
   model: AlertAudio
   onChange: (value: AlertAudio) => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 const AlertSettingsAudio: React.FC<AlertSettingsAudioProps> = (props) => {
@@ -44,7 +44,7 @@ const AlertSettingsAudio: React.FC<AlertSettingsAudioProps> = (props) => {
         });
       }
       }/>
-    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
+    {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}
   </>
   );
 };

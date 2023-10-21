@@ -31,7 +31,9 @@ export const AlertItemAudio: React.FC<Props<AlertAudio> & {variant: Omit<Alerts[
 
   React.useEffect(() => {
     if (canPlay && itemAnimationTriggered) {
-      audioRef.current?.play();
+      setTimeout(() =>{
+        audioRef.current?.play();
+      }, item.delay);
     }
   }, [canPlay, itemAnimationTriggered]);
 

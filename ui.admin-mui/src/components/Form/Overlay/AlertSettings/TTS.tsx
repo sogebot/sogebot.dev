@@ -17,7 +17,7 @@ import { anSelectedItemOpts } from '../../atoms';
 interface AlertSettingsTTSProps {
   model: AlertTTS
   onChange: (value: AlertTTS) => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
@@ -74,7 +74,7 @@ const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
           ...item, enabledWhen: filter,
         });
       }}/>
-    <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>
+    {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}
   </>
   );
 };

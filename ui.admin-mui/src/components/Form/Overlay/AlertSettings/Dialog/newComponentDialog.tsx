@@ -5,8 +5,8 @@ import {
   DialogContent, Grid, Typography,
 } from '@mui/material';
 import { cloneDeep } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 const componentList = {
   'tts': {
@@ -114,7 +114,7 @@ const NewComponentDialog: React.FC<NewComponentDialogProps> = (props) => {
 
   const prepare = (type: keyof typeof componentList) => {
     const value = componentList[type].value;
-    const id = shortid();
+    const id = nanoid();
     const update = cloneDeep(value);
     update.id = id;
     return update;

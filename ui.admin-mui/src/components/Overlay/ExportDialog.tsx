@@ -16,10 +16,10 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
 import { IsNotEmpty, MinLength } from 'class-validator';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -160,7 +160,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     setSaving(true);
 
     // load images
-    const obfuscateItemServer = shortid();
+    const obfuscateItemServer = nanoid();
     for (const item of gallery) {
       const response = await axios.get(item, { responseType: 'arraybuffer' });
       toSave.data[item.replace(server, obfuscateItemServer)] = `data:${response.headers['content-type'].toLowerCase()};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;

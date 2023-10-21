@@ -4,9 +4,9 @@ import {
   Backdrop, CircularProgress, Stack, Typography,
 } from '@mui/material';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
-import shortid from 'shortid';
 
 import { getSocket } from '../../helpers/socket';
 
@@ -49,7 +49,7 @@ const TwitchOwnAppTokens = () => {
       }
 
       if (!code) {
-        sessionStorage.twitchOauthState = type + shortid();
+        sessionStorage.twitchOauthState = type + nanoid();
         sessionStorage.clientSecret = clientSecret;
         sessionStorage.clientId = clientId;
         location.href = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${window.location.origin}/credentials/oauth/tokens&response_type=code&scope=${scope}&force_verify=true&state=${sessionStorage.twitchOauthState}`;

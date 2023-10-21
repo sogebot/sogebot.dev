@@ -163,7 +163,7 @@ const PageRegistryOverlays = () => {
 
   const copy = useCallback((link: string) => {
     navigator.clipboard.writeText(`${link}`);
-    enqueueSnackbar(<div>Overlay link &nbsp;<strong>{link}</strong>&nbsp;copied to clipboard.</div>);
+    enqueueSnackbar(<div>Overlay link copied to clipboard.</div>);
   }, [ enqueueSnackbar, server ]);
 
   const clone = useCallback((item: Overlay) => {

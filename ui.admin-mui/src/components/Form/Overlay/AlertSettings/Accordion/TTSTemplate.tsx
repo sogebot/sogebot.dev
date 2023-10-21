@@ -2,6 +2,7 @@ import { ExpandMoreTwoTone } from '@mui/icons-material';
 import {
   Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography,
 } from '@mui/material';
+import { nanoid } from 'nanoid';
 import React from 'react';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
@@ -12,10 +13,13 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   label?: string,
   onOpenChange: (value: string) => void;
   onChange: (value: string) => void;
+  helperText?: string;
+  customLabelDetails?: React.ReactNode;
+  placeholder?: string;
 };
 
 export const AccordionTTSTemplate: React.FC<Props> = (props) => {
-  const accordionId = 'ttsTemplate';
+  const [accordionId] = React.useState(nanoid());
   const { open,
     onOpenChange,
     onChange,
@@ -54,7 +58,10 @@ export const AccordionTTSTemplate: React.FC<Props> = (props) => {
             whiteSpace:   'nowrap',
             maxWidth:     '180px',
           }}>
-            {value}
+            {props.customLabelDetails
+              ? props.customLabelDetails
+              : value
+            }
           </Typography>
         </Fade>
       </Typography>
@@ -63,10 +70,9 @@ export const AccordionTTSTemplate: React.FC<Props> = (props) => {
       <TextField
         fullWidth
         value={value}
-        multiline
-        sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
-        placeholder={translate('registry.alerts.ttsTemplate.placeholder')}
-        helperText={translate('registry.alerts.ttsTemplate.help')}
+        helperText={props.helperText ?? translate('registry.alerts.ttsTemplate.help')}
+        placeholder={props.placeholder ?? translate('registry.alerts.ttsTemplate.placeholder')}
+        sx={{ '& .MuiFilledInput-input': { p: '10px' } }}
         onChange={ev => {
           setValue(ev.currentTarget.value);
         }}

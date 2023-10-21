@@ -4,8 +4,8 @@ import {
 } from '@mui/material';
 import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { cloneDeep } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
-import shortid from 'shortid';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
@@ -57,7 +57,7 @@ const itemsToStringifiedPart = (items: any[], operator: string): string => {
 };
 
 export const AccordionFilter: React.FC<Props> = (props) => {
-  const [ accordionId ] = React.useState(shortid());
+  const [ accordionId ] = React.useState(nanoid());
   const { translate } = useTranslation();
   const { open,
     onOpenChange,

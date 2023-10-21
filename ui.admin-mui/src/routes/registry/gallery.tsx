@@ -6,10 +6,10 @@ import {
 } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import chunk from 'lodash/chunk';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState , useRefElement } from 'rooks';
-import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
 import { AudioButton } from '../../components/Audio/Button';
@@ -92,7 +92,7 @@ const PageRegistryGallery = () => {
     for (const file of filesUpload) {
       try {
         const chunkSize = 512 * 1024;
-        const id = shortid();
+        const id = nanoid();
         for (const b64dataArr of chunk((await getBase64FromUrl(URL.createObjectURL(file))), chunkSize)) {
           const b64data = b64dataArr.join('');
           await new Promise((resolve) => {

@@ -32,10 +32,10 @@ import {
 import {
   capitalize, cloneDeep, set,
 } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import Moveable from 'react-moveable';
 import { useKey } from 'rooks';
-import shortid from 'shortid';
 import SimpleBar from 'simplebar-react';
 
 import { AccordionAnimationIn } from './Accordion/AnimationIn';
@@ -43,6 +43,9 @@ import { AccordionAnimationOut } from './Accordion/AnimationOut';
 import { AccordionAnimationText } from './Accordion/AnimationText';
 import { AccordionDuration } from './Accordion/Duration';
 import { AccordionFilter } from './Accordion/Filter';
+import { AccordionResponseFilter } from './Accordion/ResponseFilter';
+import { AccordionReward } from './Accordion/Reward';
+import { AccordionTTSTemplate } from './Accordion/TTSTemplate';
 import AlertSettingsAudio from './Audio';
 import AlertSettingsCustom from './Custom';
 import NewAlertDialog from './Dialog/newAlertDialog';
@@ -65,6 +68,9 @@ import { AlertItemCustom } from '../../../Overlay/AlertItemCustom';
 import { AlertItemImage } from '../../../Overlay/AlertItemImage';
 import { AlertItemText } from '../../../Overlay/AlertItemText';
 import { anSelectedItemOpts } from '../../atoms';
+import { Settings } from '../Settings';
+
+let disabledMouseMove = false;
 
 type Props = {
   canvas: { width: number, height: number },
@@ -137,11 +143,11 @@ function SortableAccordion(props: {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
-        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? function() {}}/>}
+        {props.item?.type === 'tts' && <AlertSettingsTTS model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
       </AccordionDetails>
     </Accordion>
   );
@@ -198,6 +204,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
   const [ moveableId, setMoveableId ] = React.useState<null | string>(null);
   const moveableRef = React.useMemo(() => document.getElementById(moveableId!), [ moveableId ]);
+  const [ key, setKey ] = React.useState(Date.now());
 
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
 
@@ -263,7 +270,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
     };
 
     const newAlert: Alerts['items'][number] = {
-      id:                   shortid(),
+      id:                   nanoid(),
       hooks:                [...it.hooks as any],
       name:                 it.name,
       enabled:              it.enabled,
@@ -279,7 +286,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
       variants:             [...it.variants as any],
       items:                [...it.items.map(o => ({
         ...(o as any),
-        id:     shortid.generate(),
+        id:     nanoid(),
         width:  calculateWidth(o.width, o.type),
         alignX: canvas.width / 2 - calculateWidth(o.width, o.type) / 2,
         alignY: calculateAlignY(o.height, o.type === 'text' && o.globalFont === 'globalFont2' ? 'text2' : o.type),
@@ -372,9 +379,10 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const cloneVariant = (item: Alerts['items'][number] | Alerts['items'][number]['variants'][number]) => {
     const variant: Alerts['items'][number]['variants'][number] = cloneDeep(item);
     // generate new ids
-    variant.id = shortid();
+    variant.id = nanoid();
+    variant.variantName = null; // remove name
     for (const it of variant.items) {
-      it.id = shortid();
+      it.id = nanoid();
     }
     'variants' in variant && delete variant.variants;
     console.log('Cloning', item);
@@ -397,14 +405,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const cloneGroup = (item: Alerts['items'][number]) => {
     setItems((val) => {
       const newItem = cloneDeep(item);
-      newItem.id = shortid();
+      newItem.id = nanoid();
       newItem.name = `Copy of ${newItem.name}`;
       for (const it of newItem.items) {
-        it.id = shortid();
+        it.id = nanoid();
       }
       for (const variant of newItem.variants) {
         for (const it of variant.items) {
-          it.id = shortid();
+          it.id = nanoid();
         }
       }
       return [...val, newItem];
@@ -544,6 +552,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
           }
         }
       }
+      setTimeout(() => {
+        setKey(Date.now());
+      }, 10);
       return updatedItems;
     });
   }, [moveableId, selectedVariantId]);
@@ -641,6 +652,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
           }}>
           <Box id="container" className="positionHandler"
             onMouseMove={(e) => {
+              if (disabledMouseMove) {
+                return;
+              }
               if (e.buttons === 1) {
                 const target = e.target as HTMLElement;
                 if (target.classList.contains('positionHandler')) {
@@ -711,12 +725,12 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 }}>
                   {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest} variant={selectedAlert}/>}
                   {o.type === 'gallery' && <AlertItemImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
-                  {o.type === 'text' && <AlertItemText test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'text' && <AlertItemText canvas={canvas} test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
                 </Box>
               </Paper>)}
               {moveableId && <Moveable
-                key={`${moveableId}-${snapEnabled}`}
+                key={`${moveableId}-${key}-${snapEnabled}`}
                 ables={[DimensionViewable, RemoveButton]}
                 props={{
                   dimensionViewable: true, removeButton: true,
@@ -767,16 +781,22 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 rotationPosition={'top'}
                 rotatable={true}
                 throttleRotate={0}
+                onRotateStart={e => {
+                  disabledMouseMove = true;
+                  e.set(frame.rotate);
+                }}
                 onRotate={e => {
                   e.target.style.transform = e.transform;
                 }}
                 onRotateEnd={(e) => {
+                  disabledMouseMove = false;
                   const rotate = Number(e.target.style.transform.replace('rotate(', '').replace('deg)', ''));
                   if (selectedItem) {
                     handleItemChange({ 'rotation': rotate });
                   }
                 }}
                 onResizeEnd={e => {
+                  disabledMouseMove = false;
                   if (selectedItem) {
                     handleItemChange({
                       'width':  Math.round((e.target as any).offsetWidth),
@@ -787,6 +807,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   }
                 }}
                 onResizeStart={e => {
+                  disabledMouseMove = true;
                   e.setOrigin(['%', '%']);
                   e.dragStart && e.dragStart.set(frame.translate);
                 }}
@@ -799,6 +820,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
                 }}
                 onDragEnd={() => {
+                  disabledMouseMove = false;
                   if (selectedItem) {
                     handleItemChange({
                       'alignX': Math.round(selectedItem.alignX + frame.translate[0]),
@@ -807,6 +829,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   }
                 }}
                 onDragStart={(e) => {
+                  disabledMouseMove = true;
                   if (e.clientY < e.target.getBoundingClientRect().top) {
                     // disable drag if clicking outside of the box
                     // checking currently only top side of moveable
@@ -870,7 +893,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   checked={selectedAlert.enabled !== false}
                   onClick={(ev) => ev.stopPropagation()}
                   onChange={(_, checked) => setEnable(null, checked)}/>
-                <Typography sx={{ width: '100%' }}>Main</Typography>
+                <Typography sx={{ width: '100%' }}>
+                  { selectedAlert.variantName ?? 'Main' }
+                </Typography>
                 <IconButton onClick={() => cloneVariant(selectedAlert)}><ContentCopyTwoToneIcon/></IconButton>
               </Stack>
             </Paper>
@@ -889,7 +914,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                     checked={k.enabled !== false}
                     onClick={(ev) => ev.stopPropagation()}
                     onChange={(_, checked) => setEnable(k.id, checked)}/>
-                  <Typography sx={{ width: '100%' }}>Variant {idx + 1}</Typography>
+                  <Typography sx={{ width: '100%' }}>
+                    {k.variantName ?? `Variant ${idx + 1}`}
+                  </Typography>
                   <IconButton color='error' onClick={() => deleteVariant(k)}><DeleteTwoTone/></IconButton>
                   <IconButton onClick={() => cloneVariant(k)}><ContentCopyTwoToneIcon/></IconButton>
                 </Stack>
@@ -897,6 +924,32 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             )}
 
             <Divider variant='middle' sx={{ my: 1 }}>Settings</Divider>
+
+            { selectedAlert.hooks[0] === 'custom' && <AccordionResponseFilter
+              model={selectedAlertVariant.id}
+              open={accordionId}
+              onOpenChange={setAccordionId}
+            />
+            }
+
+            <AccordionTTSTemplate
+              label={translate('registry.alerts.title.name')}
+              model={selectedAlertVariant.variantName ?? ''}
+              open={accordionId}
+              onOpenChange={setAccordionId} onChange={(val) => {
+                handleAlertChange({ 'variantName': val.length > 0 ? val : null });
+              }}
+              helperText={translate('registry.alerts.title.placeholder')}
+              placeholder=''
+              customLabelDetails={<>{selectedAlertVariant.variantName}</>}/>
+
+            <AccordionReward
+              label={'Trigger by reward'}
+              model={selectedAlertVariant.rewardId ?? ''}
+              open={accordionId}
+              onOpenChange={setAccordionId} onChange={(val) => {
+                handleAlertChange({ 'rewardId': val });
+              }}/>
 
             <AccordionDuration
               label={translate('registry.alerts.variant.name')}
@@ -923,14 +976,16 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
             <AccordionAnimationIn model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
               handleAlertChange({
-                'animationIn':         val.animationIn,
-                'animationInDuration': val.animationInDuration,
+                'animationIn':                 val.animationIn,
+                'animationInDuration':         val.animationInDuration,
+                'animationInWindowBoundaries': val.animationInWindowBoundaries,
               });
             }}/>
             <AccordionAnimationOut model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
               handleAlertChange({
-                'animationOut':         val.animationOut,
-                'animationOutDuration': val.animationOutDuration,
+                'animationOut':                 val.animationOut,
+                'animationOutDuration':         val.animationOutDuration,
+                'animationOutWindowBoundaries': val.animationOutWindowBoundaries,
               });
             }}/>
             <AccordionAnimationText model={selectedAlertVariant} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
@@ -986,6 +1041,14 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 </DragOverlay>
               </DndContext>
             </Box>
+
+            {selectedItem && <Box sx={{ pb: 2 }}>
+              <Divider variant='middle' sx={{ my: 1 }}>Component position</Divider>
+
+              <Settings model={selectedItem} onUpdate={(path, value) => {
+                handleItemChange({ [path]: value });
+              }}/>
+            </Box>}
 
             <NewComponentDialog onAdd={addNewComponent}/>
           </SimpleBar>

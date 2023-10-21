@@ -2,9 +2,9 @@ import { Box } from '@mui/material';
 import { Emotes } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { cloneDeep, random } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
 import type { Props } from './ChatItem';
@@ -14,7 +14,7 @@ let model: Emotes;
 const maxEmoteGuard = new Map<string, number>();
 
 export const EmotesItem: React.FC<Props<Emotes>> = ({ item }) => {
-  const [ containerId ] = React.useState(`emotes-` + shortid());
+  const [ containerId ] = React.useState(`emotes-` + nanoid());
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   const getContainerDimensions = () => {

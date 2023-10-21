@@ -7,9 +7,9 @@ import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { isEqual } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
-import shortid from 'shortid';
 
 import type { Props } from './ChatItem';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -82,7 +82,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
   const [ tiltifyCampaigns, setTiltifyCampaigns ] = React.useState<tiltifyCampaign[]>([]);
   const lang = useAppSelector((state: any) => state.loader.configuration.lang );
   const currency = useAppSelector((state: any) => state.loader.configuration.currency );
-  const [ threadId ] = React.useState(shortid());
+  const [ threadId ] = React.useState(nanoid());
 
   const [ lastFadeAt, setLastFadeAt ] = React.useState(0);
   const [ currentGoal, setCurrentGoal ] = React.useState(item.display.type === 'fade' ? item.campaigns.length : 0);
