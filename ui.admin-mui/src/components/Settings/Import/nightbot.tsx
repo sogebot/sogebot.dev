@@ -117,9 +117,11 @@ const PageSettingsModulesImportNightbot: React.FC<{
       } else if (error.response.status >= 500 && error.response.status < 600) {
         enqueueSnackbar('Remote server error.', { variant: 'error' });
         console.error(`Error === ${error.response.status}`);
+        return acc
       } else {
         enqueueSnackbar('Remote server error.', { variant: 'error' });
         console.error(`Error !== 429 or 5XX: ${error.response.status}`);
+        return acc
       }
     }
   };
