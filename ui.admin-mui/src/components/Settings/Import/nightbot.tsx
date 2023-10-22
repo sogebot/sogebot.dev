@@ -91,7 +91,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     playlist: PlaylistItem[];
   };
 
-  const fetchPlaylist = async (acc: PlaylistItemTrack[], offset: number): Promise<T> => {
+  const fetchPlaylist = async (acc: PlaylistItemTrack[] = [], offset = 0): Promise<T> => {
     const url = 'https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset=';
     let maxRetries = 3;
 
@@ -125,7 +125,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   const importPlaylist = async () => {
-    const videos: PlaylistItemTrack[] = await fetchPlaylist([], 0);
+    const videos: PlaylistItemTrack[] = await fetchPlaylist();
     const ytVideos = videos.filter((track) => {
       track.provider === 'youtube';
     });
@@ -178,8 +178,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
             </InputAdornment>,
           }}
         />
-        <Stack direction='row-reverse'>
-          <Button color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import</Button>
+        <Stack direction='row'>
+          <Button color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import playlist</Button>
         </Stack>
 
       </Paper>
