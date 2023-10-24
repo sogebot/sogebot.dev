@@ -91,11 +91,11 @@ const PageSettingsModulesImportNightbot: React.FC<{
     playlist: PlaylistItem[];
   };
 
-  async function sleep(ms: number) {
+  const sleep = async (ms: number) => {
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async function fetchPlaylistPage(offset: number): Promise<PlaylistResponse> {
+  const fetchPlaylistPage = async (offset: number): Promise<PlaylistResponse> => {
     const url = 'https://api.nightbot.tv/1/song_requests/playlist';
     const delay = 10 ** 4 * 6;
     const delaySeconds = delay / 10 ** 3;
