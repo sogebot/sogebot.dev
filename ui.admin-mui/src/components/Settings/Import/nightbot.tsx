@@ -66,7 +66,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  type PlaylistItemTrack = {
+  type Track = {
     providerId: string;
     provider: string;
     duration: number;
@@ -76,13 +76,13 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   type PlaylistItem = {
-    track: PlaylistItemTrack;
+    track: Track;
     _id: string;
     createdAt: string;
     updatedAt: string;
   };
 
-  type PlaylistPage = {
+  type PlaylistResponse = {
     status: number;
     _sort: { date: 'asc' | 'desc' };
     _limit: number;
@@ -91,60 +91,65 @@ const PageSettingsModulesImportNightbot: React.FC<{
     playlist: PlaylistItem[];
   };
 
-  const fetchPlaylist = async (acc: PlaylistItemTrack[] = [], offset = 0): Promise<T> => {
-    const url = 'https://api.nightbot.tv/1/song_requests/playlist?limit=100&offset=';
-    let maxRetries = 3;
+  async function sleep(ms: number) {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
-    try {
-      const response = await axios.get(url + offset, { headers: { Authorization: 'Bearer ' + accessToken } });
-      const data: PlaylistPage = response.data;
-      const tracks = data.playlist.map((e) => e.track);
-
-      if (acc.push(...tracks) >= data._total ?? 0) {
-        return acc;
-      }
-
-      return await fetchPlaylist(acc, offset + 100);
-    } catch (error: any) {
-      if (error.response.status === 429 && maxRetries !== 0) {
-        maxRetries -= 1;
-        console.error('Received a 429 error. Retrying after a delay...');
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(axios.get(url+offset, { headers: { Authorization: 'Bearer ' + accessToken } }));
-          }, 1000);
+  async function fetchPlaylistPage(offset: number): Promise<PlaylistResponse> {
+    const url = 'https://api.nightbot.tv/1/song_requests/playlist';
+    const delay = 10 ** 4 * 6;
+    const delaySeconds = delay / 10 ** 3;
+    for (let retries = 3; retries > 0; retries--) {
+      try {
+        const response = await axios.get(url, {
+          params: {
+            limit:  100,
+            offset: offset,
+          },
+          headers: { Authorization: 'Bearer ' + accessToken },
         });
-      } else if (error.response.status >= 500 && error.response.status < 600) {
-        enqueueSnackbar('Remote server error.', { variant: 'error' });
-        console.error(`Error === ${error.response.status}`);
-        return acc
-      } else {
-        enqueueSnackbar('Remote server error.', { variant: 'error' });
-        console.error(`Error !== 429 or 5XX: ${error.response.status}`);
-        return acc
+        return response.data;
+      } catch (error: any) {
+        console.info(`Retrying after ${delaySeconds} seconds.`);
+        await sleep(delay);
       }
+    }
+    console.error('Error fetching playlist page after multiple retries.');
+    enqueueSnackbar('Remote server error.', { variant: 'error' });
+    throw new Error('Failed to fetch playlist after multiple retries.');
+  }
+
+  const fetchTracks = async (tracks: Track[] = [], offset = 0): Promise<Track[]> => {
+    try {
+      const page = await fetchPlaylistPage(offset);
+      const mergedTracks = tracks.concat(page.playlist.map(t => t.track));
+      if (mergedTracks.length < page._total) {
+        await fetchTracks(mergedTracks, offset + 100);
+      }
+      return mergedTracks;
+    } catch (error: any) {
+      console.error('Error fetching playlist.');
+      enqueueSnackbar('Remote server error.', { variant: 'error' });
+      throw new Error('Failed to fetch playlist.');
     }
   };
 
   const importPlaylist = async () => {
-    const videos: PlaylistItemTrack[] = await fetchPlaylist();
-    const ytVideos = videos.filter((track) => {
-      track.provider === 'youtube';
-    });
-
+    const tracks = await fetchTracks();
+    const ytVideos = tracks.filter(track => track.provider === 'youtube');
     let failCount = 0;
-    for (const video of ytVideos) {
+    for (const track of ytVideos) {
       await new Promise((resolve, reject) => {
         getSocket('/systems/songs').emit(
           'import.video',
           {
-            playlist:  video.providerId,
+            playlist:  track.providerId,
             forcedTag: 'nightbot-import',
           },
           (err) => {
             if (err) {
               failCount += 1;
-              console.error('error: ', video.url);
+              console.error('error: ', track.url);
               reject(err);
             } else {
               resolve('resolved');
@@ -153,11 +158,9 @@ const PageSettingsModulesImportNightbot: React.FC<{
         );
       });
     }
-
     if (failCount > 0) {
-      enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'error' });
+      enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'info' });
     }
-
     enqueueSnackbar('Playlist import completed.', { variant: 'success' });
   };
 
