@@ -93,7 +93,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const sleep = async (ms: number) => {
     await new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  };
 
   const fetchPlaylistPage = async (offset: number): Promise<PlaylistResponse> => {
     const url = 'https://api.nightbot.tv/1/song_requests/playlist';
@@ -117,7 +117,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
     console.error('Error fetching playlist page after multiple retries.');
     enqueueSnackbar('Remote server error.', { variant: 'error' });
     throw new Error('Failed to fetch playlist after multiple retries.');
-  }
+  };
 
   const fetchTracks = async (tracks: Track[] = [], offset = 0): Promise<Track[]> => {
     try {
@@ -136,27 +136,31 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const importPlaylist = async () => {
     const tracks = await fetchTracks();
-    const ytVideos = tracks.filter(track => track.provider === 'youtube');
+    const ytVideos = tracks.filter((track) => track.provider === 'youtube');
     let failCount = 0;
     for (const track of ytVideos) {
-      await new Promise((resolve, reject) => {
-        getSocket('/systems/songs').emit(
-          'import.video',
-          {
-            playlist:  track.providerId,
-            forcedTag: 'nightbot-import',
-          },
-          (err) => {
-            if (err) {
-              failCount += 1;
-              console.error('error: ', track.url);
-              reject(err);
-            } else {
-              resolve('resolved');
-            }
-          },
-        );
-      });
+      try {
+        await new Promise((resolve, reject) => {
+          getSocket('/systems/songs').emit(
+            'import.video',
+            {
+              playlist:  track.providerId,
+              forcedTag: 'nightbot-import',
+            },
+            (err) => {
+              if (err) {
+                failCount += 1;
+                console.error('error: ', track.url);
+                reject(err);
+              } else {
+                resolve('resolved');
+              }
+            },
+          );
+        });
+      } catch (error) {
+        console.log('ERROR DURING IMPORT: ', error);
+      }
     }
     if (failCount > 0) {
       enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'info' });
