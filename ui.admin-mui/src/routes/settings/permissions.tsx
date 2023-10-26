@@ -159,7 +159,7 @@ const PageSettingsPermissions = () => {
   }, [reorder]);
 
   const addNewPermissionGroup = useCallback(() => {
-    const data = new Permissions({
+    const data = Permissions.create({
       id:                 v4(),
       name:               nanoid(),
       isCorePermission:   false,

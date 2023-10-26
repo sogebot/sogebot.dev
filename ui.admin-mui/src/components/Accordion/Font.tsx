@@ -166,7 +166,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
           fullWidth
           isAlphaHidden
           format="hex"
-          value={isHexColor(model.highlightcolor) ? model.highlightcolor : '#111111'}
+          value={isHexColor(String(model.highlightcolor)) ? String(model.highlightcolor) : '#111111'}
           onChange={(_, value) => onChange({
             ...model, highlightcolor: isHexColor(value.hex) && value.hex.length > 0 ? value.hex : '#111111',
           })} />}
@@ -230,7 +230,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             max={200}
             valueLabelFormat={(val) => `${val}px`}
             valueLabelDisplay="on"
-            value={model.pl}
+            value={Number(model.pl)}
             onChange={(_, newValue) => onChange({
               ...model, pl: newValue as number,
             })}/>
@@ -244,7 +244,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             max={200}
             valueLabelFormat={(val) => `${val}px`}
             valueLabelDisplay="on"
-            value={model.pr}
+            value={Number(model.pr)}
             onChange={(_, newValue) => onChange({
               ...model, pr: newValue as number,
             })}/>
@@ -258,7 +258,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             max={200}
             valueLabelFormat={(val) => `${val}px`}
             valueLabelDisplay="on"
-            value={model.pb}
+            value={Number(model.pb)}
             onChange={(_, newValue) => onChange({
               ...model, pb: newValue as number,
             })}/>
@@ -272,7 +272,7 @@ export const AccordionFont = <T extends Randomizer['customizationFont']
             max={200}
             valueLabelFormat={(val) => `${val}px`}
             valueLabelDisplay="on"
-            value={model.pt}
+            value={Number(model.pt)}
             onChange={(_, newValue) => onChange({
               ...model, pt: newValue as number,
             })}/>

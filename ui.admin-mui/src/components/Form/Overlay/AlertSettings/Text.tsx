@@ -29,10 +29,6 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
   const variant = useAtomValue(anSelectedAlertVariant);
   const selectedAlert = useAtomValue(anSelectedAlert);
 
-  console.log({
-    parent, variant, selectedAlert,
-  });
-
   const isParent = item.font === null;
 
   React.useEffect(() => {
@@ -40,7 +36,7 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
       props.onChange(item);
     }
   }, [ item ]);
-  return (parent && variant) && (<>
+  return (parent && variant) ? <>
     <AccordionMessageTemplate open={accordion} onOpenChange={setAccordion} model={item.messageTemplate} onChange={(messageTemplate) => setItem({
       ...item, messageTemplate,
     })}/>
@@ -132,7 +128,7 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
       }}/>
 
     {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}  </>
-  );
+    : <></>;
 };
 
 export default AlertSettingsText;

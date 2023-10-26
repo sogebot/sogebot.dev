@@ -31,7 +31,7 @@ export const HLTBEdit: React.FC<{
   const navigate = useNavigate();
   const { id } = useParams();
   const { translate } = useTranslation();
-  const [ item, setItem ] = useState<HowLongToBeatGame>(new HowLongToBeatGame({
+  const [ item, setItem ] = useState<HowLongToBeatGame>(HowLongToBeatGame.create({
     game:   '',
     offset: 0,
   }));
@@ -52,7 +52,7 @@ export const HLTBEdit: React.FC<{
   useEffect(() => {
     setLoading(true);
     if (id) {
-      const it = props.items?.find(o => o.id === id) ?? new HowLongToBeatGame({
+      const it = props.items?.find(o => o.id === id) ?? HowLongToBeatGame.create({
         id:     v4(),
         game:   '',
         offset: 0,
@@ -63,7 +63,7 @@ export const HLTBEdit: React.FC<{
     } else {
       setLastValidGame('');
       setInputValue('');
-      setItem(new HowLongToBeatGame({
+      setItem(HowLongToBeatGame.create({
         id:     v4(),
         game:   '',
         offset: 0,
