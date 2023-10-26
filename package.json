@@ -10,7 +10,7 @@
     "tunnel": "ssh -L 5432:community.sogebot.xyz:15432 root@community.sogebot.xyz"
   },
   "dependencies": {
-    "custompatch": "1.0.22"
+    "custompatch": "^1.0.22"
   },
   "devDependencies": {
     "@types/uuid": "^9.0.2"
