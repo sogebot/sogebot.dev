@@ -1,16 +1,16 @@
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { atom } from 'jotai';
 
-export const emptyItem = Overlay.create({
+export const emptyItem: Partial<Overlay> = {
   canvas: {
     height: 1080,
     width:  1920,
   },
   name:  '',
   items: [],
-});
+};
 
-export const anItems = atom<Overlay>(Overlay.create(emptyItem));
+export const anItems = atom<Overlay>(Object.assign(new Overlay(), emptyItem));
 export const anMoveableId = atom<null | string>(null);
 
 export const anSelectedItem = atom(

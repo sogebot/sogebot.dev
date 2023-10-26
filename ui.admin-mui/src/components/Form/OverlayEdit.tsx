@@ -218,7 +218,7 @@ export const OverlayEdit: React.FC = () => {
         }
       });
     } else {
-      setItem(Overlay.create(emptyItem));
+      setItem(Object.assign(new Overlay(), emptyItem));
       setLoading(false);
     }
     reset();

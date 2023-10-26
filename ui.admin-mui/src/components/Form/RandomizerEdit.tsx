@@ -75,7 +75,7 @@ export const generateItems = (items: any[], generatedItems: Required<Randomizer[
   return generatedItems;
 };
 
-const emptyItem = Randomizer.create({
+const emptyItem = Object.assign(new Randomizer(), {
   name:           '',
   command:        '',
   items:          [],
@@ -217,7 +217,7 @@ export const RandomizerEdit: React.FC = () => {
 
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
-  const [ item, setItem ] = React.useState<Randomizer>(Randomizer.create(emptyItem));
+  const [ item, setItem ] = React.useState<Randomizer>(Object.assign(new Randomizer(), emptyItem));
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -302,11 +302,11 @@ export const RandomizerEdit: React.FC = () => {
       axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           console.log(data.data);
-          setItem(data.data ?? Randomizer.create(emptyItem));
+          setItem(data.data ?? Object.assign(new Randomizer(), emptyItem));
           setLoading(false);
         });
     } else {
-      setItem(Randomizer.create(emptyItem));
+      setItem(Object.assign(new Randomizer(), emptyItem));
       setLoading(false);
     }
     reset();

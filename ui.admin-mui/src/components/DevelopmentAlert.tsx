@@ -1,7 +1,7 @@
 import {
   Box,
-  Button, Fade, Paper, Stack,
-  Typography,
+  Button, Fade, Link, Paper,
+  Stack, Typography,
 } from '@mui/material';
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
@@ -18,9 +18,17 @@ export default function DevelopmentAlert() {
           fontWeight: 'bold', pb: 2,
         }}>Development</Typography>
         <Typography>This dashboard is still in heavy development and doesn't contain all features.</Typography>
-        <Typography sx={{ pt: 2 }}>Missing features:</Typography>
+        <Typography sx={{ pt: 2 }}><strong>Testing focus:</strong></Typography>
         <ul>
-          <li>Alerts registry</li>
+          <li>New{' '}
+            <Link href={`/registry/overlays?server=${JSON.parse(localStorage.server)}`}>
+              <strong>Alerts</strong> system
+            </Link>
+            {' '}which should replace Alerts registry. Located at </li>
+        </ul>
+        <Typography sx={{ pt: 2 }}><strong>Missing features:</strong></Typography>
+        <ul>
+          <li>Events</li>
         </ul>
         <Typography sx={{ pt: 2 }}>Happy testing!</Typography>
 

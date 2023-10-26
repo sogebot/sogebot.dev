@@ -66,7 +66,7 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 
 const createInitialItem = async () => {
   const response = await fetch(`${JSON.parse(localStorage.server)}/assets/custom-variables-code.txt`);
-  return Variable.create({
+  return Object.assign(new Variable(), {
     variableName:  '',
     currentValue:  '',
     evalValue:     await response.text(),

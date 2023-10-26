@@ -236,7 +236,7 @@ const PageRegistryCustomVariables = () => {
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const clone = useCallback((item: Variable) => {
-    const clonedItem = Variable.create({
+    const clonedItem = Object.assign(new Variable(), {
       ...item,
       id:           v4(),
       description:  '(clone) of ' + item.variableName,

@@ -19,7 +19,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 
 const createInitialItem = async () => {
   const response = await fetch(`${JSON.parse(localStorage.server)}/assets/obswebsocket-code.txt`);
-  return OBSWebsocket.create({
+  return Object.assign(new OBSWebsocket(), {
     id:   nanoid(),
     name: '',
     code: await response.text(),

@@ -27,7 +27,7 @@ export const PlaylistEdit: React.FC<{
   const navigate = useNavigate();
   const { id } = useParams();
   const { translate } = useTranslation();
-  const [ item, setItem ] = useState<SongPlaylist>(SongPlaylist.create({ tags: [] }));
+  const [ item, setItem ] = useState<SongPlaylist>(Object.assign(new SongPlaylist(), { tags: [] }));
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { reset, setErrors, haveErrors, validate } = useValidator();
@@ -44,15 +44,15 @@ export const PlaylistEdit: React.FC<{
         if (err) {
           console.error(err);
         } else {
-          setItem(res[0] ?? SongPlaylist.create({ tags: [] }));
+          setItem(res[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
         }
         setLoading(false);
 
       });
-      //setItem(props.items?.find(o => o.videoId === id) ?? SongPlaylist.create({ tags: [] }));
+      //setItem(props.items?.find(o => o.videoId === id) ?? Object.assign(new SongPlaylist(), { tags: [] }));
       setLoading(false);
     } else {
-      setItem(SongPlaylist.create({ tags: [] }));
+      setItem(Object.assign(new SongPlaylist(), { tags: [] }));
       setLoading(false);
     }
     reset();
