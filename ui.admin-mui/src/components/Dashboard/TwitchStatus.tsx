@@ -99,11 +99,13 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
                   </Typography>);
                 })}</Typography>
             }
-            <Box sx={{ py: 0.5 }}>{
-              contentClassificationLabels.map(label => <Chip icon={label === 'MatureGame' ? <Lock/> : undefined}size='small' sx={{ mx: 0.1 }} label={
-                CONTENT_CLASSIFICATION_LABELS[label as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? label
-              }/>)
-            }&nbsp;</Box>
+            <Box sx={{ py: 0.5 }}>
+              { contentClassificationLabels.length === 0
+                ? <Typography component='small' sx={{ color: theme.palette.grey[800] }}>Without content classification labels</Typography>
+                : contentClassificationLabels.map(label => <Chip icon={label === 'MatureGame' ? <Lock/> : undefined}size='small' sx={{ mx: 0.1 }} label={
+                  CONTENT_CLASSIFICATION_LABELS[label as keyof typeof CONTENT_CLASSIFICATION_LABELS]?.name ?? label
+                }/>)
+              }&nbsp;</Box>
           </Grid>
         </Grid>
         { game && <Backdrop open={hover} sx={classes.backdrop} onClick={() => setOpen(true)}>
