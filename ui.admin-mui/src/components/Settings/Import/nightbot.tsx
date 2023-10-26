@@ -159,7 +159,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
           );
         });
       } catch (error) {
-        console.log('ERROR DURING IMPORT: ', error);
+        console.error('ERROR DURING IMPORT: ', error);
       }
     }
     if (failCount > 0) {
