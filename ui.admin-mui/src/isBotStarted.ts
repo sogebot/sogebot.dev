@@ -7,7 +7,7 @@ function isBotStarted(dispatch: Dispatch<AnyAction>, server: string) {
     const check = () => {
       dispatch(setMessage('Checking bot status.'));
       console.log('Checking bot on ' + server);
-      fetch(server)
+      fetch(server + '/health')
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
