@@ -1,11 +1,12 @@
 import {
-  Box, Button, CircularProgress, InputAdornment, Paper, TextField, Typography,
+  Box, Button, InputAdornment, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
+import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -65,29 +66,133 @@ const PageSettingsModulesImportNightbot: React.FC<{
     enqueueSnackbar('User access revoked.', { variant: 'success' });
   }, [ enqueueSnackbar ]);
 
-  return (<Box ref={ref} id="nightbot">
-    <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
+  type Track = {
+    providerId: string;
+    provider: string;
+    duration: number;
+    title: string;
+    artist: string;
+    url: string;
+  };
 
-    <Paper elevation={1} sx={{ p: 1 }}>
-      {userLoadInProgress}
-      <TextField
-        disabled
-        fullWidth
-        variant='filled'
-        value={userLoadInProgress ? 'Loading user data...' : user}
-        label={translate('integrations.lastfm.settings.username')}
-        InputProps={{
-          startAdornment: userLoadInProgress && <InputAdornment position="start"><CircularProgress size={20}/></InputAdornment>,
-          endAdornment:   <InputAdornment position="end">
-            { user !== 'Not Authorized'
-              ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-              : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+  type PlaylistItem = {
+    track: Track;
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  type PlaylistResponse = {
+    status: number;
+    _sort: { date: 'asc' | 'desc' };
+    _limit: number;
+    _offset: number;
+    _total: number;
+    playlist: PlaylistItem[];
+  };
+
+  const sleep = async (ms: number) => {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  };
+
+  const fetchPlaylistPage = async (offset: number): Promise<PlaylistResponse> => {
+    const url = 'https://api.nightbot.tv/1/song_requests/playlist';
+    const delay = 10 ** 4 * 6;
+    const delaySeconds = delay / 10 ** 3;
+    for (let retries = 3; retries > 0; retries--) {
+      try {
+        const response = await axios.get(url, {
+          params: {
+            limit:  100,
+            offset: offset,
+          },
+          headers: { Authorization: 'Bearer ' + accessToken },
+        });
+        return response.data;
+      } catch (error: any) {
+        console.info(`Retrying after ${delaySeconds} seconds.`);
+        await sleep(delay);
+      }
+    }
+    console.error('Error fetching playlist page after multiple retries.');
+    enqueueSnackbar('Remote server error.', { variant: 'error' });
+    throw new Error('Failed to fetch playlist after multiple retries.');
+  };
+
+  const fetchTracks = async (tracks: Track[] = [], offset = 0): Promise<Track[]> => {
+    try {
+      const page = await fetchPlaylistPage(offset);
+      const mergedTracks = tracks.concat(page.playlist.map(t => t.track));
+      if (mergedTracks.length < page._total) {
+        await fetchTracks(mergedTracks, offset + 100);
+      }
+      return mergedTracks;
+    } catch (error: any) {
+      console.error('Error fetching playlist.');
+      enqueueSnackbar('Remote server error.', { variant: 'error' });
+      throw new Error('Failed to fetch playlist.');
+    }
+  };
+
+  const importPlaylist = async () => {
+    const tracks = await fetchTracks();
+    const ytVideos = tracks.filter((track) => track.provider === 'youtube');
+    let failCount = 0;
+    for (const track of ytVideos) {
+      try {
+        await new Promise((resolve, reject) => {
+          getSocket('/systems/songs').emit(
+            'import.video',
+            {
+              playlist:  track.providerId,
+              forcedTag: 'nightbot-import',
+            },
+            (err) => {
+              if (err) {
+                failCount += 1;
+                console.error('error: ', track.url);
+                reject(err);
+              } else {
+                resolve('resolved');
+              }
+            },
+          );
+        });
+      } catch (error) {
+        console.error('ERROR DURING IMPORT: ', error);
+      }
+    }
+    if (failCount > 0) {
+      enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'info' });
+    }
+    enqueueSnackbar('Playlist import completed.', { variant: 'success' });
+  };
+
+  return (
+    <Box ref={ref} id='nightbot'>
+      <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
+      <Paper elevation={1} sx={{ p: 1 }}>
+        {userLoadInProgress}
+        <TextField
+          disabled
+          fullWidth
+          variant='filled'
+          value={userLoadInProgress ? 'Loading user data...' : user}
+          label={translate('integrations.lastfm.settings.username')}
+          InputProps={{
+            endAdornment: <InputAdornment position='end'> { user !== 'Not Authorized'
+              ? <Button color='error' variant='contained' onClick={revoke}>Revoke</Button>
+              : <Button color='success' variant='contained' onClick={authorize}>Authorize</Button>
             }
-          </InputAdornment>,
-        }}
-      />
-    </Paper>
-  </Box>
+            </InputAdornment>,
+          }}
+        />
+        <Stack direction='row'>
+          <Button color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import playlist</Button>
+        </Stack>
+
+      </Paper>
+    </Box>
   );
 };
 
