@@ -1,17 +1,21 @@
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import {
-  Avatar, Box, IconButton, InputAdornment, TextField,
+  Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography,
 } from '@mui/material';
 import { isEqual } from 'lodash';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+import { useAppSelector } from '../../hooks/useAppDispatch';
 import { scopes } from '../../routes/credentials/login';
 
 export const UserSimple: React.FC = () => {
   const [ user ] = useLocalstorageState<false | Record<string, any>>('cached-logged-user', false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { state } = useAppSelector((s: any) => s.loader);
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
@@ -25,6 +29,25 @@ export const UserSimple: React.FC = () => {
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
     window.location.assign(window.location.origin);
   };
+
+  React.useEffect(() => {
+    if (user && state) {
+      getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
+        if (missingScopes.length > 0) {
+          console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
+          enqueueSnackbar(<Box>
+            <Typography>Broadcaster is missing these scopes <small>{missingScopes.join(', ')}</small>.</Typography>
+            <Typography>Please reauthenticate your broadcaster account at <Link sx={{
+              display: 'inline-block', color: 'white !important', textDecorationColor: 'white !important', fontWeight: 'bold',
+            }} href={`/settings/modules/services/twitch?server=${JSON.parse(localStorage.server)}`}>Twitch module service</Link> settings.</Typography>
+          </Box>, {
+            variant:          'error',
+            autoHideDuration: null,
+          });
+        }
+      });
+    }
+  }, [user, state]);
 
   React.useEffect(() => {
     if (user) {

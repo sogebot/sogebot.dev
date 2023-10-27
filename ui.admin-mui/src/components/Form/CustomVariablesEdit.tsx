@@ -11,7 +11,6 @@ import {
   Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio,
   Select, Slider, Stack, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography,
-
 } from '@mui/material';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
