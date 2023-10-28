@@ -6,11 +6,14 @@ import {
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
 
+import { useAppSelector } from '../hooks/useAppDispatch';
+
 export default function DevelopmentAlert() {
   const [ acknowledge, setAcknowledged ] = useSessionstorageState('dev_acknowledged', false);
+  const { state } = useAppSelector((s: any) => s.loader);
 
   return (
-    <Fade in={acknowledge === false} unmountOnExit mountOnEnter>
+    state && <Fade in={acknowledge === false} unmountOnExit mountOnEnter>
       <Box sx={{
         position: 'absolute', right: 10, bottom: 10, width: '500px', p: 2, marginLeft: 'auto', zIndex: 9999999,
       }} component={Paper}>

@@ -27,6 +27,7 @@ import { DashboardWidgetBot } from '../components/Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../components/Dashboard/Widget/Twitch';
 import DebugBar from '../components/DebugBar';
 import DevelopmentAlert from '../components/DevelopmentAlert';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { LoginWarning } from '../components/LoginWarning';
 import NavDrawer from '../components/NavDrawer/navDrawer';
 import { OnboardingTokens } from '../components/OnboardingTokens';
@@ -191,117 +192,119 @@ export default function Root() {
     }
   }, [ element, dispatch, throttledFunction ]);
   return <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={configuration.lang}>
-    <ServerSelect/>
-    <Version/>
-    <LoginWarning/>
-    <CookieBar/>
-    <DebugBar/>
-    <ServerRouterQueryParam/>
-    <DevelopmentAlert/>
+    <ErrorBoundary>
+      <ServerSelect/>
+      <Version/>
+      <LoginWarning/>
+      <CookieBar/>
+      <DebugBar/>
+      <ServerRouterQueryParam/>
+      <DevelopmentAlert/>
 
-    {state && <>
-      <OnboardingTokens/>
-      <Fade in={state && tokensOnboardingState}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Slide in={!isIndexPage}>
-            <AppBar position="sticky" sx={{ px: '70px' }}>
-              <Toolbar>
-                <Box sx={{ flexGrow: 1 }}>
-                  <AppBarBreadcrumbs/>
+      {state && <>
+        <OnboardingTokens/>
+        <Fade in={state && tokensOnboardingState}>
+          <Box sx={{ flexGrow: 1 }}>
+            <Slide in={!isIndexPage}>
+              <AppBar position="sticky" sx={{ px: '70px' }}>
+                <Toolbar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <AppBarBreadcrumbs/>
+                  </Box>
+                  <Logo/>
+                </Toolbar>
+              </AppBar>
+            </Slide>
+            <NavDrawer />
+
+            {state && tokensOnboardingState && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
+              <Fade in={isIndexPage}>
+                <Box sx={{
+                  position: 'absolute', top: '0px', width: isMobile ? '100%' : 'calc(100% - 75px)', left: isMobile ? undefined : '70px',
+                }} mr={0.2}>
+                  <DashboardStats/>
+                  <Grid container pt={0.5} pr={0.2} spacing={0.5} sx={{
+                    flexFlow: 'nowrap', minWidth: 0,
+                  }}>
+                    <Grid item
+                      sx={{ minWidth: 0 }}
+                      sm={chatUnfold ? 12 : true}
+                      md={chatUnfold ? 6 : true}
+                      xs={chatUnfold ? 12 : true}>
+                      <DashboardWidgetBot/>
+                    </Grid>
+                    <Grid item
+                      sx={{ minWidth: 0 }}
+                      sm={chatUnfold ? true : 'auto'}
+                      md={chatUnfold ? true : 'auto'}
+                      xs={chatUnfold ? true : 'auto'}>
+                      <DashboardWidgetTwitch/>
+                    </Grid>
+                    <Grid item
+                      sm={unfold ? 2 : 'auto'}
+                      md={unfold ? 2 : 'auto'}
+                      xs={unfold ? 12 : 'auto'}
+                      sx={{ minWidth: unfold ? '180px' : 0 }}>
+                      <DashboardWidgetAction/>
+                    </Grid>
+                  </Grid>
                 </Box>
-                <Logo/>
-              </Toolbar>
-            </AppBar>
-          </Slide>
-          <NavDrawer />
+              </Fade>
 
-          {state && tokensOnboardingState && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
-            <Fade in={isIndexPage}>
-              <Box sx={{
-                position: 'absolute', top: '0px', width: isMobile ? '100%' : 'calc(100% - 75px)', left: isMobile ? undefined : '70px',
-              }} mr={0.2}>
-                <DashboardStats/>
-                <Grid container pt={0.5} pr={0.2} spacing={0.5} sx={{
-                  flexFlow: 'nowrap', minWidth: 0,
+              <Fade in={!isIndexPage}>
+                <Box ref={pageRef} sx={{
+                  minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
                 }}>
-                  <Grid item
-                    sx={{ minWidth: 0 }}
-                    sm={chatUnfold ? 12 : true}
-                    md={chatUnfold ? 6 : true}
-                    xs={chatUnfold ? 12 : true}>
-                    <DashboardWidgetBot/>
-                  </Grid>
-                  <Grid item
-                    sx={{ minWidth: 0 }}
-                    sm={chatUnfold ? true : 'auto'}
-                    md={chatUnfold ? true : 'auto'}
-                    xs={chatUnfold ? true : 'auto'}>
-                    <DashboardWidgetTwitch/>
-                  </Grid>
-                  <Grid item
-                    sm={unfold ? 2 : 'auto'}
-                    md={unfold ? 2 : 'auto'}
-                    xs={unfold ? 12 : 'auto'}
-                    sx={{ minWidth: unfold ? '180px' : 0 }}>
-                    <DashboardWidgetAction/>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Fade>
+                  <Suspense fallback={<Backdrop open={true}>
+                    <CircularProgress/>
+                  </Backdrop>}>
+                    <Routes>
+                      <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
+                      <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
+                      <Route path="/commands/botcommands/:type?/:id?" element={<PageCommandsBot/>}/>
+                      <Route path="/commands/price/:type?/:id?" element={<PageCommandsPrice/>}/>
+                      <Route path="/commands/cooldowns/:type?/:id?" element={<PageCommandsCooldowns/>}/>
+                      <Route path="/commands/keywords/group/:type?/:id?" element={<PageCommandsKeywordsGroup/>}/>
+                      <Route path="/commands/keywords/:type?/:id?" element={<PageCommandsKeywords/>}/>
+                      <Route path="/commands/customcommands/group/:type?/:id?" element={<PageCommandsCustomCommandsGroup/>}/>
+                      <Route path="/commands/customcommands/:type?/:id?" element={<PageCommandsCustomCommands/>}/>
 
-            <Fade in={!isIndexPage}>
-              <Box ref={pageRef} sx={{
-                minHeight: 'calc(100vh - 64px)', maxHeight: 'calc(100vh - 64px)', padding: '0.3em', overflow: 'auto',
-              }}>
-                <Suspense fallback={<Backdrop open={true}>
-                  <CircularProgress/>
-                </Backdrop>}>
-                  <Routes>
-                    <Route path="/commands/alias/group/:type?/:id?" element={<PageCommandsAliasGroup/>}/>
-                    <Route path="/commands/alias/:type?/:id?" element={<PageCommandsAlias/>}/>
-                    <Route path="/commands/botcommands/:type?/:id?" element={<PageCommandsBot/>}/>
-                    <Route path="/commands/price/:type?/:id?" element={<PageCommandsPrice/>}/>
-                    <Route path="/commands/cooldowns/:type?/:id?" element={<PageCommandsCooldowns/>}/>
-                    <Route path="/commands/keywords/group/:type?/:id?" element={<PageCommandsKeywordsGroup/>}/>
-                    <Route path="/commands/keywords/:type?/:id?" element={<PageCommandsKeywords/>}/>
-                    <Route path="/commands/customcommands/group/:type?/:id?" element={<PageCommandsCustomCommandsGroup/>}/>
-                    <Route path="/commands/customcommands/:type?/:id?" element={<PageCommandsCustomCommands/>}/>
+                      <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
+                      <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
+                      <Route path="/manage/viewers/:userId?" element={<PageManageViewers/>}/>
+                      <Route path="/manage/highlights" element={<PageManageHighlights/>}/>
+                      <Route path="/manage/ranks/:type?/:id?" element={<PageManageRanks/>}/>
+                      <Route path="/manage/howlongtobeat/:type?/:id?" element={<PageManageHLTB/>}/>
+                      <Route path="/manage/songs/playlist/:type?/:id?" element={<PageManagePlaylist/>}/>
+                      <Route path="/manage/songs/bannedsongs/" element={<PageManageBannedSongs/>}/>
+                      <Route path="/manage/spotify/bannedsongs/" element={<PageManageBannedSongsSpotify/>}/>
 
-                    <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
-                    <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
-                    <Route path="/manage/viewers/:userId?" element={<PageManageViewers/>}/>
-                    <Route path="/manage/highlights" element={<PageManageHighlights/>}/>
-                    <Route path="/manage/ranks/:type?/:id?" element={<PageManageRanks/>}/>
-                    <Route path="/manage/howlongtobeat/:type?/:id?" element={<PageManageHLTB/>}/>
-                    <Route path="/manage/songs/playlist/:type?/:id?" element={<PageManagePlaylist/>}/>
-                    <Route path="/manage/songs/bannedsongs/" element={<PageManageBannedSongs/>}/>
-                    <Route path="/manage/spotify/bannedsongs/" element={<PageManageBannedSongsSpotify/>}/>
+                      <Route path="/settings/modules/:type/:id?" element={<PageSettingsModules/>}/>
+                      <Route path="/settings/permissions/:type?/:id?" element={<PageSettingsPermissions/>}/>
+                      <Route path="/settings/translations/:type?/:id?" element={<PageSettingsTranslations/>}/>
 
-                    <Route path="/settings/modules/:type/:id?" element={<PageSettingsModules/>}/>
-                    <Route path="/settings/permissions/:type?/:id?" element={<PageSettingsPermissions/>}/>
-                    <Route path="/settings/translations/:type?/:id?" element={<PageSettingsTranslations/>}/>
+                      <Route path="/registry/obswebsocket/:type?/:id?" element={<PageRegistryOBSWebsocket/>}/>
+                      <Route path="/registry/overlays/:type?/:id?" element={<PageRegistryOverlays/>}/>
+                      <Route path="/registry/randomizer/:type?/:id?" element={<PageRegistryRandomizer/>}/>
+                      <Route path="/registry/plugins/:type?/:id?" element={<PageRegistryPlugins/>}/>
+                      <Route path="/registry/customvariables/:type?/:id?" element={<PageRegistryCustomVariables/>}/>
+                      <Route path="/registry/gallery" element={<PageRegistryGallery/>}/>
 
-                    <Route path="/registry/obswebsocket/:type?/:id?" element={<PageRegistryOBSWebsocket/>}/>
-                    <Route path="/registry/overlays/:type?/:id?" element={<PageRegistryOverlays/>}/>
-                    <Route path="/registry/randomizer/:type?/:id?" element={<PageRegistryRandomizer/>}/>
-                    <Route path="/registry/plugins/:type?/:id?" element={<PageRegistryPlugins/>}/>
-                    <Route path="/registry/customvariables/:type?/:id?" element={<PageRegistryCustomVariables/>}/>
-                    <Route path="/registry/gallery" element={<PageRegistryGallery/>}/>
+                      <Route path="/stats/bits" element={<PageStatsBits/>}/>
+                      <Route path="/stats/tips" element={<PageStatsTips/>}/>
+                      <Route path="/stats/commandcount" element={<PageStatsCommandCount/>}/>
+                      <Route path="/stats/profiler" element={<PageStatsProfiler/>}/>
 
-                    <Route path="/stats/bits" element={<PageStatsBits/>}/>
-                    <Route path="/stats/tips" element={<PageStatsTips/>}/>
-                    <Route path="/stats/commandcount" element={<PageStatsCommandCount/>}/>
-                    <Route path="/stats/profiler" element={<PageStatsProfiler/>}/>
-
-                    <Route path="/" element={<span/>}/>
-                    <Route path="*" element={<Error404/>}/>
-                  </Routes>
-                </Suspense>
-              </Box>
-            </Fade>
-          </Box>}
-        </Box>
-      </Fade>
-    </>}
+                      <Route path="/" element={<span/>} errorElement={<ErrorBoundary />}/>
+                      <Route path="*" element={<Error404/>}/>
+                    </Routes>
+                  </Suspense>
+                </Box>
+              </Fade>
+            </Box>}
+          </Box>
+        </Fade>
+      </>}
+    </ErrorBoundary>
   </LocalizationProvider>;
 }

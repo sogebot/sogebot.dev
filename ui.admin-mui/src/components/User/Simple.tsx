@@ -9,13 +9,15 @@ import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
 import { getSocket } from '../../helpers/socket';
+// import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { scopes } from '../../routes/credentials/login';
 
 export const UserSimple: React.FC = () => {
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const [ user ] = useLocalstorageState<false | Record<string, any>>('cached-logged-user', false);
   const { enqueueSnackbar } = useSnackbar();
-  const { state } = useAppSelector((s: any) => s.loader);
+  const { isBotConnected } = useAppSelector((s: any) => s.loader);
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
@@ -31,7 +33,7 @@ export const UserSimple: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (user && state) {
+    if (user /*&& isBotConnected*/) {
       getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
@@ -39,7 +41,7 @@ export const UserSimple: React.FC = () => {
             <Typography>Broadcaster is missing these scopes <small>{missingScopes.join(', ')}</small>.</Typography>
             <Typography>Please reauthenticate your broadcaster account at <Link sx={{
               display: 'inline-block', color: 'white !important', textDecorationColor: 'white !important', fontWeight: 'bold',
-            }} href={`/settings/modules/services/twitch?server=${JSON.parse(localStorage.server)}`}>Twitch module service</Link> settings.</Typography>
+            }} href={`/settings/modules/services/twitch?server=${server}`}>Twitch module service</Link> settings.</Typography>
           </Box>, {
             variant:          'error',
             autoHideDuration: null,
@@ -47,7 +49,7 @@ export const UserSimple: React.FC = () => {
         }
       });
     }
-  }, [user, state]);
+  }, [user, isBotConnected]);
 
   React.useEffect(() => {
     if (user) {
