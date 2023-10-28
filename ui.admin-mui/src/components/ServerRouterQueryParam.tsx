@@ -13,8 +13,9 @@ export const ServerRouterQueryParam: React.FC = () => {
   useEffect(() => {
     const server = query.get('server');
     if (connectedToServer && localStorage.server) {
+      const connectedToServerName = JSON.parse(localStorage.server);
       // we need to remove query.server until we solve issue with server GET param
-      if (!server) {
+      if (!server || server !== connectedToServerName) {
         navigate(`${location.pathname}?server=${JSON.parse(localStorage.server)}`);
       }
     }
