@@ -187,8 +187,10 @@ const PageSettingsModulesImportNightbot: React.FC<{
             </InputAdornment>,
           }}
         />
-        <Stack direction='row'>
-          <Button color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import playlist</Button>
+        <Stack direction='row' sx={{
+          pt: 1, textAlign: 'center',
+        }}>
+          <Button sx={{ width: '300px' }} color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import playlist</Button>
         </Stack>
 
       </Paper>
