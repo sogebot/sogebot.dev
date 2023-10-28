@@ -125,7 +125,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
             for (const versionKey of Object.keys(versions).reverse()) {
               if (semver.satisfies(version, versionKey)) {
                 // we have found version and returning basepath
-                window.location.href = `https://dash.sogebot.xyz/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
+                window.location.href = `${new URL(window.location.href).toString()}/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
                 return;
               }
             }
@@ -134,6 +134,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
           // version is higher than in compatibility list -> without base path
           dispatch(setServer(serverURL));
           isBotStarted(dispatch, serverURL).then(() => {
+            // we need to change server in url
             const serverHistoryLS = JSON.parse(localStorage.serverHistory ?? '[]');
             localStorage.serverHistory = JSON.stringify(
               Array
@@ -148,6 +149,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
           if (serverURL !== url.origin) {
             return;
           }
+          dispatch(setMessage(`Cannot connect to ${server}.`));
           setValidVersionError(`Something went wrong connecting to server ${url.origin}`);
         });
     }
