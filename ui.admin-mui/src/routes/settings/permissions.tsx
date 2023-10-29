@@ -89,6 +89,16 @@ const PageSettingsPermissions = () => {
     refresh();
   }, [location.pathname, refresh ]);
 
+  React.useEffect(() => {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].order !== i) {
+        // order is not correct, reorder
+        reorder(true);
+        break;
+      }
+    }
+  }, [ items ]);
+
   const reorder = useCallback((quiet = false) => {
     if (!items) {
       return;
@@ -204,7 +214,6 @@ const PageSettingsPermissions = () => {
       navigate('/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
       setRemoving(false);
       await refresh();
-      await reorder(true);
     });
   }, [ enqueueSnackbar, selectedItem, refresh, navigate, reorder ]);
 
@@ -216,7 +225,6 @@ const PageSettingsPermissions = () => {
     getSocket('/core/permissions').emit('permission::save', [...items, selectedItem] as any, async () => {
       enqueueSnackbar(`Permissions ${selectedItem.name} updated.`, { variant: 'success' });
       await refresh();
-      await reorder(true);
     });
     setSaving(false);
   }, [ enqueueSnackbar, selectedItem, refresh, items, reorder ]);
