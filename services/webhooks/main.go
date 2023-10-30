@@ -155,6 +155,23 @@ func handleUsers(updatedOnly bool) {
 				version:   "1",
 				condition: basic,
 			}},
+			"channel:read:charity": {{
+				scope:     "channel.charity_campaign.donate",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.charity_campaign.start",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.charity_campaign.progress",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.charity_campaign.stop",
+				version:   "1",
+				condition: basic,
+			}},
 		}
 
 		for scope, data := range subscriptionsMap {
