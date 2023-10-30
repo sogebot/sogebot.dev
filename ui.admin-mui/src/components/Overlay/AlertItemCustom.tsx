@@ -14,7 +14,7 @@ const encodeFont = (font: string) => {
 };
 const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
-export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts }>
+export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, profileImageUrl?: string, }>
 = ({ item, width, height, parent, active }) => {
   const emitData = useAtomValue(anEmitData);
 
@@ -31,7 +31,8 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts }>
         .replace(/\{amount\}/g, String(emitData.amount))
         .replace(/\{monthsName\}/g, emitData.monthsName)
         .replace(/\{currency\}/g, emitData.currency)
-        .replace(/\{message\}/g, emitData.message);
+        .replace(/\{message\}/g, emitData.message)
+        .replace(/\{image\}/g, emitData?.user?.profileImageUrl ?? '');
     }
 
     for (const emote of orderBy(emotesCache, 'code', 'asc')) {

@@ -37,7 +37,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
     if (item.messageTemplate.split('|')[curIdx + 1]) {
       setCurIdx((idx) => idx + 1);
     } else {
-      setCurIdx(0);
+      // do nothing, we reached end of the message
     }
   }, variant.alertDuration / item.messageTemplate.split('|').length);
 

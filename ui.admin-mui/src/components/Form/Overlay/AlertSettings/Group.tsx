@@ -51,6 +51,7 @@ import AlertSettingsCustom from './Custom';
 import NewAlertDialog from './Dialog/newAlertDialog';
 import NewComponentDialog from './Dialog/newComponentDialog';
 import AlertSettingsGallery from './Gallery';
+import AlertSettingsProfileImage from './ProfileImage';
 import { alertList } from './src/alertList';
 import {
   anItems,
@@ -66,6 +67,7 @@ import { RemoveButton, setZoomRemoveButton } from '../../../Moveable/RemoveButto
 import { AlertItemAudio } from '../../../Overlay/AlertItemAudio';
 import { AlertItemCustom } from '../../../Overlay/AlertItemCustom';
 import { AlertItemImage } from '../../../Overlay/AlertItemImage';
+import { AlertItemProfileImage } from '../../../Overlay/AlertItemProfileImage';
 import { AlertItemText } from '../../../Overlay/AlertItemText';
 import { anSelectedItemOpts } from '../../atoms';
 import { Settings } from '../Settings';
@@ -147,6 +149,7 @@ function SortableAccordion(props: {
         {props.item?.type === 'text' && <AlertSettingsText model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
         {props.item?.type === 'custom' && <AlertSettingsCustom model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
         {props.item?.type === 'gallery' && <AlertSettingsGallery model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
+        {props.item?.type === 'profileImage' && <AlertSettingsProfileImage model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
         {props.item?.type === 'audio' && <AlertSettingsAudio model={props.item} onChange={onUpdate} onDelete={props.onDelete ?? undefined}/>}
       </AccordionDetails>
     </Accordion>
@@ -725,6 +728,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 }}>
                   {o.type === 'audio' && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest} variant={selectedAlert}/>}
                   {o.type === 'gallery' && <AlertItemImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
+                  {o.type === 'profileImage' && <AlertItemProfileImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'text' && <AlertItemText canvas={canvas} test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
                 </Box>

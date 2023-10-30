@@ -11,6 +11,22 @@ const defaultAudio = {
   delay:     0,
 };
 
+const defaultProfileImage = {
+  id:                   '__id__',
+  width:                205,
+  height:               205,
+  alignX:               '__center__',
+  alignY:               '__center__',
+  rotation:             0,
+  align:                'center',
+  type:                 'profileImage',
+  animationDelay:       0,
+  animationInDuration:  null,
+  animationOutDuration: null,
+  animationIn:          null,
+  animationOut:         null,
+};
+
 const defaultImage = {
   id:                   '__id__',
   width:                160,
@@ -97,7 +113,7 @@ const defaultAlerts = {
   subgift:          { items: [defaultAudio, defaultImage, defaultText('*{name}* just gifted sub to *{recipient}*! *{amount}* {monthsName}')] },
   subcommunitygift: { items: [defaultAudio, defaultImage, defaultText('*{name}* just gifted *{amount}* subscribes!')] },
   raid:             { items: [defaultAudio, defaultImage, defaultText('*{name}* is raiding with a party of *{amount}* raiders!')] },
-  promo:            { items: [defaultAudio, defaultImage, defaultText('{name} | {game}')] },
+  promo:            { items: [defaultAudio, defaultProfileImage, defaultText('{name} | {game}')] },
   tip:              { items: [defaultAudio, defaultImage, defaultText('*{name}* tipped *{amount}{currency}*!'), defaultMessage, defaultTTS('{message}')] },
   cheer:            { items: [defaultAudio, defaultImage, defaultText('*{name}* cheered! x*{amount}*'), defaultMessage, defaultTTS('{message}')] },
   rewardredeem:     { items: [defaultAudio, defaultImage, defaultText('*{name}* was redeemed by *{recipient}*!')] },
