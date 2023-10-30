@@ -255,6 +255,262 @@ declare const ListenTo: {
      *
      */
     onCheer(callback: (userState: UserState, amount: number, message: string) => void): void,
+
+    onChannelCharityCampaignStart(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      charityDescription: string;
+      charityLogo: string;
+      charityWebsite: string;
+      charityName: string;
+      currentAmount: number;
+      currentAmountCurrency: string;
+      targetAmount: number;
+      targetAmountCurrency: string;
+      startDate: string;
+    }) => void): void,
+    onChannelCharityCampaignProgress(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      charityDescription: string;
+      charityLogo: string;
+      charityWebsite: string;
+      charityName: string;
+      currentAmount: number;
+      currentAmountCurrency: string;
+      targetAmount: number;
+      targetAmountCurrency: string;
+    }) => void): void,
+    onChannelCharityCampaignStop(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      charityDescription: string;
+      charityLogo: string;
+      charityWebsite: string;
+      charityName: string;
+      currentAmount: number;
+      currentAmountCurrency: string;
+      targetAmount: number;
+      targetAmountCurrency: string;
+      endDate: string;
+    }) => void): void,
+
+    onChannelCharityDonation(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      charityDescription: string;
+      charityLogo: string;
+      charityWebsite: string;
+      charityName: string;
+      campaignId: string;
+      donorDisplayName: string;
+      donorId: string;
+      donorName: string;
+      amount: number;
+      amountCurrency: string;
+    }) => void): void,
+
+    onChannelGoalBegin(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      currentAmount: number;
+      description: string;
+      startDate: string;
+      targetAmount: number;
+      type: 'follow' | 'subscription' | 'subscription_count' | 'new_subscription' | 'new_subscription_count';
+    }) => void): void,
+    onChannelGoalProgress(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      currentAmount: number;
+      description: string;
+      startDate: string;
+      targetAmount: number;
+      type: 'follow' | 'subscription' | 'subscription_count' | 'new_subscription' | 'new_subscription_count';
+    }) => void): void,
+    onChannelGoalEnd(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      currentAmount: number;
+      description: string;
+      startDate: string;
+      endDate: string;
+      targetAmount: number;
+      type: 'follow' | 'subscription' | 'subscription_count' | 'new_subscription' | 'new_subscription_count';
+      isAchieved: boolean;
+    }) => void): void,
+
+    onChannelModeratorAdd(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      userDisplayName: string;
+      userId: string;
+      userName: string;
+    }) => void): void,
+    onChannelModeratorRemove(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      userDisplayName: string;
+      userId: string;
+      userName: string;
+    }) => void): void,
+
+    onChannelRewardAdd(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      autoApproved: boolean;
+      backgroundColor: string;
+      cooldownExpiryDate: string | null;
+      cost: number;
+      globalCooldown: number | null;
+      id: string;
+      isEnabled: boolean;
+      isInStock: boolean;
+      isPaused: boolean;
+      maxRedemptionsPerStream: number | null;
+      maxRedemptionsPerUserPerStream: number | null;
+      prompt: string;
+      redemptionsThisStream: number | null;
+      title: string;
+      userInputRequired: boolean;
+    }) => void): void,
+    onChannelRewardUpdate(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      autoApproved: boolean;
+      backgroundColor: string;
+      cooldownExpiryDate: string | null;
+      cost: number;
+      globalCooldown: number | null;
+      id: string;
+      isEnabled: boolean;
+      isInStock: boolean;
+      isPaused: boolean;
+      maxRedemptionsPerStream: number | null;
+      maxRedemptionsPerUserPerStream: number | null;
+      prompt: string;
+      redemptionsThisStream: number | null;
+      title: string;
+      userInputRequired: boolean;
+    }) => void): void,
+    onChannelRewardRemove(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      autoApproved: boolean;
+      backgroundColor: string;
+      cooldownExpiryDate: string | null;
+      cost: number;
+      globalCooldown: number | null;
+      id: string;
+      isEnabled: boolean;
+      isInStock: boolean;
+      isPaused: boolean;
+      maxRedemptionsPerStream: number | null;
+      maxRedemptionsPerUserPerStream: number | null;
+      prompt: string;
+      redemptionsThisStream: number | null;
+      title: string;
+      userInputRequired: boolean;
+    }) => void): void,
+
+    onChannelShieldModeBegin(callback: (args: {
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      moderatorDisplayName:   string,
+      moderatorId:            string,
+      moderatorName:          string,
+    }) => void): void,
+    onChannelShieldModeEnd(callback: (args: {
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      moderatorDisplayName:   string,
+      moderatorId:            string,
+      moderatorName:          string,
+      endDate:                string,
+    }) => void): void,
+
+    onChannelShoutoutCreate(callback: (args: {
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      moderatorDisplayName:   string,
+      moderatorId:            string,
+      moderatorName:          string,
+      cooldownEndDate:                  string;
+      shoutedOutBroadcasterDisplayName: string;
+      shoutedOutBroadcasterId:          string;
+      shoutedOutBroadcasterName:        string;
+      startDate:                        string;
+      viewerCount:                      number;
+    }) => void): void,
+    onChannelShoutoutReceive(callback: (args: {
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      startDate:                        string;
+      viewerCount:                      number;
+      shoutingOutBroadcasterDisplayName: string,
+      shoutingOutBroadcasterId:          string,
+      shoutingOutBroadcasterName:        string,
+    }) => void): void,
+
+    onChannelUpdate(callback: (args: {
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      categoryId: string;
+      categoryName: string;
+      isMature: boolean;
+      streamLanguage: string;
+      streamTitle: string;
+    }) => void): void,
+    onUserUpdate(callback: (args: {
+      userDescription: string;
+      userDisplayName: string;
+      userId: string;
+      userEmail: string | null;
+      userEmailIsVerified: boolean | null;
+      userName: string;
+    }) => void): void,
+    onChannelRaidFrom(callback: (args: {
+      raidedBroadcasterDisplayName: string;
+      raidedBroadcasterName: string;
+      raidedBroadcasterId: string;
+      raidingBroadcasterDisplayName: string;
+      raidingBroadcasterName: string;
+      raidingBroadcasterId: string;
+      viewers: number;
+    }) => void): void,
+    onChannelRedemptionUpdate(callback: (args: {
+      broadcasterDisplayName: string;
+      broadcasterId: string;
+      broadcasterName: string;
+      id: string;
+      input: string;
+      redemptionDate: string;
+      rewardCost: number;
+      rewardId: string;
+      rewardPrompt: string;
+      rewardTitle: string;
+      status: string;
+      userDisplayName: string;
+      userId: string;
+      userName: string;
+    }) => void): void,
   },
 
   CustomVariable: {
