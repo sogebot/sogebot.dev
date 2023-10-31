@@ -3,6 +3,7 @@ import {
 } from '@mui/material';
 import { capitalize } from 'lodash';
 import React, { useState } from 'react';
+import { useIntervalWhen } from 'rooks';
 
 import { getTime } from '../../helpers/getTime';
 import { getSocket } from '../../helpers/socket';
@@ -28,12 +29,17 @@ export const DashboardStatsUptime: React.FC = () => {
     dispatch(setStreamOnline(uptime !== null));
   }, [uptime, dispatch]);
 
+  const [ timestamp, setTimestamp ] = React.useState(Date.now());
+  useIntervalWhen(() => {
+    setTimestamp(Date.now());
+  }, 1000, uptime !== null, true);
+
   return (
     <Grid item xs={6} sm={4} md={4} lg={2} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Paper sx={{
         p: 0.5, overflow: 'hidden', ...classes.parent,
       }}>
-        <Typography sx={{ transform: 'translateY(5px)' }} key={uptime}>{ getTime(uptime, false) }</Typography>
+        <Typography sx={{ transform: 'translateY(5px)' }} key={timestamp}>{ getTime(uptime, false) }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
           pt: 2, pa: 1,
         }}>{ capitalize(translate('uptime')) }</Typography>
