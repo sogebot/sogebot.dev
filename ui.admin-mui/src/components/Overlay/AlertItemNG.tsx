@@ -63,6 +63,20 @@ const processFilter = (emitData: EmitData, filter: Filter): boolean => {
   return true;
 };
 
+const setOpacity = (id: string) => {
+  setTimeout(() => {
+    const retry = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.opacity = '1';
+      } else {
+        setTimeout(() => retry(), 10);
+      }
+    };
+    retry();
+  }, 10);
+};
+
 export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
 
@@ -283,14 +297,20 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
       possibleAlerts = (possibleAlerts as any).filter((o: any) => o.hooks[0] === 'custom');
       // find correct variant or main
       for (const alert of possibleAlerts) {
-        if (alert.id === emitData.alertId) {
+        if (alert.id === emitData.alertId || emitData.name.includes(alert.id)) {
           console.log('alerts', 'Selected variant', alert);
+          for (const it of alert.items) {
+            setOpacity(it.id);
+          }
           return alert;
         }
         if ('variants' in alert) {
           for (const variant of alert.variants) {
             if (variant.id === emitData.alertId) {
               console.log('alerts', 'Selected variant', variant);
+              for (const it of variant.items) {
+                setOpacity(it.id);
+              }
               return variant;
             }
           }
@@ -339,17 +359,7 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     }
     const selected = possibleAlertsWithRandomCount[Math.floor(Math.random() * possibleAlertsWithRandomCount.length)];
     for (const it of selected.items) {
-      setTimeout(() => {
-        const retry = () => {
-          const el = document.getElementById(it.id);
-          if (el) {
-            el.style.opacity = '1';
-          } else {
-            setTimeout(() => retry(), 10);
-          }
-        };
-        retry();
-      }, 10);
+      setOpacity(it.id);
     }
 
     console.log('Selected alert', selected);
