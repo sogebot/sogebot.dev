@@ -84,6 +84,23 @@ func handleUsers(updatedOnly bool) {
 				condition: map[string]interface{}{
 					"to_broadcaster_user_id": userId,
 				},
+			}, {
+				scope:   "channel.raid",
+				version: "1",
+				condition: map[string]interface{}{
+					"from_broadcaster_user_id": userId,
+				},
+			}, {
+				scope:     "channel.update",
+				version:   "2",
+				condition: basic,
+			}},
+			"user:read:email": {{
+				scope:   "user.update",
+				version: "1",
+				condition: map[string]interface{}{
+					"user_id": userId,
+				},
 			}},
 			"moderator:read:followers": {{
 				scope:   "channel.follow",
@@ -95,6 +112,22 @@ func handleUsers(updatedOnly bool) {
 			}},
 			"channel:read:redemptions": {{
 				scope:     "channel.channel_points_custom_reward_redemption.add",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.channel_points_custom_reward_redemption.update",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.channel_points_custom_reward.add",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.channel_points_custom_reward.update",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.channel_points_custom_reward.remove",
 				version:   "1",
 				condition: basic,
 			}},
@@ -171,6 +204,52 @@ func handleUsers(updatedOnly bool) {
 				scope:     "channel.charity_campaign.stop",
 				version:   "1",
 				condition: basic,
+			}},
+			"channel:read:goals": {{
+				scope:     "channel.goal.begin",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.goal.progress",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.goal.end",
+				version:   "1",
+				condition: basic,
+			}},
+			"moderation:read": {{
+				scope:     "channel.moderator.add",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.moderator.remove",
+				version:   "1",
+				condition: basic,
+			}},
+			"moderator:read:shield_mode": {{
+				scope:     "channel.shield_mode.begin",
+				version:   "1",
+				condition: basic,
+			}, {
+				scope:     "channel.shield_mode.end",
+				version:   "1",
+				condition: basic,
+			}},
+			"moderator:read:shoutouts": {{
+				scope:   "channel.shoutout.create",
+				version: "1",
+				condition: map[string]interface{}{
+					"broadcaster_user_id": userId,
+					"moderator_user_id":   userId,
+				},
+			}, {
+				scope:   "channel.shoutout.receive",
+				version: "1",
+				condition: map[string]interface{}{
+					"broadcaster_user_id": userId,
+					"moderator_user_id":   userId,
+				},
 			}},
 		}
 
