@@ -29,7 +29,7 @@ export const AlertItemImage: React.FC<Props<AlertImage> & {test?: boolean, varia
     // reset timestamp
     setTimestamp(variant.alertDuration);
 
-    if (itemAnimationTriggered) {
+    if (itemAnimationTriggered && active) {
       videoPlayer.current?.play();
     }
 
