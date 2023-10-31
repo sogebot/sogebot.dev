@@ -23,8 +23,8 @@ type Props = {
 
 const layers = {
   alerts: {
-    title:       'Alerts (WIP) ',
-    description: '!! TESTING ONLY !! Add alerts for your stream follows, raids, donations and more.',
+    title:       'Alerts',
+    description: 'Add alerts for your stream follows, raids, donations and more.',
   },
   alertsRegistry: {
     title:       'Alert from registry (deprecated)',
