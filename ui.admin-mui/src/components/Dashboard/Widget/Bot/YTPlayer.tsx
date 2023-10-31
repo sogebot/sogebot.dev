@@ -6,6 +6,7 @@ import {
   FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip,
 } from '@mui/material';
 import { currentSongType } from '@sogebot/backend/src/database/entity/song';
+import { isEqual } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDidMount, useIntervalWhen } from 'rooks';
@@ -153,7 +154,9 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
         if (currentSong.videoId === null && autoplay) {
           next();
         }
-        setRequests(items);
+        if (!isEqual(requests, items)) {
+          setRequests(items);
+        }
         resolve();
       });
     });

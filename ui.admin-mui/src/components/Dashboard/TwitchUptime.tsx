@@ -3,7 +3,6 @@ import {
 } from '@mui/material';
 import { capitalize } from 'lodash';
 import React, { useState } from 'react';
-import { useIntervalWhen } from 'rooks';
 
 import { getTime } from '../../helpers/getTime';
 import { getSocket } from '../../helpers/socket';
@@ -16,17 +15,12 @@ import { classes } from '../styles';
 export const DashboardStatsUptime: React.FC = () => {
   const { translate } = useTranslation();
   const [hover, setHover] = useState(false);
-  const [timestamp, setTimestamp] = useState(Date.now());
   const dispatch = useAppDispatch();
   const { currentStats } = useAppSelector(state => state.page);
 
   const saveHighlight = () => {
     getSocket('/systems/highlights').emit('highlight');
   };
-
-  useIntervalWhen(() => {
-    setTimestamp(Date.now());
-  }, 500, true, true);
 
   const uptime = React.useMemo(() => currentStats.uptime, [currentStats.uptime]);
 
@@ -39,10 +33,10 @@ export const DashboardStatsUptime: React.FC = () => {
       <Paper sx={{
         p: 0.5, overflow: 'hidden', ...classes.parent,
       }}>
-        <Typography sx={{ transform: 'translateY(5px)' }}>{ getTime(uptime, false) }</Typography>
+        <Typography sx={{ transform: 'translateY(5px)' }} key={uptime}>{ getTime(uptime, false) }</Typography>
         <Typography color={theme.palette.grey[400]} variant='caption' sx={{
           pt: 2, pa: 1,
-        }} key={timestamp}>{ capitalize(translate('uptime')) }</Typography>
+        }}>{ capitalize(translate('uptime')) }</Typography>
         <Backdrop open={hover} sx={classes.backdrop} onClick={() => saveHighlight()}>
           <Typography variant="button">{translate('click-to-highlight')}</Typography>
         </Backdrop>

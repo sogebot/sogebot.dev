@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
+import { isEqual } from 'lodash';
 import React from 'react';
 import {
   useDidMount, useIntervalWhen, usePreviousImmediate,
@@ -46,14 +47,18 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
       if (err) {
         return console.error(err);
       }
-      setPicked(users2);
+      if (!isEqual(picked, users2)) {
+        setPicked(users2);
+      }
     });
 
     getSocket('/systems/queue').emit('generic::getAll', (err, usersGetAll: QueueInterface[]) => {
       if (err) {
         return console.error(err);
       }
-      setItems(usersGetAll);
+      if (!isEqual(items, usersGetAll)) {
+        setItems(usersGetAll);
+      }
     });
   }, 1000, true, true);
 
@@ -62,10 +67,17 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
       if (err) {
         return console.error(err);
       }
-      setEligibilty({
+
+      const newData = {
         all:         data.eligibility.eligibilityAll[0],
         subscribers: data.eligibility.eligibilitySubscribers[0],
-      });
+      };
+      if (!isEqual(eligibility, newData)) {
+        setEligibilty({
+          all:         data.eligibility.eligibilityAll[0],
+          subscribers: data.eligibility.eligibilitySubscribers[0],
+        });
+      }
     });
     getSocket('/systems/queue').emit('get.value', 'locked', (err, locked2: boolean) => {
       if (err) {
