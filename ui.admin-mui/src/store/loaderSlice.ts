@@ -20,7 +20,6 @@ export interface LoaderState {
   configuration:         Record<string,any>,
   translation:           Record<string,any>,
 
-  nextVersion:    null | string,
   currentVersion: null | string,
 
   core:         null | { name: string }[],
@@ -46,7 +45,6 @@ const initialState: LoaderState = {
   configuration:         {},
   translation:           {},
 
-  nextVersion:    null,
   currentVersion: null,
 
   core:         null,
@@ -91,14 +89,6 @@ export const loaderSlice = createSlice({
       console.debug(`setConfiguration`, action.payload);
       state.configuration = action.payload;
     },
-    setCurrentVersion: (state: { currentVersion: any }, action: { payload: any }) => {
-      console.debug(`setCurrentVersion`, action.payload);
-      state.currentVersion = action.payload;
-    },
-    setNextVersion: (state: { nextVersion: any }, action: { payload: any }) => {
-      console.debug(`setNextVersion`, action.payload);
-      state.nextVersion = action.payload;
-    },
     setServer: (state: { server: any }, action: { payload: any }) => {
       console.debug(`setServer`, action.payload);
       state.server = action.payload;
@@ -125,7 +115,7 @@ export const loaderSlice = createSlice({
   },
 });
 
-export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, setCurrentVersion, setNextVersion, showLoginWarning } = loaderSlice.actions;
+export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, showLoginWarning } = loaderSlice.actions;
 
 export const selectTranslationState = (state: RootState) => state.loader.translation;
 export const selectStateState = (state: RootState) => state.loader.state;

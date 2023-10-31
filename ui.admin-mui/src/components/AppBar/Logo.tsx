@@ -1,16 +1,24 @@
-import { Badge, Box } from '@mui/material';
+import { CloseTwoTone } from '@mui/icons-material';
+import {
+  Badge, Box, IconButton, Link,
+} from '@mui/material';
+import { closeSnackbar, useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
+import reactStringReplace from 'react-string-replace';
+import semver from 'semver';
 
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { useTranslation } from '../../hooks/useTranslation';
 import sogebotLarge from '../../images/sogebot_large.png';
 import sogebotSmall from '../../images/sogebot_small.png';
-import { setCurrentVersion, setNextVersion } from '../../store/loaderSlice';
 
 export const Logo: React.FC = () => {
   const { currentVersion, state, connectedToServer } = useAppSelector((s: any) => s.loader);
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useTranslation();
 
   useEffect(() => {
     if (!state || !connectedToServer) {
@@ -18,7 +26,6 @@ export const Logo: React.FC = () => {
     }
 
     getSocket('/', true).emit('version', async (version: string) => {
-      dispatch(setCurrentVersion(version));
       try {
         const { response } = await new Promise<{ response: Record<string, any>}>((resolve) => {
           const request = new XMLHttpRequest();
@@ -37,29 +44,30 @@ export const Logo: React.FC = () => {
 
           request.send();
         });
-        const botVersion = version.replace('-SNAPSHOT', '').split('.').map(o => Number(o));
-        const gitVersion = (response.tag_name as string).split('.').map(o => Number(o));
-        console.debug({
-          botVersion, gitVersion,
-        });
+        const botVersion = version.trim().split('-')[0];
+        const gitVersion = (response.tag_name as string);
+        console.log('botVersion', botVersion, 'gitVersion', gitVersion);
 
-        let isNewer = false;
-        for (let index = 0; index < botVersion.length; index++) {
-          if (botVersion[index] < gitVersion[index]) {
-            isNewer = true;
-            break;
-          } else if (botVersion[index] === gitVersion[index]) {
-            continue;
-          } else {
-            isNewer = false;
-            break;
-          }
-        }
-
-        if (isNewer) {
-          dispatch(setNextVersion(gitVersion.join('.')));
-        } else {
-          dispatch(setNextVersion(null));
+        if (semver.lt(botVersion, gitVersion)) {
+          let message = reactStringReplace(translate('errors.new_bot_version_available_at'), '{version}', () =>  <strong>&nbsp;{gitVersion}&nbsp;</strong>);
+          message = reactStringReplace(message, '{link}', () => <Link sx={{
+            pl:                  0.5,
+            display:             'inline-block',
+            color:               'white !important',
+            textDecorationColor: 'white !important',
+            fontWeight:          'bold',
+          }}
+          target="_blank" rel="noreferrer"
+          href={`https://github.com/sogehige/sogeBot/releases/tag/${gitVersion}`}>GitHub</Link>);
+          const notif = enqueueSnackbar(
+            <>{message}</>,
+            {
+              action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
+                <CloseTwoTone/>
+              </IconButton>,
+              variant:          'info',
+              autoHideDuration: null,
+            });
         }
       } catch (e) {
         return;

@@ -1,10 +1,11 @@
+import { CloseTwoTone } from '@mui/icons-material';
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import {
   Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography,
 } from '@mui/material';
 import { isEqual } from 'lodash';
-import { useSnackbar } from 'notistack';
+import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
@@ -37,12 +38,15 @@ export const UserSimple: React.FC = () => {
       getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
-          enqueueSnackbar(<Box>
+          const notif = enqueueSnackbar(<Box>
             <Typography>Broadcaster is missing these scopes <small>{missingScopes.join(', ')}</small>.</Typography>
             <Typography>Please reauthenticate your broadcaster account at <Link sx={{
               display: 'inline-block', color: 'white !important', textDecorationColor: 'white !important', fontWeight: 'bold',
             }} href={`/settings/modules/services/twitch?server=${server}`}>Twitch module service</Link> settings.</Typography>
           </Box>, {
+            action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
+              <CloseTwoTone/>
+            </IconButton>,
             variant:          'error',
             autoHideDuration: null,
           });
