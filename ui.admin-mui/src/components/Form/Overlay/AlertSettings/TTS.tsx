@@ -22,7 +22,11 @@ interface AlertSettingsTTSProps {
 
 const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
   const [ item, setItem ] = React.useState(props.model);
-  const [ accordion, setAccordion ] = React.useState('');
+  React.useEffect(() => {
+    setItem(it => ({
+      ...it, rotation: props.model.rotation, alignX: props.model.alignX, alignY: props.model.alignY, width: props.model.width, height: props.model.height,
+    }));
+  }, [ props.model.rotation, props.model.alignX, props.model.alignY, props.model.width, props.model.height]);  const [ accordion, setAccordion ] = React.useState('');
 
   const parent = useAtomValue(anSelectedItemOpts as Atom<Alerts>);
 

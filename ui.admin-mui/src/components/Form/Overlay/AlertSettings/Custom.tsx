@@ -24,6 +24,12 @@ interface AlertSettingsCustomProps {
 
 const AlertSettingsCustom: React.FC<AlertSettingsCustomProps> = (props) => {
   const [ item, setItem ] = React.useState(props.model);
+  React.useEffect(() => {
+    setItem(it => ({
+      ...it, rotation: props.model.rotation, alignX: props.model.alignX, alignY: props.model.alignY, width: props.model.width, height: props.model.height,
+    }));
+  }, [ props.model.rotation, props.model.alignX, props.model.alignY, props.model.width, props.model.height]);
+
   const [ accordion, setAccordion ] = React.useState('');
 
   const parent = useAtomValue(anSelectedItemOpts as Atom<Alerts>);

@@ -35,6 +35,13 @@ const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
       props.onChange(item);
     }
   }, [ item ]);
+
+  React.useEffect(() => {
+    setItem(it => ({
+      ...it, rotation: props.model.rotation, alignX: props.model.alignX, alignY: props.model.alignY, width: props.model.width, height: props.model.height, 
+    }));
+  }, [ props.model.rotation, props.model.alignX, props.model.alignY, props.model.width, props.model.height]);
+
   return (<>
     <FormSelectorGallery type='image' volume={item.volume * 100} label='Select image / video'
       onChange={(galleryId, volume, type) => setItem({
