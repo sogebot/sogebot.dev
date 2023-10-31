@@ -34,7 +34,7 @@ export const UserSimple: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (user /*&& isBotConnected*/) {
+    if (user && isBotConnected) {
       getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
