@@ -947,13 +947,15 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
               placeholder=''
               customLabelDetails={<>{selectedAlertVariant.variantName}</>}/>
 
-            <AccordionReward
-              label={'Trigger by reward'}
-              model={selectedAlertVariant.rewardId ?? ''}
-              open={accordionId}
-              onOpenChange={setAccordionId} onChange={(val) => {
-                handleAlertChange({ 'rewardId': val });
-              }}/>
+            {selectedAlert.hooks[0] === 'rewardredeem'
+              && <AccordionReward
+                label={'Trigger by reward'}
+                model={selectedAlertVariant.rewardId ?? ''}
+                open={accordionId}
+                onOpenChange={setAccordionId} onChange={(val) => {
+                  handleAlertChange({ 'rewardId': val });
+                }}/>
+            }
 
             <AccordionDuration
               label={translate('registry.alerts.variant.name')}
