@@ -61,6 +61,7 @@ import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 import { AlertItem } from '../Overlay/AlertItem';
+import { AlertItemNG } from '../Overlay/AlertItemNG';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { ClipsItem } from '../Overlay/ClipsItem';
@@ -480,6 +481,7 @@ export const OverlayEdit: React.FC = () => {
                     width: '100%', height: '100%',
                   }}>
                     {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'alerts' && <AlertItemNG width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'marathon' && <MarathonItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
