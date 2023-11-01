@@ -9,6 +9,7 @@ import { orderBy } from 'lodash';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
+import { isAlreadyProcessed } from './_processedSocketCalls';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import {
@@ -34,6 +35,49 @@ const generateColorFromString = (stringInput: string) => {
   }, 0);
   return `hsl(${stringUniqueHash % 360}, 80%, 60%)`;
 };
+
+function hexToHSL(hexColor: string) {
+  // Remove the '#' symbol if present
+  hexColor = hexColor.replace(/^#/, '');
+
+  // Convert the HEX color to RGB
+  const r = parseInt(hexColor.slice(0, 2), 16) / 255;
+  const g = parseInt(hexColor.slice(2, 4), 16) / 255;
+  const b = parseInt(hexColor.slice(4, 6), 16) / 255;
+
+  // Calculate the maximum and minimum values for RGB
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+
+  // Calculate the lightness
+  const lightness = (max + min) / 2 * 100;
+
+  // Calculate the saturation
+  let saturation = 0;
+
+  if (max !== min) {
+    const delta = max - min;
+    saturation = lightness > 50 ? delta / (2 - max - min) : delta / (max + min);
+  }
+
+  // Calculate the hue
+  let hue = 0;
+
+  if (max === r) {
+    hue = ((g - b) / (max - min)) * 60;
+  } else if (max === g) {
+    hue = (2 + (b - r) / (max - min)) * 60;
+  } else if (max === b) {
+    hue = (4 + (r - g) / (max - min)) * 60;
+  }
+
+  if (hue < 0) {
+    hue += 360;
+  }
+
+  return `hsl(${hue}, ${saturation * 100}%, ${Math.max(70, lightness)}%)`;
+}
+
 export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
   const messages = useAppSelector(state => state.overlay.chat.messages);
   const posY = useAppSelector(state => state.overlay.chat.posY);
@@ -63,6 +107,10 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
     });
 
     getSocket('/overlays/chat', true).on('message', (data: any) => {
+      if (isAlreadyProcessed(data.id)) {
+        return;
+      }
+      console.log({ data });
       if (data.message.startsWith('!') && !item.showCommandMessages) {
         return;
       }
@@ -224,7 +272,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
               <Typography component='strong' sx={{
                 fontFamily: item.font.family,
                 pr:         0.5,
-                color:      generateColorFromString(message.displayName),
+                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
                 fontWeight: item.font.weight,
                 fontSize:   `${item.font.size}px`,
                 lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,

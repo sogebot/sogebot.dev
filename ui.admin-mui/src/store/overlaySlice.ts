@@ -17,7 +17,7 @@ interface OverlayState {
     uptime:      string,
   },
   chat: {
-    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, badges: {url: string}[] }[],
+    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, color?: string, badges: {url: string}[] }[],
     posY: Record<string,number>,
     fontSize: Record<string,number>,
   }

@@ -396,6 +396,18 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
           ...model, reverseOrder: checked,
         })} />} label='Reverse flow of chat'/>}
 
+        <FormControlLabel sx={{
+          width: '100%', alignItems: 'self-start', pt: 1,
+        }} control={<Switch checked={model.useGeneratedColors} onChange={(_, checked) => onUpdate({
+          ...model, useGeneratedColors: checked,
+        })} />} label={<>
+          <Typography>Use generated user name colors</Typography>
+          <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.useGeneratedColors
+            ? <>User names will have generated colors.</>
+            : <>User names will have user-defined color.<br/><small>Note: we are slightly altering color lightness to have better visibility.</small></>
+          }</Typography>
+        </>}/>
+
       </Box>
       <AccordionFont
         disableExample
