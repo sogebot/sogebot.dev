@@ -98,9 +98,20 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
   React.useEffect(() => {
     setTTSWaiting(true);
     return () => {
-      if (!snd.paused) {
-        console.log('= Forcing TTS to stop');
-        snd.pause();
+      try {
+        if (snd) {
+          if (!snd.paused) {
+            console.log('= Forcing TTS to stop');
+            snd.pause();
+          }
+        } else {
+          if ((window as any).responsiveVoice?.isPlaying()) {
+            console.log('= Forcing TTS to stop');
+            (window as any).responsiveVoice?.cancel();
+          }
+        }
+      } catch (e) {
+        return console.error(e);
       }
     };
   }, []);
