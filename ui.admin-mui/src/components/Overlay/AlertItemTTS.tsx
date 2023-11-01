@@ -9,7 +9,7 @@ import {
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
-let snd: HTMLAudioElement; // to be able to parry
+let snd: HTMLAudioElement | undefined; // to be able to parry
 
 export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
 = ({ item, parent }) => {
