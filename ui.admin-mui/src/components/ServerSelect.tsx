@@ -125,7 +125,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
             for (const versionKey of Object.keys(versions).reverse()) {
               if (semver.satisfies(version, versionKey)) {
                 // we have found version and returning basepath
-                window.location.href = `${new URL(window.location.href).toString()}/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
+                window.location.href = `${new URL(window.location.href).origin}/${versions[versionKey as keyof typeof versions]}/?server=${server}`;
                 return;
               }
             }
