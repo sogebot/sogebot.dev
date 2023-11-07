@@ -18,6 +18,7 @@ import {
 } from 'rooks';
 
 import Error404 from './404';
+import PageManageEvents from './manage/events';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';
@@ -269,6 +270,7 @@ export default function Root() {
                       <Route path="/commands/customcommands/group/:type?/:id?" element={<PageCommandsCustomCommandsGroup/>}/>
                       <Route path="/commands/customcommands/:type?/:id?" element={<PageCommandsCustomCommands/>}/>
 
+                      <Route path="/manage/events/:type?/:id?" element={<PageManageEvents/>}/>
                       <Route path="/manage/quotes/:type?/:id?" element={<PageManageQuotes/>}/>
                       <Route path="/manage/timers/:type?/:id?" element={<PageManageTimers/>}/>
                       <Route path="/manage/viewers/:userId?" element={<PageManageViewers/>}/>
