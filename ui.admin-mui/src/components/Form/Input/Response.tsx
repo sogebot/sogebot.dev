@@ -75,12 +75,9 @@ export const AdditionalGridFormResponse: React.FC<{
         <FilledInput
           value={propsValue.filter}
           onChange={onFilterChangeHandler}
-          endAdornment={<>
-            <InputAdornment position="end">
-              <FormInputAdornmentCustomVariable onSelect={onFilterAddHandler}/>
-            </InputAdornment>
-          </>
-          }
+          endAdornment={<InputAdornment position="end">
+            <FormInputAdornmentCustomVariable onSelect={onFilterAddHandler}/>
+          </InputAdornment>}
         />
       </FormControl>
     </Grid>}

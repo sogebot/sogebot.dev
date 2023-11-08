@@ -16,8 +16,9 @@ import { useTranslation } from '../../../../hooks/useTranslation';
 
 export const FormInputAdornmentCustomVariable: React.FC<{
   onSelect: (value: string) => void,
+  additionalVariables?: string[]
 }> = ({
-  onSelect,
+  onSelect, additionalVariables,
 }) => {
   const popupState = usePopupState({
     variant: 'popover',
@@ -37,10 +38,10 @@ export const FormInputAdornmentCustomVariable: React.FC<{
       'toptip.stream.currency', 'toptip.stream.message', 'latestCheerAmount', 'latestCheerMessage',
       'latestCheer', 'isBotSubscriber', 'isStreamOnline', 'uptime',
     ];
-    return globalFilters.map(o => ({
+    return [...globalFilters, ...(additionalVariables ?? [])].map(o => ({
       label: translate('responses.variable.' + o), id: `$${o}`,
     }));
-  }, [translate]);
+  }, [translate, additionalVariables]);
 
   const onChangeHandle = useCallback((value: {
     label: string;

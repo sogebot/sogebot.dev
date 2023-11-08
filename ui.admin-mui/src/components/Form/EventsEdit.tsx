@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Autocomplete, Box, Button, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField, Typography,
+  Autocomplete, Box, Button, Collapse, DialogContent, Divider, Grid, InputAdornment, LinearProgress, Switch, TextField, Typography,
 } from '@mui/material';
 import { EventInterface, Events } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
@@ -10,6 +10,8 @@ import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 
+import { CopyButton } from './Input/Adornment/Copy';
+import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
@@ -34,6 +36,10 @@ export const EventsEdit: React.FC = () => {
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { reset, haveErrors } = useValidator();
+
+  const availableVariables = React.useMemo(() => {
+    return (availableEvents.find(o => o.id === item?.name ?? '') || { variables: [] }).variables;
+  }, [ availableEvents, item ]);
 
   // const handleValueChange = <T extends keyof EventInterface>(key: T, value: EventInterface[T]) => {
   //   if (!item) {
@@ -152,7 +158,24 @@ export const EventsEdit: React.FC = () => {
               return options.filter(o => capitalize(translate(o)).toLowerCase().includes(state.inputValue.toLowerCase()));
             }}
             getOptionLabel={(option) => capitalize(translate(option))}
-            renderInput={(params) => <TextField {...params} label={capitalize(translate('event'))} />}
+            renderInput={(params) => <TextField {...params} label={capitalize(translate('event'))} InputProps={{
+              ...params.InputProps,
+              endAdornment: <InputAdornment position="end">
+                <Switch
+                  sx={{
+                    position: 'absolute',
+                    right:    '40px',
+                    top:      'calc(50% - 19px)',
+                  }}
+                  checked={item.isEnabled}
+                  onClick={ev => ev.stopPropagation()}
+                  onChange={(_, val) => setItem({
+                    ...item, isEnabled: val,
+                  })}
+                />
+                {params.InputProps.endAdornment}
+              </InputAdornment>,
+            }} />}
             renderOption={(p, option, { inputValue }) => {
               const matches = match(capitalize(translate(option)), inputValue, { insideWords: true });
               const parts = parse(capitalize(translate(option)), matches);
@@ -176,6 +199,33 @@ export const EventsEdit: React.FC = () => {
               );
             }}
           />
+
+          <TextField
+            fullWidth
+            label={translate('filter')}
+            value={item.filter}
+            onChange={(ev) => setItem({
+              ...item, filter: ev.target.value,
+            })}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                <FormInputAdornmentCustomVariable additionalVariables={availableVariables} onSelect={filter => setItem({
+                  ...item, filter: item.filter + filter,
+                })}/>
+              </InputAdornment>,
+            }}/>
+
+          <TextField
+            fullWidth
+            disabled
+            label="Response filter"
+            helperText="Be careful, not all variables may be available if triggered by response filter"
+            value={`$triggerOperation(${item.id})`}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                <CopyButton text={`$triggerOperation(${item.id})`}/>
+              </InputAdornment>,
+            }}/>
           {JSON.stringify(item)}
         </Box>}
       </DialogContent>

@@ -1,9 +1,7 @@
-import ContentPasteTwoToneIcon from '@mui/icons-material/ContentPasteTwoTone';
-import InventoryTwoToneIcon from '@mui/icons-material/InventoryTwoTone';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Alert, Autocomplete, Dialog, DialogActions, DialogContent,
-  DialogTitle, FormGroup, IconButton, InputAdornment, Link,
+  DialogTitle, FormGroup, InputAdornment, Link,
   Stack, TextField,
 } from '@mui/material';
 import axios from 'axios';
@@ -11,6 +9,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
 import semver from 'semver';
 
+import { CopyButton } from './Form/Input/Adornment/Copy';
 import { UserSimple } from './User/Simple';
 import { versions } from '../compatibilityList';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
@@ -194,13 +193,6 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
     }
   }, [message]);
 
-  const [ copied, setCopied ] = React.useState(false);
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1000);
-  };
-
   return (<Dialog open={open && !props.passive} hideBackdrop sx={{ zIndex: 0 }} fullScreen={isMobile}>
     <DialogTitle sx={{
       display:        'flex',
@@ -255,9 +247,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
           sx={{ '& .MuiInputBase-root': { borderRadius: 0 } }}
           InputProps={{
             endAdornment: <InputAdornment position="end">
-              <IconButton onClick={() => copyToClipboard(`${window.location.origin}?server=${serverInputValue}`)}>
-                {copied ? <InventoryTwoToneIcon/> : <ContentPasteTwoToneIcon/>}
-              </IconButton>
+              <CopyButton text={`${window.location.origin}?server=${serverInputValue}`}/>
             </InputAdornment>,
           }}
         />
