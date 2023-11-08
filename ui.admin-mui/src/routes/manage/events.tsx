@@ -41,6 +41,7 @@ import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
+import { EventsEdit } from '../../components/Form/EventsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
@@ -264,7 +265,7 @@ const PageManageEvents = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/events/create/'>Create new event</LinkButton>
+          <LinkButton sx={{ width: 300 }} variant="contained" href='/manage/events/create/'>Create new event</LinkButton>
         </Grid>
         <Grid item>
           <Tooltip arrow title="Enable">
@@ -338,7 +339,7 @@ const PageManageEvents = () => {
         open={open}
         fullWidth
         maxWidth='md'>
-        {open && <>Nothing to see here yet</>}
+        {open && <EventsEdit/>}
       </Dialog>
     </>
   );
