@@ -107,7 +107,7 @@ const PageManageEvents = () => {
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<EventInterface>([
     {
       columnName:  'name',
-      table:       { width: '20%' },
+      table:       { width: '30%' },
       translation: 'Event name',
       filtering:   {
         type:    'list' ,

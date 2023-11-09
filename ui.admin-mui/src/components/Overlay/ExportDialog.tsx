@@ -236,7 +236,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
                 setName(value.name);
                 setDescription(value.description);
               }}
-              disablePortal
               id="overlay.update.selector"
               options={remoteOverlays ?? []}
               filterOptions={(options, state) => {
@@ -303,7 +302,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
                 setName(value.name);
                 setDescription(value.description);
               }}
-              disablePortal
               id="overlay.update.selector"
               options={remoteOverlays ?? []}
               filterOptions={(options, state) => {

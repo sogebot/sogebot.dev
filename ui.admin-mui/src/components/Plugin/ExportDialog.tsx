@@ -172,7 +172,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
                 setName(value.name);
                 setDescription(value.description);
               }}
-              disablePortal
               id="plugin.update.selector"
               options={remotePlugins ?? []}
               filterOptions={(options, state) => {
@@ -239,7 +238,6 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
                 setName(value.name);
                 setDescription(value.description);
               }}
-              disablePortal
               id="plugin.update.selector"
               options={remotePlugins ?? []}
               filterOptions={(options, state) => {

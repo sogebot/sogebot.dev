@@ -108,7 +108,6 @@ export const AccordionFont = <T extends FontTypes>(props: Props<T>) => {
             onChange={(ev, value) => onChange({
               ...model, family: value as typeof model.family,
             })}
-            disablePortal
             id="registry.alerts.font.name"
             options={fonts.items.map(o => o.family)}
             renderInput={(params) => <TextField {...params} label={translate('registry.alerts.font.name')} />}

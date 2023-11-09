@@ -189,7 +189,6 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           onChange={(ev, value) => onChange({
             ...model, voice: value as typeof model.voice,
           })}
-          disablePortal
           id="registry.alerts.voice"
           options={voices}
           renderInput={(params) => <TextField {...params} label={translate('registry.alerts.voice')} />}

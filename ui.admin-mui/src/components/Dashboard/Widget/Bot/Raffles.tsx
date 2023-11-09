@@ -270,7 +270,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
               disabled={!raffle?.isClosed}
               getOptionLabel={(option) => option.title}
               disableClearable
-              disablePortal
               value={eligible}
               onChange={(event, newValue) => handleEligibilitySet(newValue)}
               ChipProps={{
@@ -288,7 +287,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
             />
             <Autocomplete
               value={typeItemSelected}
-              disablePortal
               options={typeItems}
               disabled={!raffle?.isClosed}
               disableClearable
