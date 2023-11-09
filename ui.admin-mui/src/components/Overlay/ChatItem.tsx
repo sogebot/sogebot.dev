@@ -74,7 +74,7 @@ function hexToHSL(hexColor: string) {
   return `hsl(${hue}, ${saturation * 100}%, ${Math.max(70, lightness)}%)`;
 }
 
-export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
+export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
   const messages = useAppSelector(state => state.overlay.chat.messages);
   const posY = useAppSelector(state => state.overlay.chat.posY);
   const fontSize = useAppSelector(state => state.overlay.chat.fontSize);
@@ -106,7 +106,6 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }
-      console.log({ data });
       if (data.message.startsWith('!') && !item.showCommandMessages) {
         return;
       }
@@ -123,6 +122,63 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
       dispatch(cleanMessages(item.hideMessageAfter));
     }
   }, 1000, true, true);
+
+  const orderedMessages = React.useMemo(() => {
+    return orderBy(messages, 'timestamp', item.reverseOrder ? 'desc' :'asc');
+  }, [ messages, item.reverseOrder ]);
+
+  React.useEffect(() => {
+    // we need to wait little bit for the messages to be rendered
+    setTimeout(() => {
+      const elements = document.getElementsByClassName('message');
+      if (item.type === 'vertical') {
+        const toHide: string[] = [];
+
+        if (item.reverseOrder) {
+        // reverse order goes from top to bottom, we want to hide elements that are below the height
+          let parent: number | null = null;
+          for (const el of elements) {
+            if (!parent) {
+              parent = (el.parentElement?.getBoundingClientRect().top ?? 0) + height;
+            }
+
+            if (parent) {
+              if (parent - el.getBoundingClientRect().bottom < 0) {
+                toHide.push(el.id);
+              }
+            }
+          }
+        } else {
+          let parent: number | null = null;
+          for (const el of elements) {
+            if (!parent) {
+              parent = (el.parentElement?.getBoundingClientRect().bottom ?? 0) - height;
+            }
+
+            if (parent) {
+              if (parent - el.getBoundingClientRect().top > 0) {
+                toHide.push(el.id);
+              }
+            }
+          }
+
+        }
+        Array.from<HTMLElement>(elements as any).forEach(el => {
+          const message = messages.find(o => o.id === el.id);
+          if (!message) {
+            return;
+          }
+          if (message.show && !toHide.includes(el.id)) {
+            el.style.opacity = '1';
+          } else {
+            el.style.opacity = '0';
+          }
+        });
+      } else {
+        Array.from<HTMLElement>(elements as any).forEach(el => el.style.opacity = '1');
+      }
+    }), 10;
+  }, [ messages, item.reverseOrder, height ]);
 
   React.useEffect(() => {
     loadFont(item.font.family);
@@ -153,7 +209,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
 
   return <>
     <Box sx={{
-      width: '100%', height: '100%', overflow: 'hidden', position: 'relative', p: 0.5, textTransform: 'none !important',
+      width: '100%', height: '100%', overflow: 'hidden', position: 'relative', textTransform: 'none !important',
     }}>
       {item.type === 'niconico' && messages.map(message => <Fade in={message.show} key={message.timestamp} mountOnEnter unmountOnExit>
         <Box
@@ -210,115 +266,123 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
         position:      'absolute',
         ...boxStyle,
       }}>
-        {orderBy(messages, 'timestamp', item.reverseOrder ? 'desc' :'asc')
-          .map(message => <Fade in={message.show} key={message.timestamp} mountOnEnter unmountOnExit>
-            <Box sx={{
-              p:                  `${item.messagePadding}px`,
-              mb:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0,
-              mr:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0,
-              backgroundColor:    item.messageBackgroundColor,
-              lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
-              '.simpleChatImage': {
+        {orderedMessages
+          .map(message => <Box className="message" id={message.id} key={message.id} sx={{
+            transition: 'all 0.5s ease-in-out',
+            opacity:    0,
+            // opacity:    message.show && !hideMessagesByBoundaries.includes(message.id) ? 1 : 0,
+            p:          `${item.messagePadding}px`,
+            mt:         item.type === 'vertical' && !item.reverseOrder
+              ? item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0
+              : 0,
+            mb: item.type === 'vertical' && item.reverseOrder
+              ? item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0
+              : 0,
+            mr: item.type === 'horizontal'
+              ? item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0
+              : 0,
+            backgroundColor:    item.messageBackgroundColor,
+            lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+            '.simpleChatImage': {
+              position:    'relative',
+              display:     'inline-block',
+              width:       `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
+              marginRight: '1px',
+              marginLeft:  '1px',
+            },
+            '.simpleChatImage .emote': {
+              width:     `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
+              height:    `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
+              position:  'absolute',
+              objectFit: 'contain',
+              overflow:  'visible',
+              top:       0,
+              bottom:    0,
+              margin:    'auto',
+              transform: 'translateY(-30%)',
+            },
+          }}>
+            {item.showTimestamp && <Typography component='span' sx={{
+              pr:         0.5,
+              fontSize:   `${item.font.size}px`,
+              lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+            }}>{new Date(message.timestamp).toLocaleTimeString('default', {
+                hour: '2-digit', minute: '2-digit',
+              })}</Typography>}
+
+            {item.showBadges && message.badges.length > 0 && <Box sx={{
+              pr: 0.5, display: 'inline',
+            }}>
+              {message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
                 position:    'relative',
                 display:     'inline-block',
-                width:       `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
                 marginRight: '1px',
-                marginLeft:  '1px',
-              },
-              '.simpleChatImage .emote': {
-                width:     `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
-                height:    `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
-                position:  'absolute',
-                objectFit: 'contain',
-                overflow:  'visible',
-                top:       0,
-                bottom:    0,
-                margin:    'auto',
-                transform: 'translateY(-30%)',
-              },
+                width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+              }}>
+                <img src={badge.url} style={{
+                  width:     `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                  height:    `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                  position:  'absolute',
+                  objectFit: 'contain',
+                  overflow:  'visible',
+                  top:       0,
+                  bottom:    0,
+                  margin:    'auto',
+                  transform: 'translateY(-30%)',
+                }}/>
+              </Box>)}
+            </Box>}
+            <Typography component='span' sx={{
+              fontSize:   `${item.font.size}px`,
+              lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+              fontFamily: item.font.family,
+              fontWeight: item.font.weight,
+              textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
+              color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
+              ...(item.usernameFont
+                ? {
+                  fontSize:   `${item.usernameFont.size}px`,
+                  fontFamily: item.usernameFont.family,
+                  fontWeight: item.usernameFont.weight,
+                  textShadow: [textStrokeGenerator(item.usernameFont.borderPx, item.usernameFont.borderColor), shadowGenerator(item.usernameFont.shadow)].filter(Boolean).join(', '),
+                  ...(item.useCustomUsernameColor && {
+                    color: `${item.usernameFont.color}`,
+                  })
+                }
+                : {}),
             }}>
-              {item.showTimestamp && <Typography component='span' sx={{
-                pr:         0.5,
-                fontSize:   `${item.font.size}px`,
-                lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
-              }}>{new Date(message.timestamp).toLocaleTimeString('default', {
-                  hour: '2-digit', minute: '2-digit',
-                })}</Typography>}
-
-              {item.showBadges && message.badges.length > 0 && <Box sx={{
-                pr: 0.5, display: 'inline',
-              }}>
-                {message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
-                  position:    'relative',
-                  display:     'inline-block',
-                  marginRight: '1px',
-                  width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
-                }}>
-                  <img src={badge.url} style={{
-                    width:     `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
-                    height:    `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
-                    position:  'absolute',
-                    objectFit: 'contain',
-                    overflow:  'visible',
-                    top:       0,
-                    bottom:    0,
-                    margin:    'auto',
-                    transform: 'translateY(-30%)',
-                  }}/>
-                </Box>)}
-              </Box>}
-              <Typography component='span' sx={{
-                fontSize:   `${item.font.size}px`,
-                lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
-                fontFamily: item.font.family,
-                fontWeight: item.font.weight,
-                textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
-                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
-                ...(item.usernameFont
-                  ? {
-                    fontSize:   `${item.usernameFont.size}px`,
-                    fontFamily: item.usernameFont.family,
-                    fontWeight: item.usernameFont.weight,
-                    textShadow: [textStrokeGenerator(item.usernameFont.borderPx, item.usernameFont.borderColor), shadowGenerator(item.usernameFont.shadow)].filter(Boolean).join(', '),
-                    ...(item.useCustomUsernameColor && {
-                      color: `${item.usernameFont.color}`,
-                    })
-                  }
-                  : {}),
-              }}>
-                { message.displayName }
-              </Typography>
-              <Typography component='span' sx={{
-                fontSize:   `${item.font.size}px`,
-                lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
-                fontFamily: item.font.family,
-                fontWeight: item.font.weight,
-                textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
-                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
-                ...(item.usernameFont
-                  ? {
-                    ...(item.useCustomUsernameColor && {
-                      color: `${item.usernameFont.color}`,
-                    })
-                  }
-                  : {}),
-                ...(item.separatorFont
-                  ? {
-                    fontSize:   `${item.separatorFont.size}px`,
-                    color:      `${item.separatorFont.color}`,
-                    fontFamily: item.separatorFont.family,
-                    fontWeight: item.separatorFont.weight,
-                    textShadow: [textStrokeGenerator(item.separatorFont.borderPx, item.separatorFont.borderColor), shadowGenerator(item.separatorFont.shadow)].filter(Boolean).join(', '),
-                  }
-                  : {}),
-              }}>
-                { item.separator }
-              </Typography>
-              <span>
-                { HTMLReactParser(message.message) }
-              </span>
-            </Box>
-          </Fade>)}
+              { message.displayName }
+            </Typography>
+            <Typography component='span' sx={{
+              fontSize:   `${item.font.size}px`,
+              lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+              fontFamily: item.font.family,
+              fontWeight: item.font.weight,
+              textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
+              color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
+              ...(item.usernameFont
+                ? {
+                  ...(item.useCustomUsernameColor && {
+                    color: `${item.usernameFont.color}`,
+                  })
+                }
+                : {}),
+              ...(item.separatorFont
+                ? {
+                  fontSize:   `${item.separatorFont.size}px`,
+                  color:      `${item.separatorFont.color}`,
+                  fontFamily: item.separatorFont.family,
+                  fontWeight: item.separatorFont.weight,
+                  textShadow: [textStrokeGenerator(item.separatorFont.borderPx, item.separatorFont.borderColor), shadowGenerator(item.separatorFont.shadow)].filter(Boolean).join(', '),
+                }
+                : {}),
+            }}>
+              { item.separator }
+            </Typography>
+            <span>
+              { HTMLReactParser(message.message) }
+            </span>
+          </Box>)}
       </Box>}
     </Box>
   </>;

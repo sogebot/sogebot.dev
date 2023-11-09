@@ -65,10 +65,6 @@ export const AccordionFont = <T extends FontTypes>(props: Props<T>) => {
   const [ exampleText, setExampleText ] = React.useState('The quick brown fox jumps over the lazy dog');
   const [ shadowTab, setShadowTab ] = React.useState(0);
 
-  if (model !== null) {
-    console.log({ model });
-  }
-
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);
   };
