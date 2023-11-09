@@ -1,13 +1,15 @@
 import { DataTypeProvider, DataTypeProviderProps, FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
-import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { EventInterface } from '@sogebot/backend/dest/database/entity/event';
+import { useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
+import { rewardsAtom } from '../../atoms';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
@@ -27,22 +29,63 @@ import theme from '../../theme';
 const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => {
   const { translate } = useTranslation();
 
+  const rewards = useAtomValue(rewardsAtom);
+  const getReward = React.useCallback((rewardId: string) => {
+    const reward = rewards.find(o => o.id === rewardId);
+    return reward?.name ?? <Typography sx={{ fontWeight: 'bold', color: theme.palette.error.main }}>!!! unknown reward !!!</Typography>;
+  }, [ rewards]);
+
   return <DataTypeProvider
     formatterComponent={({ row }: { row?: EventInterface }) => <>
       <Typography variant='body2'>{capitalize(translate(row!.name))}</Typography>
-      {row!.filter.length > 0 && <Box>
-        <FilterAltTwoTone sx={{
-          fontSize: '1rem', position: 'relative', top: '.2rem',
-        }}/>
-        <Typography sx={{
-          display:      'inline-block',
+
+      {row!.filter.length > 0 && <Box sx={{ pt: '0.2rem', paddingLeft: '1rem' }}>
+        <Paper sx={{
           border:       `1px solid ${theme.palette.primary.main}85`,
           borderRadius: '4px',
-          padding:      '.1rem .3rem',
-          marginLeft:   '.5rem',
+          display:      'flex',
           lineHeight:   'normal',
-        }} variant="caption"> {row!.filter}</Typography>
+          width:        'fit-content'
+        }}>
+          <Box sx={{
+            backgroundColor: `${theme.palette.primary.main}55`,
+            px:              0.3,
+          }}>
+            <FilterAltTwoTone sx={{
+              fontSize: '1rem',
+              height:   '100%',
+            }}/>
+          </Box>
+          <Typography sx={{
+            px:      0.3,
+            display: 'inline-block',
+          }} variant="caption">
+            {row!.filter}
+          </Typography>
+        </Paper>
       </Box>}
+
+      {Object.keys(row!.definitions).length > 0 && <ul style={{
+        padding: 0, paddingLeft: '1rem', listStyle: 'none', margin: 0, paddingTop: '0.2rem'
+      }}>
+        {Object.keys(row!.definitions).map((key, idx2) => <li key={idx2}>
+          { key === 'rewardId' ? translate('events.definitions.reward.label') : translate('events.definitions.' + key + '.label') }
+          <Typography sx={{
+            display:      'inline-block',
+            border:       `1px solid ${theme.palette.primary.main}85`,
+            borderRadius: '4px',
+            padding:      '.1rem .3rem',
+            marginLeft:   '.5rem',
+            lineHeight:   'normal',
+          }} variant="caption">
+            {
+              key === 'rewardId'
+                ? getReward(String(row!.definitions[key]))
+                : String(row!.definitions[key])
+            }
+          </Typography>
+        </li>)}
+      </ul>}
     </>}
     {...props}
   />;
@@ -78,7 +121,7 @@ const PageManageEvents = () => {
       column:     {
         getCellValue: (row) => <>
           {row.operations.length === 0 && <Typography variant='body2' sx={{ color: theme.palette.grey[400] }}>No operations set for this event</Typography>}
-          {row.operations.map((operation, idx) => <Box key={idx}>
+          {row.operations.map((operation: any, idx: any) => <Box key={idx}>
             <Typography variant='body2' sx={{ color: theme.palette.primary.main }}>{ capitalize(translate(operation.name)) }</Typography>
             {Object.keys(operation.definitions).length > 0 && <ul style={{
               padding: 0, paddingLeft: '1rem', listStyle: 'none', margin: 0,
