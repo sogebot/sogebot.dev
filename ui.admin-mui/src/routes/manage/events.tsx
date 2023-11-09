@@ -1,39 +1,10 @@
-import {
-  DataTypeProvider,
-  DataTypeProviderProps,
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSelection,
-  IntegratedSorting,
-  SelectionState, SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone,
-} from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  capitalize,
-  CircularProgress,
-  Dialog,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { DataTypeProvider, DataTypeProviderProps, FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
+import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { EventInterface } from '@sogebot/backend/dest/database/entity/event';
 import { useSnackbar } from 'notistack';
-import React, {
-  ReactNode, useCallback, useEffect, useMemo,
-  useState,
-} from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 

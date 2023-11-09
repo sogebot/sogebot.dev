@@ -1,7 +1,5 @@
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Alert, Box, Stack, SxProps, Tab,
-} from '@mui/material';
+import { Alert, Box, Stack, SxProps, Tab } from '@mui/material';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import React, { useEffect } from 'react';
 

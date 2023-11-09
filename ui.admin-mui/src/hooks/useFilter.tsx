@@ -1,8 +1,6 @@
 import { Filter } from '@devexpress/dx-react-grid';
 import { Add } from '@mui/icons-material';
-import {
-  Box, Button, Chip, FormControl, FormControlLabel, FormLabel, Input, MenuItem, Popover, Radio, RadioGroup, Select,
-} from '@mui/material';
+import { Box, Button, Chip, FormControl, FormControlLabel, FormLabel, Input, MenuItem, Popover, Radio, RadioGroup, Select } from '@mui/material';
 import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
@@ -12,15 +10,15 @@ import { usePermissions } from './usePermissions';
 import { useTranslation } from './useTranslation';
 
 export const useFilter = <T,>(availableFilters: {
-  columnName: keyof T;
-  translation: string;
-  type: 'string' | 'number' | 'boolean' | 'permission' | 'list';
+  columnName:   keyof T;
+  translation:  string;
+  type:         'string' | 'number' | 'boolean' | 'permission' | 'list';
   valueRender?: (value: string) => string;
   options?: {
-    showDisabled?: boolean,
-    disabledName?: string,
+    showDisabled?:  boolean,
+    disabledName?:  string,
     disabledValue?: string,
-    listValues?: string[],
+    listValues?:    string[],
   }
 }[]) => {
   const { translate } = useTranslation();

@@ -1,6 +1,4 @@
-import {
-  clips, events, title,
-} from './DefaultScreens';
+import { clips, events, title } from './DefaultScreens';
 
 export const screensList = {
   custom: {

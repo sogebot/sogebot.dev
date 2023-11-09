@@ -1,22 +1,9 @@
-import {
-  DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  BorderInnerTwoTone, BorderStyleTwoTone,
-  CropFreeTwoTone, DragIndicatorTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
-} from '@mui/icons-material';
-import {
-  Box, Button, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip,
-} from '@mui/material';
+import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, DragIndicatorTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
+import { Box, Button, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { CreditsScreenCustom, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
@@ -24,9 +11,7 @@ import { cloneDeep } from 'lodash';
 import set from 'lodash/set';
 import React from 'react';
 import Moveable from 'react-moveable';
-import {
-  useKey, useMouse, usePreviousImmediate,
-} from 'rooks';
+import { useKey, useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
 
@@ -46,18 +31,18 @@ let isPositionChanging = false;
 document.addEventListener('mouseup', () => isPositionChanging = false);
 
 type Props = {
-  model: CreditsScreenCustom;
-  canvas: { width: number, height: number },
+  model:    CreditsScreenCustom;
+  canvas:   { width: number, height: number },
   onUpdate: (value: CreditsScreenCustom) => void;
 };
 
 function SortableCard(props: {
-  name: string,
-  id: string,
-  isDragging: boolean,
-  onClick?: () => void,
+  name:        string,
+  id:          string,
+  isDragging:  boolean,
+  onClick?:    () => void,
   isSelected?: boolean,
-  item?: CreditsScreenCustom['items'][number],
+  item?:       CreditsScreenCustom['items'][number],
 }) {
   const {
     attributes,

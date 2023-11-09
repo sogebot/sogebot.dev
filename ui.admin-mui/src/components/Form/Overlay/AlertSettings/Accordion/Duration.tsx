@@ -1,22 +1,20 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, InputAdornment, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, InputAdornment, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
 import { FormNumericInput } from '../../../Input/Numeric';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: number,
-  open: string,
-  label?: string,
-  max?: number,
-  onOpenChange: (value: string) => void;
-  onChange: (value: number) => void;
+  model:               number,
+  open:                string,
+  label?:              string,
+  max?:                number,
+  onOpenChange:        (value: string) => void;
+  onChange:            (value: number) => void;
   customLabelDetails?: React.ReactNode;
-  hideEndAdornment?: boolean;
-  helperText?: string;
+  hideEndAdornment?:   boolean;
+  helperText?:         string;
 };
 
 export const AccordionDuration: React.FC<Props> = (props) => {

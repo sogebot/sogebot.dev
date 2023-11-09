@@ -4,8 +4,8 @@ export interface getListOfReturn {
   systems: {
     name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean;
   }[];
-  services: { name: string }[];
-  core: { name: string }[];
+  services:     { name: string }[];
+  core:         { name: string }[];
   integrations: {
     name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean;
   }[];

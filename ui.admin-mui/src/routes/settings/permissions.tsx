@@ -1,44 +1,16 @@
-import {
-  DragDropContext, Draggable, Droppable,
-} from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { AddTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Alert,
-  Backdrop,
-  Box,
-  Checkbox,
-  CircularProgress,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Stack,
-  TextField,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { Alert, Backdrop, Box, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, InputLabel, MenuItem, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import Select from '@mui/material/Select';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import {
-  capitalize,
-  cloneDeep, orderBy, sortBy,
-} from 'lodash';
+import { capitalize, cloneDeep, orderBy, sortBy } from 'lodash';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
-import {
-  useLocation, useNavigate, useParams,
-} from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';

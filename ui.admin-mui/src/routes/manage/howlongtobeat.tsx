@@ -1,36 +1,11 @@
-import {
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSelection,
-  IntegratedSorting,
-  RowDetailState,
-  SelectionState,
-  Sorting,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableRowDetail,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, RowDetailState, SelectionState, Sorting, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableRowDetail, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { Button, CircularProgress, Dialog, Grid, Stack, Typography } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
@@ -66,7 +41,7 @@ const PageManageHLTB = () => {
   const toggle = useAppSelector(state => state.hltb.toggle);
   const offset = useAppSelector(state => state.hltb.offset);
 
-  const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number}) => {
+  const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number }) => {
     const output = [];
     if (data.days) {
       output.push(`${data.days}d`);
@@ -150,11 +125,11 @@ const PageManageHLTB = () => {
   }]);
 
   type extension = {
-    thumbnail: string;
-    main: string;
-    extra: string;
+    thumbnail:     string;
+    main:          string;
+    extra:         string;
     completionist: string;
-    time: string;
+    time:          string;
   };
 
   const getThumbnailURL = useCallback((game: string) => {

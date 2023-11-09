@@ -8,7 +8,7 @@ import { anExpectedSoundCount, anFinishedSoundCount } from './AlertItem/atom';
 import defaultAudio from './assets/alerts/default.mp3';
 import type { Props } from './ChatItem';
 
-export const AlertItemAudio: React.FC<Props<AlertAudio> & {variant: Omit<Alerts['items'][number], 'variants'>}>
+export const AlertItemAudio: React.FC<Props<AlertAudio> & { variant: Omit<Alerts['items'][number], 'variants'> }>
 = ({ item, width, height, active, variant }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const audioRef = React.useRef<HTMLAudioElement>();

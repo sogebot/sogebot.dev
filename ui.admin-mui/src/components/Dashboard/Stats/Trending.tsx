@@ -1,16 +1,12 @@
-import {
-  AllInclusive, TrendingDown, TrendingUp,
-} from '@mui/icons-material';
-import {
-  Box, Stack, Typography,
-} from '@mui/material';
+import { AllInclusive, TrendingDown, TrendingUp } from '@mui/icons-material';
+import { Box, Stack, Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import React from 'react';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
-export const Trending: React.FC<{average: number, current: number, isStreamOnline: boolean, type?: 'bigNumber'}> = (props) => {
+export const Trending: React.FC<{ average: number, current: number, isStreamOnline: boolean, type?: 'bigNumber' }> = (props) => {
   const { configuration } = useAppSelector(state => state.loader);
 
   const numberReducer = (out: string, item: any) => {

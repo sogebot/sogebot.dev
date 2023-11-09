@@ -1,18 +1,16 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, TextField, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: string,
-  open: string,
-  label?: string,
+  model:        string,
+  open:         string,
+  label?:       string,
   onOpenChange: (value: string) => void;
-  onChange: (value: string) => void;
+  onChange:     (value: string) => void;
 };
 
 export const AccordionMessageTemplate: React.FC<Props> = (props) => {

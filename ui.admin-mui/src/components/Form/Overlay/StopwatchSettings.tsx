@@ -1,24 +1,15 @@
-import {
-  Box,
-  FormControlLabel,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
 
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../../constants';
 import { timestampToObject } from '../../../helpers/getTime';
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
-  model: Stopwatch;
+  model:    Stopwatch;
   onUpdate: (value: Stopwatch) => void;
 };
 

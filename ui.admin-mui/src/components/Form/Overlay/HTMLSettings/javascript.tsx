@@ -1,7 +1,5 @@
 import Editor from '@monaco-editor/react';
-import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, PaperProps, Stack,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, PaperProps, Stack } from '@mui/material';
 import React from 'react';
 import Draggable from 'react-draggable';
 

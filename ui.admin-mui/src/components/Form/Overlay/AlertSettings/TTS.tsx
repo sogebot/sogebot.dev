@@ -1,6 +1,4 @@
-import {
-  Alert, Button, Stack,
-} from '@mui/material';
+import { Alert, Button, Stack } from '@mui/material';
 import { Alerts,  AlertTTS } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
@@ -15,8 +13,8 @@ import { AccordionTTS } from '../../../Accordion/TTS';
 import { anSelectedItemOpts } from '../../atoms';
 
 interface AlertSettingsTTSProps {
-  model: AlertTTS
-  onChange: (value: AlertTTS) => void
+  model:     AlertTTS
+  onChange:  (value: AlertTTS) => void
   onDelete?: () => void
 }
 

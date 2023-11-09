@@ -1,12 +1,6 @@
 import { AddTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Box, Button, Divider,
-  Fade, FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider,
-  Stack, Tab, Tabs, TextField, Typography,
-} from '@mui/material';
-import {
-  Alerts, Countdown, CreditsScreenEvents, Eventlist, Wordcloud,
-} from '@sogebot/backend/dest/database/entity/overlay';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Box, Button, Divider, Fade, FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Alerts, Countdown, CreditsScreenEvents, Eventlist, Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -38,16 +32,16 @@ export function loadFont (value: string) {
 }
 
 type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: T,
-  open: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: T) => void;
-  disableExample?: boolean;
-  label?: string;
-  accordionId?: string;
+  model:                   T,
+  open:                    string,
+  onOpenChange:            (value: string) => void;
+  onChange:                (value: T) => void;
+  disableExample?:         boolean;
+  label?:                  string;
+  accordionId?:            string;
   alwaysShowLabelDetails?: boolean;
-  prepend?: React.ReactNode;
-  customLabelDetails?: React.ReactNode;
+  prepend?:                React.ReactNode;
+  customLabelDetails?:     React.ReactNode;
 };
 export const AccordionFont = <T extends Randomizer['customizationFont']
 | Alerts['globalFont1']

@@ -1,13 +1,9 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { DragIndicator, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import {
-  Countdown, Marathon , Stopwatch,
-} from '@sogebot/backend/dest/database/entity/overlay';
+import { Countdown, Marathon, Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
@@ -21,9 +17,7 @@ import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
 import { getSocket } from '../../../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
-import {
-  setCountdowns, setMarathons, setRandomizers, setStopwatchs,
-} from '../../../../../store/quickActionsSlice';
+import { setCountdowns, setMarathons, setRandomizers, setStopwatchs } from '../../../../../store/quickActionsSlice';
 import { isHexColor } from '../../../../../validators';
 import { DeleteButton } from '../../../../Buttons/DeleteButton';
 import { DroppableComponent } from '../../../../Table/DroppableComponent';
@@ -39,7 +33,7 @@ const reorder = (list: QuickActions.Item[], startIndex: number, endIndex: number
   return result;
 };
 
-export const RenderList: React.FC<{label?: string, id: string | number | null}> = ({
+export const RenderList: React.FC<{ label?: string, id: string | number | null }> = ({
   label, id,
 }) => {
   return id && (String(id).length > 0)
@@ -291,7 +285,7 @@ const DraggableComponent: React.FC<{
   );
 };
 
-export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void}> = ({
+export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void }> = ({
   onClose,
 }) => {
   const dispatch = useAppDispatch();

@@ -1,10 +1,5 @@
-import {
-
-  CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
-} from '@mui/icons-material';
-import {
-  Box, DialogContent, Divider, FormControl, FormLabel, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Slider, Stack, TextField, Tooltip,
-} from '@mui/material';
+import { CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
+import { Box, DialogContent, Divider, FormControl, FormLabel, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Slider, Stack, TextField, Tooltip } from '@mui/material';
 import { CreditsScreenClips, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useMouse, usePreviousImmediate } from 'rooks';
@@ -22,8 +17,8 @@ let isPositionChanging = false;
 document.addEventListener('mouseup', () => isPositionChanging = false);
 
 type Props = {
-  model: CreditsScreenClips;
-  canvas: { width: number, height: number },
+  model:    CreditsScreenClips;
+  canvas:   { width: number, height: number },
   onUpdate: (value: CreditsScreenClips) => void;
 };
 

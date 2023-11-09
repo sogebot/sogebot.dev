@@ -1,7 +1,4 @@
-import {
-  Alert,
-  Backdrop, CircularProgress, Stack, Typography,
-} from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 

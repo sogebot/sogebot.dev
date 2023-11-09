@@ -1,23 +1,17 @@
-import {
-  DragDropContext, Draggable, Droppable,
-} from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { mdiResize, mdiTarget } from '@mdi/js';
 import Icon from '@mdi/react';
-import {
-  AddTwoTone, ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
-} from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, IconButton, List, ListItemButton, ListItemText, Stack, Typography,
-} from '@mui/material';
+import { AddTwoTone, ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, IconButton, List, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 
 type Props = {
-  items: Overlay['items'];
-  onUpdate: (value: Overlay['items']) => void;
-  onAdd: (value: Overlay['items'][number]['opts']['typeId']) => void;
-  moveableId: null | string;
+  items:         Overlay['items'];
+  onUpdate:      (value: Overlay['items']) => void;
+  onAdd:         (value: Overlay['items'][number]['opts']['typeId']) => void;
+  moveableId:    null | string;
   setMoveableId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 

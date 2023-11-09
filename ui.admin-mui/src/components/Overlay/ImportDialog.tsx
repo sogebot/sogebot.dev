@@ -1,22 +1,12 @@
-import {
-  DownloadTwoTone, ExpandLessTwoTone, ExpandMoreTwoTone, ThumbDown,
-  ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
-} from '@mui/icons-material';
-import {
-  Box, Button,
-  ButtonGroup, Card, CardActions, CardContent, Chip, CircularProgress, Dialog , DialogActions, DialogContent, DialogTitle,
-  FormControl,
-  IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { DownloadTwoTone, ExpandLessTwoTone, ExpandMoreTwoTone, ThumbDown, ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone } from '@mui/icons-material';
+import { Box, Button, ButtonGroup, Card, CardActions, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { atom, useAtomValue } from 'jotai';
-import {
-  chunk, cloneDeep, orderBy,
-} from 'lodash';
+import { chunk, cloneDeep, orderBy } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';

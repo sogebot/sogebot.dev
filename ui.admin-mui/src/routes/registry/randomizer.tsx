@@ -1,39 +1,13 @@
-import {
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSelection,
-  IntegratedSorting,
-  SelectionState,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  PlayArrowTwoTone, VisibilityOffTwoTone, VisibilityTwoTone,
-} from '@mui/icons-material';
+import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { PlayArrowTwoTone, VisibilityOffTwoTone, VisibilityTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
-import {
-  CircularProgress,
-  Dialog,
-  Grid,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';

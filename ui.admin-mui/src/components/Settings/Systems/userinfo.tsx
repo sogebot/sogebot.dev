@@ -1,25 +1,9 @@
-import {
-  DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  List,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, List, Paper, Stack, TextField, Typography } from '@mui/material';
 import { xor } from 'lodash';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';

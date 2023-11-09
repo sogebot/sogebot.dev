@@ -3,7 +3,7 @@ import { URL } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 type Props = {
-  model: URL;
+  model:    URL;
   onUpdate: (value: URL) => void;
 };
 

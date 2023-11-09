@@ -1,17 +1,5 @@
-import {
-  LockOpenTwoTone, LockTwoTone, PriorityHighTwoTone,
-} from '@mui/icons-material';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
-  InputAdornment,
-  Stack,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import { LockOpenTwoTone, LockTwoTone, PriorityHighTwoTone } from '@mui/icons-material';
+import { Box, Checkbox, FormControlLabel, FormGroup, IconButton, InputAdornment, Stack, Tab, Tabs } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import get from 'lodash/get';
@@ -32,19 +20,19 @@ const getIgnoredPermissions = (settings: Record<string, any>, category: string) 
 };
 
 export const PermissionTabs: React.FC<{
-  settings: Record<string, any>
-  errors: { propertyName: string, message: string }[],
+  settings:                    Record<string, any>
+  errors:                      { propertyName: string, message: string }[],
   ignoredPermissionsCategory?: string,
   handleChangePermissionBased: (key: string, pid: string, value?: any) => void,
   getPermissionSettingsValue: (permId: string, values: {
     [x: string]: string | null;
   }) => string | null,
   children: (opts: {
-    permission: Permissions,
-    isEditable: (key: string) => boolean,
-    toggle: (key: string, handleChange: (key: string, pid: string) => void) => void,
-    isToggable: boolean,
-    CheckBox: (key: string, options: { label: string }) => JSX.Element,
+    permission:     Permissions,
+    isEditable:     (key: string) => boolean,
+    toggle:         (key: string, handleChange: (key: string, pid: string) => void) => void,
+    isToggable:     boolean,
+    CheckBox:       (key: string, options: { label: string }) => JSX.Element,
     TextFieldProps: (key: string) => Record<string, any>
   }) => void,
 }> = ({

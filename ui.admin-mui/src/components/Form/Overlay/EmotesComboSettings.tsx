@@ -1,15 +1,11 @@
-import {
-  InputAdornment,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { InputAdornment, Stack, TextField } from '@mui/material';
 import { EmotesCombo } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: EmotesCombo;
+  model:    EmotesCombo;
   onUpdate: (value: EmotesCombo) => void;
 };
 

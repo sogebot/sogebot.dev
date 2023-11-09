@@ -1,6 +1,4 @@
-import {
-  Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography,
-} from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';

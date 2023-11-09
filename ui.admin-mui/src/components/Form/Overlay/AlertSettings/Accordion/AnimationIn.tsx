@@ -1,8 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade,
-  FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
@@ -10,13 +7,13 @@ import { useTranslation } from '../../../../../hooks/useTranslation';
 import { FormNumericInput } from '../../../Input/Numeric';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: { animationIn: string, animationInDuration: number, animationInWindowBoundaries?: boolean },
-  open: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: { animationIn: string, animationInDuration: number, animationInWindowBoundaries?: boolean }) => void;
+  model:                   { animationIn: string, animationInDuration: number, animationInWindowBoundaries?: boolean },
+  open:                    string,
+  onOpenChange:            (value: string) => void;
+  onChange:                (value: { animationIn: string, animationInDuration: number, animationInWindowBoundaries?: boolean }) => void;
   alwaysShowLabelDetails?: boolean;
-  prepend?: React.ReactNode;
-  customLabelDetails?: React.ReactNode;
+  prepend?:                React.ReactNode;
+  customLabelDetails?:     React.ReactNode;
 };
 
 const animationInOptions = [

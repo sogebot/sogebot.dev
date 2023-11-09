@@ -1,22 +1,7 @@
-import {
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSorting,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-} from '@devexpress/dx-react-grid-material-ui';
+import { FilteringState, IntegratedFiltering, IntegratedSorting, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import { EditTwoTone } from '@mui/icons-material';
-import {
-  CircularProgress,
-  Dialog,
-  Grid,
-  Stack,
-} from '@mui/material';
+import { CircularProgress, Dialog, Grid, Stack } from '@mui/material';
 import IconButton from '@mui/material/IconButton/IconButton';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';

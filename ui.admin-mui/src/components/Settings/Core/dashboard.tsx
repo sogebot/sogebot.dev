@@ -1,27 +1,10 @@
-import {
-  DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { SwapVertTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 

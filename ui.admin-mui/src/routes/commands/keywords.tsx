@@ -1,35 +1,11 @@
-import {
-  Filter,
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSelection,
-  IntegratedSorting,
-  SelectionState,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
+import { Filter, FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone } from '@mui/icons-material';
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Button, CircularProgress, Dialog, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { Keyword, KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 

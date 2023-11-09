@@ -1,14 +1,10 @@
-import {
-  PlayArrow, Visibility, VisibilityOff,
-} from '@mui/icons-material';
+import { PlayArrow, Visibility, VisibilityOff } from '@mui/icons-material';
 import { CircularProgress, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
-import React, {
-  MouseEventHandler, useCallback, useMemo, useState,
-} from 'react';
+import React, { MouseEventHandler, useCallback, useMemo, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';

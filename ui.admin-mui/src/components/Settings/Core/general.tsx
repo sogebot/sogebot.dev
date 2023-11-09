@@ -1,14 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material';
 import FormLabel from '@mui/material/FormLabel';
 import Slider from '@mui/material/Slider';
 import React, { useEffect } from 'react';

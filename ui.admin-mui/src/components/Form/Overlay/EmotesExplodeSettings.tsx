@@ -1,14 +1,4 @@
-import {
-  Button,
-  Divider,
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Button, Divider, FormControl, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { EmotesExplode } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
@@ -16,7 +6,7 @@ import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: EmotesExplode;
+  model:    EmotesExplode;
   onUpdate: (value: EmotesExplode) => void;
 };
 

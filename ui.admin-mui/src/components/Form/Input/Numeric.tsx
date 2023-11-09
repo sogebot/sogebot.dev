@@ -1,16 +1,12 @@
 import { AddTwoTone, RemoveTwoTone } from '@mui/icons-material';
-import {
-  Box, Button, ButtonGroup, TextField, TextFieldProps,
-} from '@mui/material';
-import React, {
-  ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useState,
-} from 'react';
+import { Box, Button, ButtonGroup, TextField, TextFieldProps } from '@mui/material';
+import React, { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useState } from 'react';
 
 export const FormNumericInput: React.FC<{
-  min?: number,
-  max?: number,
-  value?: number | null,
-  onChange?: (value: number | '') => void,
+  min?:          number,
+  max?:          number,
+  value?:        number | null,
+  onChange?:     (value: number | '') => void,
   displayEmpty?: boolean,
 } & TextFieldProps> = ({
   value,

@@ -1,9 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionSummary, Box,
-  Button, Divider, FormControl, FormControlLabel, FormHelperText, InputAdornment,
-  InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
@@ -32,7 +28,7 @@ type Flatten<T extends object> = object extends T ? object : {
   ) => void } extends Record<keyof T, (y: infer O) => void> ? { [K in keyof O]: O[K] } : never;
 
 type Props = {
-  model: Goal;
+  model:    Goal;
   onUpdate: (value: Goal) => void;
 };
 

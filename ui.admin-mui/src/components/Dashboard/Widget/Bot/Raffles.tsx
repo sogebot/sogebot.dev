@@ -1,13 +1,7 @@
-import {
-  Chat, Sync, SyncDisabled, VisibilityOff,
-} from '@mui/icons-material';
+import { Chat, Sync, SyncDisabled, VisibilityOff } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, SxProps, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography,
-} from '@mui/material';
-import {
-  green, grey, red,
-} from '@mui/material/colors';
+import { Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, SxProps, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from '@mui/material';
+import { green, grey, red } from '@mui/material/colors';
 import { RaffleInterface } from '@sogebot/backend/dest/database/entity/raffle';
 import { RaffleParticipantInterface } from '@sogebot/backend/src/database/entity/raffle';
 import { UserInterface } from '@sogebot/backend/src/database/entity/user';
@@ -22,9 +16,7 @@ import { SECOND } from '../../../../constants';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
 import { useTranslation } from '../../../../hooks/useTranslation';
-import {
-  minLength, required, startsWith,
-} from '../../../../validators';
+import { minLength, required, startsWith } from '../../../../validators';
 import { classes } from '../../../styles';
 
 let lastUpdateAt = 0;

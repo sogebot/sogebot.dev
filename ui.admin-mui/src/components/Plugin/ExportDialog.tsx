@@ -1,13 +1,6 @@
 import { ShareTwoTone } from '@mui/icons-material';
-import {
-  LoadingButton,
-  TabContext, TabList, TabPanel,
-} from '@mui/lab';
-import {
-  Autocomplete, Box,
-  Button, Chip, Dialog , DialogActions, DialogContent, DialogTitle,
-  IconButton, LinearProgress, Stack, Tab, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, LinearProgress, Stack, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { Plugin } from '@sogebot/backend/src/database/entity/plugins';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -98,10 +91,10 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       plugin:         itemsToExport,
       compatibleWith: (currentVersion ?? '').split('-')[0],
     } as {
-      name: string;
-      description: string,
-      plugin: string,
-      data: Record<string, string>
+      name:           string;
+      description:    string,
+      plugin:         string,
+      data:           Record<string, string>
       compatibleWith: string,
     };
 

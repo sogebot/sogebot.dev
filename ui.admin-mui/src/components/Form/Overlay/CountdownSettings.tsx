@@ -1,23 +1,10 @@
-import {
-  Box,
-  Button,
-  Divider,
-  FormControlLabel,
-  FormLabel,
-  InputAdornment,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Divider, FormControlLabel, FormLabel, InputAdornment, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
 
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../../constants';
 import { timestampToObject } from '../../../helpers/getTime';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { selectOverlayCountdown, setCountdownShow } from '../../../store/overlaySlice';
@@ -25,8 +12,8 @@ import theme from '../../../theme';
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
-  id: string;
-  model: Countdown;
+  id:       string;
+  model:    Countdown;
   onUpdate: (value: Countdown) => void;
 };
 

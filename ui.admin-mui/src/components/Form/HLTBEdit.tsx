@@ -1,20 +1,11 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Autocomplete,
-  Box, Button, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack, TextField, Typography,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack, TextField, Typography } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
-import {
-  capitalize,
-  cloneDeep,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import debounce from 'lodash/debounce';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 

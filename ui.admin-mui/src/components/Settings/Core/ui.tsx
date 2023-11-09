@@ -1,14 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Checkbox, FormControlLabel, FormGroup, Paper, Stack, TextField, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { IsNotEmpty, validateOrReject } from 'class-validator';
 import React, { useEffect } from 'react';
@@ -26,7 +17,7 @@ class Settings {
 
 const PageSettingsModulesCoreUI: React.FC<{
   onVisible: () => void,
-  sx?: SxProps<Theme> | undefined
+  sx?:       SxProps<Theme> | undefined
 }> = ({
   onVisible,
   sx,

@@ -1,14 +1,12 @@
 import { DeleteTwoTone } from '@mui/icons-material';
-import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, Stack, TextField, Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, Stack, TextField, Typography } from '@mui/material';
 import { isEqual } from 'lodash';
 import React from 'react';
 
 export const SettingsSystemsDialogStringArray: React.FC<{
-  items: string[],
-  onChange: (value: string[]) => void,
-  title: string,
+  items:       string[],
+  onChange:    (value: string[]) => void,
+  title:       string,
   helperText?: string,
 }> = ({
   items,

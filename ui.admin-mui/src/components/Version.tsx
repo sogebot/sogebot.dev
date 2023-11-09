@@ -1,6 +1,4 @@
-import {
-  Box, Fade, Typography,
-} from '@mui/material';
+import { Box, Fade, Typography } from '@mui/material';
 import React from 'react';
 
 import { useAppSelector } from '../hooks/useAppDispatch';

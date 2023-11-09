@@ -1,14 +1,6 @@
 import { ShareTwoTone } from '@mui/icons-material';
-import {
-  LoadingButton,
-  TabContext, TabList, TabPanel,
-} from '@mui/lab';
-import {
-  Alert,
-  Autocomplete, Box,
-  Button, Checkbox, Chip, Dialog , DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup,
-  FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
+import { Alert, Autocomplete, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
 import { GalleryInterface } from '@sogebot/backend/src/database/entity/gallery';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
@@ -145,10 +137,10 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       data:           {},
       compatibleWith: (currentVersion ?? '').split('-')[0],
     } as {
-      name: string;
-      description: string,
-      items: typeof model.items,
-      data: Record<string, string>
+      name:           string;
+      description:    string,
+      items:          typeof model.items,
+      data:           Record<string, string>
       compatibleWith: string,
     };
 

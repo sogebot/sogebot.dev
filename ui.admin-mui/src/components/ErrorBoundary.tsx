@@ -1,9 +1,5 @@
-import {
-  Box, Paper, Typography,
-} from '@mui/material';
-import React, {
-  Component, ErrorInfo, ReactNode,
-} from 'react';
+import { Box, Paper, Typography } from '@mui/material';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import { versions } from '../compatibilityList';
@@ -18,8 +14,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  public state: State = { hasError: false };
-  public error: Error | null = null;
+  public state:     State = { hasError: false };
+  public error:     Error | null = null;
   public errorInfo: ErrorInfo | null = null;
 
   public static getDerivedStateFromError(): State {

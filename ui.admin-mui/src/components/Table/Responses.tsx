@@ -1,9 +1,5 @@
-import {
-  FilterAlt, Key, Pause, PlayArrow,
-} from '@mui/icons-material';
-import {
-  Divider, Grid, List, ListItem, Stack, Typography,
-} from '@mui/material';
+import { FilterAlt, Key, Pause, PlayArrow } from '@mui/icons-material';
+import { Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material';
 import { KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
 import orderBy from 'lodash/orderBy';
 import React from 'react';

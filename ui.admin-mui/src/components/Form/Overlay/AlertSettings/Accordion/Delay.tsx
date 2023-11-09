@@ -1,7 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade, Slider, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade, Slider, Typography } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -9,12 +7,12 @@ import React from 'react';
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Alerts['alertDelayInMs'],
-  open: string,
-  label?: string,
-  max?: number,
+  model:        Alerts['alertDelayInMs'],
+  open:         string,
+  label?:       string,
+  max?:         number,
   onOpenChange: (value: string) => void;
-  onChange: (value: Alerts['alertDelayInMs']) => void;
+  onChange:     (value: Alerts['alertDelayInMs']) => void;
 };
 
 export const AccordionDelay: React.FC<Props> = (props) => {

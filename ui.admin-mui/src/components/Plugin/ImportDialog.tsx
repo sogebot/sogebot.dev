@@ -1,13 +1,5 @@
-import {
-  DownloadTwoTone, ExpandLessTwoTone, ExpandMoreTwoTone, ThumbDown,
-  ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone,
-} from '@mui/icons-material';
-import {
-  Box,
-  Button, Card, CardActions, CardContent, Chip, CircularProgress, Dialog , DialogActions, DialogContent, DialogTitle,
-  FormControl,
-  IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { DownloadTwoTone, ExpandLessTwoTone, ExpandMoreTwoTone, ThumbDown, ThumbDownTwoTone, ThumbUp, ThumbUpTwoTone } from '@mui/icons-material';
+import { Box, Button, Card, CardActions, CardContent, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, LinearProgress, MenuItem, Pagination, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';

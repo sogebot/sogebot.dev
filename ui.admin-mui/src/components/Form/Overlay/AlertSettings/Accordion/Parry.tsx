@@ -1,7 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Checkbox, Fade, FormControlLabel, FormGroup, FormLabel, Slider, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Checkbox, Fade, FormControlLabel, FormGroup, FormLabel, Slider, Typography } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -9,10 +7,10 @@ import React from 'react';
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Alerts['parry'],
-  open: string,
+  model:        Alerts['parry'],
+  open:         string,
   onOpenChange: (value: string) => void;
-  onChange: (value: Alerts['parry']) => void;
+  onChange:     (value: Alerts['parry']) => void;
 };
 
 export const AccordionParry: React.FC<Props> = (props) => {

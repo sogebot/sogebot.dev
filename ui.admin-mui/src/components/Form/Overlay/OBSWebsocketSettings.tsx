@@ -1,11 +1,5 @@
 import { KeyboardReturnTwoTone } from '@mui/icons-material';
-import {
-  Box,
-  FormLabel,
-  InputAdornment,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Box, FormLabel, InputAdornment, Stack, TextField } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -14,13 +8,13 @@ import { IMaskInput } from 'react-imask';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: OBSWebsocket;
+  model:    OBSWebsocket;
   onUpdate: (value: OBSWebsocket) => void;
 };
 
 interface CustomProps {
   onChange: (event: { currentTarget: { value: string } }) => void;
-  name: string;
+  name:     string;
 }
 const IPFormatCustom = React.forwardRef<HTMLElement, CustomProps>(
   function IPFormatCustom(props, ref) {

@@ -1,16 +1,10 @@
-import {
-  AddTwoTone, Edit, RemoveTwoTone,
-} from '@mui/icons-material';
-import {
-  IconButton, InputAdornment, Popover,
-} from '@mui/material';
+import { AddTwoTone, Edit, RemoveTwoTone } from '@mui/icons-material';
+import { IconButton, InputAdornment, Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayMarathonItem } from '@sogebot/backend/src/database/entity/dashboard';
 import parse from 'html-react-parser';
-import React, {
-  MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState,
-} from 'react';
+import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';

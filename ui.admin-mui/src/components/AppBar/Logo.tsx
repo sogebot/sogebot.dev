@@ -1,7 +1,5 @@
 import { CloseTwoTone } from '@mui/icons-material';
-import {
-  Badge, Box, IconButton, Link,
-} from '@mui/material';
+import { Badge, Box, IconButton, Link } from '@mui/material';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
@@ -27,7 +25,7 @@ export const Logo: React.FC = () => {
 
     getSocket('/', true).emit('version', async (version: string) => {
       try {
-        const { response } = await new Promise<{ response: Record<string, any>}>((resolve) => {
+        const { response } = await new Promise<{ response: Record<string, any> }>((resolve) => {
           const request = new XMLHttpRequest();
           request.open('GET', 'https://api.github.com/repos/sogehige/sogebot/releases/latest', true);
 

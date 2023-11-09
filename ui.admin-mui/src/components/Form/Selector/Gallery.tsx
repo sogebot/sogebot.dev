@@ -1,8 +1,5 @@
 import { CollectionsTwoTone, Folder } from '@mui/icons-material';
-import {
-  Box,
-  Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography,
-} from '@mui/material';
+import { Box, Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import { uniq } from 'lodash';
 import { enqueueSnackbar } from 'notistack';
@@ -57,11 +54,11 @@ export const getDirectoriesOf = (items: GalleryInterface[], directories: string[
 };
 
 type Props = {
-  label: string
-  type: 'audio' | 'image',
-  value?: string;
-  volume?: number;
-  button?: boolean;
+  label:     string
+  type:      'audio' | 'image',
+  value?:    string;
+  volume?:   number;
+  button?:   boolean;
   announce?: string;
   onChange(value: string | null, volume: number | null, type: string): void;
   onVolumeChange?(value: number | null): void;

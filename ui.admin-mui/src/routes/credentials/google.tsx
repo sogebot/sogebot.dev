@@ -1,7 +1,4 @@
-import {
-  Alert,
-  Backdrop, CircularProgress, Stack, Typography,
-} from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';

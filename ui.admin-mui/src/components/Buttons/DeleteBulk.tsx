@@ -5,7 +5,7 @@ import React from 'react';
 import { DialogDelete } from '../DialogDelete';
 
 export const ButtonsDeleteBulk: React.FC<{
-  onDelete: () => void,
+  onDelete:  () => void,
   disabled?: boolean,
 }> = ({
   onDelete,

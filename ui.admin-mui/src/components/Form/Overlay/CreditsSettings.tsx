@@ -1,36 +1,9 @@
-import {
-  DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragIndicatorTwoTone, SettingsTwoTone } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
@@ -46,7 +19,7 @@ import { setParentDelKeyDisableStatus } from '../../../store/overlaySlice';
 import { FormNumericInput } from '../Input/Numeric';
 
 type Props = {
-  model: Credits;
+  model:  Credits;
   canvas: {
     height: number, width: number
   };
@@ -54,13 +27,13 @@ type Props = {
 };
 
 function SortableCard(props: {
-  name: string,
-  id: string,
+  name:       string,
+  id:         string,
   isDragging: boolean,
-  item?: Credits['screens'][number],
-  canvas: { height: number, width: number } ,
-  onUpdate?: (value: Credits['screens'][number]) => void;
-  onRemove?: () => void;
+  item?:      Credits['screens'][number],
+  canvas:     { height: number, width: number } ,
+  onUpdate?:  (value: Credits['screens'][number]) => void;
+  onRemove?:  () => void;
 }) {
   const {
     attributes,

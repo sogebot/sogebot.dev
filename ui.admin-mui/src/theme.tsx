@@ -6,39 +6,39 @@ import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-d
 
 declare module '@mui/material/styles' {
   interface Palette {
-    dark: Palette['primary'];
+    dark:  Palette['primary'];
     light: Palette['primary'];
   }
   interface PaletteOptions {
-    dark: PaletteOptions['primary'];
+    dark:  PaletteOptions['primary'];
     light: PaletteOptions['primary'];
   }
 }
 
 declare module '@mui/material/Fab' {
   interface FabPropsColorOverrides {
-    dark: true;
+    dark:  true;
     light: true;
   }
 }
 
 declare module '@mui/material/ButtonGroup' {
   interface ButtonGroupPropsColorOverrides {
-    dark: true;
+    dark:  true;
     light: true;
   }
 }
 
 declare module '@mui/material/IconButton' {
   interface IconButtonPropsColorOverrides {
-    dark: true;
+    dark:  true;
     light: true;
   }
 }
 
 declare module '@mui/material/Button' {
   interface ButtonPropsColorOverrides {
-    dark: true;
+    dark:  true;
     light: true;
   }
 }

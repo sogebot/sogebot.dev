@@ -1,6 +1,4 @@
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../../../constants';
 
 export const GenerateTime = (timestamp: null | number, showMilliseconds: boolean) => {
   if (timestamp === null) {

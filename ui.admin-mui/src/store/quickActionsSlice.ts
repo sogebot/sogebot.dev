@@ -3,9 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 type List = { id: string, label: string, };
 export interface State {
   randomizers: List[],
-  countdowns: List[],
-  stopwatchs: List[],
-  marathons: List[]
+  countdowns:  List[],
+  stopwatchs:  List[],
+  marathons:   List[]
 }
 
 const initialState: State = {

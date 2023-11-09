@@ -41,7 +41,7 @@ export default function accessTokenCheck () {
   setInterval(() => {
     if (localStorage[`${localStorage.server}::accessToken`]) {
       // we just need to check if token is expired
-      const { exp } = jwtDecode<{exp: number}>(localStorage[`${localStorage.server}::accessToken`]);
+      const { exp } = jwtDecode<{ exp: number }>(localStorage[`${localStorage.server}::accessToken`]);
       const expirationTime = (exp * 1000) - 60000;
       if (Date.now() >= expirationTime) {
         refreshToken();

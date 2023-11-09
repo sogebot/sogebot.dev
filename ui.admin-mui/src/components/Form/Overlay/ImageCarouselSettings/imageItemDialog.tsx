@@ -1,8 +1,5 @@
 import { SettingsTwoTone } from '@mui/icons-material';
-import {
-  Button,
-  FormControl, InputAdornment, InputLabel, MenuItem,
-} from '@mui/material';
+import { Button, FormControl, InputAdornment, InputLabel, MenuItem } from '@mui/material';
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -18,7 +15,7 @@ import { useLocalstorageState } from 'rooks';
 import { useTranslation } from '../../../../hooks/useTranslation';
 
 export function ImageItemDialog(props: {
-  image: Carousel['images'][number],
+  image:    Carousel['images'][number],
   onUpdate: (value: Carousel['images'][number]) => void,
   onDelete: () => void,
 }) {

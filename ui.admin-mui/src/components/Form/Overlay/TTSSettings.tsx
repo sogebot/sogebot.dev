@@ -1,6 +1,4 @@
-import {
-  Checkbox, FormControlLabel, FormGroup, Stack,
-} from '@mui/material';
+import { Checkbox, FormControlLabel, FormGroup, Stack } from '@mui/material';
 import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
@@ -8,7 +6,7 @@ import { useTranslation } from '../../../hooks/useTranslation';
 import { AccordionTTS } from '../../Accordion/TTS';
 
 type Props = {
-  model: TTS;
+  model:    TTS;
   onUpdate: (value: TTS) => void;
 };
 

@@ -1,14 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  InputAdornment,
-  Stack,
-  Switch,
-  Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, FormControlLabel, FormHelperText, FormLabel, InputAdornment, Stack, Switch, Typography } from '@mui/material';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -17,9 +8,9 @@ import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { FormNumericInput } from '../../Input/Numeric';
 
 type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: T,
-  open: string,
-  onClick: (value: string) => void;
+  model:    T,
+  open:     string,
+  onClick:  (value: string) => void;
   onChange: (value: T) => void;
 };
 export const AccordionTimeAdditions = <T extends Marathon['values']>(props: Props<T>) => {

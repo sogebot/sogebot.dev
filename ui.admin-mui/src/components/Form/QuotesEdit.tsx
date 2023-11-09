@@ -1,19 +1,11 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Chip, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField,
-} from '@mui/material';
+import { Box, Button, Chip, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { Quotes } from '@sogebot/backend/dest/database/entity/quotes';
 import axios from 'axios';
-import {
-  capitalize,
-  cloneDeep,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useEffect, useMemo,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import getAccessToken from '../../getAccessToken';

@@ -1,7 +1,5 @@
 import { ArrowDropDownTwoTone } from '@mui/icons-material';
-import {
-  Button, Menu, MenuItem,
-} from '@mui/material';
+import { Button, Menu, MenuItem } from '@mui/material';
 import React from 'react';
 
 type Props = {

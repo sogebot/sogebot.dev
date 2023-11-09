@@ -1,6 +1,4 @@
-import {
-  Box, Checkbox, CircularProgress, List, ListItem, ListItemButton, ListItemText, SxProps,
-} from '@mui/material';
+import { Box, Checkbox, CircularProgress, List, ListItem, ListItemButton, ListItemText, SxProps } from '@mui/material';
 import React from 'react';
 
 import { getSocket } from '../../../../helpers/socket';

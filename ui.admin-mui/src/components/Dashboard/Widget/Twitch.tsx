@@ -1,10 +1,6 @@
-import {
-  SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone,
-} from '@mui/icons-material';
+import { SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Box, Card, IconButton, Stack, Tab, Typography,
-} from '@mui/material';
+import { Box, Card, IconButton, Stack, Tab, Typography } from '@mui/material';
 import React from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 

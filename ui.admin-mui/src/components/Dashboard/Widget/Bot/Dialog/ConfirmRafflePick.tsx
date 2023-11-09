@@ -7,11 +7,11 @@ import React from 'react';
 import { getSocket } from '../../../../../helpers/socket';
 
 interface ConfirmationDialogProps {
-  id: string;
+  id:          string;
   keepMounted: boolean;
-  open: boolean;
-  setOpen: (value: boolean) => void;
-  onPick: () => void;
+  open:        boolean;
+  setOpen:     (value: boolean) => void;
+  onPick:      () => void;
 }
 
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = (props) => {
@@ -51,7 +51,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = (props) => {
   );
 };
 
-const DashboardWidgetBotDialogConfirmRafflePick: React.FC<{onPick: () => void, title?: React.ReactElement<any, any>, color?: 'inherit' | 'success' | 'primary' | 'secondary' | 'error' | 'info' | 'warning'}> = ({
+const DashboardWidgetBotDialogConfirmRafflePick: React.FC<{ onPick: () => void, title?: React.ReactElement<any, any>, color?: 'inherit' | 'success' | 'primary' | 'secondary' | 'error' | 'info' | 'warning' }> = ({
   onPick,
   color,
   title,

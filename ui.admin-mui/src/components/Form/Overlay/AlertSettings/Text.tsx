@@ -16,8 +16,8 @@ import { AccordionFont } from '../../../Accordion/Font';
 import { anSelectedItemOpts } from '../../atoms';
 
 interface AlertSettingsTextProps {
-  model: AlertText
-  onChange: (value: AlertText) => void
+  model:     AlertText
+  onChange:  (value: AlertText) => void
   onDelete?: () => void
 }
 

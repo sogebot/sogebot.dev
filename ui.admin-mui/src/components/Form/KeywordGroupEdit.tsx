@@ -1,15 +1,11 @@
 import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Collapse, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField,
-} from '@mui/material';
+import { Box, Button, Collapse, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect , useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';

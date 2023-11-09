@@ -1,6 +1,4 @@
-import {
-  Column, Filter, IntegratedFiltering, SortingState, VirtualTable,
-} from '@devexpress/dx-react-grid';
+import { Column, Filter, IntegratedFiltering, SortingState, VirtualTable } from '@devexpress/dx-react-grid';
 import { capitalize } from 'lodash';
 import { useCallback, useMemo } from 'react';
 
@@ -8,26 +6,26 @@ import { useFilter } from './useFilter';
 import { useTranslation } from './useTranslation';
 import { customPredicate } from '../helpers/customPredicate';
 
-export type ColumnMakerProps<T,> = {
-  columnName: keyof T | 'actions';
+export type ColumnMakerProps<T> = {
+  columnName:      keyof T | 'actions';
   translationKey?: string;
-  translation?: string;
-  table?: Omit<VirtualTable.ColumnExtension, 'columnName'>;
+  translation?:    string;
+  table?:          Omit<VirtualTable.ColumnExtension, 'columnName'>;
   column?: {
     getCellValue (row: T, columnName: string): any
   }
-  sorting?: Omit<SortingState.ColumnExtension, 'columnName'>
+  sorting?:   Omit<SortingState.ColumnExtension, 'columnName'>
   filtering?: {
-    type: 'string' | 'number' | 'boolean' | 'permission' | 'list',
+    type:         'string' | 'number' | 'boolean' | 'permission' | 'list',
     valueRender?: (value: string) => string;
     options?: {
-      showDisabled?: boolean,
-      disabledName?: string,
+      showDisabled?:  boolean,
+      disabledName?:  string,
       disabledValue?: string,
-      listValues?: string[],
+      listValues?:    string[],
     }
   }
-  hidden?: boolean;
+  hidden?:    boolean;
   predicate?: (value: string, filter: Filter, row: any) => boolean;
 }[];
 

@@ -1,20 +1,4 @@
-import {
-  Box,
-  Button,
-  capitalize,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Slider,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, capitalize, FormControl, FormControlLabel, FormLabel, InputAdornment, InputLabel, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Clips } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
@@ -22,7 +6,7 @@ import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: Clips;
+  model:    Clips;
   onUpdate: (value: Clips) => void;
 };
 

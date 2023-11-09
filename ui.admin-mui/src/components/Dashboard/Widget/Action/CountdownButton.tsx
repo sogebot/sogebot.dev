@@ -1,16 +1,10 @@
-import {
-  Edit,
-  Pause,
-  PlayArrow,
-} from '@mui/icons-material';
+import { Edit, Pause, PlayArrow } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayCountdownItem } from '@sogebot/backend/src/database/entity/dashboard';
 import parse from 'html-react-parser';
-import React, {
-  MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState,
-} from 'react';
+import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';

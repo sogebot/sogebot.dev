@@ -1,6 +1,4 @@
-import {
-  InputAdornment, Stack, TextField,
-} from '@mui/material';
+import { InputAdornment, Stack, TextField } from '@mui/material';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -8,14 +6,14 @@ import { FormNumericInput } from '../Input/Numeric';
 
 type Props = {
   model: {
-    name?: string;
+    name?:    string;
     rotation: number;
-    width: number;
-    height: number;
-    alignX: number;
-    alignY: number;
+    width:    number;
+    height:   number;
+    alignX:   number;
+    alignY:   number;
   };
-  onUpdate: (path: string, value: any) => void;
+  onUpdate:  (path: string, value: any) => void;
   children?: React.ReactNode
 };
 

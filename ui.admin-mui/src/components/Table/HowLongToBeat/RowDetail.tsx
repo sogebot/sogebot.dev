@@ -1,12 +1,6 @@
-import {
-  IntegratedSorting, Sorting, SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid, Table, TableHeaderRow,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  Box, Button, Slider, Stack, Typography,
-} from '@mui/material';
+import { IntegratedSorting, Sorting, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { Box, Button, Slider, Stack, Typography } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import React, { useCallback, useState } from 'react';
 import SimpleBar from 'simplebar-react';
@@ -28,7 +22,7 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
   const { translate } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number}) => {
+  const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number }) => {
     const output = [];
     if (data.days) {
       output.push(`${data.days}d`);

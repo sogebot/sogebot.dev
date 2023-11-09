@@ -2,7 +2,7 @@ import { ContentPasteTwoTone, DoneTwoTone } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import React from 'react';
 
-const CopyButton: React.FC<{ text: string}> = (props) => {
+const CopyButton: React.FC<{ text: string }> = (props) => {
   const [ copied, setCopied ] = React.useState(false);
   const copyToClipboard = () => {
     navigator.clipboard.writeText(props.text);

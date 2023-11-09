@@ -1,20 +1,5 @@
-import {
-  ExpandMoreTwoTone, ShuffleOnTwoTone, ShuffleTwoTone,
-} from '@mui/icons-material';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Autocomplete, Box,
-  Button,
-  Divider, FormControl,
-  IconButton, InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { ExpandMoreTwoTone, ShuffleOnTwoTone, ShuffleTwoTone } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import match from 'autosuggest-highlight/match';
@@ -94,7 +79,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
   const [ currency, setCurrency ] = React.useState(configuration.currency);
 
   const [ reward, setReward ] = React.useState<{
-    id: string | null,
+    id:   string | null,
     name: string | null,
   }>({
     id:   null,

@@ -1,7 +1,4 @@
-import {
-  Backdrop,
-  Grid, Paper, Typography,
-} from '@mui/material';
+import { Backdrop, Grid, Paper, Typography } from '@mui/material';
 import { capitalize } from 'lodash';
 import React from 'react';
 

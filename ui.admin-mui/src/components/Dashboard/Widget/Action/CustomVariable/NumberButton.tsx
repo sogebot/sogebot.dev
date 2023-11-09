@@ -3,9 +3,7 @@ import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import React, {
-  MouseEventHandler, useCallback, useState,
-} from 'react';
+import React, { MouseEventHandler, useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { getSocket } from '../../../../../helpers/socket';

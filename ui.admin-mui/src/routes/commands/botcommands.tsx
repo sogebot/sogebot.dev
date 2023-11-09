@@ -1,24 +1,7 @@
-import {
-  Filter,
-  FilteringState,
-  IntegratedFiltering,
-  IntegratedSorting,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-} from '@devexpress/dx-react-grid-material-ui';
+import { Filter, FilteringState, IntegratedFiltering, IntegratedSorting, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import {
-  CircularProgress,
-  Dialog,
-  Grid,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { CircularProgress, Dialog, Grid, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';

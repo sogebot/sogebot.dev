@@ -1,9 +1,5 @@
 import { RefreshTwoTone } from '@mui/icons-material';
-import {
-  CircularProgress, FormControl, FormHelperText,
-  IconButton, InputAdornment, InputLabel,
-  MenuItem, Select, Typography,
-} from '@mui/material';
+import { CircularProgress, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { useAtom } from 'jotai';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
@@ -14,7 +10,7 @@ import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 export const FormRewardInput: React.FC<{
-  value?: string | null
+  value?:    string | null
   onChange?: (value: { id: string, name: string }) => void,
 }> = ({
   value,

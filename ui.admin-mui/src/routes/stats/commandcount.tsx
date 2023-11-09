@@ -1,15 +1,8 @@
-import {
-  Backdrop, Box, capitalize,
-  Checkbox, CircularProgress, Paper, Slider,
-  Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow, Typography,
-} from '@mui/material';
+import { Backdrop, Box, capitalize, Checkbox, CircularProgress, Paper, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { CommandsCount } from '@sogebot/backend/dest/database/entity/commands';
 import { countBy } from 'lodash';
 import React from 'react';
-import {
-  CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { DAY } from '../../constants';
@@ -118,12 +111,12 @@ const PageStatsBits = () => {
   const tableData = React.useMemo(() => {
     const items: {
       command: string,
-      hour: number,
-      day: number,
-      week: number,
-      month: number,
-      year: number,
-      total: number,
+      hour:    number,
+      day:     number,
+      week:    number,
+      month:   number,
+      year:    number,
+      total:   number,
     }[] = [];
     for (const command of _data.map(o => o.command)) {
       if (items.find(o => o.command === command)) {

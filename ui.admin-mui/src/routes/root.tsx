@@ -1,21 +1,12 @@
-import {
-  AppBar, Backdrop, Box, CircularProgress, Fade, Grid, Slide, Toolbar,
-} from '@mui/material';
+import { AppBar, Backdrop, Box, CircularProgress, Fade, Grid, Slide, Toolbar } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
-import React, {
-  lazy,
-  Suspense, useEffect, useState,
-} from 'react';
-import {
-  Route, Routes, useLocation,
-} from 'react-router-dom';
-import {
-  useDebounce, useLocalstorageState, useRefElement,
-} from 'rooks';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { useDebounce, useLocalstorageState, useRefElement } from 'rooks';
 
 import Error404 from './404';
 import PageManageEvents from './manage/events';
@@ -42,9 +33,7 @@ import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
-import {
-  setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
-} from '../store/loaderSlice';
+import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import { setScrollY } from '../store/pageSlice';
 import { setUser } from '../store/userSlice';
 

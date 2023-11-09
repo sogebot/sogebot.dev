@@ -1,18 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Divider, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import Jabber from 'jabber';
@@ -21,9 +7,7 @@ import { nanoid } from 'nanoid';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
 
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../../constants';
 import { timestampToObject } from '../../../helpers/getTime';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { chatAddMessage, chatRemoveMessageById } from '../../../store/overlaySlice';
@@ -32,7 +16,7 @@ import { AccordionFont } from '../../Accordion/Font';
 const jabber = new Jabber();
 
 type Props = {
-  model: Chat;
+  model:    Chat;
   onUpdate: (value: Chat) => void;
 };
 

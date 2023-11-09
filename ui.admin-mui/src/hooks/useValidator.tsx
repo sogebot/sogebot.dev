@@ -3,16 +3,14 @@ import { validateOrReject , ValidationError } from 'class-validator';
 import { isEqual, merge } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo, useReducer, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 
 import { useTranslation } from './useTranslation';
 
 type Props = {
   translations?: Record<string, string>
   /** Values needs to be changed to trigger errors  */
-  mustBeDirty?: boolean,
+  mustBeDirty?:  boolean,
 };
 
 const regexps = { 'minLength': 'must be longer than or equal to (\\d+) characters' };

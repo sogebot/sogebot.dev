@@ -1,7 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControlLabel, FormGroup, MenuItem, Select, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControlLabel, FormGroup, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -9,10 +7,10 @@ import React from 'react';
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Alerts['profanityFilter'],
-  open: string,
+  model:        Alerts['profanityFilter'],
+  open:         string,
   onOpenChange: (value: string) => void;
-  onChange: (value: Alerts['profanityFilter']) => void;
+  onChange:     (value: Alerts['profanityFilter']) => void;
 };
 
 export const AccordionProfanity: React.FC<Props> = (props) => {

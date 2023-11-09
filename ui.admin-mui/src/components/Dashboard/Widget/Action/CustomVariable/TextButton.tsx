@@ -1,13 +1,9 @@
 import { Edit } from '@mui/icons-material';
-import {
-  Popover, Stack, TextField, Typography,
-} from '@mui/material';
+import { Popover, Stack, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
-import React, {
-  useCallback, useRef, useState,
-} from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import { getSocket } from '../../../../../helpers/socket';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';

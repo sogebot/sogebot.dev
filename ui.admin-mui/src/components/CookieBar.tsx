@@ -1,12 +1,6 @@
 import CookieIcon from '@mui/icons-material/Cookie';
-import {
-  Box,
-  Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Fade, FormControlLabel, FormGroup, Paper, Stack,
-  Typography,
-} from '@mui/material';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Fade, FormControlLabel, FormGroup, Paper, Stack, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocalstorageState } from 'rooks';
 

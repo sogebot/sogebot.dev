@@ -1,13 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { CircleTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
-import {
-  Box,
-  Grid,
-  IconButton,
-  Paper,
-  Stack,
-} from '@mui/material';
+import { Box, Grid, IconButton, Paper, Stack } from '@mui/material';
 import { orange } from '@mui/material/colors';
 import { capitalize } from 'lodash';
 import { Twitch } from 'mdi-material-ui';

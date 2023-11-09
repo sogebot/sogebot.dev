@@ -1,10 +1,6 @@
 import { DeleteTwoTone } from '@mui/icons-material';
-import {
-  IconButton, ListItem, Stack, TextField,
-} from '@mui/material';
-import {
-  IsInt, IsNotEmpty, Max, Min, MinLength, validateOrReject,
-} from 'class-validator';
+import { IconButton, ListItem, Stack, TextField } from '@mui/material';
+import { IsInt, IsNotEmpty, Max, Min, MinLength, validateOrReject } from 'class-validator';
 import { isEqual } from 'lodash';
 import React from 'react';
 
@@ -33,8 +29,8 @@ export class Item {
 }
 
 export const SettingsSystemsDialogLevelsInput: React.FC<{
-  item: Item,
-  onChange: (value: Item) => void,
+  item:          Item,
+  onChange:      (value: Item) => void,
   onLevelsError: (haveErrors: boolean) => void;
   onLevelDelete: () => void;
 }> = ({

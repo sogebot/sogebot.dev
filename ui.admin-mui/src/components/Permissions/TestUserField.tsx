@@ -1,15 +1,9 @@
-import {
-  Alert, AlertTitle, LoadingButton,
-} from '@mui/lab';
-import {
-  Link, TextField, Typography,
-} from '@mui/material';
+import { Alert, AlertTitle, LoadingButton } from '@mui/lab';
+import { Link, TextField, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import parse from 'html-react-parser';
 import { capitalize } from 'lodash';
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 
 import { getSocket } from '../../helpers/socket';

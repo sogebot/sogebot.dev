@@ -1,26 +1,14 @@
 import { DeleteTwoTone } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Box, Button, Divider, FormControl, FormLabel, IconButton, MenuItem, Select, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import { isEqual } from 'lodash';
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const FilterMaker: React.FC<{
-  model: Permissions['filters'],
+  model:    Permissions['filters'],
   onChange: (filter: Permissions['filters']) => void
 }> = ({
   onChange, model,

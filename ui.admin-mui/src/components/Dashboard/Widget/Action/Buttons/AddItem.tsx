@@ -1,6 +1,4 @@
-import {
-  Button, Menu, MenuItem,
-} from '@mui/material';
+import { Button, Menu, MenuItem } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/dest/database/entity/dashboard';
 import React from 'react';
 

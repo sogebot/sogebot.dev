@@ -4,7 +4,7 @@ import React from 'react';
 import { ImageDialog } from './ImageCarouselSettings/image';
 
 type Props = {
-  model: Carousel;
+  model:    Carousel;
   onUpdate: (value: Carousel) => void;
 };
 

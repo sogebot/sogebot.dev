@@ -1,7 +1,4 @@
-import {
-  Breadcrumbs,
-  Fade, Typography,
-} from '@mui/material';
+import { Breadcrumbs, Fade, Typography } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { validate } from 'uuid';

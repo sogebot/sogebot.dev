@@ -1,7 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { capitalize, cloneDeep } from 'lodash';
@@ -26,7 +24,7 @@ newAlias.group = null;
 
 export const AliasEdit: React.FC<{
   aliasGroups: AliasGroup[]
-  aliases: Alias[]
+  aliases:     Alias[]
 }> = (props) => {
   const navigate = useNavigate();
   const { id } = useParams();

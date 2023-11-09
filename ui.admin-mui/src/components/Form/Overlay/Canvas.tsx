@@ -1,12 +1,10 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionSummary, InputAdornment, Stack, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 type Props = {
-  model: Overlay['canvas'];
+  model:    Overlay['canvas'];
   onUpdate: (value: Overlay['canvas']) => void;
 };
 

@@ -1,11 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails,
-  AccordionSummary, Box,
-  Button, Collapse, Divider, Fade, FormControl,
-  InputLabel, LinearProgress, ListSubheader,
-  MenuItem, Select, Stack, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { Alerts, Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
@@ -28,12 +22,12 @@ import AlertSettingsText from '../Overlay/AlertSettings/Text';
 import AlertSettingsTTS from '../Overlay/AlertSettings/TTS';
 
 type Props = {
-  value: any,
-  idx: number,
-  onChange?: (value: any) => void,
+  value:              any,
+  idx:                number,
+  onChange?:          (value: any) => void,
   disablePermission?: boolean,
-  disableFilter?: boolean,
-  disableExecution?: boolean,
+  disableFilter?:     boolean,
+  disableExecution?:  boolean,
 };
 
 const selectedItemRegex = /\$triggerAlert\((?<uuid>.{21}),? ?(?<options>.*)?\)/mi;

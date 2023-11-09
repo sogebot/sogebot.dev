@@ -1,7 +1,5 @@
 import { ExpandMoreTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Fade, FormLabel, IconButton, Link, Slider, Stack, Switch, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Fade, FormLabel, IconButton, Link, Slider, Stack, Switch, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
@@ -26,13 +24,13 @@ declare global {
 type model = Randomizer['tts'] | TTS | Alerts['tts'];
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: model,
-  open: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: any) => void;
+  model:                   model,
+  open:                    string,
+  onOpenChange:            (value: string) => void;
+  onChange:                (value: any) => void;
   alwaysShowLabelDetails?: boolean;
-  prepend?: React.ReactNode;
-  customLabelDetails?: React.ReactNode;
+  prepend?:                React.ReactNode;
+  customLabelDetails?:     React.ReactNode;
 };
 
 function isGlobal (value: Partial<Alert['items'][number]['tts']> | Required<Alert['tts']>): value is Required<Alert['tts']> {

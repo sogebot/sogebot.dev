@@ -1,22 +1,13 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField,
-} from '@mui/material';
+import { Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
 import axios from 'axios';
-import {
-  capitalize,
-  cloneDeep,
-} from 'lodash';
+import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect , useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../constants';
 import getAccessToken from '../../getAccessToken';
 import { timestampToObject } from '../../helpers/getTime';
 import { useTranslation } from '../../hooks/useTranslation';

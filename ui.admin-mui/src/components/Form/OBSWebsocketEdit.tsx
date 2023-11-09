@@ -1,17 +1,11 @@
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Collapse, DialogContent, Divider, Grid,
-  LinearProgress,
-  TextField,
-} from '@mui/material';
+import { Box, Button, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect , useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { getSocket } from '../../helpers/socket';
@@ -27,7 +21,7 @@ const createInitialItem = async () => {
 };
 
 export const OBSWebsocketEdit: React.FC<{
-  id?: string,
+  id?:     string,
   onSave?: () => void,
 }> = ({ id, onSave }) => {
   const navigate = useNavigate();

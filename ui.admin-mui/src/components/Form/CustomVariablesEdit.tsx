@@ -1,28 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
-  mdiAlphabeticalVariant, mdiCodeBrackets, mdiCodeJson, mdiNumeric,
-} from '@mdi/js';
+import { mdiAlphabeticalVariant, mdiCodeBrackets, mdiCodeJson, mdiNumeric } from '@mdi/js';
 import Icon from '@mdi/react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Alert, Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormLabel,
-  Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio,
-  Select, Slider, Stack, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography,
-} from '@mui/material';
+import { Alert, Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormLabel, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 

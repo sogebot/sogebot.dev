@@ -1,17 +1,11 @@
-import {
-  InputAdornment,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { InputAdornment, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
-  model: Wordcloud;
+  model:    Wordcloud;
   onUpdate: (value: Wordcloud) => void;
 };
 

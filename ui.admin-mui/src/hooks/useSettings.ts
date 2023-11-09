@@ -1,13 +1,8 @@
 import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 import parse from 'html-react-parser';
-import {
-  cloneDeep, get, set,
-} from 'lodash';
+import { cloneDeep, get, set } from 'lodash';
 import { useSnackbar } from 'notistack';
-import {
-  ChangeEvent,
-  useCallback, useEffect, useState,
-} from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch } from './useAppDispatch';
 import { usePermissions } from './usePermissions';
@@ -16,7 +11,7 @@ import { saveSettings } from '../helpers/settings';
 import { getSocket } from '../helpers/socket';
 import { addSettingsLoading, rmSettingsLoading } from '../store/loaderSlice';
 
-export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[]}) => {
+export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[] }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
@@ -225,7 +220,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     });
   }, [ getPermissionSettingsValue ]);
 
-  const TextFieldProps = useCallback((key: string, defaultValues?: { helperText?: string, onChange?: (value: string) => void, multiline? : boolean }) => {
+  const TextFieldProps = useCallback((key: string, defaultValues?: { helperText?: string, onChange?: (value: string) => void, multiline?: boolean }) => {
     if (!settings) {
       return {};
     }

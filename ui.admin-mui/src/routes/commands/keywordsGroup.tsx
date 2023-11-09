@@ -1,23 +1,11 @@
 import { Column } from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  Table,
-  TableHeaderRow,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  Grid,
-  Stack,
-} from '@mui/material';
+import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { Button, CircularProgress, Dialog, Grid, Stack } from '@mui/material';
 import { Keyword, KeywordGroup } from '@sogebot/backend/src/database/entity/keyword';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 

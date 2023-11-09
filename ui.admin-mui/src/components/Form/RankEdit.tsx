@@ -1,14 +1,10 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Collapse,  DialogContent, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField,
-} from '@mui/material';
+import { Box, Button, Collapse, DialogContent, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { Rank } from '@sogebot/backend/dest/database/entity/rank';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect , useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import getAccessToken from '../../getAccessToken';

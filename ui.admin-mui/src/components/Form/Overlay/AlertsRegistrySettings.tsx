@@ -1,13 +1,4 @@
-import {
-  Fade,
-  FormControl,
-  InputLabel,
-  LinearProgress,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Fade, FormControl, InputLabel, LinearProgress, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import { AlertsRegistry } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
@@ -16,7 +7,7 @@ import React from 'react';
 import getAccessToken from '../../../getAccessToken';
 
 type Props = {
-  model: AlertsRegistry;
+  model:    AlertsRegistry;
   onUpdate: (value: AlertsRegistry) => void;
 };
 

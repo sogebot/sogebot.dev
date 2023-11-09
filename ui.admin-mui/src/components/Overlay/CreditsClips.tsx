@@ -12,8 +12,8 @@ import { loadFont } from '../Accordion/Font';
 const currentClipIdx = new Map<string, number>();
 
 export const CreditsClips: React.FC<Props<CreditsScreenClips> &
-{ play?: boolean,
-  onLoaded?: (shouldWait: boolean) => void,
+{ play?:       boolean,
+  onLoaded?:   (shouldWait: boolean) => void,
   onFinished?: () => void }>
 = ({ item, active, width, height, onLoaded, play, onFinished }) => {
   const [ id ] = React.useState(v4());

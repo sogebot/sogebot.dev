@@ -1,6 +1,4 @@
-import {
-  Box, keyframes, Stack, Typography,
-} from '@mui/material';
+import { Box, keyframes, Stack, Typography } from '@mui/material';
 import { HypeTrain } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { chunk } from 'lodash';
@@ -42,8 +40,8 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   const [id] = React.useState(v4());
   const [ running, setRunning ] = React.useState(false);
   const [ cooldown, setCooldown ] = React.useState(Date.now());
-  const [ events, setEvents ] = React.useState<{ id: string, level: number, goal: number, total: number}[]>([]);
-  const [ subs, setSubs ] = React.useState<{username: string; thumbnailUrl: string}[]>(!active ? [
+  const [ events, setEvents ] = React.useState<{ id: string, level: number, goal: number, total: number }[]>([]);
+  const [ subs, setSubs ] = React.useState<{ username: string; thumbnailUrl: string }[]>(!active ? [
     {
       username: 'test1', thumbnailUrl: 'https://i.pravatar.cc/300',
     },
@@ -59,7 +57,7 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   ]: []);
   const [ level, setLevel ] = React.useState(0);
 
-  const runTrain = React.useCallback((data: { level: number, goal: number, total: number}, path?: number, duration?: number) => {
+  const runTrain = React.useCallback((data: { level: number, goal: number, total: number }, path?: number, duration?: number) => {
     setCooldown(Date.now());
 
     const widthWithTrain = boxRef.current!.clientWidth + (document.getElementById(`train-${id}`)?.getBoundingClientRect().width ?? 0) + 30;

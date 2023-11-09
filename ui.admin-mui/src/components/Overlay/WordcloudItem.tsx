@@ -22,7 +22,7 @@ export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
       obj[word] = (obj[word] ?? 0) + 1;
     }
 
-    const wordObj: {text: string, value: number}[] = [];
+    const wordObj: { text: string, value: number }[] = [];
     for (const key of Object.keys(obj)) {
       wordObj.push({
         text: key, value: obj[key],
@@ -41,7 +41,7 @@ export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
     return maxNumber;
   }, [ computedWords ]);
 
-  const fontSize = React.useCallback((word: {text: string, value: number}) => Math.max(20, (word.value / maxValue) * 100), [maxValue]);
+  const fontSize = React.useCallback((word: { text: string, value: number }) => Math.max(20, (word.value / maxValue) * 100), [maxValue]);
   const rotate = React.useCallback(() => Math.round(Math.random() * 360), []);
 
   React.useEffect(() => {

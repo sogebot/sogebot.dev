@@ -6,7 +6,7 @@ import { HTMLDialog } from './HTMLSettings/html';
 import { JavascriptDialog } from './HTMLSettings/javascript';
 
 type Props = {
-  model: HTML;
+  model:    HTML;
   onUpdate: (value: HTML) => void;
 };
 

@@ -1,30 +1,12 @@
 import { Alert, LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  Link,
-  MenuItem,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputAdornment, InputLabel, Link, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import Select from '@mui/material/Select/Select';
 import { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo,
-} from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
@@ -35,7 +17,7 @@ import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
 
 const PageSettingsModulesServiceTwitch: React.FC<{
   onVisible: () => void,
-  sx?: SxProps<Theme> | undefined
+  sx?:       SxProps<Theme> | undefined
 }> = ({
   onVisible,
   sx,

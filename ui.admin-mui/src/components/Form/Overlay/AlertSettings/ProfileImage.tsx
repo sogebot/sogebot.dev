@@ -1,7 +1,4 @@
-import {
-  Button,
-  Stack,
-} from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { AlertProfileImage } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
@@ -13,8 +10,8 @@ import { AccordionDelay } from './Accordion/Delay';
 import { anSelectedAlertVariant } from './src/atoms';
 
 interface AlertSettingsProfileImageProps {
-  model: AlertProfileImage
-  onChange: (value: AlertProfileImage) => void
+  model:     AlertProfileImage
+  onChange:  (value: AlertProfileImage) => void
   onDelete?: () => void
 }
 

@@ -1,12 +1,8 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Collapse, DialogContent, Divider, Grid, Grow, InputAdornment, LinearProgress, Stack,
-} from '@mui/material';
+import { Box, Button, Collapse, DialogContent, Divider, Grid, Grow, InputAdornment, LinearProgress, Stack } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { getSocket } from '../../helpers/socket';

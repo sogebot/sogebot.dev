@@ -6,7 +6,7 @@ import React from 'react';
 
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableEvalButton: React.FC<{ item: QuickActions.Item; variable: Variable}> = ({
+export const DashboardWidgetActionCustomVariableEvalButton: React.FC<{ item: QuickActions.Item; variable: Variable }> = ({
   item, variable,
 }) => {
 

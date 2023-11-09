@@ -1,13 +1,5 @@
-import {
-
-  CropFreeTwoTone, ExpandMoreTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
-} from '@mui/icons-material';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { CropFreeTwoTone, ExpandMoreTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { CreditsScreenEvents, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { capitalize } from 'lodash';
 import React from 'react';
@@ -26,8 +18,8 @@ let isPositionChanging = false;
 document.addEventListener('mouseup', () => isPositionChanging = false);
 
 type Props = {
-  model: CreditsScreenEvents;
-  canvas: { width: number, height: number },
+  model:    CreditsScreenEvents;
+  canvas:   { width: number, height: number },
   onUpdate: (value: CreditsScreenEvents) => void;
 };
 

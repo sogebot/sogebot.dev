@@ -1,9 +1,7 @@
 import { CookieTwoTone, PestControlTwoTone } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import {
-  Avatar, Button, Chip, Divider, Grid, IconButton, Tooltip, Typography,
-} from '@mui/material';
+import { Avatar, Button, Chip, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
 import React, { useEffect } from 'react';

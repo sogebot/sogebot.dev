@@ -1,15 +1,6 @@
-import {
-  DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
-import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, Stack,
-} from '@mui/material';
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, Stack } from '@mui/material';
 import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { v4 } from 'uuid';

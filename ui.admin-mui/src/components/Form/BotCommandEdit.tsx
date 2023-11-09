@@ -1,16 +1,9 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Collapse, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField,
-} from '@mui/material';
+import { Box, Button, Collapse, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Commands } from '../../classes/Commands';

@@ -1,6 +1,4 @@
-import {
-  Box, CircularProgress, Fade,
-} from '@mui/material';
+import { Box, CircularProgress, Fade } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
@@ -20,9 +18,7 @@ import { getListOf, populateListOf } from '../helpers/getListOf';
 import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
-import {
-  setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning,
-} from '../store/loaderSlice';
+import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import { setUser } from '../store/userSlice';
 import theme from '../theme';
 

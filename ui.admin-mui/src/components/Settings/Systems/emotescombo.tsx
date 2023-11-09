@@ -1,20 +1,7 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import React, {
-  useCallback, useEffect, useMemo,
-} from 'react';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';

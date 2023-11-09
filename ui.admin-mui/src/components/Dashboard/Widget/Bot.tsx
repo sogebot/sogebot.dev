@@ -1,8 +1,6 @@
 import { OpenInNewTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Box, Card, IconButton, Tab,
-} from '@mui/material';
+import { Box, Card, IconButton, Tab } from '@mui/material';
 import React from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 

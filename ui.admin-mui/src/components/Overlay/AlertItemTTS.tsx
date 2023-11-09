@@ -3,9 +3,7 @@ import { Alerts, AlertTTS } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue, useSetAtom } from 'jotai';
 import React from 'react';
 
-import {
-  anEmitData, anExpectedSoundCount, anFinishedSoundCount, anWaitingForTTS,
-} from './AlertItem/atom';
+import { anEmitData, anExpectedSoundCount, anFinishedSoundCount, anWaitingForTTS } from './AlertItem/atom';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 

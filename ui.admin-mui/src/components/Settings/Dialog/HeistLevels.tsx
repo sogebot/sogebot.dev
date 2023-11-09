@@ -1,17 +1,15 @@
-import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, List, Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, Typography } from '@mui/material';
 import { isEqual } from 'lodash';
 import React from 'react';
 
 import { Item, SettingsSystemsDialogLevelsInput } from './LevelsInput';
 
 export const SettingsSystemsDialogHeistLevels: React.FC<{
-  items: Item[],
-  onChange: (value: Item[]) => void,
+  items:         Item[],
+  onChange:      (value: Item[]) => void,
   onLevelsError: (haveErrors: boolean) => void;
-  title: string,
-  helperText?: string,
+  title:         string,
+  helperText?:   string,
 }> = ({
   items,
   onChange,

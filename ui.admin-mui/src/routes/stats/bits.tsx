@@ -1,15 +1,9 @@
-import {
-  Backdrop, CircularProgress, FormControl, Link,
-  MenuItem, Paper, Select, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Typography,
-} from '@mui/material';
+import { Backdrop, CircularProgress, FormControl, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { UserBitInterface } from '@sogebot/backend/dest/database/entity/user';
 import capitalize from 'lodash/capitalize';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { dayjs } from '../../helpers/dayjsHelper';

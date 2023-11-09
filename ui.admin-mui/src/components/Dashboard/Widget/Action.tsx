@@ -1,8 +1,6 @@
 import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Box, Card, IconButton, Tab, Typography,
-} from '@mui/material';
+import { Box, Card, IconButton, Tab, Typography } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import orderBy from 'lodash/orderBy';
 import React from 'react';

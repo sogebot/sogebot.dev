@@ -1,21 +1,11 @@
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Select,
-  Slider,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Box, FormControl, FormLabel, InputLabel, MenuItem, Select, Slider, Stack, TextField } from '@mui/material';
 import { ClipsCarousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  model: ClipsCarousel;
+  model:    ClipsCarousel;
   onUpdate: (value: ClipsCarousel) => void;
 };
 

@@ -1,16 +1,14 @@
-import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, List, Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, Typography } from '@mui/material';
 import { isEqual } from 'lodash';
 import React from 'react';
 
 import { Item, SettingsSystemsDialogResultsInput } from './ResultsInput';
 
 export const SettingsSystemsDialogHeistResults: React.FC<{
-  items: Item[],
-  onChange: (value: Item[]) => void,
-  onError: (haveErrors: boolean) => void;
-  title: string,
+  items:       Item[],
+  onChange:    (value: Item[]) => void,
+  onError:     (haveErrors: boolean) => void;
+  title:       string,
   helperText?: string,
 }> = ({
   items,

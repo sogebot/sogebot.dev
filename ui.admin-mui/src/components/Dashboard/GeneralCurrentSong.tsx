@@ -1,6 +1,4 @@
-import {
-  Grid, Paper, Skeleton, Typography,
-} from '@mui/material';
+import { Grid, Paper, Skeleton, Typography } from '@mui/material';
 import { capitalize } from 'lodash';
 import React from 'react';
 

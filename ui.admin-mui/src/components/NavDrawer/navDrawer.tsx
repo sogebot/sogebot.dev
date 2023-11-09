@@ -4,9 +4,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
-import {
-  ListItem, ListItemIcon, Paper, Stack, Toolbar, Typography,
-} from '@mui/material';
+import { ListItem, ListItemIcon, Paper, Stack, Toolbar, Typography } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import MuiListItemButton from '@mui/material/ListItemButton';
@@ -21,8 +19,8 @@ import customTheme, { theme } from '../../theme';
 import { UserMenu } from '../User/userMenu';
 
 interface LinkedListItemProps {
-  path: string;
-  icon: any;
+  path:  string;
+  icon:  any;
   title: string;
 }
 const LinkedListItem = function (props: LinkedListItemProps) {

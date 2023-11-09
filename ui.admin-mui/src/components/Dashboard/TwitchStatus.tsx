@@ -1,8 +1,5 @@
 import { Lock } from '@mui/icons-material';
-import {
-  Backdrop, Box, Chip, Grid, Paper, Skeleton,
-  Typography,
-} from '@mui/material';
+import { Backdrop, Box, Chip, Grid, Paper, Skeleton, Typography } from '@mui/material';
 import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/dest/helpers/constants';
 import parse from 'html-react-parser';
 import { isNil } from 'lodash';

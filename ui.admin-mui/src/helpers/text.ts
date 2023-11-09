@@ -27,10 +27,10 @@ export function textStrokeGenerator(radius: number, color: string) {
 
 export function shadowGenerator(shadow: {
   shiftRight: number;
-  shiftDown: number;
-  blur: number;
-  opacity: number;
-  color: string;
+  shiftDown:  number;
+  blur:       number;
+  opacity:    number;
+  color:      string;
 }[] | undefined) {
   const output: string[] = [];
   if (shadow) {

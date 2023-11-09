@@ -1,16 +1,6 @@
-import {
-  Box,
-  Button,
-  InputAdornment,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo,
-} from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';

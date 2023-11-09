@@ -1,6 +1,4 @@
-import {
-  Button, Checkbox, Divider, Fade, FormControlLabel, InputAdornment, TextField,
-} from '@mui/material';
+import { Button, Checkbox, Divider, Fade, FormControlLabel, InputAdornment, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 

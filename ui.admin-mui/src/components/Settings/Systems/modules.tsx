@@ -1,17 +1,8 @@
-import {
-  Box,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Switch,
-  Typography,
-} from '@mui/material';
+import { Box, FormControlLabel, FormGroup, Grid, Switch, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';
@@ -21,7 +12,7 @@ import { addSettingsLoading, rmSettingsLoading } from '../../../store/loaderSlic
 
 const PageSettingsModulesSystemsModules: React.FC<{
   onVisible: () => void,
-  sx?: SxProps<Theme> | undefined
+  sx?:       SxProps<Theme> | undefined
 }> = ({
   onVisible,
   sx,

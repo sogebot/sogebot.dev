@@ -1,6 +1,4 @@
-import {
-  Box, Button, InputAdornment, Paper, Stack, TextField, Typography,
-} from '@mui/material';
+import { Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
@@ -68,26 +66,26 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   type Track = {
     providerId: string;
-    provider: string;
-    duration: number;
-    title: string;
-    artist: string;
-    url: string;
+    provider:   string;
+    duration:   number;
+    title:      string;
+    artist:     string;
+    url:        string;
   };
 
   type PlaylistItem = {
-    track: Track;
-    _id: string;
+    track:     Track;
+    _id:       string;
     createdAt: string;
     updatedAt: string;
   };
 
   type PlaylistResponse = {
-    status: number;
-    _sort: { date: 'asc' | 'desc' };
-    _limit: number;
-    _offset: number;
-    _total: number;
+    status:   number;
+    _sort:    { date: 'asc' | 'desc' };
+    _limit:   number;
+    _offset:  number;
+    _total:   number;
     playlist: PlaylistItem[];
   };
 

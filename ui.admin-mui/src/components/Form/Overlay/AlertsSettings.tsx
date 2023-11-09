@@ -1,9 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  Grid,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, Grid } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import React from 'react';

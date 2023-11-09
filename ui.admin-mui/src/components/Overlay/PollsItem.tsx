@@ -1,6 +1,4 @@
-import {
-  Box, Fade, LinearProgress, Stack, SxProps, Theme, Typography,
-} from '@mui/material';
+import { Box, Fade, LinearProgress, Stack, SxProps, Theme, Typography } from '@mui/material';
 import { Polls } from '@sogebot/backend/src/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';

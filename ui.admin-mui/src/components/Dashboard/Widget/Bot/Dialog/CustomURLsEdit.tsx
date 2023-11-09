@@ -1,8 +1,6 @@
 import { Delete, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Alert, Button, Container, Divider, Drawer, Grid, IconButton, Stack, TextField, Tooltip,
-} from '@mui/material';
+import { Alert, Button, Container, Divider, Drawer, Grid, IconButton, Stack, TextField, Tooltip } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
@@ -13,7 +11,7 @@ import { v4 } from 'uuid';
 import { getSocket } from '../../../../../helpers/socket';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 
-export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{setRefreshTimestamp: React.Dispatch<React.SetStateAction<number>>}> = ({
+export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimestamp: React.Dispatch<React.SetStateAction<number>> }> = ({
   setRefreshTimestamp,
 }) => {
   const [ custom, setCustom ] = React.useState<WidgetCustomInterface[]>([]);

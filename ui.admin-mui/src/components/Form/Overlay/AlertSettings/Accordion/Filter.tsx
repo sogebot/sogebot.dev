@@ -1,7 +1,5 @@
 import { DeleteTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, Fade, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, Fade, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
@@ -10,15 +8,15 @@ import React from 'react';
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Filter,
-  open: string,
-  label?: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: Filter) => void;
-  onDelete?: () => void;
+  model:               Filter,
+  open:                string,
+  label?:              string,
+  onOpenChange:        (value: string) => void;
+  onChange:            (value: Filter) => void;
+  onDelete?:           () => void;
   customLabelDetails?: React.ReactNode;
-  rules:       [string, string][],
-  hideGroupButton?: boolean,
+  rules:               [string, string][],
+  hideGroupButton?:    boolean,
 };
 
 const itemsToStringifiedPart = (items: any[], operator: string): string => {

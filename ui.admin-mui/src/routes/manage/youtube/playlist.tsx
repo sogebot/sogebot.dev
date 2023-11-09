@@ -1,41 +1,13 @@
-import {
-  CustomPaging,
-  FilteringState,
-  IntegratedSelection,
-  IntegratedSorting,
-  PagingState,
-  SelectionState,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  PagingPanel,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeUpTwoTone,
-} from '@mui/icons-material';
+import { CustomPaging, FilteringState, IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, PagingPanel, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Dialog,
-  Grid,
-  IconButton,
-  Stack,
-  TextField, Typography,
-} from '@mui/material';
+import { Backdrop, Button, CircularProgress, Dialog, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -81,7 +53,7 @@ const PageCommandsSongPlaylist = () => {
 
   type extension = {
     thumbnail: string;
-    data: string;
+    data:      string;
   };
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<SongPlaylist & extension>([
     {

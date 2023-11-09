@@ -7,8 +7,8 @@ import { AccordionDelay } from './Accordion/Delay';
 import { FormSelectorGallery } from '../../Selector/Gallery';
 
 interface AlertSettingsAudioProps {
-  model: AlertAudio
-  onChange: (value: AlertAudio) => void
+  model:     AlertAudio
+  onChange:  (value: AlertAudio) => void
   onDelete?: () => void
 }
 

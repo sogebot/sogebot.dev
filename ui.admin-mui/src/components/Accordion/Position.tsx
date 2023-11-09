@@ -1,28 +1,26 @@
 import { ExpandMoreTwoTone, Square } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, FormControl, InputLabel, MenuItem, Paper, Select, Slider, Stack, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, FormControl, InputLabel, MenuItem, Paper, Select, Slider, Stack, Typography } from '@mui/material';
 import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 type Position = {
-  x: number;
-  y: number;
+  x:       number;
+  y:       number;
   anchorX: 'right' | 'left' | 'middle';
   anchorY: 'top' | 'bottom' | 'middle';
 };
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: Position,
+  model:           Position,
   disableAnchorX?: boolean,
-  disableX?: boolean,
-  disableY?: boolean,
+  disableX?:       boolean,
+  disableY?:       boolean,
   disableAnchorY?: boolean,
-  open: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: Position) => void;
+  open:            string,
+  onOpenChange:    (value: string) => void;
+  onChange:        (value: Position) => void;
 };
 
 export const AccordionPosition: React.FC<Props> = (props) => {

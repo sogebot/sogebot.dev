@@ -1,13 +1,11 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionSummary, Alert, Box, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Typography } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
 type Props = {
-  id: string;
+  id:   string;
   opts: Overlay['items'][number]['opts'];
 };
 

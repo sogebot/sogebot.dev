@@ -1,7 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField,
-} from '@mui/material';
+import { Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField } from '@mui/material';
 import { Price } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';

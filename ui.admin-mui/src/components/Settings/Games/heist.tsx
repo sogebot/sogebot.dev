@@ -1,15 +1,6 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  InputAdornment,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import { Box, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';

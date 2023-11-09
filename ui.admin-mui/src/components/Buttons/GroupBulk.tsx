@@ -1,13 +1,11 @@
 import { WorkspacesTwoTone } from '@mui/icons-material';
-import {
-  Button, Menu, MenuItem, TextField, Tooltip,
-} from '@mui/material';
+import { Button, Menu, MenuItem, TextField, Tooltip } from '@mui/material';
 import React from 'react';
 
 export const ButtonsGroupBulk: React.FC<{
-  onSelect: (groupId: string | null) => void,
+  onSelect:  (groupId: string | null) => void,
   disabled?: boolean,
-  groups: (string | null)[],
+  groups:    (string | null)[],
 }> = ({
   onSelect,
   disabled,

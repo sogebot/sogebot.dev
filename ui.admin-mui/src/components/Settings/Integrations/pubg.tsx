@@ -1,20 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  FormControl,
-  FormLabel,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, CircularProgress, FormControl, FormLabel, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { JsonViewer, NamedColorspace } from '@textea/json-viewer';
 import { escapeRegExp } from 'lodash';

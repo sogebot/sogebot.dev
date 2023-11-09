@@ -1,10 +1,4 @@
-import {
-  Box,
-  FormControlLabel,
-  FormHelperText,
-  Stack,
-  Switch,
-} from '@mui/material';
+import { Box, FormControlLabel, FormHelperText, Stack, Switch } from '@mui/material';
 import { DateTimeValidationError } from '@mui/x-date-pickers';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
@@ -15,7 +9,7 @@ import { dayjs } from '../../../helpers/dayjsHelper';
 import { AccordionFont } from '../../Accordion/Font';
 
 type Props = {
-  model: Marathon;
+  model:    Marathon;
   onUpdate: (value: Marathon) => void;
 };
 

@@ -1,17 +1,11 @@
-import {
-  Backspace, Lock, LockOpenTwoTone,
-} from '@mui/icons-material';
+import { Backspace, Lock, LockOpenTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import {
-  Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, SxProps, Tab, TextField, Tooltip, Typography,
-} from '@mui/material';
+import { Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, SxProps, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
 import { isEqual } from 'lodash';
 import React from 'react';
-import {
-  useDidMount, useIntervalWhen, usePreviousImmediate,
-} from 'rooks';
+import { useDidMount, useIntervalWhen, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';

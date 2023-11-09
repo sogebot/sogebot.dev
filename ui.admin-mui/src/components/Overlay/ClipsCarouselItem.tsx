@@ -6,9 +6,7 @@ import { Alert, Box } from '@mui/material';
 import { ClipsCarousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { EffectFade } from 'swiper';
-import {
-  Swiper, SwiperRef, SwiperSlide,
-} from 'swiper/react';
+import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 
 import type { Props } from './ChatItem';
 import { isVideoSupported } from '../../helpers/isVideoSupported';

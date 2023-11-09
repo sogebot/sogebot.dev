@@ -7,13 +7,13 @@ import DialogContent from '@mui/material/DialogContent';
 import React, { useState } from 'react';
 
 export const ConfirmButton: React.FC<{
-  children: string;
-  handleOk: () => void;
+  children:      string;
+  handleOk:      () => void;
   handleCancel?: () => void;
-  variant?: 'text' | 'outlined' | 'contained';
-  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
-  loading?: boolean;
-  sx?: SxProps<Theme> | undefined
+  variant?:      'text' | 'outlined' | 'contained';
+  color?:        'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
+  loading?:      boolean;
+  sx?:           SxProps<Theme> | undefined
 }> =  ({
   children,
   handleOk,

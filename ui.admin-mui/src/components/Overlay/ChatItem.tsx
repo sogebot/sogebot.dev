@@ -1,6 +1,4 @@
-import {
-  Box, Fade, Typography,
-} from '@mui/material';
+import { Box, Fade, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
@@ -12,21 +10,19 @@ import { useIntervalWhen } from 'rooks';
 import { isAlreadyProcessed } from './_processedSocketCalls';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import {
-  chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages,
-} from '../../store/overlaySlice';
+import { chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages } from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';
 
 export type Props<T> = {
-  item: T,
-  id: string,
-  groupId: string,
+  item:      T,
+  id:        string,
+  groupId:   string,
   /** Overlay is active, e.g. used in overlay */
-  active?: boolean,
+  active?:   boolean,
   /** Selected in editation */
   selected?: boolean,
-  width: number,
-  height: number,
+  width:     number,
+  height:    number,
 };
 
 const generateColorFromString = (stringInput: string) => {

@@ -1,13 +1,11 @@
 import { KeyTwoTone } from '@mui/icons-material';
-import {
-  Button, Menu, MenuItem, Tooltip,
-} from '@mui/material';
+import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import React from 'react';
 
 import { usePermissions } from '../../hooks/usePermissions';
 
 export const ButtonsPermissionsBulk: React.FC<{
-  onSelect: (permissionId: string) => void,
+  onSelect:  (permissionId: string) => void,
   disabled?: boolean,
 }> = ({
   onSelect,

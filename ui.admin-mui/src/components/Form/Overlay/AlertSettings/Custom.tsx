@@ -1,6 +1,4 @@
-import {
-  Alert, Button, Stack,
-} from '@mui/material';
+import { Alert, Button, Stack } from '@mui/material';
 import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
@@ -17,8 +15,8 @@ import { HTMLDialog } from '../HTMLSettings/html';
 import { JavascriptDialog } from '../HTMLSettings/javascript';
 
 interface AlertSettingsCustomProps {
-  model: AlertCustom
-  onChange: (value: AlertCustom) => void
+  model:     AlertCustom
+  onChange:  (value: AlertCustom) => void
   onDelete?: () => void
 }
 

@@ -7,10 +7,10 @@ import React from 'react';
 import { getSocket } from '../../../../../helpers/socket';
 
 export interface ConfirmationDialogProps {
-  id: string;
+  id:          string;
   keepMounted: boolean;
-  open: boolean;
-  setOpen: (value: boolean) => void;
+  open:        boolean;
+  setOpen:     (value: boolean) => void;
 }
 
 function ConfirmationDialog(props: ConfirmationDialogProps) {

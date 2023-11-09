@@ -1,12 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  Box,
-  Button,
-  Grid,
-  Paper,
-  Stack,
-} from '@mui/material';
+import { Box, Button, Grid, Paper, Stack } from '@mui/material';
 import { orange } from '@mui/material/colors';
 import { Carousel } from '@sogebot/backend/src/database/entity/overlay';
 import React from 'react';
@@ -15,10 +9,10 @@ import { useLocalstorageState } from 'rooks';
 import { ImageItemDialog } from './imageItemDialog';
 
 export function ImageItem(props: {
-  image: Carousel['images'][number],
+  image:      Carousel['images'][number],
   isDragging: boolean,
-  onUpdate: (value: Carousel['images'][number]) => void,
-  onDelete: () => void,
+  onUpdate:   (value: Carousel['images'][number]) => void,
+  onDelete:   () => void,
 }) {
   const {
     attributes,

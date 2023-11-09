@@ -1,14 +1,5 @@
-import {
-  ClearTwoTone, ExpandMoreTwoTone, VolumeUpTwoTone,
-} from '@mui/icons-material';
-import {
-  Alert as AlertElement,
-  Collapse,
-  Divider,
-  Fade,
-  FormControl,
-  FormLabel, IconButton, InputAdornment, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Switch, TextField, Typography,
-} from '@mui/material';
+import { ClearTwoTone, ExpandMoreTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
+import { Alert as AlertElement, Collapse, Divider, Fade, FormControl, FormLabel, IconButton, InputAdornment, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { Alerts } from '@sogebot/backend/dest/database/entity/overlay';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
@@ -27,12 +18,12 @@ import layout5 from '../assets/layout5.png';
 import { FormSelectorGallery } from '../Selector/Gallery';
 
 type Props = {
-  value: any,
-  idx: number,
-  onChange?: (value: any) => void,
+  value:              any,
+  idx:                number,
+  onChange?:          (value: any) => void,
   disablePermission?: boolean,
-  disableFilter?: boolean,
-  disableExecution?: boolean,
+  disableFilter?:     boolean,
+  disableExecution?:  boolean,
 };
 
 const selectedItemRegex = /\$triggerAlert\((?<uuid>[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}),? ?(?<options>.*)?\)/mi;

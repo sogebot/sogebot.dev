@@ -1,6 +1,4 @@
-import {
-  FormControl, InputLabel, MenuItem, Select, Typography,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
@@ -11,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { getRandomizerId, setRandomizerId } from '../../../store/overlaySlice';
 
 type Props = {
-  model: Overlay;
+  model:    Overlay;
   onUpdate: (value: Overlay) => void;
 };
 

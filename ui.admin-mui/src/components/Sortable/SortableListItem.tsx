@@ -1,14 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragIndicatorTwoTone } from '@mui/icons-material';
-import {
-  Box,
-  IconButton,
-  ListItem,
-  Paper,
-  Stack,
-  Switch,
-} from '@mui/material';
+import { Box, IconButton, ListItem, Paper, Stack, Switch } from '@mui/material';
 import { grey, orange } from '@mui/material/colors';
 import React from 'react';
 

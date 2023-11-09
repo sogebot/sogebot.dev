@@ -1,7 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Autocomplete, Box, Button, Collapse, DialogContent, Divider, Grid, InputAdornment, LinearProgress, Switch, TextField, Typography,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Collapse, DialogContent, Divider, Grid, InputAdornment, LinearProgress, Switch, TextField, Typography } from '@mui/material';
 import { EventInterface, Events } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';

@@ -1,13 +1,6 @@
-import {
-  Backdrop, Box, capitalize,
-  Checkbox, CircularProgress, Paper,
-  Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow, Typography,
-} from '@mui/material';
+import { Backdrop, Box, capitalize, Checkbox, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import React from 'react';
-import {
-  CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { stringToColour } from './commandcount';

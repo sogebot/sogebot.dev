@@ -1,17 +1,6 @@
 import { LoadingButton, Skeleton } from '@mui/lab';
-import {
-  Alert,
-  Box,
-  List,
-  ListItem,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import { Alert, Box, List, ListItem, Paper, Stack, TextField, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { getSocket } from '../../../helpers/socket';

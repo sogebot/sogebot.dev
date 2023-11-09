@@ -1,10 +1,5 @@
-import {
-  DiamondTwoTone,
-  PeopleTwoTone, ScheduleTwoTone, StarTwoTone, VisibilityTwoTone,
-} from '@mui/icons-material';
-import {
-  Box, Stack, Typography,
-} from '@mui/material';
+import { DiamondTwoTone, PeopleTwoTone, ScheduleTwoTone, StarTwoTone, VisibilityTwoTone } from '@mui/icons-material';
+import { Box, Stack, Typography } from '@mui/material';
 import { Stats } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';

@@ -1,8 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade,
-  FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
 import { nanoid } from 'nanoid';
@@ -15,13 +12,13 @@ import { FormNumericInput } from '../../../Input/Numeric';
 require('animate.css');
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: { animationText: typeof options[number], animationTextOptions: Alerts['items'][number]['animationTextOptions'] },
-  open: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: Props['model']) => void;
+  model:                   { animationText: typeof options[number], animationTextOptions: Alerts['items'][number]['animationTextOptions'] },
+  open:                    string,
+  onOpenChange:            (value: string) => void;
+  onChange:                (value: Props['model']) => void;
   alwaysShowLabelDetails?: boolean;
-  prepend?: React.ReactNode;
-  customLabelDetails?: React.ReactNode;
+  prepend?:                React.ReactNode;
+  customLabelDetails?:     React.ReactNode;
 };
 
 const options = [

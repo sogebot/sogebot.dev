@@ -1,19 +1,13 @@
-import {
-  SxProps, TextField, TextFieldProps, Theme,
-} from '@mui/material';
-import React, {
-  ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useState,
-} from 'react';
+import { SxProps, TextField, TextFieldProps, Theme } from '@mui/material';
+import React, { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  DAY, HOUR, MINUTE, SECOND,
-} from '../../../constants';
+import { DAY, HOUR, MINUTE, SECOND } from '../../../constants';
 
 export const FormInputTime: React.FC<{
-  label?: string,
+  label?:    string,
   disabled?: boolean,
-  sx?: SxProps<Theme>,
-  variant?: 'filled' | 'outlined' | 'standard',
+  sx?:       SxProps<Theme>,
+  variant?:  'filled' | 'outlined' | 'standard',
   value?: number, onChange?: (value: number) => void,
   InputProps?: TextFieldProps['InputProps']
 }> = ({

@@ -1,36 +1,11 @@
-import {
-  CustomPaging,
-  FilteringState,
-  IntegratedSelection,
-  PagingState,
-  RowDetailState,
-  SelectionState,
-  Sorting,
-  SortingState,
-} from '@devexpress/dx-react-grid';
-import {
-  Grid as DataGrid,
-  PagingPanel,
-  Table,
-  TableColumnVisibility,
-  TableHeaderRow,
-  TableRowDetail,
-  TableSelection,
-} from '@devexpress/dx-react-grid-material-ui';
+import { CustomPaging, FilteringState, IntegratedSelection, PagingState, RowDetailState, SelectionState, Sorting, SortingState } from '@devexpress/dx-react-grid';
+import { Grid as DataGrid, PagingPanel, Table, TableColumnVisibility, TableHeaderRow, TableRowDetail, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import type { UserInterface } from '@entity/user';
-import {
-  Backdrop,
-  CircularProgress,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Backdrop, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -87,10 +62,10 @@ const PageManageViewers = () => {
 
   type extension = {
     userIdAndName: string;
-    level: number;
-    watchedTime: number;
-    sumBits: number;
-    sumTips: number;
+    level:         number;
+    watchedTime:   number;
+    sumBits:       number;
+    sumTips:       number;
   };
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<UserInterface & extension>([
     {

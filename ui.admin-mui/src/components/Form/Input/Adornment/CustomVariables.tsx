@@ -1,21 +1,12 @@
 import { Functions } from '@mui/icons-material';
-import {
-  Autocomplete,
-  IconButton,
-  Popover,
-  TextField,
-} from '@mui/material';
-import {
-  bindPopover,
-  bindTrigger,
-  usePopupState,
-} from 'material-ui-popup-state/hooks';
+import { Autocomplete, IconButton, Popover, TextField } from '@mui/material';
+import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from '../../../../hooks/useTranslation';
 
 export const FormInputAdornmentCustomVariable: React.FC<{
-  onSelect: (value: string) => void,
+  onSelect:             (value: string) => void,
   additionalVariables?: string[]
 }> = ({
   onSelect, additionalVariables,
@@ -45,7 +36,7 @@ export const FormInputAdornmentCustomVariable: React.FC<{
 
   const onChangeHandle = useCallback((value: {
     label: string;
-    id: string;
+    id:    string;
   } | null) => {
     if (value) {
       onSelect(value.id);

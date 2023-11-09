@@ -1,15 +1,5 @@
-import {
-  Button,
-  FilledInput,
-  FormControl,
-  Grid,
-  InputAdornment, InputLabel, MenuItem, Select, TextField,
-} from '@mui/material';
-import React, {
-  ChangeEventHandler,
-  useCallback,
-  useEffect, useState,
-} from 'react';
+import { Button, FilledInput, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import React, { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 
 import { FormInputAdornmentCustomVariable } from './Adornment/CustomVariables';
 import { usePermissions } from '../../../hooks/usePermissions';
@@ -17,10 +7,10 @@ import { useTranslation } from '../../../hooks/useTranslation';
 
 export const AdditionalGridFormResponse: React.FC<{
   disablePermission?: boolean,
-  disableFilter?: boolean,
-  disableExecution?: boolean,
-  value: any,
-  onChange?: (value: any) => void,
+  disableFilter?:     boolean,
+  disableExecution?:  boolean,
+  value:              any,
+  onChange?:          (value: any) => void,
 }> = ({ disableExecution, disableFilter, disablePermission, value, onChange }) => {
   const { translate } = useTranslation();
   const { permissions } = usePermissions();
@@ -112,12 +102,12 @@ export const AdditionalGridFormResponse: React.FC<{
 };
 
 export const FormResponse: React.FC<{
-  value: any,
-  idx: number,
-  onChange?: (value: any) => void,
+  value:              any,
+  idx:                number,
+  onChange?:          (value: any) => void,
   disablePermission?: boolean,
-  disableFilter?: boolean,
-  disableExecution?: boolean,
+  disableFilter?:     boolean,
+  disableExecution?:  boolean,
 }> = ({
   value,
   idx,

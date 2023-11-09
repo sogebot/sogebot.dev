@@ -1,7 +1,5 @@
 import { ChevronRight } from '@mui/icons-material';
-import {
-  ListItemIcon, Menu, MenuItem, Stack, Typography,
-} from '@mui/material';
+import { ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import capitalize from 'lodash/capitalize';
 import React, { useEffect, useState } from 'react';
@@ -14,8 +12,8 @@ import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
 interface LinkedListItemProps {
-  icon: any;
-  title: string;
+  icon:     any;
+  title:    string;
   category: 'commands' | 'manage' | 'settings' | 'registry' | 'stats';
 }
 export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {

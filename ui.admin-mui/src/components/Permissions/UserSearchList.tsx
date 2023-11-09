@@ -1,10 +1,5 @@
-import {
-  Autocomplete,
-  TextField,
-} from '@mui/material';
-import React,{
-  useEffect, useMemo, useState,
-} from 'react';
+import { Autocomplete, TextField } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 
 import { getSocket } from '../../helpers/socket';
@@ -13,16 +8,16 @@ let state = v4();
 
 export const UserSearchlist: React.FC<{
   onChange: (users: string[]) => void,
-  users: string[],
-  label: string
+  users:    string[],
+  label:    string
 }> = ({
   onChange, users, label,
 }) => {
   const [ inputValue, setInputValue ] = useState('');
   const [ isSearching, setIsSearching ] = useState(false);
 
-  const [ mapping, setMapping ] = useState<{ userId: string, userName: string}[]>([]);
-  const [ options, setOptions ] = useState<{ userId: string, userName: string}[]>([]);
+  const [ mapping, setMapping ] = useState<{ userId: string, userName: string }[]>([]);
+  const [ options, setOptions ] = useState<{ userId: string, userName: string }[]>([]);
 
   useEffect(() => {
     users.forEach((userId) => {

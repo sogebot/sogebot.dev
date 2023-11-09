@@ -1,13 +1,6 @@
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button, Checkbox, Dialog, DialogActions, DialogContent,
-  Divider, FormControlLabel, Grid, LinearProgress, List,
-  ListItem, ListItemButton, ListItemText,
-  ListSubheader, Menu, MenuItem, Popover, Stack,
-  TextField, Tooltip, Typography,
-} from '@mui/material';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { nanoid } from 'nanoid';
@@ -29,8 +22,8 @@ import libSource from '!raw-loader!./assets/plugin.global.d.ts';
 const leftPanelWidth = 352;
 
 type File = {
-  id: string;
-  name: string;
+  id:     string;
+  name:   string;
   source: string;
 };
 

@@ -1,7 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import {
-  Alert, Dialog, DialogActions, DialogContent, DialogTitle,
-} from '@mui/material';
+import { Alert, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 

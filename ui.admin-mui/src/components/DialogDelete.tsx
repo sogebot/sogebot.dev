@@ -1,12 +1,10 @@
-import {
-  Button, Dialog, DialogActions, DialogContent, Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 
 export const DialogDelete: React.FC<{
-  onDelete: () => void,
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  open: boolean,
+  onDelete:         () => void,
+  setOpen:          React.Dispatch<React.SetStateAction<boolean>>,
+  open:             boolean,
   isBulkOperation?: boolean,
 }> = ({
   onDelete,

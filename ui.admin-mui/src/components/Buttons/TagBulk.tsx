@@ -1,16 +1,13 @@
 import { LabelTwoTone } from '@mui/icons-material';
-import {
-  Autocomplete,
-  Button, Chip, createFilterOptions, Menu, Stack, TextField, Tooltip,
-} from '@mui/material';
+import { Autocomplete, Button, Chip, createFilterOptions, Menu, Stack, TextField, Tooltip } from '@mui/material';
 import React from 'react';
 
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const ButtonsTagBulk: React.FC<{
-  onSelect: (groupId: string[]) => void,
-  disabled?: boolean,
-  tags: (string | null)[],
+  onSelect:   (groupId: string[]) => void,
+  disabled?:  boolean,
+  tags:       (string | null)[],
   forceTags?: string[],
 }> = ({
   onSelect,

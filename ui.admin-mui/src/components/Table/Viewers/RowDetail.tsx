@@ -1,13 +1,7 @@
-import {
-  Grid as DataGrid, Table, TableHeaderRow,
-} from '@devexpress/dx-react-grid-material-ui';
-import {
-  Box, Button, LinearProgress, Typography,
-} from '@mui/material';
+import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { Box, Button, LinearProgress, Typography } from '@mui/material';
 import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
-import React, {
-  useEffect, useMemo, useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 
 import { dayjs } from '../../../helpers/dayjsHelper';

@@ -1,6 +1,4 @@
-import {
-  Box, SxProps, Theme,
-} from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
 import { AlertsRegistry } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
@@ -60,23 +58,23 @@ const layouts: Record<string, SxProps<Theme>> = {
 };
 
 type RunningAlert = EmitData & {
-  id: string;
+  id:            string;
   isShowingText: boolean;
-  isShowing: boolean;
-  soundPlayed: boolean;
-  hideAt: number;
-  showTextAt: number;
-  showAt: number;
+  isShowing:     boolean;
+  soundPlayed:   boolean;
+  hideAt:        number;
+  showTextAt:    number;
+  showAt:        number;
   waitingForTTS: boolean;
-  alert: (Alert['items'][number]) & { ttsTemplate?: string };
-  isTTSMuted: boolean;
-  isSoundMuted: boolean;
-  TTSService: number,
-  TTSKey: string,
-  caster: null | UserInterface,
-  user: null | UserInterface,
+  alert:         (Alert['items'][number]) & { ttsTemplate?: string };
+  isTTSMuted:    boolean;
+  isSoundMuted:  boolean;
+  TTSService:    number,
+  TTSKey:        string,
+  caster:        null | UserInterface,
+  user:          null | UserInterface,
   recipientUser: null | UserInterface,
-  game?: string,
+  game?:         string,
 };
 
 const loadedCSS: string[] = [];
@@ -94,10 +92,10 @@ let cleanupAlert = false;
 
 const alerts: Record<string, (EmitData & {
   isTTSMuted: boolean, isSoundMuted: boolean, TTSService: number, TTSKey: string,
-  caster: null | UserInterface,
-  user: null | UserInterface,
+  caster:        null | UserInterface,
+  user:          null | UserInterface,
   recipientUser: null | UserInterface,
-  game?: string,
+  game?:         string,
 })[]> = {};
 let blocked = false; // we want to block across whole overlay set
 
@@ -509,13 +507,13 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item }) => {
   }, [ runningAlert ]);
 
   const processIncomingAlert = React.useCallback(async (data2: EmitData & {
-    id: string;
-    isTTSMuted: boolean;
-    isSoundMuted: boolean;
-    TTSService: number;
-    TTSKey: string;
-    caster: UserInterface | null;
-    user: UserInterface | null;
+    id:            string;
+    isTTSMuted:    boolean;
+    isSoundMuted:  boolean;
+    TTSService:    number;
+    TTSKey:        string;
+    caster:        UserInterface | null;
+    user:          UserInterface | null;
     recipientUser: UserInterface | null;
   }, _alert: Alert) => {
     if (isAlreadyProcessed(alert!.id + data2.id)) {

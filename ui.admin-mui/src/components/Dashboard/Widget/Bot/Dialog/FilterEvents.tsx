@@ -1,8 +1,6 @@
 import { ArrowDropDown, FilterAlt } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip,
-} from '@mui/material';
+import { Container, Divider, FilledInput, FormControlLabel, FormGroup, Grid, IconButton, InputAdornment, Menu, Stack, Switch, Tooltip } from '@mui/material';
 import React from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';

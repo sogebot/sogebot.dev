@@ -1,7 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, Typography } from '@mui/material';
 import { useAtomValue } from 'jotai';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -10,11 +8,11 @@ import { rewardsAtom } from '../../../../../atoms';
 import { FormRewardInput } from '../../../Input/Reward';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: string,
-  open: string,
-  label?: string,
-  onOpenChange: (value: string) => void;
-  onChange: (value: string) => void;
+  model:               string,
+  open:                string,
+  label?:              string,
+  onOpenChange:        (value: string) => void;
+  onChange:            (value: string) => void;
   customLabelDetails?: React.ReactNode;
 };
 

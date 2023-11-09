@@ -1,8 +1,4 @@
-import {
-  Box,
-  Button, Fade, Link, Paper,
-  Stack, Typography,
-} from '@mui/material';
+import { Box, Button, Fade, Link, Paper, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { useSessionstorageState } from 'rooks';
 

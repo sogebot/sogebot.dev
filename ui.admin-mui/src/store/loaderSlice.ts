@@ -11,7 +11,7 @@ export interface LoaderState {
   connectedToServer: boolean,
   showLoginWarning:  boolean,
   showCookieManager: boolean,
-  showDebugManager: boolean,
+  showDebugManager:  boolean,
 
   drawerWidth:           number,
   message:               null,

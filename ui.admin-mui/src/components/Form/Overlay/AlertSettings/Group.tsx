@@ -1,37 +1,15 @@
-import {
-  DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors,
-} from '@dnd-kit/core';
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  BorderInnerTwoTone, BorderStyleTwoTone,
-  CropFreeTwoTone, DeleteTwoTone, DragIndicatorTwoTone,
-  ExpandMore, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
-} from '@mui/icons-material';
+import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, DeleteTwoTone, DragIndicatorTwoTone, ExpandMore, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import { LoadingButton } from '@mui/lab';
-import {
-  Accordion, AccordionDetails, AccordionSummary,
-  Box, Chip, DialogContent, Divider, FormControl,
-  Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack,
-  Switch,
-  TextField, Tooltip, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, DialogContent, Divider, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
-import {
-  Atom, useAtom, useAtomValue,
-} from 'jotai';
-import {
-  capitalize, cloneDeep, set,
-} from 'lodash';
+import { Atom, useAtom, useAtomValue } from 'jotai';
+import { capitalize, cloneDeep, set } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import Moveable from 'react-moveable';
@@ -53,10 +31,7 @@ import NewComponentDialog from './Dialog/newComponentDialog';
 import AlertSettingsGallery from './Gallery';
 import AlertSettingsProfileImage from './ProfileImage';
 import { alertList } from './src/alertList';
-import {
-  anItems,
-  anSelectedAlert, anSelectedAlertId, anSelectedAlertVariant, anSelectedVariantId,
-} from './src/atoms';
+import { anItems, anSelectedAlert, anSelectedAlertId, anSelectedAlertVariant, anSelectedVariantId } from './src/atoms';
 import { rules } from './src/rules';
 import AlertSettingsText from './Text';
 import AlertSettingsTTS from './TTS';
@@ -75,20 +50,20 @@ import { Settings } from '../Settings';
 let disabledMouseMove = false;
 
 type Props = {
-  canvas: { width: number, height: number },
+  canvas:   { width: number, height: number },
   onUpdate: (value: Alerts['items']) => void;
 };
 
 function SortableAccordion(props: {
-  name: string,
-  id: string,
-  isDragging: boolean,
-  onClick?: () => void,
+  name:        string,
+  id:          string,
+  isDragging:  boolean,
+  onClick?:    () => void,
   isSelected?: boolean,
-  onSelect?: (id: string | null) => void,
-  onUpdate?: (value: Alerts['items'][number]['items'][number]) => void
-  onDelete?: () => void
-  item?: Alerts['items'][number]['items'][number],
+  onSelect?:   (id: string | null) => void,
+  onUpdate?:   (value: Alerts['items'][number]['items'][number]) => void
+  onDelete?:   () => void
+  item?:       Alerts['items'][number]['items'][number],
 }) {
   const {
     attributes,

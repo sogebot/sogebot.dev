@@ -1,6 +1,4 @@
-import {
-  Box, LinearProgress, linearProgressClasses, Stack,
-} from '@mui/material';
+import { Box, LinearProgress, linearProgressClasses, Stack } from '@mui/material';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
@@ -20,9 +18,9 @@ import { loadFont } from '../Accordion/Font';
 const loadedCSS: string[] = [];
 
 const doEnterAnimation = (idx: number, threadId: string, display: {
-  type: 'fade';
-  durationMs: number;
-  animationInMs: number;
+  type:           'fade';
+  durationMs:     number;
+  animationInMs:  number;
   animationOutMs: number;
 }, haveMoreItems: boolean, retry = 0) => {
   console.log('doEnterAnimation', {
@@ -48,9 +46,9 @@ const doEnterAnimation = (idx: number, threadId: string, display: {
 };
 
 const doLeaveAnimation = (idx: number, threadId: string, display: {
-  type: 'fade';
-  durationMs: number;
-  animationInMs: number;
+  type:           'fade';
+  durationMs:     number;
+  animationInMs:  number;
   animationOutMs: number;
 }, retry = 0) => {
   console.log('doLeaveAnimation', {

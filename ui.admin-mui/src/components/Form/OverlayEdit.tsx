@@ -1,11 +1,6 @@
-import {
-  BorderInnerTwoTone, BorderStyleTwoTone,
-  CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone,
-} from '@mui/icons-material';
+import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box, Button, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip,
-} from '@mui/material';
+import { Box, Button, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip } from '@mui/material';
 import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
@@ -19,9 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useKey, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
-import {
-  anItems, anMoveableId, anSelectedItem, anSelectedItemCanvas, anSelectedItemOpts, emptyItem,
-} from './atoms';
+import { anItems, anMoveableId, anSelectedItem, anSelectedItemCanvas, anSelectedItemOpts, emptyItem } from './atoms';
 import { AlertsRegistryTesterAccordion } from './Overlay/AlertSettings/tester';
 import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
 import { AlertsSettings } from './Overlay/AlertsSettings';

@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { statsUpdate } from '../../../store/overlaySlice';
 
 type Props = {
-  model: Stats;
+  model:    Stats;
   onUpdate: (value: Stats) => void;
 };
 

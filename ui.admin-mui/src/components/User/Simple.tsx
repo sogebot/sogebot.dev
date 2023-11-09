@@ -1,9 +1,7 @@
 import { CloseTwoTone } from '@mui/icons-material';
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
-import {
-  Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography,
-} from '@mui/material';
+import { Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography } from '@mui/material';
 import { isEqual } from 'lodash';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';

@@ -2,10 +2,10 @@ import { IsCommand } from '@sogebot/backend/dest/database/validators/IsCommand';
 import { IsNotEmpty, MinLength } from 'class-validator';
 
 export class Commands {
-  id: string;
+  id:           string;
   defaultValue: string;
-  type: string;
-  name: string;
+  type:         string;
+  name:         string;
 
   @IsNotEmpty()
   @MinLength(2)

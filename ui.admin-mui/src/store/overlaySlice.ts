@@ -5,7 +5,7 @@ import type { RootState } from './store';
 // Define a type for the slice state
 interface OverlayState {
   isParentDeleteKeyDisabled: boolean;
-  randomizerId: string;
+  randomizerId:              string;
   countdown: {
     [id: string]: 'time' | 'text' | undefined
   },
@@ -17,8 +17,8 @@ interface OverlayState {
     uptime:      string,
   },
   chat: {
-    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, color?: string, badges: {url: string}[] }[],
-    posY: Record<string,number>,
+    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, color?: string, badges: { url: string }[] }[],
+    posY:     Record<string,number>,
     fontSize: Record<string,number>,
   }
 }

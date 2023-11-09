@@ -1,6 +1,4 @@
-import {
-  Box, ScopedCssBaseline, Stack, Typography,
-} from '@mui/material';
+import { Box, ScopedCssBaseline, Stack, Typography } from '@mui/material';
 import { EmotesCombo } from '@sogebot/backend/dest/database/entity/overlay';
 import { random } from 'lodash';
 import { nanoid } from 'nanoid';

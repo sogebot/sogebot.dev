@@ -1,9 +1,7 @@
 import { Box } from '@mui/material';
 import { EmotesExplode } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
-import {
-  cloneDeep, random, sample,
-} from 'lodash';
+import { cloneDeep, random, sample } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';

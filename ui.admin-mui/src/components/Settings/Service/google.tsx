@@ -1,33 +1,11 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Checkbox, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 
@@ -42,26 +20,26 @@ import { useTranslation } from '../../../hooks/useTranslation';
 declare namespace stream {
 
   export interface Snippet {
-    publishedAt: Date;
-    channelId: string;
-    title: string;
-    description: string;
+    publishedAt:     Date;
+    channelId:       string;
+    title:           string;
+    description:     string;
     isDefaultStream: boolean;
   }
 
   export interface IngestionInfo {
-    streamName: string;
-    ingestionAddress: string;
-    backupIngestionAddress: string;
-    rtmpsIngestionAddress: string;
+    streamName:                  string;
+    ingestionAddress:            string;
+    backupIngestionAddress:      string;
+    rtmpsIngestionAddress:       string;
     rtmpsBackupIngestionAddress: string;
   }
 
   export interface Cdn {
     ingestionType: string;
     ingestionInfo: IngestionInfo;
-    resolution: string;
-    frameRate: string;
+    resolution:    string;
+    frameRate:     string;
   }
 
   export interface HealthStatus {
@@ -74,19 +52,19 @@ declare namespace stream {
   }
 
   export interface RootObject {
-    kind: string;
-    etag: string;
-    id: string;
+    kind:    string;
+    etag:    string;
+    id:      string;
     snippet: Snippet;
-    cdn: Cdn;
-    status: Status;
+    cdn:     Cdn;
+    status:  Status;
   }
 
 }
 
 const PageSettingsModulesServiceGoogle: React.FC<{
   onVisible: () => void,
-  sx?: SxProps<Theme> | undefined
+  sx?:       SxProps<Theme> | undefined
 }> = ({
   onVisible,
   sx,

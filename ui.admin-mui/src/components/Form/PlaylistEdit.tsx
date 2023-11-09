@@ -1,7 +1,5 @@
 import { Autocomplete, LoadingButton } from '@mui/lab';
-import {
-  Box, Button, Chip, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack,
-} from '@mui/material';
+import { Box, Button, Chip, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
@@ -9,10 +7,7 @@ import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect, useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import YouTube, { YouTubeProps } from 'react-youtube';
 
@@ -168,7 +163,7 @@ export const PlaylistEdit: React.FC<{
             fullWidth
             value={item.tags.map((o: string) => ({
               title: o, value: o,
-            })) as { title: string, value: string}[]}
+            })) as { title: string, value: string }[]}
             multiple
             onChange={(event, newValue) => {
               if (Array.isArray(newValue)) {

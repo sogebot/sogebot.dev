@@ -1,8 +1,6 @@
 import { Theme } from '@emotion/react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
-import {
-  SxProps, TableBody, TableBodyClasses,
-} from '@mui/material';
+import { SxProps, TableBody, TableBodyClasses } from '@mui/material';
 import React from 'react';
 import { CommonProps } from 'react-window';
 

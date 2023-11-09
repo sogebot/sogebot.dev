@@ -1,9 +1,6 @@
 import { Folder } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import {
-  Box, Button, CircularProgress, Grid,
-  IconButton, Stack, Typography,
-} from '@mui/material';
+import { Box, Button, CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import chunk from 'lodash/chunk';
 import { nanoid } from 'nanoid';

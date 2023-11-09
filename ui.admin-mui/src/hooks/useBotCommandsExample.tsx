@@ -1,13 +1,8 @@
-import {
-  Alert,
-  CircularProgress, Divider, Typography,
-} from '@mui/material';
+import { Alert, CircularProgress, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import axios from 'axios';
 import camelCase from 'lodash/camelCase';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
@@ -22,7 +17,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ loading, setLoading ] = useState(true);
-  const [ exampleData, setExampleData ] = useState<(string|{if?: string, message: string, replace: { [x:string]: string }})[][]>([]);
+  const [ exampleData, setExampleData ] = useState<(string|{ if?: string, message: string, replace: { [x:string]: string } })[][]>([]);
   const [ settings, setSettings ] = useState<Record<string, any>>({});
   const [ parsed, setParsed ] = useState<Record<string, string>>({});
 

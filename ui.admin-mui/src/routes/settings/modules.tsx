@@ -1,23 +1,9 @@
 import { ArrowUpwardTwoTone } from '@mui/icons-material';
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Container,
-  Fab,
-  Grid,
-  List,
-  ListItemButton,
-  ListItemText,
-  Slide,
-  Typography ,
-} from '@mui/material';
+import { Backdrop, Box, CircularProgress, Container, Fab, Grid, List, ListItemButton, ListItemText, Slide, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Stack } from '@mui/system';
 import { capitalize } from 'lodash';
-import React, {
-  useCallback, useEffect, useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import PageSettingsModulesCoreCurrency from '../../components/Settings/Core/currency';

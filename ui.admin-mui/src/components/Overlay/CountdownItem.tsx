@@ -100,7 +100,7 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
         id:        id,
         isEnabled: latestEnabled.current,
         time:      latestModel.current.currentTime,
-      }, (_err: null, data?: { isEnabled: boolean | null, time :string | null }) => {
+      }, (_err: null, data?: { isEnabled: boolean | null, time: string | null }) => {
         if (data) {
           if (data.isEnabled !== null) {
             setModel(o => ({

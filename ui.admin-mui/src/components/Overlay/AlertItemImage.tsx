@@ -6,7 +6,7 @@ import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import defaultImage from './assets/alerts/default.gif';
 import type { Props } from './ChatItem';
 
-export const AlertItemImage: React.FC<Props<AlertImage> & {test?: boolean, variant: Omit<Alerts['items'][number], 'variants'>}>
+export const AlertItemImage: React.FC<Props<AlertImage> & { test?: boolean, variant: Omit<Alerts['items'][number], 'variants'> }>
 = ({ item, width, height, active, variant, test }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 

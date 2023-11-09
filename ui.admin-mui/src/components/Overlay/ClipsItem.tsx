@@ -1,7 +1,5 @@
 import { Circle } from '@mui/icons-material';
-import {
-  Alert, Box, Fade, keyframes,
-} from '@mui/material';
+import { Alert, Box, Fade, keyframes } from '@mui/material';
 import { Clips } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 

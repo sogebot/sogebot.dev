@@ -1,10 +1,6 @@
-import {
-  CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock, LockTwoTone,
-} from '@mui/icons-material';
+import { CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock, LockTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography,
-} from '@mui/material';
+import { Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
 import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/dest/helpers/constants';
@@ -24,7 +20,7 @@ const icon = <CheckBoxOutlineBlankTwoTone fontSize="small" />;
 const checkedIcon = <CheckBoxTwoTone fontSize="small" />;
 const lockIcon = <LockTwoTone fontSize="small" />;
 
-export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, contentClassificationLabels: string[], tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void}> = (props) => {
+export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: string, contentClassificationLabels: string[], tags: string[], open: boolean, setOpen: (value: React.SetStateAction<boolean>) => void }> = (props) => {
   const [ options, setOptions ] = React.useState<string[]>([]);
   const [ loading, setLoading ] = React.useState(true);
   const [ titles, setTitles ] = React.useState<CacheTitlesInterface[]>([]);
@@ -78,7 +74,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
   }, [titles]);
 
   const lastTitles = React.useMemo(() => {
-    const value = [] as {title: string, tags: string[], content_classification_labels: string[]}[];
+    const value = [] as { title: string, tags: string[], content_classification_labels: string[] }[];
     for (const title of orderBy(titles, 'timestamp', 'desc').filter(o => o.game === inputValue)) {
       if (!value.find(o => o.title === title.title)) {
         value.push({

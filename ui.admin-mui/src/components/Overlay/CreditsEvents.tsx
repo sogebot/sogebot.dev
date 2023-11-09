@@ -1,13 +1,9 @@
-import {
-  DiamondTwoTone, KeyboardDoubleArrowRightTwoTone, TheaterComedyTwoTone,
-} from '@mui/icons-material';
+import { DiamondTwoTone, KeyboardDoubleArrowRightTwoTone, TheaterComedyTwoTone } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { Alert } from '@sogebot/backend/dest/database/entity/alert';
 import { CreditsScreenEvents } from '@sogebot/backend/dest/database/entity/overlay';
 import type { Event } from '@sogebot/backend/dest/overlays/credits';
-import {
-  capitalize, get, groupBy,
-} from 'lodash';
+import { capitalize, get, groupBy } from 'lodash';
 import React from 'react';
 
 import type { Props } from './ChatItem';

@@ -1,9 +1,5 @@
-import {
-  PlayArrow, Stop, VolumeUp,
-} from '@mui/icons-material';
-import {
-  Box, CircularProgress, Fab, Fade, IconButton, Popover, Slider,
-} from '@mui/material';
+import { PlayArrow, Stop, VolumeUp } from '@mui/icons-material';
+import { Box, CircularProgress, Fab, Fade, IconButton, Popover, Slider } from '@mui/material';
 import React from 'react';
 
 type Props = {

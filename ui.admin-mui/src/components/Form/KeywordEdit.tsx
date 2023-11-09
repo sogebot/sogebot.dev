@@ -1,22 +1,13 @@
-import {
-  DragDropContext, Draggable, Droppable,
-} from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import {
-  Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField,
-} from '@mui/material';
-import {
-  Keyword, KeywordGroup, KeywordResponses,
-} from '@sogebot/backend/dest/database/entity/keyword';
+import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
+import { Keyword, KeywordGroup, KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, {
-  useCallback, useEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 

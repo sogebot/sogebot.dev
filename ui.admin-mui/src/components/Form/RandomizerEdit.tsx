@@ -1,22 +1,10 @@
-import {
-  DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable, OnDragEndResponder,
-} from '@hello-pangea/dnd';
-import {
-  DeleteTwoTone,
-  DragHandleTwoTone, ExpandMoreTwoTone, LinkOffTwoTone, LinkTwoTone,
-} from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography,
-} from '@mui/material';
+import { DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
+import { DeleteTwoTone, DragHandleTwoTone, ExpandMoreTwoTone, LinkOffTwoTone, LinkTwoTone } from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
-import {
-  cloneDeep, debounce, isEqual, orderBy,
-} from 'lodash';
+import { cloneDeep, debounce, isEqual, orderBy } from 'lodash';
 import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
 import React from 'react';
@@ -110,11 +98,11 @@ const emptyItem = Object.assign(new Randomizer(), {
 });
 
 const ItemGrid: React.FC<{
-  item: Randomizer['items'][number],
+  item:             Randomizer['items'][number],
   dragHandleProps?: DraggableProvidedDragHandleProps | null,
-  previousId?: string,
-  onChange: (value: Randomizer['items'][number]) => void
-  onDelete?: () => void
+  previousId?:      string,
+  onChange:         (value: Randomizer['items'][number]) => void
+  onDelete?:        () => void
 }> = ({
   item,
   dragHandleProps,

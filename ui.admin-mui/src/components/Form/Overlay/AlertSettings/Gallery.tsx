@@ -1,11 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Stack,
-} from '@mui/material';
+import { Button, Checkbox, FormControlLabel, FormGroup, FormHelperText, Stack } from '@mui/material';
 import { AlertImage } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
@@ -19,8 +12,8 @@ import { useTranslation } from '../../../../hooks/useTranslation';
 import { FormSelectorGallery } from '../../Selector/Gallery';
 
 interface AlertSettingsGalleryProps {
-  model: AlertImage
-  onChange: (value: AlertImage) => void
+  model:     AlertImage
+  onChange:  (value: AlertImage) => void
   onDelete?: () => void
 }
 

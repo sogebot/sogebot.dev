@@ -5,7 +5,7 @@ import React from 'react';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
-export const Value: React.FC<{current: number, isStreamOnline: boolean, showValueIfOffline?: boolean, type?: 'bigNumber' | 'hours' | 'currency'}> = (props) => {
+export const Value: React.FC<{ current: number, isStreamOnline: boolean, showValueIfOffline?: boolean, type?: 'bigNumber' | 'hours' | 'currency' }> = (props) => {
   const { configuration } = useAppSelector(state => state.loader);
 
   const value = React.useMemo(() => {

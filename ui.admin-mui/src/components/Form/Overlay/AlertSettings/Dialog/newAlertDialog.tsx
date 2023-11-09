@@ -1,9 +1,5 @@
 import { AddTwoTone } from '@mui/icons-material';
-import {
-  Button, Card, CardActionArea, CardContent,
-  Dialog, DialogActions,
-  DialogContent, Grid, Typography,
-} from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, Typography } from '@mui/material';
 import React from 'react';
 
 import { alertList } from '../src/alertList';

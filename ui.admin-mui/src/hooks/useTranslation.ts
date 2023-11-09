@@ -4,9 +4,7 @@ import React from 'react';
 
 import { useAppDispatch, useAppSelector } from './useAppDispatch';
 import { getSocket } from '../helpers/socket';
-import {
-  selectStateState, selectTranslationState, setTranslation,
-} from '../store/loaderSlice';
+import { selectStateState, selectTranslationState, setTranslation } from '../store/loaderSlice';
 
 function castObject (key: string, value: string | { [x: string]: any }) {
   if (typeof value === 'string') {

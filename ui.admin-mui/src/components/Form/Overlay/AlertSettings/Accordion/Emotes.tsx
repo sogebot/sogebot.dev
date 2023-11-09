@@ -1,8 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary,
-  Checkbox, Fade, FormControlLabel, FormGroup, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControlLabel, FormGroup, Typography } from '@mui/material';
 import { AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -10,10 +7,10 @@ import React from 'react';
 import { useTranslation } from '../../../../../hooks/useTranslation';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: AlertText['allowEmotes'],
-  open: string,
+  model:        AlertText['allowEmotes'],
+  open:         string,
   onOpenChange: (value: string) => void;
-  onChange: (value: AlertText['allowEmotes']) => void;
+  onChange:     (value: AlertText['allowEmotes']) => void;
 };
 
 export const AccordionEmotes: React.FC<Props> = (props) => {

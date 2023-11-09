@@ -1,15 +1,13 @@
 import { ContentCopyTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
-import {
-  Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, IconButton, InputAdornment, TextField, Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model: string,
+  model:        string,
   onOpenChange: (value: string) => void;
-  open: string,
+  open:         string,
 };
 
 export const AccordionResponseFilter: React.FC<Props> = (props) => {
