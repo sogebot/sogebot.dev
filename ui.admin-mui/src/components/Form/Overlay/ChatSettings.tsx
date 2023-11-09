@@ -3,6 +3,7 @@ import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import Jabber from 'jabber';
 import { isEqual } from 'lodash';
+import { matchIsValidColor, MuiColorInput } from 'mui-color-input';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';
@@ -160,6 +161,14 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
     });
   };
 
+  React.useEffect(() => {
+    test();
+    test();
+    test();
+    test();
+    test();
+  }, []);
+
   return <>
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>
     <Divider variant='middle'/>
@@ -284,57 +293,6 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
         }}
       />
 
-      {model.type !== 'niconico' && <TextField
-        fullWidth
-        variant="filled"
-        value={model.customLineHeight}
-        inputProps={{ min: 1 }}
-        type="number"
-        label={'Custom line height'}
-        InputProps={{
-          endAdornment: <>
-            <InputAdornment position='end'>px</InputAdornment>
-            <InputAdornment position='end'>
-              <Switch checked={model.useCustomLineHeight} onChange={(_, checked) => onUpdate({
-                ...model, useCustomLineHeight: checked,
-              })}/>
-            </InputAdornment></>,
-        }}
-        onChange={(ev) => {
-          if (!isNaN(Number(ev.currentTarget.value))) {
-            onUpdate({
-              ...model, customLineHeight: Number(ev.currentTarget.value),
-            });
-          }
-        }}
-      />}
-
-      {model.type !== 'niconico' && <TextField
-        fullWidth
-        variant="filled"
-        value={model.customSpaceBetweenMessages}
-        inputProps={{ min: 1 }}
-        type="number"
-        label={'Custom space between messages'}
-        InputProps={{
-          endAdornment: <>
-            <InputAdornment position='end'>px</InputAdornment>
-            <InputAdornment position='end'>
-              <Switch checked={model.useCustomSpaceBetweenMessages} onChange={(_, checked) => onUpdate({
-                ...model, useCustomSpaceBetweenMessages: checked,
-              })}/>
-            </InputAdornment>
-          </>,
-        }}
-        onChange={(ev) => {
-          if (!isNaN(Number(ev.currentTarget.value))) {
-            onUpdate({
-              ...model, customSpaceBetweenMessages: Number(ev.currentTarget.value),
-            });
-          }
-        }}
-      />}
-
       <Box sx={{
         p: 1, px: 2,
       }}>
@@ -380,23 +338,113 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
           ...model, reverseOrder: checked,
         })} />} label='Reverse flow of chat'/>}
 
-        <FormControlLabel sx={{
-          width: '100%', alignItems: 'self-start', pt: 1,
-        }} control={<Switch checked={model.useGeneratedColors} onChange={(_, checked) => onUpdate({
-          ...model, useGeneratedColors: checked,
-        })} />} label={<>
-          <Typography>Use generated user name colors</Typography>
-          <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.useGeneratedColors
-            ? <>User names will have generated colors.</>
-            : <>User names will have user-defined color.<br/><small>Note: we are slightly altering color lightness to have better visibility.</small></>
-          }</Typography>
-        </>}/>
-
       </Box>
       <AccordionFont
+        alwaysShowLabelDetails
         disableExample
-        label='Chat font'
-        accordionId='Font'
+        label='Username'
+        model={model.usernameFont ?? model.font}
+        open={open}
+        isEditable={model.usernameFont !== null}
+        onOpenChange={(val) => setOpen(val)}
+        onChange={(val) => {
+          onUpdate({
+            ...model, usernameFont: val,
+          });
+        }}
+        customLabelDetails={!model.usernameFont
+          ? <span>not used</span>
+          : <strong>{model.usernameFont.family} {'size' in model.usernameFont && `${model.usernameFont.size}px`}</strong>
+        }
+        prepend={<>
+          <Box sx={{ pb: 1 }}>
+            <FormControlLabel sx={{
+              width: '100%', alignItems: 'self-start', pt: 1,
+            }} control={<Switch checked={model.useGeneratedColors} onChange={(_, checked) => onUpdate({
+              ...model, useGeneratedColors: checked,
+            })} />} label={<>
+              <Typography>Use generated user name colors</Typography>
+              <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.useGeneratedColors
+                ? <>User names will have generated colors.</>
+                : <>User names will have user-defined color.<br/><small>Note: we are slightly altering color lightness to have better visibility.</small></>
+              }</Typography>
+            </>}/>
+
+            { model.usernameFont !== null && <FormControlLabel sx={{
+              width: '100%', alignItems: 'self-start', pt: 1,
+            }} control={<Switch checked={model.useCustomUsernameColor} onChange={(_, checked) => onUpdate({
+              ...model, useCustomUsernameColor: checked,
+            })} />} label={<>
+              <Typography>Use defined color</Typography>
+              <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.useCustomUsernameColor
+                ? <>User names will have overlay-defined single color.</>
+                : <>User names won't have  overlay-defined single color.</>
+              }</Typography>
+            </>}/>}
+          </Box>
+
+          <Stack direction='row' sx={{ py: 1 }}>
+            <Button variant={model.usernameFont === null ? 'contained' : undefined} fullWidth onClick={() => {
+              onUpdate({
+                ...model, usernameFont: null,
+              });
+            }}>Message font</Button>
+
+            <Button variant={model.usernameFont !== null ? 'contained' : undefined} fullWidth onClick={() => {
+              onUpdate({
+                ...model, usernameFont: model.font,
+              });
+            }}>Custom</Button>
+          </Stack>
+        </>}
+      />
+      <AccordionFont
+        alwaysShowLabelDetails
+        disableExample
+        label='Separator'
+        model={model.separatorFont ?? model.font}
+        open={open}
+        isEditable={model.separatorFont !== null}
+        onOpenChange={(val) => setOpen(val)}
+        onChange={(val) => {
+          onUpdate({
+            ...model, separatorFont: val,
+          });
+        }}
+        customLabelDetails={!model.separatorFont
+          ? <span>not used</span>
+          : <strong>{model.separatorFont.family} {'size' in model.separatorFont && `${model.separatorFont.size}px`}</strong>
+        }
+        prepend={<>
+          <TextField
+            fullWidth
+            variant="filled"
+            value={model.separator}
+            label={'Separator between user name and message'}
+            onChange={(ev) => {
+              onUpdate({
+                ...model, separator: String(ev.currentTarget.value),
+              });
+            }}
+          />
+          <Stack direction='row' sx={{ py: 1 }}>
+            <Button variant={model.separatorFont === null ? 'contained' : undefined} fullWidth onClick={() => {
+              onUpdate({
+                ...model, separatorFont: null,
+              });
+            }}>Username font</Button>
+
+            <Button variant={model.separatorFont !== null ? 'contained' : undefined} fullWidth onClick={() => {
+              onUpdate({
+                ...model, separatorFont: model.usernameFont ?? model.font,
+              });
+            }}>Custom</Button>
+          </Stack>
+        </>}
+      />
+      <AccordionFont
+        disableExample
+        label='Message'
         model={model.font}
         open={open}
         onOpenChange={(val) => setOpen(val)}
@@ -404,7 +452,86 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
           onUpdate({
             ...model, font: val,
           });
-        }}/>
+        }}
+        prepend={<>
+          {model.type !== 'niconico' && <TextField
+            fullWidth
+            variant="filled"
+            value={model.customSpaceBetweenMessages}
+            inputProps={{ min: 1 }}
+            type="number"
+            label={'Custom space between messages'}
+            InputProps={{
+              endAdornment: <>
+                <InputAdornment position='end'>px</InputAdornment>
+                <InputAdornment position='end'>
+                  <Switch checked={model.useCustomSpaceBetweenMessages} onChange={(_, checked) => onUpdate({
+                    ...model, useCustomSpaceBetweenMessages: checked,
+                  })}/>
+                </InputAdornment>
+              </>,
+            }}
+            onChange={(ev) => {
+              if (!isNaN(Number(ev.currentTarget.value))) {
+                onUpdate({
+                  ...model, customSpaceBetweenMessages: Number(ev.currentTarget.value),
+                });
+              }
+            }}
+          />}
+
+          {model.type !== 'niconico' && <TextField
+            fullWidth
+            variant="filled"
+            value={model.customLineHeight}
+            inputProps={{ min: 1 }}
+            type="number"
+            label={'Custom line height'}
+            InputProps={{
+              endAdornment: <>
+                <InputAdornment position='end'>px</InputAdornment>
+                <InputAdornment position='end'>
+                  <Switch checked={model.useCustomLineHeight} onChange={(_, checked) => onUpdate({
+                    ...model, useCustomLineHeight: checked,
+                  })}/>
+                </InputAdornment></>,
+            }}
+            onChange={(ev) => {
+              if (!isNaN(Number(ev.currentTarget.value))) {
+                onUpdate({
+                  ...model, customLineHeight: Number(ev.currentTarget.value),
+                });
+              }
+            }}
+          />}
+
+          {model.type !== 'niconico' && <TextField
+            fullWidth
+            variant="filled"
+            value={model.messagePadding}
+            inputProps={{ min: 0 }}
+            type="number"
+            label={'Message inner padding'}
+            onChange={(ev) => {
+              if (!isNaN(Number(ev.currentTarget.value))) {
+                onUpdate({
+                  ...model, messagePadding: Number(ev.currentTarget.value),
+                });
+              }
+            }}
+          />}
+
+          <MuiColorInput
+            label="Background color"
+            fullWidth
+            format="hex8"
+            value={matchIsValidColor(model.messageBackgroundColor ?? '') ? model.messageBackgroundColor! : '#ffffffff'}
+            onChange={(value) => {
+              onUpdate({
+                ...model, messageBackgroundColor: matchIsValidColor(value) ? value : '#ffffffff',
+              });
+            }} />
+        </>}/>
     </Stack>
   </>;
 };

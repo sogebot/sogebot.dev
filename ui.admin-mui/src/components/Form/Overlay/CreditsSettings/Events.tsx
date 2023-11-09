@@ -269,7 +269,6 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
               <AccordionFont
                 disableExample
                 label='Header font'
-                accordionId='headerFont'
                 model={item.headerFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}
@@ -281,7 +280,6 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
               <AccordionFont
                 disableExample
                 label='Item font'
-                accordionId='itemFont'
                 model={item.itemFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}
@@ -293,7 +291,6 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
               <AccordionFont
                 disableExample
                 label='Highlight font'
-                accordionId='highlightFont'
                 model={item.highlightFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}

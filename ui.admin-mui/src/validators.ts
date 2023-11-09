@@ -11,7 +11,7 @@ const maxValue = (value: number) => {
   return (v?: string) => Number(v) <= value || 'Max value of this value is ' + value;
 };
 const isHexColor = (v?: string) => {
-  return String(v).match(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/g) !== null || 'Expecting hexadecimal color in format #000 or #000000';
+  return String(v).match(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3}|[a-fA-F0-9]{8})$/g) !== null || 'Expecting hexadecimal color in format #000 or #000000';
 };
 
 const startsWith = (chars: string[]) => {

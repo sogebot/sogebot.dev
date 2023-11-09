@@ -46,7 +46,6 @@ export const WordcloudSettings: React.FC<Props> = ({ model, onUpdate }) => {
     <AccordionFont
       disableExample
       label='Word Font'
-      accordionId='wordFont'
       model={model.wordFont}
       open={open}
       onOpenChange={(val) => setOpen(val)}

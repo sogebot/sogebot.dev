@@ -274,7 +274,6 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
               <AccordionFont
                 disableExample
                 label='Game font'
-                accordionId='gameFont'
                 model={item.gameFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}
@@ -286,7 +285,6 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
               <AccordionFont
                 disableExample
                 label='Title font'
-                accordionId='titleFont'
                 model={item.titleFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}
@@ -298,7 +296,6 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
               <AccordionFont
                 disableExample
                 label='Created by font'
-                accordionId='createdByFont'
                 model={item.createdByFont}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}

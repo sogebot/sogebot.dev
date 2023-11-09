@@ -90,7 +90,6 @@ export const MarathonSettings: React.FC<Props> = ({ model, onUpdate }) => {
       <AccordionFont
         disableExample
         label='Marathon font'
-        accordionId='marathonFont'
         model={model.marathonFont}
         open={open}
         onOpenChange={(val) => setOpen(val)}

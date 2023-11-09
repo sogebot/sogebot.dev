@@ -121,7 +121,6 @@ export const EventlistSettings: React.FC<Props> = ({ model, onUpdate }) => {
     <AccordionFont
       disableExample
       label='Event font'
-      accordionId='eventFont'
       model={model.eventFont}
       open={open}
       onOpenChange={(val) => setOpen(val)}
@@ -135,7 +134,6 @@ export const EventlistSettings: React.FC<Props> = ({ model, onUpdate }) => {
     <AccordionFont
       disableExample
       label='Username font'
-      accordionId='usernameFont'
       model={model.usernameFont}
       open={open}
       onOpenChange={(val) => setOpen(val)}

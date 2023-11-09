@@ -239,7 +239,6 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
       <AccordionFont
         disableExample
         label='Countdown font'
-        accordionId='countdownFont'
         model={model.countdownFont}
         open={open}
         onOpenChange={(val) => setOpen(val)}
@@ -251,7 +250,6 @@ export const CountdownSettings: React.FC<Props> = ({ model, onUpdate, id }) => {
       <AccordionFont
         disableExample
         label='Message font'
-        accordionId='messageFont'
         model={model.messageFont}
         open={open}
         onOpenChange={(val) => setOpen(val)}

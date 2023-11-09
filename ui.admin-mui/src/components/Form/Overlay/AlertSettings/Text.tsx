@@ -53,7 +53,8 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
     })}/>
     <AccordionFont open={accordion}
       alwaysShowLabelDetails
-      onOpenChange={setAccordion} model={item.font ?? parent[item.globalFont]}
+      onOpenChange={setAccordion}
+      model={item.font ?? parent[item.globalFont]}
       onChange={(font) => setItem({
         ...item, font,
       })}

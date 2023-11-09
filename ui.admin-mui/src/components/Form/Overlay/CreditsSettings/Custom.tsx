@@ -607,7 +607,6 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
               <AccordionFont
                 disableExample
                 label='Font'
-                accordionId='customFont'
                 model={selectedItem.font}
                 open={accordion}
                 onOpenChange={(val) => setAccordion(val)}

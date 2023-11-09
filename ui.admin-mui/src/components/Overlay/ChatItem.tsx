@@ -213,8 +213,10 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
         {orderBy(messages, 'timestamp', item.reverseOrder ? 'desc' :'asc')
           .map(message => <Fade in={message.show} key={message.timestamp} mountOnEnter unmountOnExit>
             <Box sx={{
-              pb:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0.2,
-              pr:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 1,
+              p:                  `${item.messagePadding}px`,
+              mb:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0,
+              mr:                 item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0,
+              backgroundColor:    item.messageBackgroundColor,
               lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
               '.simpleChatImage': {
                 position:    'relative',
@@ -265,17 +267,56 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active }) => {
                   }}/>
                 </Box>)}
               </Box>}
-              <Typography component='strong' sx={{
-                fontFamily: item.font.family,
-                pr:         0.5,
-                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
-                fontWeight: item.font.weight,
+              <Typography component='span' sx={{
                 fontSize:   `${item.font.size}px`,
                 lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+                fontFamily: item.font.family,
+                fontWeight: item.font.weight,
+                textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
+                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
+                ...(item.usernameFont
+                  ? {
+                    fontSize:   `${item.usernameFont.size}px`,
+                    fontFamily: item.usernameFont.family,
+                    fontWeight: item.usernameFont.weight,
+                    textShadow: [textStrokeGenerator(item.usernameFont.borderPx, item.usernameFont.borderColor), shadowGenerator(item.usernameFont.shadow)].filter(Boolean).join(', '),
+                    ...(item.useCustomUsernameColor && {
+                      color: `${item.usernameFont.color}`,
+                    })
+                  }
+                  : {}),
               }}>
-                { message.displayName }:
+                { message.displayName }
               </Typography>
-              { HTMLReactParser(message.message) }
+              <Typography component='span' sx={{
+                fontSize:   `${item.font.size}px`,
+                lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+                fontFamily: item.font.family,
+                fontWeight: item.font.weight,
+                textShadow: [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
+                color:      item.useGeneratedColors || !message.color ? generateColorFromString(message.displayName) : hexToHSL(message.color),
+                ...(item.usernameFont
+                  ? {
+                    ...(item.useCustomUsernameColor && {
+                      color: `${item.usernameFont.color}`,
+                    })
+                  }
+                  : {}),
+                ...(item.separatorFont
+                  ? {
+                    fontSize:   `${item.separatorFont.size}px`,
+                    color:      `${item.separatorFont.color}`,
+                    fontFamily: item.separatorFont.family,
+                    fontWeight: item.separatorFont.weight,
+                    textShadow: [textStrokeGenerator(item.separatorFont.borderPx, item.separatorFont.borderColor), shadowGenerator(item.separatorFont.shadow)].filter(Boolean).join(', '),
+                  }
+                  : {}),
+              }}>
+                { item.separator }
+              </Typography>
+              <span>
+                { HTMLReactParser(message.message) }
+              </span>
             </Box>
           </Fade>)}
       </Box>}

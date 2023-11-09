@@ -192,7 +192,6 @@ export const StopwatchSettings: React.FC<Props> = ({ model, onUpdate }) => {
       <AccordionFont
         disableExample
         label='Stopwatch font'
-        accordionId='stopwatchFont'
         model={model.stopwatchFont}
         open={open}
         onOpenChange={(val) => setOpen(val)}

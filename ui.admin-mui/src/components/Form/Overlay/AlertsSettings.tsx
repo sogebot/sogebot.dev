@@ -52,7 +52,7 @@ export const AlertsSettings: React.FC<Props> = ({ onUpdate }) => {
       ...model, globalFont1,
     })} open={openedAccordion} onOpenChange={val => setOpenedAccordion(val)}/>
 
-    <AccordionFont model={model.globalFont2} label={`${translate('registry.alerts.font.setting')} global 2`} accordionId='globalFont2' onChange={globalFont2 => onUpdate({
+    <AccordionFont model={model.globalFont2} label={`${translate('registry.alerts.font.setting')} global 2`} onChange={globalFont2 => onUpdate({
       ...model, globalFont2,
     })} open={openedAccordion} onOpenChange={val => setOpenedAccordion(val)}/>
 
