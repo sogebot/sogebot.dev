@@ -20,7 +20,7 @@ export default function DevelopmentAlert() {
         <Typography sx={{ pt: 2 }}><strong>Testing focus:</strong></Typography>
         <ul>
           <li>New{' '}
-            <Link href={`/registry/overlays?server=${JSON.parse(localStorage.server)}`}>
+            <Link href={`manage/events?server=${JSON.parse(localStorage.server)}`}>
               <strong>Events</strong> system
             </Link>
             {' '}which is partially done, some work is needed on operation inputs.</li>
