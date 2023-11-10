@@ -23,7 +23,7 @@ export default function DevelopmentAlert() {
             <Link href={`manage/events?server=${JSON.parse(localStorage.server)}`}>
               <strong>Events</strong> system
             </Link>
-            {' '}which is partially done, some work is needed on operation inputs.</li>
+            {' '}missing tester.</li>
         </ul>
         <Typography sx={{ pt: 2 }}>Happy testing!</Typography>
 

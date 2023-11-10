@@ -281,6 +281,7 @@ export const EventsEdit: React.FC = () => {
 
               {Object.keys(item.definitions).map((key, index) => <EventsDefinitions
                 key={`${key}-${index}`}
+                additionalVariables={availableVariables}
                 attribute={key}
                 value={item.definitions[key]}
                 onChange={(value: any) => setItem({
@@ -381,6 +382,7 @@ export const EventsEdit: React.FC = () => {
                 {Object.keys(operation.definitions).map((key, index_op) => <EventsDefinitions
                   key={`${key}-${index_op}`}
                   attribute={key}
+                  additionalVariables={availableVariables}
                   value={operation.definitions[key]}
                   onChange={(value: any) =>
                     setItem((it) => {

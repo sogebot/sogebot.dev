@@ -139,7 +139,12 @@ const PageManageEvents = () => {
                   {operation.name === 'run-command' && key === 'timeout'
                     ? operation.definitions[key] === 0
                       ? 'immediate'
-                      : dayjs.duration(Number(operation.definitions[key]) * 1000).format('HH:mm:ss').replace('00:0', '').replace('00:', '')
+                      : dayjs.duration(Number(operation.definitions[key]))
+                        .format('D[d] H[h] m[m] s[s]')
+                        .replace(/ 0s/, '')
+                        .replace(/ 0m/, '')
+                        .replace(/ 0h/, '')
+                        .replace(/0d/, '')
                     : String(operation.definitions[key])}
                 </Typography>
               </li>)}

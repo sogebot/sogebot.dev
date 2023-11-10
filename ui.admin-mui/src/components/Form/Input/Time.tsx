@@ -4,14 +4,16 @@ import React, { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect
 import { DAY, HOUR, MINUTE, SECOND } from '../../../constants';
 
 export const FormInputTime: React.FC<{
-  label?:    string,
-  disabled?: boolean,
-  sx?:       SxProps<Theme>,
-  variant?:  'filled' | 'outlined' | 'standard',
+  label?:      string,
+  disabled?:   boolean,
+  fullWidth?:  boolean,
+  helperText?: string,
+  sx?:         SxProps<Theme>,
+  variant?:    'filled' | 'outlined' | 'standard',
   value?: number, onChange?: (value: number) => void,
   InputProps?: TextFieldProps['InputProps']
 }> = ({
-  label, disabled, sx, variant, value, onChange, InputProps,
+  label, disabled, sx, variant, value, onChange, InputProps, fullWidth, helperText
 }) => {
   const [propsValue, setPropsValue] = useState(value || 0);
 
@@ -83,6 +85,8 @@ export const FormInputTime: React.FC<{
   return (
     <TextField
       sx={sx}
+      fullWidth={fullWidth}
+      helperText={helperText}
       disabled={disabled}
       variant={variant}
       label={label}

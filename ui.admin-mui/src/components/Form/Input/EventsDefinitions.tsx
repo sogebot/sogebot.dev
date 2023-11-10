@@ -1,14 +1,18 @@
-import { Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
+import { Checkbox, FormControl, FormControlLabel, FormGroup, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import React from 'react';
 
+import { FormInputAdornmentCustomVariable } from './Adornment/CustomVariables';
 import { FormNumericInput } from './Numeric';
+import { FormOBSWebsocketSelect } from './OBSWebsocketSelect';
 import { FormRewardInput } from './Reward';
+import { FormInputTime } from './Time';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
-  attribute: string,
-  value:     any,
-  onChange:  (value: any) => void;
+  attribute:            string,
+  value:                any,
+  additionalVariables?: string[],
+  onChange:             (value: any) => void;
 };
 
 const EventsDefinitions: React.FC<Props> = (props) => {
@@ -23,16 +27,38 @@ const EventsDefinitions: React.FC<Props> = (props) => {
 
     {props.attribute === 'rewardId' && <FormRewardInput
       value={String(props.value)}
-      onChange={value => props.onChange(value)}/>}
-
-    {typeof props.value === 'string' && <TextField
+      onChange={value => props.onChange(value.id)}/>
+    || props.attribute === 'taskId' && <FormOBSWebsocketSelect value={String(props.value)}
+      onChange={value => props.onChange(value.id)}/>
+    || props.attribute === 'timeoutType' && <FormControl variant="filled" fullWidth>
+      <InputLabel id="demo-simple-select-standard-label">{translate(`events.definitions.${props.attribute}.label`)}</InputLabel>
+      <Select
+        label={translate(`events.definitions.${props.attribute}.label`)}
+        value={props.value} onChange={ev => props.onChange(ev.target.value)}>
+        <MenuItem value='normal'>Trigger command after every event</MenuItem>
+        <MenuItem value='add'>Add timeout to previous event</MenuItem>
+        <MenuItem value='reset'>Reset timeout</MenuItem>
+      </Select>
+    </FormControl>
+    || props.attribute === 'timeout' && <FormInputTime
+      fullWidth
+      value={props.value}
+      label={translate(`events.definitions.${props.attribute}.label`)}
+      helperText={translate(`events.definitions.${props.attribute}.placeholder`)}
+      onChange={val => props.onChange(val)}/>
+    || typeof props.value === 'string' && <TextField
       fullWidth
       label={translate(`events.definitions.${props.attribute}.label`)}
       helperText={translate(`events.definitions.${props.attribute}.placeholder`)}
       value={props.value}
-      onChange={ev => props.onChange(ev.currentTarget.value)}/>}
-
-    {typeof props.value === 'number' && <FormNumericInput
+      onChange={ev => props.onChange(ev.currentTarget.value)}
+      InputProps={['commandToRun', 'messageToSend'].includes(props.attribute) && {
+        endAdornment: <InputAdornment position="end">
+          <FormInputAdornmentCustomVariable additionalVariables={props.additionalVariables} onSelect={filter =>
+            props.onChange(props.value + filter)}/>
+        </InputAdornment>,
+      } || undefined}/>
+    || typeof props.value === 'number' && <FormNumericInput
       fullWidth
       min={0}
       label={translate(`events.definitions.${props.attribute}.label`)}
