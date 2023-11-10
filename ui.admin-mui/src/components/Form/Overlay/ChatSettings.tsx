@@ -47,7 +47,6 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const moveNicoNico = React.useCallback((elementId: string) => {
     const element = document.getElementById(`nico-${elementId}`);
     if (element) {
-      console.log({ element });
       gsap.to(element, {
         ease:       'none',
         left:       '-100%',
@@ -83,7 +82,6 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       userName,
       displayName: Math.random() <= 0.5 ? userName : jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase(),
       message,
-      show:        true,
       badges:      Math.random() <= 0.3 ? [{ url: 'https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3' }, { url: 'https://static-cdn.jtvnw.net/badges/v1/fc46b10c-5b45-43fd-81ad-d5cb0de6d2f4/3' }] : [],
     }));
 

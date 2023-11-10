@@ -1,4 +1,4 @@
-import { Box, Fade, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
@@ -117,10 +117,10 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
     });
   }, [ item, dispatch ]);
 
+  const [timestamp, setTimestamp] = React.useState(Date.now());
   useIntervalWhen(() => {
-    if (item.type !== 'niconico') {
-      dispatch(cleanMessages(item.hideMessageAfter));
-    }
+    setTimestamp(Date.now());
+    dispatch(cleanMessages(item.hideMessageAfter));
   }, 1000, true, true);
 
   const orderedMessages = React.useMemo(() => {
@@ -168,7 +168,9 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
           if (!message) {
             return;
           }
-          if (message.show && !toHide.includes(el.id)) {
+
+          const shouldShow = message.timestamp + item.hideMessageAfter > timestamp;
+          if (shouldShow && !toHide.includes(el.id)) {
             el.style.opacity = '1';
           } else {
             el.style.opacity = '0';
@@ -178,7 +180,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
         Array.from<HTMLElement>(elements as any).forEach(el => el.style.opacity = '1');
       }
     }), 10;
-  }, [ messages, item.reverseOrder, height ]);
+  }, [ messages, item.reverseOrder, height, timestamp ]);
 
   React.useEffect(() => {
     loadFont(item.font.family);
@@ -211,47 +213,45 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
     <Box sx={{
       width: '100%', height: '100%', overflow: 'hidden', position: 'relative', textTransform: 'none !important',
     }}>
-      {item.type === 'niconico' && messages.map(message => <Fade in={message.show} key={message.timestamp} mountOnEnter unmountOnExit>
-        <Box
-          id={`nico-${message.id}`}
-          sx={{
-            position:           'absolute',
-            width:              'max-content',
-            color:              item.font.color,
-            fontFamily:         item.font.family,
-            fontWeight:         item.font.weight,
-            top:                `${Math.max(1, (posY[message.id] || 0))}%`,
-            fontSize:           (Math.max(16, item.font.size + (fontSize[message.id] || 0))) + 'px',
-            textShadow:         [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
-            lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
-            marginLeft:         '100%',
-            left:               0,
-            '.simpleChatImage': {
-              position:    'relative',
-              display:     'inline-block',
-              width:       `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
-              marginRight: '1px',
-              marginLeft:  '1px',
-            },
-            '.simpleChatImage .emote': {
-              width:     `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
-              height:    `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
-              position:  'absolute',
-              objectFit: 'contain',
-              overflow:  'visible',
-              top:       0,
-              bottom:    0,
-              margin:    'auto',
-              transform: 'translateY(-30%)',
-            },
-          }}
-        >
-          {item.showTimestamp && new Date(message.timestamp).toLocaleTimeString('default', {
-            hour: '2-digit', minute: '2-digit',
-          })}{' '}
-          { HTMLReactParser(message.message) }
-        </Box>
-      </Fade>)
+      {item.type === 'niconico' && messages.map(message => <Box
+        id={`nico-${message.id}`}
+        sx={{
+          position:           'absolute',
+          width:              'max-content',
+          color:              item.font.color,
+          fontFamily:         item.font.family,
+          fontWeight:         item.font.weight,
+          top:                `${Math.max(1, (posY[message.id] || 0))}%`,
+          fontSize:           (Math.max(16, item.font.size + (fontSize[message.id] || 0))) + 'px',
+          textShadow:         [textStrokeGenerator(item.font.borderPx, item.font.borderColor), shadowGenerator(item.font.shadow)].filter(Boolean).join(', '),
+          lineHeight:         `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
+          marginLeft:         '100%',
+          left:               0,
+          '.simpleChatImage': {
+            position:    'relative',
+            display:     'inline-block',
+            width:       `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
+            marginRight: '1px',
+            marginLeft:  '1px',
+          },
+          '.simpleChatImage .emote': {
+            width:     `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
+            height:    `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
+            position:  'absolute',
+            objectFit: 'contain',
+            overflow:  'visible',
+            top:       0,
+            bottom:    0,
+            margin:    'auto',
+            transform: 'translateY(-30%)',
+          },
+        }}
+      >
+        {item.showTimestamp && new Date(message.timestamp).toLocaleTimeString('default', {
+          hour: '2-digit', minute: '2-digit',
+        })}{' '}
+        { HTMLReactParser(message.message) }
+      </Box>)
       }
 
       {item.type !== 'niconico' && <Box sx={{
@@ -270,7 +270,6 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
           .map(message => <Box className="message" id={message.id} key={message.id} sx={{
             transition: 'all 0.5s ease-in-out',
             opacity:    0,
-            // opacity:    message.show && !hideMessagesByBoundaries.includes(message.id) ? 1 : 0,
             p:          `${item.messagePadding}px`,
             mt:         item.type === 'vertical' && !item.reverseOrder
               ? item.useCustomSpaceBetweenMessages ? `${item.customSpaceBetweenMessages}px` : 0

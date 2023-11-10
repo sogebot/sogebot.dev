@@ -17,7 +17,7 @@ interface OverlayState {
     uptime:      string,
   },
   chat: {
-    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, show: boolean, color?: string, badges: { url: string }[] }[],
+    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, color?: string, badges: { url: string }[] }[],
     posY:     Record<string,number>,
     fontSize: Record<string,number>,
   }
@@ -62,16 +62,17 @@ export const overlaySlice = createSlice({
       state.stats = action.payload;
     },
     cleanMessages: (state, action: PayloadAction<number>) => {
-      state.chat.messages.filter(msg => !msg.show).forEach(msg => {
+      const messagesToHide = state.chat.messages.filter(msg => msg.timestamp + action.payload < Date.now());
+      messagesToHide.forEach(msg => {
         delete state.chat.posY[msg.id];
         delete state.chat.fontSize[msg.id];
       });
-      // check if message should be hidden
-      state.chat.messages = [...state.chat.messages.map(msg => ({
-        ...msg, show: msg.timestamp + action.payload > Date.now(),
-      }))];
-      // clear messages 10 seconds after hide
-      state.chat.messages = [...state.chat.messages.filter(msg => msg.timestamp + action.payload + 10000 > Date.now())];
+
+      const messagesToClean = state.chat.messages.filter(msg => msg.timestamp + action.payload + 10000 < Date.now());
+      while (messagesToClean.length > 0) {
+        messagesToClean.pop();
+        state.chat.messages.shift();
+      }
     },
     chatAddMessage: (state, action: PayloadAction<OverlayState['chat']['messages'][number]>) => {
       state.chat.messages.push(action.payload);
@@ -87,7 +88,7 @@ export const overlaySlice = createSlice({
       for (const msg of state.chat.messages.filter(o => o.userName === action.payload)) {
         delete state.chat.posY[msg.id];
         delete state.chat.fontSize[msg.id];
-        msg.show = false;
+        msg.timestamp = 0;
       }
       state.chat.messages = state.chat.messages.filter(o => o.id !== action.payload);
     },
