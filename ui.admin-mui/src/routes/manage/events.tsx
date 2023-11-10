@@ -140,7 +140,7 @@ const PageManageEvents = () => {
                     ? operation.definitions[key] === 0
                       ? 'immediate'
                       : dayjs.duration(Number(operation.definitions[key]) * 1000).format('HH:mm:ss').replace('00:0', '').replace('00:', '')
-                    : operation.definitions[key]}
+                    : String(operation.definitions[key])}
                 </Typography>
               </li>)}
             </ul>}
@@ -352,7 +352,7 @@ const PageManageEvents = () => {
       <Dialog
         open={open}
         fullWidth
-        maxWidth='md'>
+        maxWidth='xl'>
         {open && <EventsEdit/>}
       </Dialog>
     </>

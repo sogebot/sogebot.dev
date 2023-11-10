@@ -21,13 +21,9 @@ export default function DevelopmentAlert() {
         <ul>
           <li>New{' '}
             <Link href={`/registry/overlays?server=${JSON.parse(localStorage.server)}`}>
-              <strong>Alerts</strong> system
+              <strong>Events</strong> system
             </Link>
-            {' '}which should replace Alerts registry.</li>
-        </ul>
-        <Typography sx={{ pt: 2 }}><strong>Missing features:</strong></Typography>
-        <ul>
-          <li>Events</li>
+            {' '}which is partially done, some work is needed on operation inputs.</li>
         </ul>
         <Typography sx={{ pt: 2 }}>Happy testing!</Typography>
 
