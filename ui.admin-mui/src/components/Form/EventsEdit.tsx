@@ -22,7 +22,7 @@ const newEvent: EventInterface = {
   definitions: {},
   filter:      '',
   isEnabled:   true,
-  name:        '',
+  name:        'clearchat',
   operations:  [],
   triggered:   false,
 };
@@ -63,10 +63,10 @@ export const EventsEdit: React.FC = () => {
   }, [ item?.name, previousItemName ]);
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      Promise.all([
-        new Promise<void>(resolve => {
+    setLoading(true);
+    Promise.all([
+      new Promise<void>(resolve => {
+        if (id) {
           getSocket('/core/events').emit('generic::getOne', id, (err, res) => {
             if (err) {
               console.error(err);
@@ -76,71 +76,72 @@ export const EventsEdit: React.FC = () => {
             }
             resolve();
           });
-        }),
-        new Promise<void>(resolve => {
-          getSocket('/core/events').emit('list.supported.operations', (err, data: Events.SupportedOperation[]) => {
-            if (err) {
-              console.error(err);
-            } else {
-              setAvailableOperations(data.sort((a, b) => {
-                const A = translate(a.id).toLowerCase();
-                const B = translate(b.id).toLowerCase();
-                if (A < B) { // sort string ascending
-                  return -1;
-                }
-                if (A > B) {
-                  return 1;
-                }
-                return 0; // default return value (no sorting)
-              }));
-            }
-            resolve();
+        } else {
+          setItem({
+            ...cloneDeep(newEvent),
+            id: v4(),
           });
-        }),
-        new Promise<void>(resolve => {
-          getSocket('/core/events').emit('list.supported.events', (err, data: Events.SupportedEvent[]) => {
-            if (err) {
-              console.error(err);
-            } else {
-              for (const d of data) {
-              // sort variables
-                if (d.variables) {
-                  d.variables = d.variables.sort((A, B) => {
-                    if (A < B) { // sort string ascending
-                      return -1;
-                    }
-                    if (A > B) {
-                      return 1;
-                    }
-                    return 0; // default return value (no sorting)
-                  });
-                } else {
-                  d.variables = [];
-                }
+          resolve();
+        }
+      }),
+      new Promise<void>(resolve => {
+        getSocket('/core/events').emit('list.supported.operations', (err, data: Events.SupportedOperation[]) => {
+          if (err) {
+            console.error(err);
+          } else {
+            setAvailableOperations(data.sort((a, b) => {
+              const A = translate(a.id).toLowerCase();
+              const B = translate(b.id).toLowerCase();
+              if (A < B) { // sort string ascending
+                return -1;
               }
-              setAvailableEvents(data.sort((a, b) => {
-                const A = translate(a.id).toLowerCase();
-                const B = translate(b.id).toLowerCase();
-                if (A < B) { // sort string ascending
-                  return -1;
-                }
-                if (A > B) {
-                  return 1;
-                }
-                return 0; // default return value (no sorting)
-              }));
+              if (A > B) {
+                return 1;
+              }
+              return 0; // default return value (no sorting)
+            }));
+          }
+          resolve();
+        });
+      }),
+      new Promise<void>(resolve => {
+        getSocket('/core/events').emit('list.supported.events', (err, data: Events.SupportedEvent[]) => {
+          console.log({ data, err });
+          if (err) {
+            console.error(err);
+          } else {
+            for (const d of data) {
+              // sort variables
+              if (d.variables) {
+                d.variables = d.variables.sort((A, B) => {
+                  if (A < B) { // sort string ascending
+                    return -1;
+                  }
+                  if (A > B) {
+                    return 1;
+                  }
+                  return 0; // default return value (no sorting)
+                });
+              } else {
+                d.variables = [];
+              }
             }
-            resolve();
-          });
-        }),
-      ]).finally(() => setLoading(false));
-    } else {
-      setItem({
-        ...cloneDeep(newEvent),
-        id: v4(),
-      });
-      setLoading(false);
-    }
+            setAvailableEvents(data.sort((a, b) => {
+              const A = translate(a.id).toLowerCase();
+              const B = translate(b.id).toLowerCase();
+              if (A < B) { // sort string ascending
+                return -1;
+              }
+              if (A > B) {
+                return 1;
+              }
+              return 0; // default return value (no sorting)
+            }));
+          }
+          resolve();
+        });
+      }),
+    ]).finally(() => setLoading(false));
     reset();
   }, [id, reset]);
 
