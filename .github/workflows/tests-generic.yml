@@ -1,4 +1,4 @@
-name: Generic tests
+name: Backend - tests - generic
 
 concurrency:
   group: generic-${{ github.head_ref || github.ref }}
@@ -30,7 +30,7 @@ jobs:
         check-latest: true
     - name: Install eslint and dependencies
       run: |
-        NODE_MODULES_DIR=./node_modules make dependencies
+        make dependencies
     - name: Run eslint
       run: ENV=development make eslint
     - name: Run jsonlint
@@ -53,4 +53,4 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build everything
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make
+      run: ENV=development make

@@ -1,5 +1,5 @@
 import {exec, spawn } from 'child_process'
-
+import path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,6 +9,7 @@ async function test() {
   await new Promise((resolve, reject) => {
     try {
       exec('npx typeorm migration:run -d dest/database.js', {
+        cwd: path.join(process.cwd(), 'backend'),
         env: {
           ...process.env,
           'TYPEORM_ENTITIES':   'dest/database/entity/*.js',
@@ -30,6 +31,7 @@ async function test() {
   });
 
   const out2 = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', 'typeorm migration:generate -d dest/database.js --ch ./'.split(' '), {
+    cwd: path.join(process.cwd(), 'backend'),
     env: {
       ...process.env,
       'TYPEORM_ENTITIES':   'dest/database/entity/*.js',

@@ -1,4 +1,4 @@
-name: sogeBot Dashboard UI
+name: Docker|frontend - master
 
 concurrency:
   group: sogebot-dashboard-${{ github.head_ref || github.ref }}

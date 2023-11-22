@@ -1,4 +1,4 @@
-name: MySQL/MariaDB tests
+name: Backend - tests - MySQL/MariaDB
 
 concurrency:
   group: mysql-${{ github.head_ref || github.ref }}
@@ -40,7 +40,7 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: npm run test:config:mysql
@@ -76,7 +76,7 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: npm run test:config:mysql
@@ -118,7 +118,7 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: npm run test:config:mysql
@@ -160,7 +160,7 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: npm run test:config:mysql
@@ -171,5 +171,5 @@ jobs:
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        name: codecov-postgres # optional
-        flags: postgres
+        name: codecov-mysql # optional
+        flags: mysql

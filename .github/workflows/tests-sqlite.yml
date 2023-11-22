@@ -1,7 +1,7 @@
-name: PostgreSQL tests
+name: Backend - tests - SQLite
 
 concurrency:
-  group: postgres-${{ github.head_ref || github.ref }}
+  group: sqlite-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 on:
@@ -12,16 +12,7 @@ on:
 
 jobs:
   migration:
-    name: PostgreSQL tests - migration
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: sogebot
-        ports:
-          - 5432:5432
+    name: SQLite tests - migration
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -38,24 +29,15 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: npm run test:config:postgres
+      run: npm run test:config:sqlite
     - name: Run migration test
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: npm run test:migration
-  postgres:
-    name: PostgreSQL tests - part 1
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: sogebot
-        ports:
-          - 5432:5432
+  sqlite:
+    name: SQLite tests - part 1
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -72,10 +54,10 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: npm run test:config:postgres
+      run: npm run test:config:sqlite
     - name: Run mocha
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: TESTS=@func1 npm test
@@ -83,19 +65,10 @@ jobs:
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        name: codecov-postgres # optional
-        flags: postgres
-  postgres2:
-    name: PostgreSQL tests - part 2
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: sogebot
-        ports:
-          - 5432:5432
+        name: codecov-sqlite # optional
+        flags: sqlite
+  sqlite2:
+    name: SQLite tests - part 2
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -112,10 +85,10 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: npm run test:config:postgres
+      run: npm run test:config:sqlite
     - name: Run mocha
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: TESTS=@func2 npm test
@@ -123,19 +96,10 @@ jobs:
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        name: codecov-postgres # optional
-        flags: postgres
-  postgres3:
-    name: PostgreSQL tests - part 3
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: sogebot
-        ports:
-          - 5432:5432
+        name: codecov-sqlite # optional
+        flags: sqlite
+  sqlite3:
+    name: SQLite tests - part 3
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -152,10 +116,10 @@ jobs:
         check-latest: true
     - name: Install all dependencies and build just a bot
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: ENV=development NODE_MODULES_DIR=./node_modules make info clean dependencies bot
+      run: ENV=development make info clean dependencies bot
     - name: Set proper db to use
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
-      run: npm run test:config:postgres
+      run: npm run test:config:sqlite
     - name: Run mocha
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       run: TESTS=@func3 npm test
@@ -163,5 +127,5 @@ jobs:
       if: "!contains(steps.log.outputs.MESSAGE, '[skip-tests]')"
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        name: codecov-postgres # optional
-        flags: postgres
+        name: codecov-sqlite # optional
+        flags: sqlite

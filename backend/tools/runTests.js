@@ -3,6 +3,7 @@ dotenv.config();
 
 import child_process from 'child_process'
 import fs from 'fs'
+import path from 'path'
 
 let status = 0;
 async function retest() {
@@ -36,7 +37,7 @@ async function retest() {
           '--fgrep="' + suite + '"',
           '--recursive',
           'test/',
-        ], { shell: true, env: process.env });
+        ], { shell: true, env: process.env, cwd: path.join(process.cwd(), 'backend') });
 
         let output = '';
         p.stdout.on('data', (data) => {
@@ -102,7 +103,7 @@ async function test() {
         '--exit',
         '--recursive',
         'test/',
-      ], { shell: true, env: process.env });
+      ], { shell: true, env: process.env, cwd: path.join(process.cwd(), 'backend') });
     } else {
       // run all default behavior
       p = child_process.spawn('npx', [
@@ -115,7 +116,7 @@ async function test() {
         '--exit',
         '--recursive',
         'test/',
-      ], { shell: true, env: process.env });
+      ], { shell: true, env: process.env, cwd: path.join(process.cwd(), 'backend') });
     }
 
     const report = fs.createWriteStream('report');

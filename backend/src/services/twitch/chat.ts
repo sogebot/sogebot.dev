@@ -361,7 +361,7 @@ class Chat {
           id:                 msg.id,
           emotesOffsets:      msg.emoteOffsets,
           isAction:           false,
-          isFirstTimeMessage: msg.tags.get('first-msg') === '1',
+          isFirstTimeMessage: msg.isFirst,
           isHighlight:        msg.isHighlight,
         }).then(() => {
           linesParsedIncrement();

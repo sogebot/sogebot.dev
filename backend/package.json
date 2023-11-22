@@ -83,7 +83,6 @@
     "trigram-similarity": "^1.0.7",
     "typeorm": "0.3.17",
     "typescript": "5.2.2",
-    "custompatch": "^1.0.23",
     "url-join": "5.0.0",
     "uuid": "9.0.1",
     "velocity-animate": "1.5.2",
@@ -98,11 +97,6 @@
   "scripts": {
     "postinstall": "(custompatch || (exit 0))",
     "build": "cross-env ENV=development make bot",
-    "test": "node tools/runTests.js",
-    "test:migration": "node tools/migrationCheck.js",
-    "test:config:mysql": "cp src/data/.env.mysql .env",
-    "test:config:postgres": "cp src/data/.env.postgres .env",
-    "test:config:sqlite": "cp src/data/.env.sqlite .env",
     "start": "cross-env NODE_ENV=production node --experimental-report --report-on-fatalerror --report-directory=./logs/ --optimize_for_size --gc_interval=100 -r source-map-support/register  ./dest/main",
     "debug": "cross-env NODE_ENV=development node --inspect --experimental-report --report-on-fatalerror --report-directory=./logs/ --trace-warnings --optimize_for_size --gc_interval=100 -r source-map-support/register --inspect=0.0.0.0:9229 --nolazy ./dest/main",
     "gc": "cross-env NODE_ENV=development node --inspect --experimental-report --report-on-fatalerror --report-directory=./logs/ --trace-warnings --trace_gc --trace_gc_verbose --optimize_for_size --gc_interval=100 -r source-map-support/register --inspect=0.0.0.0:9229 --nolazy ./dest/main"
@@ -160,8 +154,6 @@
     "eslint-plugin-require-extensions": "^0.1.3",
     "git-semver-tags": "7.0.1",
     "husky": "^8.0.3",
-    "jsonlint-mod": "1.7.6",
-    "lint-staged": "15.0.2",
     "minimist": "1.2.8",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
@@ -172,16 +164,5 @@
     "tsconfig-paths": "^4.2.0",
     "url-regex": "5.0.0",
     "util": "0.12.5"
-  },
-  "lint-staged": {
-    "*.js": [
-      "npx eslint --fix --quiet"
-    ],
-    "*.ts": [
-      "npx eslint --fix --quiet"
-    ],
-    "*.json": [
-      "npx jsonlint"
-    ]
   }
 }

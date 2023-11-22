@@ -1,4 +1,4 @@
-name: Pull Request
+name: Docker|backend - PR
 
 concurrency:
   group: pr-${{ github.head_ref || github.ref }}
