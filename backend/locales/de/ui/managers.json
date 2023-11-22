@@ -1,0 +1,8 @@
+{
+  "viewers": {
+    "eventHistory": "Benutzerereignis Verlauf",
+    "hostAndRaidViewersCount": "Zuschauer: $value",
+    "receivedSubscribeFrom": "Sub von <strong>$value</strong> erhalten",
+    "giftedSubscribeTo": "Geschenkter Sub von <strong>$value</strong> erhalten"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "responsiveVoiceKeyNotSet": "Вы не правильно установили <a href='#/settings/integrations/responsivevoice'>ключ ResponsiveVoice</a>",
+    "voice": {
+      "title": "Голос",
+      "help": "Если голоса не загружаются после обновления ключа ResponsiveVoice, попробуйте обновить браузер"
+    },
+    "volume": "Громкость",
+    "rate": "Темп",
+    "pitch": "Высота",
+    "triggerTTSByHighlightedMessage": "Озвучивать выделенные сообщения"
+  }
+}

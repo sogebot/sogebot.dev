@@ -1,0 +1,12 @@
+{
+  "no-responses-set": "Bez odpovědí",
+  "addResponse": "Nová odpověď",
+  "response": {
+    "name": "Odpověď",
+    "placeholder": "Nastavte odpověď bota zde."
+  },
+  "filter": {
+    "name": "filtr",
+    "placeholder": "Přidat filtr k této odpovědi"
+  }
+}

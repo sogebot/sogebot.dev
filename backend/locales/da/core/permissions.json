@@ -1,0 +1,8 @@
+{
+  "list": "Liste over tilladelser:",
+  "excludeAddSuccessful": "$sender, du tilføjede $username til 'udelukke-listen' for tilladelse $permissionName",
+  "excludeRmSuccessful": "$sender, du fjernede $username fra 'udelukke-listen' for tilladelse $permissionName",
+  "userNotFound": "$sender, bruger $username blev ikke fundet i databasen.",
+  "permissionNotFound": "$sender, tilladelse $userlevel blev ikke fundet i databasen.",
+  "cannotIgnoreForCorePermission": "$sender, du kan ikke manuelt udelukke bruger fra kerne-tilladelse $userlevel"
+}

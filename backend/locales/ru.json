@@ -1,0 +1,1206 @@
+{
+  "core": {
+    "loaded": "загружено и",
+    "enabled": "включено",
+    "disabled": "выключено",
+    "usage": "Использование",
+    "lang-selected": "Язык бота в настоящее время установлен на русский",
+    "refresh-panel": "Вам нужно обновить пользовательский интерфейс, чтобы увидеть изменения.",
+    "command-parse": "Извините, $sender, но эта команда не верна, используйте",
+    "error": "Извините, $sender, но что-то пошло не так!",
+    "no-response": "",
+    "no-response-bool": {
+      "true": "",
+      "false": ""
+    },
+    "api": {
+      "error": "$sender, API ответил неправильно!",
+      "not-available": "недоступно"
+    },
+    "percentage": {
+      "true": "",
+      "false": ""
+    },
+    "years": "год|4:года|лет",
+    "months": "месяц|4:месяца|месяцев",
+    "days": "день|4:дня|дней",
+    "hours": "час|4:часа|часов",
+    "minutes": "минута|4:минуты|минут",
+    "seconds": "секунда|4:секунды|секунд",
+    "messages": "сообщение|4:сообщения|сообщений",
+    "bits": "бит|битсов",
+    "links": "ссылка|ссылки",
+    "entries": "запись|записи",
+    "empty": "пусто",
+    "isRegistered": "$sender, вы не можете использовать !$keyword, потому что уже используется для другого действия!"
+  },
+  "clip": {
+    "notCreated": "Что-то пошло не так и клип не был создан.",
+    "offline": "Поток в настоящее время оффлайн и клип не может быть создан."
+  },
+  "uptime": {
+    "online": "Стрим идёт (if $days>0|$daysд )(if $hours>0|$hoursч )(if $minutes>0|$minutesм )(if $seconds>0|$secondsс)",
+    "offline": "Стрим оффлайн (if $days>0|$daysд )(if $hours>0|$hoursч )(if $minutes>0|$minutesм )(if $seconds>0|$secondsс)"
+  },
+  "webpanel": {
+    "this-system-is-disabled": "Эта система отключена",
+    "or": "or",
+    "loading": "Загрузка",
+    "this-may-take-a-while": "Это <strong>может</strong> занять некоторое время",
+    "display-as": "Отображать как",
+    "go-to-admin": "Перейти к администратору",
+    "go-to-public": "Перейти к публичному",
+    "logout": "Выйти",
+    "popout": "Открыть в новом окне",
+    "not-logged-in": "Вход не выполнен",
+    "remove-widget": "Удалить <strong>$name</strong> виджет",
+    "join-channel": "Присоединиться к боту на канал",
+    "leave-channel": "Покинуть бота из канала",
+    "set-default": "Установить по умолчанию",
+    "add": "Добавить",
+    "placeholders": {
+      "text-url-generator": "Вставьте свой текст или html для создания base64 ниже и URL выше",
+      "text-decode-base64": "Вставьте свой base64 для создания URL и текста выше",
+      "creditsSpeed": "Установите скорость прокрутки, меньше = быстрее"
+    },
+    "timers": {
+      "title": "Таймеры",
+      "timer": "Таймер",
+      "messages": "сообщения",
+      "seconds": "секунды",
+      "badges": {
+        "enabled": "Включено",
+        "disabled": "Выключено"
+      },
+      "errors": {
+        "timer_name_must_be_compliant": "Значение может содержать только a-zA-Z09_",
+        "this_value_must_be_a_positive_number_or_0": "Значение должно быть положительным числом",
+        "value_cannot_be_empty": "Значение не может быть пустым"
+      },
+      "dialog": {
+        "timer": "Таймер",
+        "name": "Название",
+        "tickOffline": "Отметить если трансляция оффлайн",
+        "interval": "Интервал",
+        "responses": "Ответы",
+        "messages": "Срабатывать каждое X сообщение",
+        "seconds": "Срабатывать каждую X секунду",
+        "title": {
+          "new": "Новый таймер",
+          "edit": "Изменить таймер"
+        },
+        "placeholders": {
+          "name": "Установка имени вашего таймера. Может содержать только a-zA-Z0-9_ символы",
+          "messages": "Срабатывать каждое X сообщение",
+          "seconds": "Срабатывать каждую X секунду"
+        },
+        "alerts": {
+          "success": "Таймер был <strong>успешно</strong> сохранен.",
+          "fail": "Что-то пошло <strong>не так</strong>."
+        }
+      },
+      "buttons": {
+        "close": "Закрыть",
+        "save-changes": "Сохранить изменения",
+        "disable": "Выключить",
+        "enable": "Включить",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "yes": "Да",
+        "no": "Нет"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_timer": "Вы уверены, что хотите <strong class='text-danger'>удалить</strong> таймер"
+      }
+    },
+    "events": {
+      "event": "Событие",
+      "noEvents": "События не найдены в базе данных.",
+      "whatsthis": "что это?",
+      "myRewardIsNotListed": "Моя награда не указанна!",
+      "redeemAndClickRefreshToSeeReward": "Если в списке отсутствует созданная награда, обновите, нажав на значок обновления.",
+      "badges": {
+        "enabled": "Включено",
+        "disabled": "Выключено"
+      },
+      "buttons": {
+        "test": "Тест",
+        "enable": "Включить",
+        "disable": "Выключить",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "yes": "Да",
+        "no": "Нет"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_event": "Вы уверены, что хотите <strong class='text-danger'>удалить</strong> событие",
+        "example_of_user_object_data": "Пример данных объекта пользователя"
+      },
+      "errors": {
+        "command_must_start_with_!": "Команда должна начинаться с !",
+        "this_value_must_be_a_positive_number_or_0": "Значение должно быть положительным числом или 0",
+        "value_cannot_be_empty": "Значение не может быть пустым"
+      },
+      "dialog": {
+        "title": {
+          "new": "Новый обработчик событий",
+          "edit": "Редактировать обработчик событий"
+        },
+        "placeholders": {
+          "name": "Установка имени обработчика событий (если пусто, имя будет сгенерировано)"
+        },
+        "alerts": {
+          "success": "Таймер был <strong>успешно</strong> сохранен.",
+          "fail": "Что-то пошло <strong>не так</strong>."
+        },
+        "close": "Закрыть",
+        "save-changes": "Сохранить изменения",
+        "event": "Событие",
+        "name": "Название",
+        "usable-events-variables": "Доступные переменные событий",
+        "settings": "Параметры",
+        "filters": "Фильтры",
+        "operations": "Операции"
+      },
+      "definitions": {
+        "taskId": {
+          "label": "ID задачи"
+        },
+        "filter": {
+          "label": "Фильтр"
+        },
+        "linkFilter": {
+          "label": "Link Overlay Filter",
+          "placeholder": "При использовании наложения, добавить ссылку или идентификатор наложения"
+        },
+        "hashtag": {
+          "label": "Хэштег или Ключевое слово",
+          "placeholder": "#yourHashtagHere или Ключевое слово"
+        },
+        "fadeOutXCommands": {
+          "label": "Затухание X команд",
+          "placeholder": "Количество команд, отнимающих каждый интервал затухания"
+        },
+        "fadeOutXKeywords": {
+          "label": "Затухание X ключевых слов",
+          "placeholder": "Количество ключевых слов, отнимающих каждый интервал затухания"
+        },
+        "fadeOutInterval": {
+          "label": "Интервал затухания (секунд)",
+          "placeholder": "Вычитание от интервала затухания"
+        },
+        "runEveryXCommands": {
+          "label": "Запускать каждые X команду",
+          "placeholder": "Количество команд перед выполнением события"
+        },
+        "runEveryXKeywords": {
+          "label": "Запускать каждые X ключевых слов",
+          "placeholder": "Количество ключевых слов перед срабатыванием события"
+        },
+        "commandToWatch": {
+          "label": "Команда для наблюдения",
+          "placeholder": "Установите вашу !commandToWatch"
+        },
+        "keywordToWatch": {
+          "label": "Ключевое слово для наблюдения",
+          "placeholder": "Установите ваше ключевое слово для отслеживания"
+        },
+        "resetCountEachMessage": {
+          "label": "Сбросить счетчик каждое Х сообщение",
+          "true": "Сбросить счетчик",
+          "false": "Продолжить подсчет"
+        },
+        "viewersAtLeast": {
+          "label": "Зрители минимум",
+          "placeholder": "Сколько зрителей минимально для запуска события"
+        },
+        "runInterval": {
+          "label": "Интервал запуска (0 = запуск один раз за стрим)",
+          "placeholder": "Срабатывание ивента каждую X секунду"
+        },
+        "runAfterXMinutes": {
+          "label": "Запустить через X минут",
+          "placeholder": "Срабатывание ивента через Х минут"
+        },
+        "runEveryXMinutes": {
+          "label": "Запускать каждые X минут",
+          "placeholder": "Срабатывание ивента каждую X минуту"
+        },
+        "messageToSend": {
+          "label": "Сообщение для отправки",
+          "placeholder": "Установите ваше сообщение"
+        },
+        "channel": {
+          "label": "Канал",
+          "placeholder": "Название или ID канала"
+        },
+        "timeout": {
+          "label": "Timeout",
+          "placeholder": "Set timeout in milliseconds"
+        },
+        "timeoutType": {
+          "label": "Type of timeout",
+          "placeholder": "Set type of timeout"
+        },
+        "command": {
+          "label": "Command",
+          "placeholder": "Set your !command"
+        },
+        "commandToRun": {
+          "label": "Команда для запуска",
+          "placeholder": "Установите вашу !commandToRun"
+        },
+        "isCommandQuiet": {
+          "label": "Отключить вывод команды"
+        },
+        "urlOfSoundFile": {
+          "label": "Ссылка на звуковой файл",
+          "placeholder": "http://www.pathToYour.url/where/is/file.mp3"
+        },
+        "emotesToExplode": {
+          "label": "Смайлики для взрыва",
+          "placeholder": "Список смайлов для взрыва, например, Kappa PurpleHeart"
+        },
+        "emotesToFirework": {
+          "label": "Смайлы для фейерверка",
+          "placeholder": "Список смайлов для фейерверка, например, Kappa PurpleHeart"
+        },
+        "replay": {
+          "label": "Повторить клип в наслоении",
+          "true": "Воспроизвести повтор в наслоениях/оповещениях",
+          "false": "Повтор не будет воспроизводиться"
+        },
+        "announce": {
+          "label": "Объявить в чате",
+          "true": "Будет объявлено",
+          "false": "Не будет объявлено"
+        },
+        "hasDelay": {
+          "label": "Клип должен иметь небольшую задержку (чтобы быть ближе к тому, что видит зритель)",
+          "true": "Будет задержка",
+          "false": "Не будет задержки"
+        },
+        "durationOfCommercial": {
+          "label": "Продолжительность рекламы",
+          "placeholder": "Доступные длительности - 30, 60, 90, 120, 150, 180"
+        },
+        "customVariable": {
+          "label": "$_",
+          "placeholder": "Переменная для обновления"
+        },
+        "numberToIncrement": {
+          "label": "Число для увеличения",
+          "placeholder": ""
+        },
+        "value": {
+          "label": "Значение",
+          "placeholder": ""
+        },
+        "numberToDecrement": {
+          "label": "Число для уменьшения",
+          "placeholder": ""
+        },
+        "": "",
+        "reward": {
+          "label": "Награда",
+          "placeholder": ""
+        }
+      }
+    },
+    "eventlist-events": {
+      "follow": "<strong>Followed</strong> you",
+      "raid": "<strong>Raided</strong> you with <strong>$viewers</strong> raiders.",
+      "sub": "<strong>Subscribed</strong> to you with <strong>$subType</strong>. They've been subscribed for $subCumulativeMonths $subCumulativeMonthsName.",
+      "subgift": "has been <strong>gifted</strong> subscription from <strong>$username</strong>",
+      "subcommunitygift": "<strong>Gifted</strong> subscriptions for community",
+      "resub": "<strong>Resubscribed</strong> with <strong>$subType</strong>. They've been subscribed for $subCumulativeMonths $subCumulativeMonthsName.",
+      "cheer": "<strong>Cheered</strong> you",
+      "tip": "<strong>Tipped</strong> you",
+      "tipToCharity": "<strong>donated</strong> to <strong>$campaignName</strong>"
+    },
+    "responses": {
+      "variable": {
+        "tags": "Метки",
+        "titleOfPrediction": "Twitch Prediction - Title",
+        "outcomes": "Twitch Prediction - Outcomes",
+        "locksAt": "Twitch Prediction - Locks At Date",
+        "winningOutcomeTitle": "Twitch Prediction - Winning outcome title",
+        "winningOutcomeTotalPoints": "Twitch Prediction - Winning outcome total points",
+        "winningOutcomePercentage": "Twitch Prediction - Winning outcome percentage",
+        "titleOfPoll": "Twitch опрос - Заголовок",
+        "bitAmountPerVote": "Twitch опрос - Количество битов для подсчета как 1 голос",
+        "bitVotingEnabled": "Twitch Poll - Is bit voting enabled (boolean)",
+        "channelPointsAmountPerVote": "Twitch Poll - Amount of channel points to count as 1 vote",
+        "channelPointsVotingEnabled": "Twitch Poll - Is channel points voting enabled (boolean)",
+        "votes": "Twitch опрос - количество голосов",
+        "winnerChoice": "Twitch Poll - Winner choice",
+        "winnerPercentage": "Twitch Poll - Winner choice percentage",
+        "winnerVotes": "Twitch Poll - Winner choice votes",
+        "goal": "Цель",
+        "total": "Всего",
+        "lastContributionTotal": "Последний взнос - Всего",
+        "lastContributionType": "Last Contribution - Type",
+        "lastContributionUserId": "Последний вклад - ID пользователя",
+        "lastContributionUsername": "Последний вклад - ID пользователя",
+        "level": "Уровень",
+        "topContributionsBitsTotal": "Top Bits Contribution - Total",
+        "topContributionsBitsUserId": "Top Bits Contribution - User ID",
+        "topContributionsBitsUsername": "Top Bits Contribution - Username",
+        "topContributionsSubsTotal": "Top Subs Contribution - Total",
+        "topContributionsSubsUserId": "Топ подписчик - ID пользователя",
+        "topContributionsSubsUsername": "Top Subs Contribution - Username",
+        "sender": "Инициатор",
+        "title": "Текущее звание",
+        "game": "Текущая категория",
+        "language": "Текущий язык стрима",
+        "viewers": "Текущее количество зрителей",
+        "hostViewers": "Raid viewers count",
+        "followers": "Текущее количество подписчиков",
+        "subscribers": "Текущее количество сабскрайберов",
+        "arg": "Параметр",
+        "param": "Параметр (обязательный)",
+        "touser": "Параметр как именя пользователя",
+        "!param": "Параметр (не обязательный)",
+        "alias": "Псевдоним",
+        "command": "Команда",
+        "keyword": "Ключевое слово",
+        "response": "Ответ",
+        "list": "Выбраный список",
+        "type": "Тип",
+        "days": "Дни",
+        "hours": "Часы",
+        "minutes": "Минуты",
+        "seconds": "Секунды",
+        "description": "Описание",
+        "quiet": "Тихий (bool)",
+        "id": "ID",
+        "name": "Название",
+        "messages": "Сообщения",
+        "amount": "Сумма",
+        "amountInBotCurrency": "Сумма в валюте бота",
+        "currency": "Валюта",
+        "currencyInBot": "Валюта в боте",
+        "pointsName": "Название поинтов",
+        "points": "Поинты",
+        "rank": "Ранг",
+        "nextrank": "Следующий ранг",
+        "username": "Имя пользователя",
+        "value": "Значение",
+        "variable": "Переменная",
+        "count": "Количество",
+        "link": "Ссылка (переведено)",
+        "winner": "Победитель",
+        "loser": "Проигравший",
+        "challenger": "Претендент",
+        "min": "Минимум",
+        "max": "Максимум",
+        "eligibility": "Право на участие",
+        "probability": "Вероятность",
+        "time": "Время",
+        "options": "Параметры",
+        "option": "Опция",
+        "when": "Когда",
+        "diff": "Различия",
+        "users": "Пользователи",
+        "user": "Пользователь",
+        "bank": "Банк",
+        "nextBank": "Следующий банк",
+        "cooldown": "Перезарядка",
+        "tickets": "Билеты",
+        "ticketsName": "Название билетов",
+        "fromUsername": "От имени",
+        "toUsername": "Для пользователя",
+        "items": "Предметы",
+        "bits": "Bits",
+        "subgifts": "Сабгифты",
+        "subStreakShareEnabled": "Делиться ли стриком саба (true/false)",
+        "subStreak": "Текущий стрик саба",
+        "subStreakName": "локализованное имя месяца (1 месяц, 2 месяца) для текущего стрика саба",
+        "subCumulativeMonths": "Общее время подписки",
+        "subCumulativeMonthsName": "локализованное имя месяца (1 месяц, 2 месяца) для текущего общего стрика саба",
+        "message": "Сообщение",
+        "reason": "Причина",
+        "target": "Цель",
+        "duration": "Длительность",
+        "method": "Способ",
+        "tier": "Тир",
+        "months": "Месяцы",
+        "monthsName": "локализованное название месяца (1 месяц, 2 месяца)",
+        "oldGame": "Категория перед изменением",
+        "recipientObject": "Полный объект получателя",
+        "recipient": "Получатель",
+        "ytSong": "Текущая песня с YouTube",
+        "spotifySong": "Текущая песня в Spotify",
+        "latestFollower": "Последний подписчик",
+        "latestSubscriber": "Последний сабскрайбер",
+        "latestSubscriberMonths": "Latest Subscriber cumulative months",
+        "latestSubscriberStreak": "Latest Subscriber months streak",
+        "latestTipAmount": "Последний донат (сумма)",
+        "latestTipCurrency": "Последний донат (валюта)",
+        "latestTipMessage": "Последний донат (сообщение)",
+        "latestTip": "Последний донат (имя пользователя)",
+        "toptip": {
+          "overall": {
+            "username": "Топ донат - общее (имя пользователя)",
+            "amount": "Топ донат - общее (сумма)",
+            "currency": "Топ донат - общее (валюта)",
+            "message": "Топ донат - общее (сообщение)"
+          },
+          "stream": {
+            "username": "Топ донат - за стрим (имя пользователя)",
+            "amount": "Топ донат - за стрим (сумма)",
+            "currency": "Топ донат - за стрим (валюта)",
+            "message": "Топ донат - за стрим (сообщение)"
+          }
+        },
+        "latestCheerAmount": "Последние биты (сумма)",
+        "latestCheerMessage": "Последние биты (сообщение)",
+        "latestCheer": "Последние биты (имя пользователя)",
+        "version": "Версия бота",
+        "haveParam": "Есть параметр команды? (bool)",
+        "source": "Текущий источник (twitch или discord)",
+        "userInput": "User input during reward redeem",
+        "isBotSubscriber": "Является подписчиком бота (bool)",
+        "isStreamOnline": "Трансляция онлайн (бул)",
+        "uptime": "Время работы трансляций",
+        "is": {
+          "moderator": "Пользователь модератор? (bool)",
+          "subscriber": "Пользователь сабскрайбер? (bool)",
+          "vip": "Пользователь вип? (bool)",
+          "newchatter": "Is user's first message? (bool)",
+          "follower": "Пользователь подписчик? (bool)",
+          "broadcaster": "Пользователь стример? (bool)",
+          "bot": "Пользователь бот? (bool)",
+          "owner": "Пользователь владелец бота? (bool)"
+        },
+        "recipientis": {
+          "moderator": "Является ли получатель модератором? (bool)",
+          "subscriber": "Является ли получатель сабскрайбером? (bool)",
+          "vip": "Является ли получатель випом? (bool)",
+          "follower": "Является ли получатель фоловером? (bool)",
+          "broadcaster": "Является ли получатель броадкастером? (bool)",
+          "bot": "Является ли получатель ботом? (bool)",
+          "owner": "Является ли получатель владельцем бота? (bool)"
+        },
+        "sceneName": "Имя сцены",
+        "inputName": "Name of input",
+        "inputMuted": "Mute state (bool)"
+      }
+    },
+    "page-settings": {
+      "systems": {
+        "others": {
+          "title": "Другое",
+          "currency": "Валюта"
+        },
+        "whispers": {
+          "title": "Висперсы",
+          "toggle": {
+            "listener": "Слушать команды в висперсах",
+            "settings": "Уведомлять в висперсе при изменении настроек",
+            "raffle": "Висперсы при присоединении к розыгрышу",
+            "permissions": "Висперсы при нехватки прав",
+            "cooldowns": "Висперсы при кулдауне"
+          }
+        }
+      }
+    },
+    "page-logger": {
+      "buttons": {
+        "messages": "Сообщения",
+        "follows": "Подписки",
+        "subs": "Сабы & Ресабы",
+        "cheers": "Битсы",
+        "responses": "Ответы бота",
+        "whispers": "Висперсы",
+        "bans": "Баны",
+        "timeouts": "Таймауты"
+      },
+      "range": {
+        "day": "день",
+        "week": "неделя",
+        "month": "месяц",
+        "year": "год",
+        "all": "Все время"
+      },
+      "order": {
+        "asc": "По возрастанию",
+        "desc": "По убыванию"
+      },
+      "labels": {
+        "order": "ЗАКАЗ",
+        "range": "ОБЛАСТЬ",
+        "filters": "ФИЛЬТРЫ"
+      }
+    },
+    "stats-panel": {
+      "show": "Отображать статистику",
+      "hide": "Скрыть статистику"
+    },
+    "translations": "Пользовательские переводы",
+    "bot-responses": "Ответы бота",
+    "duration": "Длительность",
+    "viewers-reset-attributes": "Сбросить все атрибуты",
+    "viewers-points-of-all-users": "Поинты всех пользователей",
+    "viewers-watchtime-of-all-users": "Время просмотра всех пользователей",
+    "viewers-messages-of-all-users": "Сообщения всех пользователей",
+    "events-game-after-change": "Категория после изменения",
+    "events-game-before-change": "category before change",
+    "events-user-triggered-event": "пользователь вызвавший событие",
+    "events-method-used-to-subscribe": "способ сабскрайба",
+    "events-months-of-subscription": "продолжительность сабскрайба",
+    "events-monthsName-of-subscription": "слово \"месяц\" по номеру (1 месяц, 2 месяца)",
+    "events-user-message": "сообщение пользователя",
+    "events-bits-user-sent": "битсов отправлено пользователем",
+    "events-reason-for-ban-timeout": "причина для бана/таймаута",
+    "events-duration-of-timeout": "продолжительность таймаута",
+    "events-duration-of-commercial": "продолжительность рекламы",
+    "overlays-eventlist-resub": "ресаб",
+    "overlays-eventlist-subgift": "сабгифт",
+    "overlays-eventlist-subcommunitygift": "саб подарок сообщества",
+    "overlays-eventlist-sub": "саб",
+    "overlays-eventlist-follow": "подписка",
+    "overlays-eventlist-cheer": "битсы",
+    "overlays-eventlist-tip": "донат",
+    "overlays-eventlist-raid": "рейд",
+    "requested-by": "Автор —",
+    "description": "Описание",
+    "raffle-type": "Тип розыгрыша",
+    "raffle-type-keywords": "Только ключевое слово",
+    "raffle-type-tickets": "С билетами",
+    "raffle-tickets-range": "Диапазон билетов",
+    "video_id": "ID видео",
+    "highlights": "Яркие моменты",
+    "cooldown-quiet-header": "Показать сообщение о кулдауне",
+    "cooldown-quiet-toggle-no": "Оповещать",
+    "cooldown-quiet-toggle-yes": "Не уведомлять",
+    "cooldown-moderators": "Модераторы",
+    "cooldown-owners": "Владельцы",
+    "cooldown-subscribers": "Сабскрайберы",
+    "cooldown-followers": "Подписчики",
+    "in-seconds": "в секундах",
+    "songs": "Песни",
+    "show-usernames-with-at": "Показать имена пользователей с @",
+    "send-message-as-a-bot": "Отправить сообщение как бот",
+    "chat-as-bot": "Чат (как бот)",
+    "product": "Товар",
+    "optional": "опционально",
+    "placeholder-search": "Поиск",
+    "placeholder-enter-product": "Введите имя товара",
+    "placeholder-enter-keyword": "Введите ключевое слово",
+    "credits": "Благодарность",
+    "fade-out-top": "затухание",
+    "fade-out-zoom": "масштаб затухания",
+    "global": "Все",
+    "user": "Пользователь",
+    "alerts": "Алерты",
+    "eventlist": "Список событий",
+    "dashboard": "Главная",
+    "carousel": "Карусель из изображений",
+    "text": "Текст",
+    "filter": "Filter",
+    "filters": "Filters",
+    "isUsed": "Is used",
+    "permissions": "Права доступа",
+    "permission": "Разрешение",
+    "viewers": "Зрителей",
+    "systems": "Системы",
+    "overlays": "Оверлеи",
+    "gallery": "Медиагалерея",
+    "aliases": "Псевдонимы",
+    "alias": "Псевдоним",
+    "command": "Команда",
+    "cooldowns": "Кулдауны",
+    "title-template": "Шаблон названия",
+    "keyword": "Ключевое слово",
+    "moderation": "Модерация",
+    "timer": "Таймер",
+    "price": "Цена",
+    "rank": "Ранг",
+    "previous": "Предыдущий",
+    "next": "Следующий",
+    "close": "Закрыть",
+    "save-changes": "Сохранить изменения",
+    "saving": "Сохранение...",
+    "deleting": "Удаление...",
+    "done": "Выполнено",
+    "error": "Ошибка",
+    "title": "Название",
+    "change-title": "Изменить заголовок",
+    "game": "category",
+    "tags": "Теги",
+    "change-game": "Изменить категорию",
+    "click-to-change": "нажмите, чтобы изменить",
+    "uptime": "uptime",
+    "not-affiliate-or-partner": "Не компаньон/партнер",
+    "not-available": "Недоступно",
+    "max-viewers": "Максимум зрителей",
+    "new-chatters": "Новые в чате",
+    "chat-messages": "Сообщения в чате",
+    "followers": "Фоловеров",
+    "subscribers": "Сабскрайберов",
+    "bits": "Битсов",
+    "subgifts": "Сабгифтов",
+    "subStreak": "Текущий стрик саба",
+    "subCumulativeMonths": "Общий стрик саба",
+    "tips": "Донаты",
+    "tier": "Тир",
+    "status": "Статус",
+    "add-widget": "Добавить виджет",
+    "remove-dashboard": "Удалить панель",
+    "close-bet-after": "Закрыть ставки через",
+    "refund": "возврат",
+    "roll-again": "Сделать еще раз",
+    "no-eligible-participants": "Нет подходящих участников",
+    "follower": "Подписчик",
+    "subscriber": "Сабкрайбер",
+    "minutes": "минуты",
+    "seconds": "секунды",
+    "hours": "часы",
+    "months": "месяцы",
+    "eligible-to-enter": "Eligible to enter",
+    "everyone": "Всем",
+    "roll-a-winner": "Выбрать победителя",
+    "send-message": "Отправить сообщение",
+    "messages": "Сообщения",
+    "level": "Уровень",
+    "create": "Создать",
+    "cooldown": "Кулдаун",
+    "confirm": "Подтвердить",
+    "delete": "Удалить",
+    "enabled": "Включено",
+    "disabled": "Выключено",
+    "enable": "Включить",
+    "disable": "Выключить",
+    "slug": "Slug",
+    "posted-by": "Автор",
+    "time": "Время",
+    "type": "Тип",
+    "response": "Ответ",
+    "cost": "Стоимость",
+    "name": "Название",
+    "playlist": "Плейлист",
+    "length": "Длина",
+    "volume": "Громкость",
+    "start-time": "Время начала",
+    "end-time": "Время окончания",
+    "watched-time": "Просмотренное время",
+    "currentsong": "Текущая песня",
+    "group": "Группа",
+    "followed-since": "Отслеживается с",
+    "subscribed-since": "Сабскрайб с",
+    "username": "Имя пользователя",
+    "hashtag": "Хэштег",
+    "accessToken": "AccessToken",
+    "refreshToken": "RefreshToken",
+    "scopes": "Разрешения",
+    "last-seen": "Последняя активность",
+    "date": "Дата",
+    "points": "Поинты",
+    "calendar": "Календарь",
+    "string": "строка",
+    "interval": "Интервал",
+    "number": "число",
+    "minimal-messages-required": "Требуется минимально сообщений",
+    "max-duration": "Максимальная длительность",
+    "shuffle": "Перемешать",
+    "song-request": "Запрос песни",
+    "format": "Формат",
+    "available": "Доступно",
+    "one-record-per-line": "одна запись в строке",
+    "on": "вкл.",
+    "off": "выкл.",
+    "search-by-username": "Поиск по имени пользователя",
+    "widget-title-custom": "Пользовательский",
+    "widget-title-eventlist": "СПИСОК СОБЫТИЙ",
+    "widget-title-chat": "ЧАТ",
+    "widget-title-queue": "ОЧЕРЕДЬ",
+    "widget-title-raffles": "РОЗЫГРЫШИ",
+    "widget-title-social": "СОЦИАЛЬНЫЕ ССЫЛКИ",
+    "widget-title-ytplayer": "Музыкальный плеер",
+    "widget-title-monitor": "Монитор",
+    "event": "событие",
+    "operation": "операция",
+    "tweet-post-with-hashtag": "Тви запосчен с хэштегом",
+    "user-joined-channel": "пользователь присоединился к каналу",
+    "user-parted-channel": "пользователь вышел с канала",
+    "follow": "новый подписчик",
+    "tip": "новый донат",
+    "obs-scene-changed": "Сцена OBS изменена",
+    "obs-input-mute-state-changed": "OBS input source mute state changed",
+    "unfollow": "отписка",
+    "hypetrain-started": "Hype Train started",
+    "hypetrain-ended": "Hype Train ended",
+    "prediction-started": "Twitch Prediction started",
+    "prediction-locked": "Twitch Prediction locked",
+    "prediction-ended": "Twitch Prediction ended",
+    "poll-started": "Twitch опрос начался",
+    "poll-ended": "Голосование Twitch завершено",
+    "hypetrain-level-reached": "Hype Train new level reached",
+    "subscription": "новый сарскрайбер",
+    "subgift": "новый подаренный саб",
+    "subcommunitygift": "новый саб подарен комьюнити",
+    "resub": "пользователь ресабнулся",
+    "command-send-x-times": "команда была отправлена X раз",
+    "keyword-send-x-times": "ключевое слово было отправлено X раз",
+    "number-of-viewers-is-at-least-x": "количество зрителей минимум х",
+    "stream-started": "стрим запущен",
+    "reward-redeemed": "reward redeemed",
+    "stream-stopped": "стрим выключен",
+    "stream-is-running-x-minutes": "стрим идёт Х минут",
+    "chatter-first-message": "первое сообщение в чате",
+    "every-x-minutes-of-stream": "каждую Х минуту стрима",
+    "game-changed": "category changed",
+    "cheer": "received bits",
+    "clearchat": "чат был очищен",
+    "action": "пользователь использовал /me",
+    "ban": "пользователь заблокирован",
+    "raid": "ваш канал зарейдили",
+    "mod": "пользователь новый модератор",
+    "timeout": "пользователь получил таймаут",
+    "create-a-new-event-listener": "Создать новый обработчик событий",
+    "send-discord-message": "Отправить сообщение в discord",
+    "send-chat-message": "Отправить сообщение в чат (twitch)",
+    "send-whisper": "отправить сообщение в висперсы",
+    "run-command": "запустить команду",
+    "run-obswebsocket-command": "Выполнить команду OBS Websocket",
+    "do-nothing": "--- ничего не делать ----",
+    "count": "количество",
+    "timestamp": "отметка времени",
+    "message": "сообщение",
+    "sound": "звук",
+    "emote-explosion": "взрыв смайликов",
+    "emote-firework": "фейерверк смайликов",
+    "quiet": "тихий",
+    "noisy": "шумный",
+    "true": "true",
+    "false": "false",
+    "light": "светлая тема",
+    "dark": "темная тема",
+    "gambling": "Азартные игры",
+    "seppukuTimeout": "Таймаут для !seppuku",
+    "rouletteTimeout": "Таймаут для !roulette",
+    "fightmeTimeout": "Таймаут для !fightme",
+    "duelCooldown": "Кулдаун для !duel",
+    "fightmeCooldown": "Кулдаун для !fightme",
+    "gamblingCooldownBypass": "Игнорировать кулдаун азартных игр для модеров/стримера",
+    "click-to-highlight": "яркие моменты",
+    "click-to-toggle-display": "переключить отображение",
+    "commercial": "реклама запущена",
+    "start-commercial": "запустить рекламу",
+    "bot-will-join-channel": "бот присоединится к каналу",
+    "bot-will-leave-channel": "бот покинет канал",
+    "create-a-clip": "создать клип",
+    "increment-custom-variable": "увеличенить переменную",
+    "set-custom-variable": "задать пользовательскую переменную",
+    "decrement-custom-variable": "уменьшить переменную",
+    "omit": "пропустить",
+    "comply": "соблюдать",
+    "visible": "видимость",
+    "hidden": "скрытые",
+    "gamblingChanceToWin": "Шанс выиграть !gamble",
+    "gamblingMinimalBet": "Минимальная ставка для !gamble",
+    "duelDuration": "Длительность !duel",
+    "duelMinimalBet": "Минимальная ставка для !duel"
+  },
+  "raffles": {
+    "announceInterval": "Открытые розыгрыши будет анонсированы каждые $value минут",
+    "eligibility-followers-item": "подписчики",
+    "eligibility-subscribers-item": "сабскрайберов",
+    "eligibility-everyone-item": "все",
+    "raffle-is-running": "Raffle запущен ($count $l10n_entries).",
+    "to-enter-raffle": "Розыгрыш запущен. Для входа введите $keyword. Розыгрыш открыт для $eligibility.",
+    "to-enter-ticket-raffle": "To enter type \"$keyword <$min-$max>\". Raffle is opened for $eligibility.",
+    "added-entries": "Added $count $l10n_entries to raffle ($countTotal total). {raffles.to-enter-raffle}",
+    "added-ticket-entries": "Added $count $l10n_entries to raffle ($countTotal total). {raffles.to-enter-ticket-raffle}",
+    "join-messages-will-be-deleted": "Сообщения с розыгрышем будут удалены при присоединении.",
+    "announce-raffle": "{raffles.raffle-is-running} {raffles.to-enter-raffle}",
+    "announce-ticket-raffle": "{raffles.raffle-is-running} {raffles.to-enter-ticket-raffle}",
+    "announce-new-entries": "{raffles.added-entries} {raffles.to-enter-raffle}",
+    "announce-new-ticket-entries": "{raffles.added-entries} {raffles.to-enter-ticket-raffle}",
+    "cannot-create-raffle-without-keyword": "Извините, $sender, но вы не можете создавать розыгрыш без ключевого слова",
+    "raffle-is-already-running": "Извините, $sender, розыгрыш уже запущен с ключевым словом $keyword",
+    "no-raffle-is-currently-running": "$sender, в настоящее время никакие розыгрыши без победителей не запущены",
+    "no-participants-to-pick-winner": "$sender, никто не присоединился к розыгрышу",
+    "raffle-winner-is": "Победитель розыгрыша $keyword - $username! Шанс победить был $probability%!"
+  },
+  "bets": {
+    "running": "$sender, ставки уже открыты! Варианты: $options. Используйте $command close 1-$maxIndex",
+    "notRunning": "На данный момент ставки не открыты, попросите модераторов открыть их!",
+    "opened": "Новая ставка '$title'' открыта! Опции: $options. Используйте $command 1-$maxIndex <amount>, чтобы победить! У вас есть $minutesмин для ставки!",
+    "closeNotEnoughOptions": "$sender, вы должны выбрать победный вариант для закрытия ставки.",
+    "notEnoughOptions": "$sender, новые ставки требуют не менее 2 вариантов!",
+    "info": "Ставка '$title' ' все еще открыта! Ставки на ставку: $options. Используйте $command 1-$maxIndex <amount>, чтобы победить! У вас есть $minutesmin для ставки!",
+    "diffBet": "$sender, вы уже сделали ставку на $option и вы не можете делать ставку на другой вариант!",
+    "undefinedBet": "Извините, $sender, но этот вариант не существует, используйте $command для проверки использования",
+    "betPercentGain": "Вариант $value% повышен по ставке",
+    "betCloseTimer": "Ставки будут автоматически закрыты после $valuemin",
+    "refund": "Ставки были закрыты без выигрыша. Всем пользователи получили возврат!",
+    "notOption": "$sender, этот вариант не существует! Ставка не закрыта, проверьте $command",
+    "closed": "Ставки были закрыты и победа была $option! Всего $amount пользователей выиграли $points $pointsName!",
+    "timeUpBet": "Думаю, ты опоздал, $sender, время делать ставки истекло!",
+    "locked": "Время ставок истекло! Больше ставок нет.",
+    "zeroBet": "$sender, вы не можете ставить 0 $pointsName",
+    "lockedInfo": "Ставка '$title' все еще открыта, время делать ставки вышло!",
+    "removed": "Время ставок истекло! Ставок не было -> автоматическое закрытие",
+    "error": "Извините, $sender, эта команда неправильная! Используйте $command 1-$maxIndex <amount>. Например, $command 0 100 поставит 100 очков за предмет 0."
+  },
+  "alias": {
+    "alias-parse-failed": "{core.command-parse} !alias",
+    "alias-was-not-found": "$sender, псевдоним $alias не найден в базе данных",
+    "alias-was-edited": "$sender, псевдоним $alias изменен на $command",
+    "alias-was-added": "$sender, псевдоним $alias для $command был добавлен",
+    "list-is-not-empty": "$sender, список псевдонимов: $list",
+    "list-is-empty": "$sender, список псевдонимов пуст",
+    "alias-was-enabled": "$sender, псевдоним $alias был включен",
+    "alias-was-disabled": "$sender, псевдоним $alias отключен",
+    "alias-was-concealed": "$sender, псевдоним $alias был скрыт",
+    "alias-was-exposed": "$sender, псевдоним $alias был открыт",
+    "alias-was-removed": "$sender, псевдоним $alias был удален",
+    "alias-group-set": "$sender, псевдоним $alias был установлен в группу $group",
+    "alias-group-unset": "$sender, псевдоним $alias удалён из группы",
+    "alias-group-list": "$sender, список групп псевдонимов: $list",
+    "alias-group-list-aliases": "$sender, список псевдонимов в $group: $list",
+    "alias-group-list-enabled": "$sender, алиасы в $group включены.",
+    "alias-group-list-disabled": "$sender, алиасы в $group отключены."
+  },
+  "customcmds": {
+    "commands-parse-failed": "{core.command-parse} $command",
+    "command-was-not-found": "$sender, команда $command не найдена в базе данных",
+    "response-was-not-found": "$sender, ответ #$response команды $command не найден в базе данных",
+    "command-was-edited": "$sender, команда $command изменена на '$response'",
+    "command-was-added": "$sender, команда $command добавлена",
+    "list-is-not-empty": "$sender, список команд: $list",
+    "list-is-empty": "$sender, список команд пуст",
+    "command-was-enabled": "$sender, команда $command включена",
+    "command-was-disabled": "$sender, команда $command отключена",
+    "command-was-concealed": "$sender, команда $command скрыта",
+    "command-was-exposed": "$sender, команда $command была открыта",
+    "command-was-removed": "$sender, команда $command удалена",
+    "response-was-removed": "$sender, ответ #$response команды $command был удален",
+    "list-of-responses-is-empty": "$sender, $command не имеет ответов или не существует",
+    "response": "$command#$index ($permission) $after| $response"
+  },
+  "keywords": {
+    "keyword-parse-failed": "{core.command-parse} !keyword",
+    "keyword-is-ambiguous": "$sender, ключевое слово $keyword неоднозначно, используйте ID ключевого слова",
+    "keyword-was-not-found": "$sender, ключевое слово $keyword не найдено в базе данных",
+    "response-was-not-found": "$sender, ответ #$response ключевого слова $keyword не найден в базе данных",
+    "keyword-was-edited": "$sender, ключевое слово $keyword изменено на '$response'",
+    "keyword-was-added": "$sender, ключевое слово $keyword ($id) было добавлено",
+    "list-is-not-empty": "$sender, список ключевых слов: $list",
+    "list-is-empty": "$sender, список ключевых слов пуст",
+    "keyword-was-enabled": "$sender, ключевое слово $keyword было включено",
+    "keyword-was-disabled": "$sender, ключевое слово $keyword отключено",
+    "keyword-was-removed": "$sender, ключевое слово $keyword удалено",
+    "list-of-responses-is-empty": "$sender, $keyword не содержат ответов или не существует",
+    "response": "$keyword#$index ($permission) $after| $response"
+  },
+  "points": {
+    "success": {
+      "undo": "$sender, очки '$command' для $username были отменены (с $updatedValue $updatedValuePointsLocale на $originalValue $originalValuePointsLocale).",
+      "set": "$username было установлено $amount $pointsName",
+      "give": "$sender только что дал $amount $pointsName $username",
+      "online": {
+        "positive": "Все онлайн-пользователи получили $amount $pointsName!",
+        "negative": "Все пользователи сети потеряли $amount $pointsName!"
+      },
+      "all": {
+        "positive": "Все пользователи получили $amount $pointsName!",
+        "negative": "Все пользователи потеряли $amount $pointsName!"
+      },
+      "rain": "Дождь! Все онлайн-пользователи могут получить до $amount $pointsName!",
+      "add": "$username получил $amount $pointsName!",
+      "remove": "Ой, $amount $pointsName было удалено у $username!"
+    },
+    "failed": {
+      "undo": "$sender, имя пользователя не найдено в базе данных или у пользователя нет операций отмены",
+      "set": "{core.command-parse} $command [username] [amount]",
+      "give": "{core.command-parse} $command [username] [amount]",
+      "giveNotEnough": "Извините, $sender, у вас нет $amount $pointsName, чтобы дать $username",
+      "cannotGiveZeroPoints": "Извините, $sender, у вас нет $amount $pointsName, чтобы дать $username",
+      "get": "{core.command-parse} $command [username]",
+      "online": "{core.command-parse} $command [amount]",
+      "all": "{core.command-parse} $command [amount]",
+      "rain": "{core.command-parse} $command [amount]",
+      "add": "{core.command-parse} $command [username] [amount]",
+      "remove": "{core.command-parse} $command [username] [amount]"
+    },
+    "defaults": {
+      "pointsResponse": "$username у вас $amount $pointsName. Ваша позиция $order/$count."
+    }
+  },
+  "songs": {
+    "playlist-is-empty": "$sender, список воспроизведения для импорта пуст",
+    "playlist-imported": "$sender, импортировано $imported и пропущено $skipped в плейлист",
+    "not-playing": "Не играет",
+    "song-was-banned": "Песня $name была забанена и никогда не будет играть снова!",
+    "song-was-banned-timeout-message": "Вы получили тайм-аут за размещение забаненной песни",
+    "song-was-unbanned": "Пользователь успешно разблокирован",
+    "song-was-not-banned": "Эта песня не была заблокирована",
+    "no-song-is-currently-playing": "Сейчас ничего не проигрывается",
+    "current-song-from-playlist": "Текущая песня $name из плейлиста",
+    "current-song-from-songrequest": "Текущая песня $name заказана $username",
+    "songrequest-disabled": "Извините, $sender , запросы на песню отключены",
+    "song-is-banned": "Извините, $sender, но эта песня забанена",
+    "youtube-is-not-responding-correctly": "К сожалению, $sender, но YouTube отправляет неожиданные ответы, пожалуйста, повторите попытку позже.",
+    "song-was-not-found": "Извините, $sender, но эта песня не найдена",
+    "song-is-too-long": "Извините, $sender, но эта песня слишком длинная",
+    "this-song-is-not-in-playlist": "Извините, $sender, но эта песня нет в текущем плейлисте",
+    "incorrect-category": "Извините, $sender, но эта песня должна быть в категории музыка",
+    "song-was-added-to-queue": "$sender, песня $name была добавлена в очередь",
+    "song-was-added-to-playlist": "$sender, песня $name добавлена в плейлист",
+    "song-is-already-in-playlist": "$sender, песня $name уже в плейлисте",
+    "song-was-removed-from-playlist": "$sender, песня $name удалена из плейлиста",
+    "song-was-removed-from-queue": "$sender, ваша песня $name была удалена из очереди",
+    "playlist-current": "$sender, текущий плейлист $playlist.",
+    "playlist-list": "$sender, доступные плейлисты: $list.",
+    "playlist-not-exist": "$sender, ваш запрошенный список воспроизведения $playlist не существует.",
+    "playlist-set": "$sender, вы изменили плейлист на $playlist."
+  },
+  "price": {
+    "price-parse-failed": "{core.command-parse} !price",
+    "price-was-set": "$sender, цена $command установлена в $amount $pointsName",
+    "price-was-unset": "$sender, цена за $command была убрана",
+    "price-was-not-found": "$sender, цена для $command не найдена",
+    "price-was-enabled": "$sender, цена для $command включена",
+    "price-was-disabled": "$sender, цена для $command отключена",
+    "user-have-not-enough-points": "Извините, $sender, но у вас нет $amount $pointsName для использования $command",
+    "user-have-not-enough-points-or-bits": "Извините, $sender, но у вас нет $amount $pointsName или вы можете использовать команду $bitsAmount бит, чтобы использовать $command",
+    "user-have-not-enough-bits": "Извините, $sender, но вы должны активировать команду $bitsAmount бит, чтобы использовать $command",
+    "list-is-empty": "$sender, список цен пуст",
+    "list-is-not-empty": "$sender, список цен: $list"
+  },
+  "ranks": {
+    "rank-parse-failed": "{core.command-parse} !rank help",
+    "rank-was-added": "$sender, добавлен новый ранг $type $rank($hours$hlocale)",
+    "rank-was-edited": "$sender, ранг $type $hours$hlocale был изменён на $rank",
+    "rank-was-removed": "$sender, ранг $type $hours$hlocale был удалён",
+    "rank-already-exist": "$sender, уже есть ранг для $type $hours$hlocale",
+    "rank-was-not-found": "$sender, ранг $type $hours$hlocale не был найден",
+    "custom-rank-was-set-to-user": "$sender, вы установили $rank для $username",
+    "custom-rank-was-unset-for-user": "$sender, пользовательский ранг для $username был убран",
+    "list-is-empty": "$sender, ранги не были найдены",
+    "list-is-not-empty": "$sender, список рангов: $list",
+    "show-rank-without-next-rank": "$sender, у вас $rank ранг",
+    "show-rank-with-next-rank": "$sender, у вас $rank ранг. Следующий ранг - $nextrank",
+    "user-dont-have-rank": "$sender, у вас пока нет ранга"
+  },
+  "followage": {
+    "success": {
+      "never": "$sender, $username не является подписчиком",
+      "time": "$sender, $username подписан $diff"
+    },
+    "successSameUsername": {
+      "never": "$sender, вы не подписаны на канал",
+      "time": "$sender, вы подписаны $diff"
+    }
+  },
+  "subage": {
+    "success": {
+      "never": "$sender, $username не сабскрайбер.",
+      "notNow": "$sender, $username в настоящее время не является сабскрайбером. Общий стрик $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, $username сабскрайбер $diff ($subStreak $subStreakMonthsName). Общий стрик $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, $username сабскрайбер. Общий стрик $subCumulativeMonths $subCumulativeMonthsName."
+    },
+    "successSameUsername": {
+      "never": "$sender, вы не сабскрайбер.",
+      "notNow": "$sender, в настоящее время не является сабскрайбером. Общий стрик $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, сабскрайбер $diff ($subStreak $subStreakMonthsName). Общий стрик $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, сабскрайбер. Общий стрик $subCumulativeMonths $subCumulativeMonthsName."
+    }
+  },
+  "age": {
+    "failed": "$sender, у меня нет данных по $username",
+    "success": {
+      "withUsername": "$sender, возраст учетной записи $username - $diff",
+      "withoutUsername": "$sender, ваш возраст аккаунта $diff"
+    }
+  },
+  "lastseen": {
+    "success": {
+      "never": "$username никогда не был на этом канале!",
+      "time": "$username последний раз был $when"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !lastseen [username]"
+    }
+  },
+  "watched": {
+    "success": {
+      "time": "$username смотрел стрим $time часов"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !watched или !watched [username]"
+    }
+  },
+  "permissions": {
+    "without-permission": "У вас недостаточно прав для '$command'"
+  },
+  "moderation": {
+    "user-have-immunity": "$sender, пользователь $username имеет иммунитет $type на $time секунд",
+    "user-have-immunity-parameterError": "$sender, ошибка параметра. $command <username> <type> <duration>",
+    "user-have-link-permit": "Пользователь $username может отправить $count $link в чат",
+    "permit-parse-failed": "{core.command-parse} !permit [username]",
+    "user-is-warned-about-links": "Ссылки запрещены, запросите !permit [$count предупреждений осталось]",
+    "user-is-warned-about-symbols": "Спам символами запрещён [$count предупреждений осталось]",
+    "user-is-warned-about-long-message": "Длинные сообщения недопустимы [$count предупреждений]",
+    "user-is-warned-about-caps": "Капс запрещён [$count предупреждений]",
+    "user-is-warned-about-spam": "Спам запрещён [ осталось предупреждений$count]",
+    "user-is-warned-about-color": "Курсив и /me недопустимы [$count предупреждений осталось]",
+    "user-is-warned-about-emotes": "Спам смайликами запрещён [$count предупреждений осталось]",
+    "user-is-warned-about-forbidden-words": "Слово в чёрном списке [$count предупреждений осталось]",
+    "user-have-timeout-for-links": "Ссылки запрещены, попросите !permit",
+    "user-have-timeout-for-symbols": "Чрезмерное кол-во символов",
+    "user-have-timeout-for-long-message": "Длинные сообщения запрещены",
+    "user-have-timeout-for-caps": "Чрезмерное использование капса",
+    "user-have-timeout-for-spam": "Спам запрещён",
+    "user-have-timeout-for-color": "Курсив и /me не допускаются",
+    "user-have-timeout-for-emotes": "Спам смайликами запрещён",
+    "user-have-timeout-for-forbidden-words": "Запрещенные слова"
+  },
+  "queue": {
+    "list": "$sender, текущий пул очереди: $users",
+    "info": {
+      "closed": "$sender, {queue.close}",
+      "opened": "$sender, {queue.open}"
+    },
+    "join": {
+      "closed": "Извините $sender, очередь в данный момент закрыта",
+      "opened": "$sender был добавлен в очередь"
+    },
+    "open": "Очередь в настоящее время открыта! Присоединиться к очереди !очередью",
+    "close": "Извините, очередь в данный момент закрыта!",
+    "clear": "Очередь полностью очищена",
+    "picked": {
+      "single": "Этот пользователь был выбран из очереди: $users",
+      "multi": "Эти пользователи были выбраны из очереди: $users",
+      "none": "Пользователи не найдены в очереди"
+    }
+  },
+  "marker": "Stream marker has been created at $time.",
+  "title": {
+    "current": "$sender, название стрима '$title'.",
+    "change": {
+      "success": "$sender, название установлено на: $title"
+    }
+  },
+  "game": {
+    "current": "$sender, стример сейчас играет в $game.",
+    "change": {
+      "success": "$sender, категория изменена на: $game"
+    }
+  },
+  "cooldowns": {
+    "cooldown-was-set": "$sender, $type кулдаун $command установлен на $secondss",
+    "cooldown-was-unset": "$sender, $type перезарядка $command была убрана",
+    "cooldown-triggered": "$sender, '$command' перезаряжается, осталось $secondss",
+    "cooldown-not-found": "$sender, кулдаун $command не найден",
+    "cooldown-was-enabled": "$sender, кулдаун $command включён",
+    "cooldown-was-disabled": "$sender, кулдаун $command выключен",
+    "cooldown-was-enabled-for-moderators": "$sender, кулдаун $command включён для модераторов",
+    "cooldown-was-disabled-for-moderators": "$sender, кулдаун $command выключен для модераторов",
+    "cooldown-was-enabled-for-owners": "$sender, кулдаун $command включён для владельцев бота",
+    "cooldown-was-disabled-for-owners": "$sender, кулдаун $command выключен для владельцев бота",
+    "cooldown-was-enabled-for-subscribers": "$sender, кулдаун $command включён для сабскрайберов",
+    "cooldown-was-disabled-for-subscribers": "$sender, кулдаун $command выключен для сабскрайберов",
+    "cooldown-was-enabled-for-followers": "$sender, кулдаун $command включён для фоловеров",
+    "cooldown-was-disabled-for-followers": "$sender, кулдаун $command выключён для фоловеров"
+  },
+  "timers": {
+    "id-must-be-defined": "$sender, должен быть определен id ответа.",
+    "id-or-name-must-be-defined": "$sender, идентификатор ответа или таймера должны быть определены.",
+    "name-must-be-defined": "$sender, имя таймера должно быть определено.",
+    "response-must-be-defined": "$sender, ответ таймера должен быть определен.",
+    "cannot-set-messages-and-seconds-0": "$sender, вы не можете установить сообщения и секунды в 0.",
+    "timer-was-set": "$sender, таймер $name был установлен с $messages сообщениями и $seconds секунд для срабатывания",
+    "timer-was-set-with-offline-flag": "$sender, таймер $name был установлен с $messages сообщениями и $seconds секунд, чтобы срабатывать даже когда поток не в сети",
+    "timer-not-found": "$sender, таймер (имя: $name) не найден в базе данных. Проверьте таймеры с помощью списка !timers list",
+    "timer-deleted": "$sender, таймер $name и его ответы были удалены.",
+    "timer-enabled": "$sender, таймер (имя: $name) включен",
+    "timer-disabled": "$sender, таймер (имя: $name) отключен",
+    "timers-list": "$sender, список таймеров: $list",
+    "responses-list": "$sender, таймер (имя: $name) список",
+    "response-deleted": "$sender, ответ (id: $id) был удален.",
+    "response-was-added": "$sender, ответ (id: $id) для таймера (имя: $name) был добавлен - '$response'",
+    "response-not-found": "$sender, ответ (id: $id) не найден в базе данных",
+    "response-enabled": "$sender, ответ (id: $id) был включен",
+    "response-disabled": "$sender, ответ (id: $id) отключен"
+  },
+  "gambling": {
+    "duel": {
+      "bank": "$sender, текущий банк для $command - $points $pointsName",
+      "lowerThanMinimalBet": "$sender, минимальная ставка для $command - $points $pointsName",
+      "cooldown": "$sender, вы не можете использовать $command ещё $cooldown $minutesName.",
+      "joined": "$sender, удачи с вашими навыками дуэлянта. Вы поставили $points $pointsName!",
+      "added": "$sender действительно думает, что он лучше, чем другие, подняв свою ставку до $points $pointsName!",
+      "new": "$sender является вашим новым испытанием! Чтобы принять участие пишите $command [points], у вас осталось $minutes $minutesName для вступления.",
+      "zeroBet": "$sender, вы не можете ставить 0 $pointsName",
+      "notEnoughOptions": "$sender, вам нужно указать кол-во поинтовдля дуэли",
+      "notEnoughPoints": "$sender, у вас нет $points $pointsName для дуэли!",
+      "noContestant": "Только $winner имеет мужество вступить в поединок! Ваша ставка $points $pointsName возвращена вам.",
+      "winner": "Поздравляем игрока $winner! Он последний выживший и выигрывает $points $pointsName ($probability% от ставки $tickets $ticketsName)!"
+    },
+    "roulette": {
+      "trigger": "$sender играет с удачей и ему не везёт",
+      "alive": "$sender жив! Ничего не произошло.",
+      "dead": "Мозги $sender был размазан по стене!",
+      "mod": "$sender просто напросто не может попасть в свой голову!",
+      "broadcaster": "$sender стреляет себе в ногу!",
+      "timeout": "Таймаут рулетки установлен на $values"
+    },
+    "gamble": {
+      "chanceToWin": "$sender, шанс выиграть в !gamble установлен на $value%",
+      "zeroBet": "$sender, вы не можете ставить 0 $pointsName",
+      "minimalBet": "$sender, минимальная ставка для !gamble установлена на $value",
+      "lowerThanMinimalBet": "$sender, минимальная ставка для !gamble равна $points $pointsName",
+      "notEnoughOptions": "$sender, вам нужно указать кол-во поинтов для игры",
+      "notEnoughPoints": "$sender, у вас нет $points $pointsName для игры",
+      "win": "$sender, вы выиграли! Теперь у вас $points $pointsName",
+      "winJackpot": "$sender, вы получили JACKPOT! Вы выиграли $jackpot $jackpotName помимо вашей ставки. Теперь у вас $points $pointsName",
+      "loseWithJackpot": "$sender, вы ПРОИГРАЛИ! Теперь у вас $points $pointsName. Джекпот увеличился до $jackpot $jackpotName",
+      "lose": "$sender, вы проиграли! Теперь у вас $points $pointsName",
+      "currentJackpot": "$sender, текущий джекпот для $command равен $points $pointsName",
+      "winJackpotCount": "$sender, вы выиграли $count джекпотов",
+      "jackpotIsDisabled": "$sender, джекпот отключен для $command."
+    }
+  },
+  "highlights": {
+    "saved": "$sender, яркий момент был сохранён на отметке $hoursч$minutesм$secondsc",
+    "list": {
+      "items": "$sender, список сохраненных ярких моментов для последнего стрима: $items",
+      "empty": "$sender, никаких ярких событий не было сохранено"
+    },
+    "offline": "$sender, невозможно сохранить яркий момент, стрим оффлайн"
+  },
+  "whisper": {
+    "settings": {
+      "disablePermissionWhispers": {
+        "true": "Bot won't send errors on insufficient permissions",
+        "false": "Bot won't send errors on insufficient permissions through whispers"
+      },
+      "disableCooldownWhispers": {
+        "true": "Бот не будет отправлять уведомления о кулдауне",
+        "false": "Бот будет отправлять уведомления о кулдауне в висперсы"
+      }
+    }
+  },
+  "time": "Текущее время в часовом поясе стримера: $time",
+  "subs": "$sender, сейчас $onlineSubCount онлайн сабскрайберов. Последний sub/resub был $lastSubUsername $lastSubAgo",
+  "followers": "$sender, last follow was $lastFollowUsername $lastFollowAgo",
+  "ignore": {
+    "user": {
+      "is": {
+        "not": {
+          "ignored": "$sender, пользователь $username не игнорируется ботом"
+        },
+        "added": "$sender, пользователь $username добавлен в игнорируемый ботом список",
+        "removed": "$sender, пользователь $username убран из из списка игнорируемых",
+        "ignored": "$sender, пользователь $username игнорируется ботом"
+      }
+    }
+  },
+  "filters": {
+    "setVariable": "$sender, $variable изменено на $value."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Statut",
+    "secretToken": {
+      "title": "Secret token",
+      "help": "Obtenez un secret token dans les paramètres du tableau de bord de Qiwi Donate -> cliquez sur afficher le secret token"
+    }
+  }
+}

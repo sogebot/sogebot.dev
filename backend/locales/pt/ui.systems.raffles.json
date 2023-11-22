@@ -1,0 +1,36 @@
+{
+  "widget": {
+    "subscribers-luck": "Sorte dos assinantes"
+  },
+  "settings": {
+    "enabled": "Situação",
+    "announceNewEntries": {
+      "title": "Anunciar novas entradas",
+      "help": "Se usuários se juntarem ao sorteio, a mensagem de anúncio será enviada para o chat após um tempo."
+    },
+    "announceNewEntriesBatchTime": {
+      "title": "Quanto tempo esperar para anunciar novas entradas (em segundos)",
+      "help": "O tempo mais longo manterá o chat limpo, as entradas serão agregadas."
+    },
+    "deleteRaffleJoinCommands": {
+      "title": "Excluir comando de juntar para o usuário juntar-se ao sorteio",
+      "help": "Isto excluirá a mensagem do usuário se eles usarem o comando !yourraffle. Deve manter o chat limpo."
+    },
+    "allowOverTicketing": {
+      "title": "Permitir tickets a mais",
+      "help": "Permitir que o usuário se junte ao sorteio com ticket de excesso de seus pontos. Por exemplo, o usuário tem 10 pontos, mas pode juntar-se ao !raffle 100, que usará todos os seus pontos."
+    },
+    "raffleAnnounceInterval": {
+      "title": "Intervalo do anúncio",
+      "help": "Minutos"
+    },
+    "raffleAnnounceMessageInterval": {
+      "title": "Anunciar intervalo de mensagem",
+      "help": "Quantas mensagens devem ser enviadas no chat até que o anúncio possa ser publicado."
+    },
+    "subscribersPercent": {
+      "title": "Sorte de assinantes adicionais",
+      "help": "em percentagens"
+    }
+  }
+}

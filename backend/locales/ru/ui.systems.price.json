@@ -1,0 +1,14 @@
+{
+  "emitRedeemEvent": "Trigger custom alerts on bit redeem",
+  "price": {
+    "name": "цена",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Это поле не может быть пустым"
+  },
+  "warning": "Это действие нельзя будет отменить!",
+  "settings": {
+    "enabled": "Статус"
+  }
+}

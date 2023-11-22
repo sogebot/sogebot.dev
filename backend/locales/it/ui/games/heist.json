@@ -1,0 +1,30 @@
+{
+  "name": "Rapina",
+  "settings": {
+    "enabled": "Stato",
+    "showMaxUsers": "Numero massimo di utenti da mostrare nel pagamento",
+    "copsCooldownInMinutes": {
+      "title": "Attesa tra rapine",
+      "help": "Minuti"
+    },
+    "entryCooldownInSeconds": {
+      "title": "Tempo per entrare nella rapina",
+      "help": "Secondi"
+    },
+    "started": "Messaggio iniziale della rapina",
+    "nextLevelMessage": "Messaggio quando viene raggiunto il livello successivo",
+    "maxLevelMessage": "Messaggio quando viene raggiunto il livello massimo",
+    "copsOnPatrol": "Risposta del bot quando la rapina è ancora in fase di attesa",
+    "copsCooldown": "Annuncio del bot quando la rapina può essere avviata",
+    "singleUserSuccess": "Messaggio di successo per un utente",
+    "singleUserFailed": "Messaggio di errore per un utente",
+    "noUser": "Messaggio se nessun utente ha partecipato"
+  },
+  "message": "Messaggio",
+  "winPercentage": "Percentuale di vincita",
+  "payoutMultiplier": "Moltiplicatore di pagamento",
+  "maxUsers": "Numero massimo di utenti per livello",
+  "percentage": "Percentuale",
+  "noResultsFound": "Nessun risultato trovato. Clicca il pulsante qui sotto per aggiungere un nuovo risultato.",
+  "noLevelsFound": "Nessun livello trovato. Fare clic sul pulsante qui sotto per aggiungere un nuovo livello."
+}

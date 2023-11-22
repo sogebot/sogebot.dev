@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "cooldown": "Nedkøling",
+    "duration": {
+      "title": "Varighed",
+      "help": "Minutter"
+    },
+    "minimalBet": "Minimal indsats",
+    "bypassCooldownByOwnerAndMods": "Bypass nedkøling af ejer og mods"
+  }
+}

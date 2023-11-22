@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "enabled": "Стан",
+    "eligibilityAll": "Усі",
+    "eligibilityFollowers": "Підписники",
+    "eligibilitySubscribers": "Сабкрайбери"
+  }
+}

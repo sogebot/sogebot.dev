@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "apiKey": {
+      "title": "API klíč",
+      "help": "Získejte socket token z tipeeestream dashboard -> API -> Your API key"
+    }
+  }
+}

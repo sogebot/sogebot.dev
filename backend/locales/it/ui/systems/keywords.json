@@ -1,0 +1,27 @@
+{
+  "new": "Nuova Parola Chiave",
+  "empty": "Nessuna parola chiave è stata ancora creata.",
+  "emptyAfterSearch": "Nessuna parola chiave trovata dalla tua ricerca per <strong>\"$search\"</strong>.",
+  "keyword": {
+    "name": "Parola Chiave / Espressione Regolare",
+    "placeholder": "Imposta la parola chiave o l'espressione regolare per attivare la parola chiave.",
+    "help": "Puoi usare regexp (case insensitive) per usare parole chiave, ad esempio <strong>hello.*<unk> hi</strong>"
+  },
+  "response": {
+    "name": "Risposta",
+    "placeholder": "Imposta qui la tua risposta."
+  },
+  "error": {
+    "isEmpty": "Questo valore non può essere vuoto"
+  },
+  "no-responses-set": "Nessuna risposta",
+  "addResponse": "Aggiungi risposta",
+  "filter": {
+    "name": "filtro",
+    "placeholder": "Aggiungi filtro per questa risposta"
+  },
+  "warning": "Questa azione non può essere annullata!",
+  "settings": {
+    "enabled": "Stato"
+  }
+}

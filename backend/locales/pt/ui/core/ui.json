@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "theme": "Tema padrão",
+    "domain": {
+      "title": "Domínio",
+      "help": "Formato sem http/https: seudominio.com ou seu.dominio.com"
+    },
+    "percentage": "Diferença de porcentagem para estatísticas",
+    "shortennumbers": "Formato curto dos números",
+    "showdiff": "Mostrar diferenças",
+    "enablePublicPage": "Ativar página pública"
+  }
+}

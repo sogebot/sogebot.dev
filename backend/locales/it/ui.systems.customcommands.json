@@ -1,0 +1,12 @@
+{
+  "no-responses-set": "Nessuna risposta",
+  "addResponse": "Aggiungi risposta",
+  "response": {
+    "name": "Risposta",
+    "placeholder": "Imposta qui la tua risposta."
+  },
+  "filter": {
+    "name": "filtro",
+    "placeholder": "Aggiungi filtro per questa risposta"
+  }
+}

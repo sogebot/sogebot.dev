@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "enabled": "Stato",
+    "minimalBet": "Puntata minima",
+    "chanceToWin": {
+      "title": "Probabilità di vincere",
+      "help": "Percentuale"
+    },
+    "enableJackpot": "Abilita jackpot",
+    "chanceToTriggerJackpot": "Possibilità di attivare il jackpot in %",
+    "maxJackpotValue": "Valore massimo del jackpot",
+    "lostPointsAddedToJackpot": "Quanti punti persi dovrebbero essere aggiunti al jackpot in %"
+  }
+}

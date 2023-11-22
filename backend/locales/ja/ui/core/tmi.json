@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "ignorelist": "無視リスト（IDまたはユーザ名）",
+    "showWithAt": "Show users with @",
+    "sendWithMe": "Send messages with /me",
+    "sendAsReply": "ボットメッセージを返信として送信する",
+    "mute": "ボットはミュートされています",
+    "whisperListener": "Listen on commands on whispers"
+  }
+}

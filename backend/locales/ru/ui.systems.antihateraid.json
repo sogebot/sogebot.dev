@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "clearChat": "Очистить чат",
+    "mode": "Режим",
+    "minFollowTime": "Minimum follow time",
+    "customAnnounce": "Customize announcement on anti hate raid enable"
+  }
+}

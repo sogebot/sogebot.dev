@@ -1,0 +1,7 @@
+{
+  "settings": {
+    "cClipsVolume": "Hlasitost",
+    "cClipsFilter": "Filter klipu",
+    "cClipsLabel": "Ukazát 'clip' popisek"
+  }
+}

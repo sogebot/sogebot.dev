@@ -1,0 +1,30 @@
+{
+  "add": {
+    "ok": "$sender, citação $id '$quote' foi adicionada. (tags: $tags)",
+    "error": "$sender, $command não é correto ou falta o parâmetro -quote"
+  },
+  "remove": {
+    "ok": "$sender, citação $id foi excluída com sucesso.",
+    "error": "$sender, ID da citação está faltando.",
+    "not-found": "$sender, citação $id não foi encontrada."
+  },
+  "show": {
+    "ok": "Cotação $id por $quotedBy '$quote'",
+    "error": {
+      "no-parameters": "$sender, $command está faltando -id ou -tag.",
+      "not-found-by-id": "$sender, citação $id não foi encontrada.",
+      "not-found-by-tag": "$sender, não foram encontradas citações com a tag $tag."
+    }
+  },
+  "set": {
+    "ok": "$sender, citação $id teve suas tags definidas. (tags: $tags)",
+    "error": {
+      "no-parameters": "$sender, $command está faltando -id ou -tag.",
+      "not-found-by-id": "$sender, citação $id não foi encontrada."
+    }
+  },
+  "list": {
+    "ok": "$sender, Você pode encontrar a lista de citações em http://$urlBase/public/#/quotes",
+    "is-localhost": "$sender, a URL da lista de citação não foi especificada corretamente."
+  }
+}

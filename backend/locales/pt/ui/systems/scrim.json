@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "waitForMatchIdsInSeconds": {
+      "title": "Intervalo para colocar o ID da partida no chat",
+      "help": "Definir em segundos"
+    }
+  }
+}

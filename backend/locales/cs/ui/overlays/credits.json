@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "cCreditsSpeed": "Rychlost titulek",
+    "cCreditsAggregated": "Souhrnné titulky",
+    "cShowGameThumbnail": "Zobrazit miniaturu hry",
+    "cShowFollowers": "Zobrazit followery",
+    "cShowRaids": "Zobrazit raidy",
+    "cShowSubscribers": "Zobrazit subscribery",
+    "cShowSubgifts": "Zobrazit darované suby",
+    "cShowSubcommunitygifts": "Zobrazit suby darované komunitě",
+    "cShowResubs": "Zobrazit resuby",
+    "cShowCheers": "Zobrazit cheery",
+    "cShowClips": "Zobrazit klipy",
+    "cShowTips": "Zobrazit tipy",
+    "cTextLastMessage": "Poslední zpráva",
+    "cTextLastSubMessage": "Poslední podzpráva",
+    "cTextStreamBy": "Streamoval",
+    "cTextFollow": "Follow od",
+    "cTextRaid": "Raidování",
+    "cTextCheer": "Cheer od",
+    "cTextSub": "Subscribe od",
+    "cTextResub": "Resub od",
+    "cTextSubgift": "Darovaný sub",
+    "cTextSubcommunitygift": "Sub darovaný komunitě",
+    "cTextTip": "Tip od",
+    "cClipsPeriod": "Časové období",
+    "cClipsCustomPeriodInDays": "Vlastní časové období (dny)",
+    "cClipsNumOfClips": "Počet klipů",
+    "cClipsShouldPlay": "Bude klipy přehrávány",
+    "cClipsVolume": "Hlasitost"
+  }
+}

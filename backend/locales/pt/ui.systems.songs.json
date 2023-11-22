@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "volume": "Volume",
+    "calculateVolumeByLoudness": "Volume dinâmico por ruído",
+    "duration": {
+      "title": "Duração da música",
+      "help": "Em minutos"
+    },
+    "shuffle": "Embaralhar",
+    "songrequest": "Reproduzir de solicitação de música",
+    "playlist": "Reproduzir da playlist",
+    "onlyMusicCategory": "Permitir apenas música de categoria",
+    "allowRequestsOnlyFromPlaylist": "Permitir solicitações de música somente da lista atual",
+    "notify": "Enviar mensagem ao mudar a música"
+  },
+  "error": {
+    "isEmpty": "Este valor não pode ficar vazio"
+  },
+  "startTime": "Comece a música em",
+  "endTime": "Finalizar música em",
+  "add_song": "Adicionar música",
+  "add_or_import": "Adicionar música ou importar da playlist",
+  "importing": "Importando",
+  "importing_done": "Importação Concluída",
+  "seconds": "Segundos",
+  "calculated": "Calculado",
+  "set_manually": "Definir manualmente",
+  "bannedSongsEmptyAfterSearch": "Nenhuma música banida foi encontrada para sua pesquisa por <strong>\"$search\"</strong>.",
+  "emptyAfterSearch": "Nenhuma música foi encontrada para sua pesquisa por <strong>\"$search\"</strong>.",
+  "empty": "Nenhuma música foi adicionada ainda.",
+  "bannedSongsEmpty": "Nenhuma música foi adicionada a lista de banimento ainda."
+}

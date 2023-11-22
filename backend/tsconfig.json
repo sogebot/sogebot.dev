@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "strict": true,
+    "module": "es2022",
+    "incremental": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "lib": ["es2022"],
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "noResolve": false,
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@entity/*": [
+        "./database/entity/*"
+      ]
+    },
+    "outDir": "./dest",
+    "inlineSourceMap": true,
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "include": [
+    "./src",
+    "./d.ts/*",
+    "../d.ts/types.d.ts",
+    "../d.ts/*"
+  ],
+  "exclude": [
+    "test",
+    "node_modules"
+  ]
+}

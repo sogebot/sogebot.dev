@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "cListsEnabled": "Enforce the rule",
+    "cLinksEnabled": "Enforce the rule",
+    "cSymbolsEnabled": "Enforce the rule",
+    "cLongMessageEnabled": "Enforce the rule",
+    "cCapsEnabled": "Enforce the rule",
+    "cSpamEnabled": "Enforce the rule",
+    "cColorEnabled": "Enforce the rule",
+    "cEmotesEnabled": "Enforce the rule",
+    "cListsWhitelist": {
+      "title": "Allowed words",
+      "help": "To allow domains use \"domain:prtzl.io\""
+    },
+    "autobanMessages": "Autoban Messages",
+    "cListsBlacklist": "Forbidden words",
+    "cListsTimeout": "Время таймаута",
+    "cLinksTimeout": "Время таймаута",
+    "cSymbolsTimeout": "Время таймаута",
+    "cLongMessageTimeout": "Время таймаута",
+    "cCapsTimeout": "Время таймаута",
+    "cSpamTimeout": "Время таймаута",
+    "cColorTimeout": "Время таймаута",
+    "cEmotesTimeout": "Время таймаута",
+    "cWarningsShouldClearChat": "Очищать чат (таймаут на 1с)",
+    "cLinksIncludeSpaces": "Включая пробелы",
+    "cLinksIncludeClips": "Включая клипы",
+    "cSymbolsTriggerLength": "Длина сообщения для срабатывания",
+    "cLongMessageTriggerLength": "Длина сообщения для срабатывания",
+    "cCapsTriggerLength": "Длина сообщения для срабатывания",
+    "cSpamTriggerLength": "Длина сообщения для срабатывания",
+    "cSymbolsMaxSymbolsConsecutively": "Максимальное количество символов последовательно",
+    "cSymbolsMaxSymbolsPercent": "Максимальное % символов",
+    "cCapsMaxCapsPercent": "Максимально капса в %",
+    "cSpamMaxLength": "Максимальная длина",
+    "cEmotesMaxCount": "Максимальное число",
+    "cWarningsAnnounceTimeouts": "Объявить таймауты в чате для всех",
+    "cWarningsAllowedCount": "Количество предупреждений",
+    "cEmotesEmojisAreEmotes": "Считать эмодзи как смайлики"
+  }
+}

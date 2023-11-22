@@ -1,0 +1,7 @@
+{
+  "currentLevel": "$username, livello: $currentLevel ($currentXP $xpName), $nextXP $xpName al livello successivo.",
+  "changeXP": "$sender, hai cambiato $xpName da $amount $xpName a $username.",
+  "notEnoughPointsToBuy": "Ci dispiace $sender, ma non hai $points $pointsName per acquistare $amount $xpName per il livello $level.",
+  "XPBoughtByPoints": "$sender, hai comprato $amount $xpName con $points $pointsName e raggiunto il livello $level.",
+  "somethingGetWrong": "$sender, qualcosa non va nella tua richiesta."
+}

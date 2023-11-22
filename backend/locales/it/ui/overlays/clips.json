@@ -1,0 +1,7 @@
+{
+  "settings": {
+    "cClipsVolume": "Volume",
+    "cClipsFilter": "Filtro clip",
+    "cClipsLabel": "Mostra etichetta 'clip'"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "countdown": "Correspondance de snipe ($type) commençant dans $time $unit",
+  "go": "Commence maintenant ! Go !",
+  "putMatchIdInChat": "Veuillez mettre l'ID de recherche dans le chat => $command xxx",
+  "currentMatches": "Correspondances actuelles: $matches",
+  "stopped": "La recherche a été annulée."
+}

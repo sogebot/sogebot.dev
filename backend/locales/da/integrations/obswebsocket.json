@@ -1,0 +1,7 @@
+{
+  "runTask": {
+    "EntityNotFound": "$sender, der er ingen handling sat for id:$id!",
+    "ParameterError": "$sender, du skal angive et ID!",
+    "UnknownError": "$sender, noget gik galt. Tjek logs for botten, for yderligere informationer."
+  }
+}

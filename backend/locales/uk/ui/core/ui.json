@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "theme": "Тема за замовчуванням",
+    "domain": {
+      "title": "Домен",
+      "help": "Форматувати без http/https: yourdomain.com або your.domain.com"
+    },
+    "percentage": "Відсоток різниці для статистики",
+    "shortennumbers": "Короткий формат чисел",
+    "showdiff": "Показати різницю",
+    "enablePublicPage": "Увімкнути публічну сторінку"
+  }
+}

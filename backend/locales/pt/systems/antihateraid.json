@@ -1,0 +1,8 @@
+{
+  "announce": "Este chat foi definido para $mode por $username para se livrar do ataque do ódio. Desculpe a inconveniência!",
+  "mode": {
+    "0": "somente-inscritos",
+    "1": "somente-seguidores",
+    "2": "somente-emotes"
+  }
+}

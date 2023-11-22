@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Statut",
+    "consumerKey": "Clé Consommateur (clé d'API)",
+    "consumerSecret": "Secret du consommateur (API Secret)",
+    "accessToken": "Token d'Accès",
+    "secretToken": "Access Token Secret"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "formatSeparator": "Format separator",
+    "order": "Format",
+    "lastSeenFormat": {
+      "title": "Tidsformat",
+      "help": "Mulige formater kan findes på https://momentjs.com/docs/#/displaying/format/"
+    }
+  }
+}

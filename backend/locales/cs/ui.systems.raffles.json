@@ -1,0 +1,36 @@
+{
+  "widget": {
+    "subscribers-luck": "Štěstí Subscribera"
+  },
+  "settings": {
+    "enabled": "Status",
+    "announceNewEntries": {
+      "title": "Oznamovat nové vstupy",
+      "help": "Pokud se uživatelé připojí k tombole, oznámení bude po chvíli odesláno do chatu."
+    },
+    "announceNewEntriesBatchTime": {
+      "title": "Jak dlouho čekat před oznámením nových vstupů (v sekundách)",
+      "help": "Delší doba zachová čistší chat, vstupy budou sloučeny."
+    },
+    "deleteRaffleJoinCommands": {
+      "title": "Odstranit příkaz pro připojení uživatele do tomboly",
+      "help": "Tímto odstraníte zprávu uživatele při použití příkazu !yourraffle. Toto pomůže mít čistší chat."
+    },
+    "allowOverTicketing": {
+      "title": "Povolit vstup do raffle při použití více bodů",
+      "help": "Povolí vstup do raffle při použití více bodů než uživatel má. Např. uživatel má 10 bodů, ale může vstoupit do raffle pomocí !raffle 100, které použije všechny jeho body."
+    },
+    "raffleAnnounceInterval": {
+      "title": "Interval oznámení",
+      "help": "Minuty"
+    },
+    "raffleAnnounceMessageInterval": {
+      "title": "Interval oznámení - zprávy",
+      "help": "Kolik zpráv musí být odesláno do chatu, dokud nebude možné odeslat oznámení."
+    },
+    "subscribersPercent": {
+      "title": "Dodatečné štěstí subscribera",
+      "help": "v procentech"
+    }
+  }
+}

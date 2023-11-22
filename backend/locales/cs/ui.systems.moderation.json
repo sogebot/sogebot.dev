@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "cListsEnabled": "Vynutit pravidlo",
+    "cLinksEnabled": "Vynutit pravidlo",
+    "cSymbolsEnabled": "Vynutit pravidlo",
+    "cLongMessageEnabled": "Vynutit pravidlo",
+    "cCapsEnabled": "Vynutit pravidlo",
+    "cSpamEnabled": "Vynutit pravidlo",
+    "cColorEnabled": "Vynutit pravidlo",
+    "cEmotesEnabled": "Vynutit pravidlo",
+    "cListsWhitelist": {
+      "title": "Povolená slova",
+      "help": "Pro povolení domén použijte \"domain:prtzl.io\""
+    },
+    "autobanMessages": "Autoban zprávy",
+    "cListsBlacklist": "Zakázaná slova",
+    "cListsTimeout": "Čas trvání timeoutu",
+    "cLinksTimeout": "Čas trvání timeoutu",
+    "cSymbolsTimeout": "Čas trvání timeoutu",
+    "cLongMessageTimeout": "Čas trvání timeoutu",
+    "cCapsTimeout": "Čas trvání timeoutu",
+    "cSpamTimeout": "Čas trvání timeoutu",
+    "cColorTimeout": "Čas trvání timeoutu",
+    "cEmotesTimeout": "Čas trvání timeoutu",
+    "cWarningsShouldClearChat": "Promaže chat (dostane timeout 1s)",
+    "cLinksIncludeSpaces": "Zahrnout mezeru",
+    "cLinksIncludeClips": "Zahrnout klipy",
+    "cSymbolsTriggerLength": "Kontrolovat od této délky zprávy",
+    "cLongMessageTriggerLength": "Kontrolovat od této délky zprávy",
+    "cCapsTriggerLength": "Kontrolovat od této délky zprávy",
+    "cSpamTriggerLength": "Kontrolovat od této délky zprávy",
+    "cSymbolsMaxSymbolsConsecutively": "Maximální počet symbolů po sobě",
+    "cSymbolsMaxSymbolsPercent": "Maximálně symbolů v %",
+    "cCapsMaxCapsPercent": "Maximálně velkých písmen v %",
+    "cSpamMaxLength": "Maximální délka",
+    "cEmotesMaxCount": "Maximální počet",
+    "cWarningsAnnounceTimeouts": "Oznámit timeout v chatu pro každého",
+    "cWarningsAllowedCount": "Počet výstrah",
+    "cEmotesEmojisAreEmotes": "Považovat emoji za emotikony"
+  }
+}

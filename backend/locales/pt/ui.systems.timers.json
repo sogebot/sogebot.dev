@@ -1,0 +1,10 @@
+{
+  "new": "Novo Temporizador",
+  "empty": "Nenhum temporizador foi criado ainda.",
+  "emptyAfterSearch": "Nenhum temporizador foi encontrado na sua pesquisa por <strong>\"$search\"</strong>.",
+  "add_response": "Adicionar Resposta",
+  "settings": {
+    "enabled": "Situação"
+  },
+  "warning": "Esta ação não pode ser revertida!"
+}

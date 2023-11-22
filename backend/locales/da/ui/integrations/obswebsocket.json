@@ -1,0 +1,59 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "accessBy": {
+      "title": "Tilgængelig for",
+      "help": "Direkte - tilslut direkte fra en bot | Overlag - tilslut via overlag browserkilde"
+    },
+    "address": "Adresse",
+    "password": "Adgangskode"
+  },
+  "noSourceSelected": "Ingen kilde valgt",
+  "noSceneSelected": "Ingen scene valgt",
+  "empty": "Ingen handlingssæt er blevet oprettet endnu.",
+  "emptyAfterSearch": "Ingen handlingsssæt blev fundet ved din søgning efter <strong>\"$search\"</strong>.",
+  "command": "Kommando",
+  "new": "Opret nyt OBS Websocket handlingssæt",
+  "actions": "Handlinger",
+  "name": {
+    "name": "Navn"
+  },
+  "mute": "Lyd fra",
+  "unmute": "Lyd til",
+  "SetCurrentScene": {
+    "name": "SetCurrentScene"
+  },
+  "StartReplayBuffer": {
+    "name": "StartReplayBuffer"
+  },
+  "StopReplayBuffer": {
+    "name": "StopReplayBuffer"
+  },
+  "SaveReplayBuffer": {
+    "name": "SaveReplayBuffer"
+  },
+  "WaitMs": {
+    "name": "Vent X millisekunder"
+  },
+  "Log": {
+    "name": "Log meddelelser"
+  },
+  "StartRecording": {
+    "name": "StartOptagelse"
+  },
+  "StopRecording": {
+    "name": "StopOptagelse"
+  },
+  "PauseRecording": {
+    "name": "PauseOptagelse"
+  },
+  "ResumeRecording": {
+    "name": "FortsætOptagelse"
+  },
+  "SetMute": {
+    "name": "SetMute"
+  },
+  "SetVolume": {
+    "name": "SetVolume"
+  }
+}

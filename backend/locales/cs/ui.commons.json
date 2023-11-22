@@ -1,0 +1,18 @@
+{
+  "additional-settings": "Doplňující nastavení",
+  "never": "nikdy",
+  "reset": "resetovat",
+  "moveUp": "posunout nahoru",
+  "moveDown": "posunout dolů",
+  "stop-if-executed": "po provedení nepokračuje",
+  "continue-if-executed": "po provedení pokračuje",
+  "generate": "Vygenerovat",
+  "thumbnail": "Miniatura",
+  "yes": "Ano",
+  "no": "Ne",
+  "show-more": "Zobrazit více",
+  "show-less": "Zobrazit méně",
+  "allowed": "Povoleno",
+  "disallowed": "Zakázáno",
+  "back": "Zpět"
+}

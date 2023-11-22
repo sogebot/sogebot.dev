@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "minimalBet": "Minimal indsats",
+    "chanceToWin": {
+      "title": "Chance for at vinde",
+      "help": "Procent"
+    },
+    "enableJackpot": "Aktivér jackpot",
+    "chanceToTriggerJackpot": "Chance for at udløse jackpot i %",
+    "maxJackpotValue": "Maksimal jackpotværdi",
+    "lostPointsAddedToJackpot": "Hvor mange mistede point skal tilføjes til jackpot i %"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "responsiveVoiceKeyNotSet": "Vous n'avez pas correctement défini <a href='#/settings/integrations/responsivevoice'>ResponsiveVoice key</a>",
+    "voice": {
+      "title": "Voix",
+      "help": "Si les voix ne se chargent pas correctement après la mise à jour de la clé ResponsiveVoice, essayez de rafraîchir le navigateur"
+    },
+    "volume": "Volume",
+    "rate": "Taux",
+    "pitch": "Pitch",
+    "triggerTTSByHighlightedMessage": "La synthèse vocale sera déclenchée par un message surligné"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "urls": "URLs",
+  "generateurl": "Gerar uma nova URL",
+  "show-examples": "mostra exemplos CURL",
+  "response": {
+    "show": "Exibir resposta após POST",
+    "name": "Resposta após definir variável",
+    "default": "Padrão",
+    "default-placeholder": "Definir resposta do seu bot",
+    "default-help": "Use $value para obter novo valor da variável",
+    "custom": "Personalizado",
+    "command": "Comando"
+  },
+  "useIfInCommand": "Use se você usar a variável no comando. Retornará somente a variável atualizada sem resposta.",
+  "permissionToChange": "Permissão para modicar",
+  "isReadOnly": "somente leitura no chat",
+  "isNotReadOnly": "pode ser alterado através do bate-papo",
+  "no-variables-found": "Nenhuma variável encontrada",
+  "additional-info": "Informação adicional",
+  "run-script": "Executar o script",
+  "last-run": "Última data de execução",
+  "variable": {
+    "name": "Nome da variável",
+    "help": "O nome da variável deve ser único, por exemplo, $_wins, $_loses, $_top3",
+    "placeholder": "Digite o nome único da variável",
+    "error": {
+      "isNotUnique": "A variável precisa ter um nome único.",
+      "isEmpty": "O nome da variável não pode estar vazio."
+    }
+  },
+  "description": {
+    "name": "Descrição",
+    "help": "Descrição opcional",
+    "placeholder": "Digite sua descrição opcional"
+  },
+  "type": {
+    "name": "Tipo",
+    "error": {
+      "isNotSelected": "Por favor, escolha um tipo variável."
+    }
+  },
+  "currentValue": {
+    "name": "Valor atual",
+    "help": "Se o tipo é definido como <strong>script Avaliado</strong>, o valor não pode ser alterado manualmente"
+  },
+  "usableOptions": {
+    "name": "Opções utilizáveis",
+    "placeholder": "Entrada, sua, opções, aqui",
+    "help": "Opções que podem ser usadas com esta variável, exemplo: <strong>SOLO, DUO, 3-SQ, SQUAD</strong>",
+    "error": {
+      "atLeastOneValue": "Você precisa definir ao menos 1 valor."
+    }
+  },
+  "scriptToEvaluate": "Script para avaliar",
+  "runScript": {
+    "name": "Executar script",
+    "error": {
+      "isNotSelected": "Por favor, selecione uma opção."
+    }
+  },
+  "testCurrentScript": {
+    "name": "Testar script atual",
+    "help": "Clique em <strong>Testar o script atual</strong> para ver o valor na entrada <strong>Atual</strong>"
+  },
+  "history": "Histórico",
+  "historyIsEmpty": "Histórico para esta variável está vazio!",
+  "warning": "<strong>Aviso:</strong> Todos os dados desta variável serão descartados!",
+  "choose": "Escolha...",
+  "types": {
+    "number": "Número",
+    "text": "Texto",
+    "options": "Opções",
+    "eval": "Script"
+  },
+  "runEvery": {
+    "isUsed": "Quando a variável é usada"
+  }
+}
+

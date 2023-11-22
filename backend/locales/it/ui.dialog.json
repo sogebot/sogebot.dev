@@ -1,0 +1,70 @@
+{
+  "title": {
+    "edit": "Modifica",
+    "add": "Aggiungi"
+  },
+  "position": {
+    "settings": "Impostazioni posizione",
+    "anchorX": "Posizione ancoraggio X",
+    "anchorY": "Posizione ancoraggio Y",
+    "left": "Sinistra",
+    "right": "Destra",
+    "middle": "Medio",
+    "top": "Alto",
+    "bottom": "Basso",
+    "x": "X",
+    "y": "Y"
+  },
+  "font": {
+    "shadowShiftRight": "Sposta A Destra",
+    "shadowShiftDown": "Scorri in basso",
+    "shadowBlur": "Sfocatura",
+    "shadowOpacity": "Opacità",
+    "color": "Colore"
+  },
+  "errors": {
+    "required": "Questo campo non può essere vuoto.",
+    "minValue": "Il valore più basso di questo input è $value."
+  },
+  "buttons": {
+    "reorder": "Riordina",
+    "upload": {
+      "idle": "Carica",
+      "progress": "Caricamento",
+      "done": "Caricato"
+    },
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "test": {
+      "idle": "Prova",
+      "progress": "Prove in corso",
+      "done": "Test effettuato"
+    },
+    "saveChanges": {
+      "idle": "Salva modifiche",
+      "invalid": "Impossibile salvare le modifiche",
+      "progress": "Salvataggio delle modifiche",
+      "done": "Modifiche salvate"
+    },
+    "something-went-wrong": "Qualcosa è andato storto",
+    "mark-to-delete": "Segna per eliminare",
+    "disable": "Disattiva",
+    "enable": "Attiva",
+    "disabled": "Disabilitato",
+    "enabled": "Attivato",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "play": "Esegui",
+    "stop": "Arresta",
+    "hold-to-delete": "Tieni premuto per eliminare",
+    "yes": "Si",
+    "no": "No",
+    "permission": "Permesso",
+    "group": "Gruppo",
+    "visibility": "Visibilità",
+    "reset": "Reset "
+  },
+  "changesPending": "Le modifiche non sono state salvate.",
+  "formNotValid": "Modulo non valido.",
+  "nothingToShow": "Niente da mostrare qui."
+}

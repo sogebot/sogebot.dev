@@ -1,0 +1,86 @@
+{
+  "addGoalGroup": "Přidat skupinu cílů",
+  "addGoal": "Přidat cíl",
+  "newGoal": "Nový cíl",
+  "newGoalGroup": "Nová skupina cílů",
+  "goals": "Cíle",
+  "general": "Obecné",
+  "display": "Zobrazení",
+  "fontSettings": "Nastavení písma",
+  "barSettings": "Nastavení sloupce",
+  "selectGoalOnLeftSide": "Vyberte nebo přidejte cíl na levé straně",
+  "input": {
+    "description": {
+      "title": "Popis"
+    },
+    "goalAmount": {
+      "title": "Částka cíle"
+    },
+    "countBitsAsTips": {
+      "title": "Počítat Bity s Tipy"
+    },
+    "currentAmount": {
+      "title": "Aktuální částka"
+    },
+    "endAfter": {
+      "title": "Konec po"
+    },
+    "endAfterIgnore": {
+      "title": "Tento cíl nevyprší"
+    },
+    "borderPx": {
+      "title": "Ohraničení",
+      "help": "Velikost ohraničení je v pixelech"
+    },
+    "barHeight": {
+      "title": "Výška sloupce",
+      "help": "Výška sloupce je v pixelech"
+    },
+    "color": {
+      "title": "Barva"
+    },
+    "borderColor": {
+      "title": "Barva ohraničení"
+    },
+    "backgroundColor": {
+      "title": "Barva pozadí"
+    },
+    "type": {
+      "title": "Typ"
+    },
+    "nameGroup": {
+      "title": "Název této skupiny"
+    },
+    "name": {
+      "title": "Název tohoto cíle"
+    },
+    "displayAs": {
+      "title": "Zobrazit jako",
+      "help": "Nastaví, jak se má zobrazit cílová skupina"
+    },
+    "durationMs": {
+      "title": "Doba trvání",
+      "help": "Tato hodnota je v milisekundách",
+      "placeholder": "Jak dlouho má být cíl zobrazen"
+    },
+    "animationInMs": {
+      "title": "Doba trvání vstupní animace",
+      "help": "Tato hodnota je v milisekundách",
+      "placeholder": "Nastavte dobu trvání vstupní animace"
+    },
+    "animationOutMs": {
+      "title": "Doba trvání výstupní animace",
+      "help": "Tato hodnota je v milisekundách",
+      "placeholder": "Nastavte dobu trvání výstupní animace"
+    },
+    "interval": {
+      "title": "Jaký interval se má počítat"
+    },
+    "spaceBetweenGoalsInPx": {
+      "title": "Prostor mezi cíly",
+      "help": "Tato hodnota je v pixelech",
+      "placeholder": "Nastavte prostor mezi cíly"
+    }
+  },
+  "groupSettings": "Nastavení skupiny"
+}

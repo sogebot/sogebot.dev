@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "generalOwners": "Owners",
+    "botAccessToken": "AccessToken",
+    "channelAccessToken": "AccessToken",
+    "botRefreshToken": "RefreshToken",
+    "channelRefreshToken": "RefreshToken",
+    "botUsername": "Username",
+    "channelUsername": "Username",
+    "botExpectedScopes": "Scopes",
+    "channelExpectedScopes": "Scopes"
+  }
+}

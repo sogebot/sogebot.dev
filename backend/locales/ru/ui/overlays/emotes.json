@@ -1,0 +1,48 @@
+{
+	"settings": {
+		"btnRemoveCache": "Очистить кэш",
+		"hypeMessagesEnabled": "Show hype messages in chat",
+		"btnTestExplosion": "Test emote explosion",
+		"btnTestEmote": "Test emote",
+		"btnTestFirework": "Test emote firework",
+		"cEmotesSize": "Размер эмоций",
+		"cEmotesMaxEmotesPerMessage": "Maximum of emotes per message",
+		"cEmotesMaxRotation": "Maximal rotation of emote",
+		"cEmotesOffsetX": "Maximal offset on X-axis",
+		"cEmotesAnimation": "Анимация",
+		"cEmotesAnimationTime": "Продолжительность анимации",
+		"cExplosionNumOfEmotes": "Количество эмоций",
+		"cExplosionNumOfEmotesPerExplosion": "Количество эмоций за взрыв",
+		"cExplosionNumOfExplosions": "Кол-во взрывов",
+		"enableEmotesCombo": "Enable emotes combo",
+		"comboBreakMessages": "Combo break messages",
+		"threshold": "Threshold",
+		"noMessagesFound": "No messages found.",
+		"message": "Сообщение",
+		"showEmoteInOverlayThreshold": "Minimal message threshold to show emote in overlay",
+		"hideEmoteInOverlayAfter": {
+			"title": "Hide emote in overlay after inactivity",
+			"help": "Will hide emote in overlay after certain time in seconds"
+		},
+		"comboCooldown": {
+			"title": "Combo cooldown",
+			"help": "Cooldown of combo in seconds"
+		},
+		"comboMessageMinThreshold": {
+			"title": "Minimal message threshold",
+			"help": "Minimal message threshold to count emotes as combo (until then won't trigger cooldown)"
+		},
+		"comboMessages": "Combo messages"
+	},
+	"hype": {
+		"5": "Let's go! We got $amountx $emote combo so far! SeemsGood",
+		"15": "Keep it going! Can we get more than $amountx $emote? TriHard"
+	},
+	"message": {
+		"3": "$amountx $emote combo",
+		"5": "$amountx $emote combo SeemsGood",
+		"10": "$amountx $emote combo PogChamp",
+		"15": "$amountx $emote combo TriHard",
+		"20": "$sender ruined $amountx $emote combo! NotLikeThis"
+	}
+}

@@ -1,0 +1,20 @@
+{
+  "settings": {
+    "enabled": "Situação"
+  },
+  "empty": "Nenhum jogo foi rastreado ainda.",
+  "emptyAfterSearch": "Nenhum jogo monitorado foi encontrado na sua pesquisa por <strong>\"$search\"</strong>.",
+  "when": "Quando transmitido",
+  "time": "Tempo registrado",
+  "overallTime": "Tempo geral",
+  "offset": "Deslocamento de tempo rastreado",
+  "main": "Principal",
+  "extra": "Principal + extra",
+  "completionist": "Complecionista",
+  "game": "Jogo rastreado",
+  "startedAt": "Rastreamento começou em",
+  "updatedAt": "Última atualização",
+  "showHistory": "Mostrar histórico ($count)",
+  "hideHistory": "Ocultar histórico ($count)",
+  "searchToAddNewGame": "Pesquise para adicionar um novo jogo para gravar"
+}

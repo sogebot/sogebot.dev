@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Statut",
+    "timeout": {
+      "title": "Durée d'expiration",
+      "help": "Secondes"
+    }
+  }
+}

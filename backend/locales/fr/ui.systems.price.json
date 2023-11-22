@@ -1,0 +1,14 @@
+{
+  "emitRedeemEvent": "Trigger custom alerts on bit redeem",
+  "price": {
+    "name": "prix",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "This value cannot be empty"
+  },
+  "warning": "Cette action ne peut pas être annulée !",
+  "settings": {
+    "enabled": "Status"
+  }
+}

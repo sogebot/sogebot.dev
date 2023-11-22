@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "apiKey": {
+      "title": "Ключ API",
+      "help": "Получите свой API ключ на https://developer.pubg.com/"
+    },
+    "platform": "Платформа",
+    "playerName": "Имя игрока",
+    "playerId": "ID игрока",
+    "seasonId": {
+      "title": "ID сезона",
+      "help": "ID текущего сезона получается каждый час."
+    },
+    "rankedGameModeStatsCustomization": "Настраиваемое сообщение для статистики рейтинга",
+    "gameModeStatsCustomization": "Настраиваемое сообщение для обычной статистики"
+  },
+  "click_to_fetch": "Нажмите, чтобы получить",
+  "something_went_wrong": "Что-то пошло не так!",
+  "ok": "OK!",
+  "stats_are_automatically_refreshed_every_10_minutes": "Статистика обновляется каждые 10 минут.",
+  "player_stats_ranked": "Статистика игрока (рейтинг)",
+  "player_stats": "Статистика игрока"
+}

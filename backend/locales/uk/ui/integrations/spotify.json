@@ -1,0 +1,41 @@
+{
+  "artists": "Artists",
+  "settings": {
+    "enabled": "Статус",
+    "songRequests": "Запити на пісню",
+    "fetchCurrentSongWhenOffline": {
+      "title": "Завантажити поточну пісню, коли потік не в мережі",
+      "help": "Рекомендуємо відключити дану функцію для уникнення ліміту API"
+    },
+    "allowApprovedArtistsOnly": "Дозволити тільки затверджених виконавців",
+    "approvedArtists": {
+      "title": "Схвалені артисти",
+      "help": "Ім'я або SpotifyURI виконавця, один елемент у рядку"
+    },
+    "queueWhenOffline": {
+      "title": "Черга пісень, коли трансляція не в мережі",
+      "help": "Рекомендується відключити цю функцію, щоб уникнути черги, коли ви просто слухаєте музику"
+    },
+    "clientId": "clientId",
+    "clientSecret": "clientSecret",
+    "manualDeviceId": {
+      "title": "Примусовий ідентифікатор пристрою",
+      "help": "Empty = disabled, force spotify device ID to be used to queue songs. Check logs for current active device or use button when playing song for at least 10 seconds."
+    },
+    "redirectURI": "redirectURI",
+    "format": {
+      "title": "Формат",
+      "help": "Доступні змінні: $song, $artist, $artists"
+    },
+    "username": "Авторизований користувач",
+    "revokeBtn": "Відкликати авторизацію користувача",
+    "authorizeBtn": "Авторизація користувача",
+    "scopes": "Дозвіл",
+    "playlistToPlay": {
+      "title": "URI Spotify з основного плейлісту",
+      "help": "Якщо призначено, то по завершенню замовлених пісень цей плейлист буде продовжено"
+    },
+    "continueOnPlaylistAfterRequest": "Продовжити відтворення пісні після запиту пісні",
+    "notify": "Надсилати повідомлення про зміну пісні"
+  }
+}

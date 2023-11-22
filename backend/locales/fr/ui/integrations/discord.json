@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "guild": "Serveur",
+    "listenAtChannels": "Activer les commandes sur ce salon",
+    "sendOnlineAnnounceToChannel": "Envoyer une annonce en ligne pour ce salon",
+    "onlineAnnounceMessage": "Message in online announcement (can include mentions)",
+    "sendAnnouncesToChannel": "Configurer l'envoi d'annonces aux salons",
+    "deleteMessagesAfterWhile": "Supprimer le message après un moment",
+    "clientId": "ClientId",
+    "token": "Token",
+    "joinToServerBtn": "Cliquez pour ajouter le bot sur votre serveur",
+    "joinToServerBtnDisabled": "Please save changes to enable bot join to your server",
+    "cannotJoinToServerBtn": "Définir le token et le clientId client pour pouvoir ajouter le bot sur votre serveur",
+    "noChannelSelected": "aucun salon sélectionné",
+    "noRoleSelected": "aucun rôle sélectionné",
+    "noGuildSelected": "aucun serveur sélectionné",
+    "noGuildSelectedBox": "Sélectionnez le serveur où le bot devrait fonctionner et vous verrez plus de paramètres",
+    "onlinePresenceStatusDefault": "Statut par défaut",
+    "onlinePresenceStatusDefaultName": "Message de statut par défaut",
+    "onlinePresenceStatusOnStream": "Statut lors du Streaming",
+    "onlinePresenceStatusOnStreamName": "Message de statut lors du streaming",
+    "ignorelist": {
+      "title": "Liste des ignorés",
+      "help": "username, username#0000 ou userID"
+    }
+  }
+}

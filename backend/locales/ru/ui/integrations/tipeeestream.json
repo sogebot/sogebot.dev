@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "apiKey": {
+      "title": "Ключ API",
+      "help": "Получить токен сокета с панели tipeeestream -> API -> Ваш ключ API"
+    }
+  }
+}

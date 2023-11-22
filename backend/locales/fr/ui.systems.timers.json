@@ -1,0 +1,10 @@
+{
+  "new": "New Timer",
+  "empty": "No timers were created yet.",
+  "emptyAfterSearch": "Aucune minuterie n'a été trouvée lors de votre recherche de <strong>\"$search\"</strong>.",
+  "add_response": "Ajouter une réponse",
+  "settings": {
+    "enabled": "Status"
+  },
+  "warning": "Cette action ne peut pas être annulée !"
+}

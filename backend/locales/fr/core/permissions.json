@@ -1,0 +1,8 @@
+{
+  "list": "Liste de vos permissions :",
+  "excludeAddSuccessful": "$sender, vous avez ajouté $username à la liste d'exclusion pour la permission $permissionName",
+  "excludeRmSuccessful": "$sender, vous avez retiré $username de la liste d'exclusion pour la permission $permissionName",
+  "userNotFound": "$sender, $username n'a pas été trouvé dans la base de données.",
+  "permissionNotFound": "$sender, la permission $userlevel n'a pas été trouvée dans la base de données.",
+  "cannotIgnoreForCorePermission": "$sender, vous ne pouvez pas exclure manuellement cet utilisateur pour la permission de base $userlevel"
+}

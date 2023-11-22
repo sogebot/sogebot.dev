@@ -1,0 +1,48 @@
+{
+	"settings": {
+		"btnRemoveCache": "Cancella cache",
+		"hypeMessagesEnabled": "Mostra i messaggi di hype nella chat",
+		"btnTestExplosion": "Test Esplosione di Emote",
+		"btnTestEmote": "Test emote",
+		"btnTestFirework": "Test fuochi d'artificio emote",
+		"cEmotesSize": "Dimensione degli Emotes",
+		"cEmotesMaxEmotesPerMessage": "Maximum of emotes per message",
+		"cEmotesMaxRotation": "Maximal rotation of emote",
+		"cEmotesOffsetX": "Maximal offset on X-axis",
+		"cEmotesAnimation": "Animazione",
+		"cEmotesAnimationTime": "Durata dell'animazione",
+		"cExplosionNumOfEmotes": "N. di emotes",
+		"cExplosionNumOfEmotesPerExplosion": "N. di emotes per esplosione",
+		"cExplosionNumOfExplosions": "N. di esplosioni",
+		"enableEmotesCombo": "Abilita combinazione di emotes",
+		"comboBreakMessages": "Messaggi di interruzione combinati",
+		"threshold": "Soglia",
+		"noMessagesFound": "Nessun messaggio trovato.",
+		"message": "Messaggio",
+		"showEmoteInOverlayThreshold": "Soglia minima messaggio da mostrare emote in sovrapposizione",
+		"hideEmoteInOverlayAfter": {
+			"title": "Nascondi emote in sovrapposizione dopo inattività",
+			"help": "Si nasconderà l'emote in sovrapposizione dopo un certo tempo in secondi"
+		},
+		"comboCooldown": {
+			"title": "Tempo d'attesa combo",
+			"help": "Tempo d'attesa della combinazione in secondi"
+		},
+		"comboMessageMinThreshold": {
+			"title": "Soglia minima messaggio",
+			"help": "Soglia minima del messaggio per contare le emozioni come combo (fino a quel momento non si attiverà il tempo di attesa)"
+		},
+		"comboMessages": "Messaggi combinati"
+	},
+	"hype": {
+		"5": "Evvai! Abbiamo ottenuto $amountx $emote combo finora! SeemsGood",
+		"15": "Teniamo duro! Possiamo ottenere più di $amountx $emote? TriHard"
+	},
+	"message": {
+		"3": "$amountx $emote combo",
+		"5": "$amountx $emote combo sembraBuono",
+		"10": "$amountx $emote combo PogChamp",
+		"15": "$amountx $emote combo TriHard",
+		"20": "$sender ha rovinato $amountx $emote combo! NonCosi"
+	}
+}

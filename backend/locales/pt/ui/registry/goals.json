@@ -1,0 +1,86 @@
+{
+  "addGoalGroup": "Adicionar Grupo de Metas",
+  "addGoal": "Adicionar meta",
+  "newGoal": "nova Meta",
+  "newGoalGroup": "novo Grupo de Meta",
+  "goals": "Objetivos",
+  "general": "Geral",
+  "display": "Visualização",
+  "fontSettings": "Configurações de Fonte",
+  "barSettings": "Configurações da Barra",
+  "selectGoalOnLeftSide": "Selecione ou adicione meta ao lado esquerdo",
+  "input": {
+    "description": {
+      "title": "Descrição"
+    },
+    "goalAmount": {
+      "title": "Valor da Meta"
+    },
+    "countBitsAsTips": {
+      "title": "Contar bits como Doações"
+    },
+    "currentAmount": {
+      "title": "Montante Atual"
+    },
+    "endAfter": {
+      "title": "Finalizar após"
+    },
+    "endAfterIgnore": {
+      "title": "O objetivo não expirará"
+    },
+    "borderPx": {
+      "title": "Borda",
+      "help": "Tamanho da borda está em pixels"
+    },
+    "barHeight": {
+      "title": "Altura da barra",
+      "help": "Altura da barra em pixels"
+    },
+    "color": {
+      "title": "Cor"
+    },
+    "borderColor": {
+      "title": "Cor da Borda"
+    },
+    "backgroundColor": {
+      "title": "Cor do Fundo"
+    },
+    "type": {
+      "title": "Tipo"
+    },
+    "nameGroup": {
+      "title": "Nome deste grupo de objetivos"
+    },
+    "name": {
+      "title": "Nome deste objetivo"
+    },
+    "displayAs": {
+      "title": "Exibir como",
+      "help": "Define como o grupo de metas será mostrado"
+    },
+    "durationMs": {
+      "title": "Duração",
+      "help": "This value is in milliseconds",
+      "placeholder": "Quanto tempo o objetivo deve ser mostrado"
+    },
+    "animationInMs": {
+      "title": "Animação em duração",
+      "help": "Este valor está em milissegundos",
+      "placeholder": "Definir sua animação em duração"
+    },
+    "animationOutMs": {
+      "title": "Duração da saída da animação",
+      "help": "Este valor está em milissegundos",
+      "placeholder": "Definir a duração da animação de saída"
+    },
+    "interval": {
+      "title": "Que intervalo contar"
+    },
+    "spaceBetweenGoalsInPx": {
+      "title": "Espaço entre metas",
+      "help": "Este valor está em pixels",
+      "placeholder": "Defina seu espaço entre as metas"
+    }
+  },
+  "groupSettings": "Configurações do Grupo"
+}

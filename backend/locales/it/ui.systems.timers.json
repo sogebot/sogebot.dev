@@ -1,0 +1,10 @@
+{
+  "new": "Nuovo Timer",
+  "empty": "Nessun timer è stato ancora creato.",
+  "emptyAfterSearch": "Nessun timer è stato trovato dalla tua ricerca per <strong>\"$search\"</strong>.",
+  "add_response": "Aggiungi Risposta",
+  "settings": {
+    "enabled": "Stato"
+  },
+  "warning": "Questa azione non può essere annullata!"
+}

@@ -1,0 +1,7 @@
+{
+  "new": "Criar nova overlay de texto",
+  "title": "overlay de texto",
+  "name": {
+    "placeholder": "Defina o nome desta overlay de texto"
+  }
+}

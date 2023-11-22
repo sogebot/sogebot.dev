@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "enabled": "Stato",
+    "cListsEnabled": "Forza la regola",
+    "cLinksEnabled": "Forza la regola",
+    "cSymbolsEnabled": "Forza la regola",
+    "cLongMessageEnabled": "Forza la regola",
+    "cCapsEnabled": "Forza la regola",
+    "cSpamEnabled": "Forza la regola",
+    "cColorEnabled": "Forza la regola",
+    "cEmotesEnabled": "Forza la regola",
+    "cListsWhitelist": {
+      "title": "Parole consentite",
+      "help": "Per consentire l'uso dei domini \"dominio:prtzl.io\""
+    },
+    "autobanMessages": "Autoban Messages",
+    "cListsBlacklist": "Parole vietate",
+    "cListsTimeout": "Durata del timeout",
+    "cLinksTimeout": "Durata del timeout",
+    "cSymbolsTimeout": "Durata del timeout",
+    "cLongMessageTimeout": "Durata del timeout",
+    "cCapsTimeout": "Durata del timeout",
+    "cSpamTimeout": "Durata del timeout",
+    "cColorTimeout": "Durata del timeout",
+    "cEmotesTimeout": "Durata del timeout",
+    "cWarningsShouldClearChat": "Indica se cancellare la chat (timeout per 1s)",
+    "cLinksIncludeSpaces": "Includi spazi",
+    "cLinksIncludeClips": "Includi clip",
+    "cSymbolsTriggerLength": "Lunghezza limite del messaggio",
+    "cLongMessageTriggerLength": "Lunghezza limite del messaggio",
+    "cCapsTriggerLength": "Lunghezza limite del messaggio",
+    "cSpamTriggerLength": "Lunghezza limite del messaggio",
+    "cSymbolsMaxSymbolsConsecutively": "Massimo simboli consecutivi",
+    "cSymbolsMaxSymbolsPercent": "Massimo simboli %",
+    "cCapsMaxCapsPercent": "Limite massimo di lettere maiuscole %",
+    "cSpamMaxLength": "Lunghezza massima",
+    "cEmotesMaxCount": "Numero massimo",
+    "cWarningsAnnounceTimeouts": "Timeout dell'annuncio in chat per tutti",
+    "cWarningsAllowedCount": "Conteggio avvisi",
+    "cEmotesEmojisAreEmotes": "Tratta Emojis come Emotes"
+  }
+}

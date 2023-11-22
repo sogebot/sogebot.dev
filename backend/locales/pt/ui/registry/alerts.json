@@ -1,0 +1,220 @@
+{
+  "enabled": "Ativado",
+  "testDlg": {
+    "alertTester": "Teste de alerta",
+    "command": "Comando",
+    "username": "Nome de Usuário",
+    "recipient": "Destinatário",
+    "message": "Mensagem",
+    "tier": "Nível",
+    "amountOfViewers": "Quantidade de espectadores",
+    "amountOfBits": "Quantidade de bits",
+    "amountOfGifts": "Quantidade de presentes",
+    "amountOfMonths": "Quantidade de meses",
+    "amountOfTips": "Doações",
+    "event": "Evento",
+    "service": "Serviço"
+  },
+  "empty": "Registro de alertas está vazio, crie novos alertas.",
+  "emptyAfterSearch": "Registro de alertas está vazio em busca de \"<strong>$search</strong>\"",
+  "revertcode": "Reverter o código para os padrões",
+  "name": {
+    "name": "Nome",
+    "placeholder": "Definir nome dos seus alertas"
+  },
+  "alertDelayInMs": {
+    "name": "Atraso do alerta"
+  },
+  "parryEnabled": {
+    "name": "\"Esquivas\" de alerta"
+  },
+  "parryDelay": {
+    "name": "Alerta de atraso do bloqueio"
+  },
+  "profanityFilterType": {
+    "name": "Filtro de Palavrões",
+    "disabled": "Desativado",
+    "replace-with-asterisk": "Substituir por asterisco",
+    "replace-with-happy-words": "Substituir com palavras felizes",
+    "hide-messages": "Ocultar mensagens",
+    "disable-alerts": "Desativar alertas"
+  },
+  "loadStandardProfanityList": "Carregar lista de palavrãos padrão",
+  "customProfanityList": {
+    "name": "Lista de palavrãos personalizada",
+    "help": "As palavras devem ser separadas por vírgulas."
+  },
+  "event": {
+    "follow": "Seguir",
+    "cheer": "Cheer",
+    "sub": "Inscrição",
+    "resub": "Resub",
+    "subgift": "Sub de presente",
+    "subcommunitygift": "Sub de presente para comunidade",
+    "tip": "Gorjeta",
+    "raid": "Raid",
+    "custom": "Personalizado",
+    "promo": "Promo (shout-out)",
+    "rewardredeem": "Resgate de Recompensa"
+  },
+  "title": {
+    "name": "Nome da variante",
+    "placeholder": "Defina o nome da variante"
+  },
+  "variant": {
+    "name": "Ocorrência de variante"
+  },
+  "filter": {
+    "name": "Filtro",
+    "operator": "Operador",
+    "rule": "Regra",
+    "addRule": "Adicionar regra",
+    "addGroup": "Adicionar Grupo",
+    "comparator": "Comparador",
+    "value": "Valor",
+    "valueSplitByComma": "Valores divididos por vírgula (por exemplo val1, val2)",
+    "isEven": "é par",
+    "isOdd": "é ímpar",
+    "lessThan": "menor que",
+    "lessThanOrEqual": "menor ou igual a",
+    "contain": "contém",
+    "contains": "contém",
+    "equal": "igual",
+    "notEqual": "diferente de",
+    "present": "está presente",
+    "includes": "inclui",
+    "greaterThan": "maior que",
+    "greaterThanOrEqual": "maior que ou igual",
+    "noFilter": "sem filtro"
+  },
+  "speed": {
+    "name": "Velocidade"
+  },
+  "maxTimeToDecrypt": {
+    "name": "Tempo máximo de descriptografar"
+  },
+  "characters": {
+    "name": "Caracteres"
+  },
+  "random": "Aleatório",
+  "exact-amount": "Quantidade exata",
+  "greater-than-or-equal-to-amount": "Maior que ou igual a quantidade",
+  "tier-exact-amount": "Nível é exatamente",
+  "tier-greater-than-or-equal-to-amount": "O nível é superior ou igual a",
+  "months-exact-amount": "Quantidade de meses está exatamente",
+  "months-greater-than-or-equal-to-amount": "A quantidade dos meses é maior ou igual a",
+  "gifts-exact-amount": "Quantidade de presentes é exatamente",
+  "gifts-greater-than-or-equal-to-amount": "Quantidade de presentes é maior ou igual a",
+  "very-rarely": "Muito raramente",
+  "rarely": "Raramente",
+  "default": "Padrão",
+  "frequently": "Frequentemente",
+  "very-frequently": "Muito Frequentemente",
+  "exclusive": "Exclusivo",
+  "messageTemplate": {
+    "name": "Modelo de mensagem",
+    "placeholder": "Defina o seu modelo de mensagem",
+    "help": "Variáveis disponíveis: {name}, {amount} (cheers, subs, dicas, sub-presetnes, subs-presente da comunidade, resgate de comandos), {recipient} (subs-presente, resgate de comandos), {monthsName} (subs, subs-presente), {currency} (doações), {game} (promo). Se | adicionado (veja a promo) então mostrará esses valores em sequência."
+  },
+  "ttsTemplate": {
+    "name": "Modelos TTS",
+    "placeholder": "Defina seu modelo de TTS",
+    "help": "Variáveis disponíveis: {name}, {amount} {monthsName} {currency} {message}"
+  },
+  "animationText": {
+    "name": "Texto de animação"
+  },
+  "animationType": {
+    "name": "Tipo de animação"
+  },
+  "animationIn": {
+    "name": "Animação de entrada"
+  },
+  "animationOut": {
+    "name": "Animação de saída"
+  },
+  "alertDurationInMs": {
+    "name": "Duração do alerta"
+  },
+  "alertTextDelayInMs": {
+    "name": "Alerta de atraso texto"
+  },
+  "layoutPicker": {
+    "name": "Layout"
+  },
+  "loop": {
+    "name": "Reproduzir em loop"
+  },
+  "scale": {
+    "name": "Escala"
+  },
+  "translateY": {
+    "name": "Mover para cima / +Baixo"
+  },
+  "translateX": {
+    "name": "Mover -Esquerda / +Direita"
+  },
+  "image": {
+    "name": "Imagem / Vídeo(.webm)",
+    "setting": "Configurações de imagem / Vídeo(.webm)"
+  },
+  "sound": {
+    "name": "Som",
+    "setting": "Configurações de som"
+  },
+  "soundVolume": {
+    "name": "Volume dos alertas"
+  },
+  "enableAdvancedMode": "Ativar o modo avançado",
+  "font": {
+    "setting": "Configurações de fonte",
+    "name": "Família da fonte",
+    "overrideGlobal": "Substituir as configurações de fonte globais",
+    "align": {
+      "name": "Alinhamento",
+      "left": "Esquerdo",
+      "center": "Centro",
+      "right": "Direita"
+    },
+    "size": {
+      "name": "Tamanho da fonte"
+    },
+    "weight": {
+      "name": "Peso da fonte"
+    },
+    "borderPx": {
+      "name": "Borda da fonte"
+    },
+    "borderColor": {
+      "name": "Cor da borda da fonte"
+    },
+    "color": {
+      "name": "Cor da fonte"
+    },
+    "highlightcolor": {
+      "name": "Cor de realce da fonte"
+    }
+  },
+  "minAmountToShow": {
+    "name": "Montante mínimo para mostrar"
+  },
+  "minAmountToPlay": {
+    "name": "Valor mínimo para jogar"
+  },
+  "allowEmotes": {
+    "name": "Permitir emotes"
+  },
+  "message": {
+    "setting": "Configurações de mensagem"
+  },
+  "voice": "Voz",
+  "keepAlertShown": "O alerta mantém visível durante o TTS",
+  "skipUrls": "Pular URLs durante o TTS",
+  "volume": "Volume",
+  "rate": "Taxa",
+  "pitch": "Tom",
+  "test": "Teste",
+  "tts": {
+    "setting": "Configurações de TTS"
+  }
+}

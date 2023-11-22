@@ -1,0 +1,14 @@
+{
+  "emitRedeemEvent": "Spustit vlastní upozornění při zakoupení bity",
+  "price": {
+    "name": "cena",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Tato hodnota nesmí být prázdná"
+  },
+  "warning": "Tato akce nemůže být vrácena!",
+  "settings": {
+    "enabled": "Status"
+  }
+}

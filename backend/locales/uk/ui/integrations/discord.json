@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "enabled": "Стан",
+    "guild": "Сервер",
+    "listenAtChannels": "Слухати команди на цьому каналі",
+    "sendOnlineAnnounceToChannel": "Надіслати онлайн оголошення на цей канал",
+    "onlineAnnounceMessage": "Message in online announcement (can include mentions)",
+    "sendAnnouncesToChannel": "Налаштування відправки повідомлень каналам",
+    "deleteMessagesAfterWhile": "Видалити повідомлення через деякий час",
+    "clientId": "ClientId",
+    "token": "Token",
+    "joinToServerBtn": "Натисніть для приєднання бота до серверу",
+    "joinToServerBtnDisabled": "Please save changes to enable bot join to your server",
+    "cannotJoinToServerBtn": "Встановіть token і clientId, щоб мати можливість приєднати бота на ваш сервер",
+    "noChannelSelected": "канал не обрано",
+    "noRoleSelected": "роль не обрана",
+    "noGuildSelected": "сервер не обрано",
+    "noGuildSelectedBox": "Виберіть сервер, де бот повинен працювати, і ви побачите більше параметрів",
+    "onlinePresenceStatusDefault": "Стан за замовчуванням",
+    "onlinePresenceStatusDefaultName": "Повідомлення про стан за умовчанням",
+    "onlinePresenceStatusOnStream": "Статус при трансляції",
+    "onlinePresenceStatusOnStreamName": "Повідомлення про статус під час трансляції",
+    "ignorelist": {
+      "title": "Список ігнорування",
+      "help": "ім'я, ім'я користувача#0000 або Id користувача"
+    }
+  }
+}

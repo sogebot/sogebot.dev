@@ -1,0 +1,1206 @@
+{
+  "core": {
+    "loaded": "wird geladen und",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "usage": "Nutzung",
+    "lang-selected": "Bot Sprache ist derzeit auf Deutsch gesetzt",
+    "refresh-panel": "Du musst die Benutzeroberfläche aktualisieren, um Änderungen zu sehen.",
+    "command-parse": "Sorry, $sender, aber dieser Befehl ist nicht korrekt, verwende",
+    "error": "Entschuldigung $sender, aber etwas ist schief gelaufen!",
+    "no-response": "",
+    "no-response-bool": {
+      "true": "",
+      "false": ""
+    },
+    "api": {
+      "error": "$sender, API reagiert nicht korrekt!",
+      "not-available": "nicht verfügbar"
+    },
+    "percentage": {
+      "true": "",
+      "false": ""
+    },
+    "years": "Jahr|Jahre",
+    "months": "Monat|Monate",
+    "days": "Tag|Tage",
+    "hours": "Stunde|Stunden",
+    "minutes": "Minute|Minuten",
+    "seconds": "Sekunde|Sekunden",
+    "messages": "Nachricht|Nachrichten",
+    "bits": "Bit|Bits",
+    "links": "Link|Links",
+    "entries": "eintrag|Einträge",
+    "empty": "leer",
+    "isRegistered": "$sender, Du kannst !$keyword nicht verwenden, da es bereits für eine andere Aktion verwendet wird!"
+  },
+  "clip": {
+    "notCreated": "Etwas ist schief gelaufen und Clip wurde nicht erstellt.",
+    "offline": "Stream ist momentan offline und Clip kann nicht erstellt werden."
+  },
+  "uptime": {
+    "online": "Stream ist online seit (if $days>0|$daysd )(if $hours>0|$hoursh )(if $minutes>0|$minutesm )(if $seconds>0|$secondss)",
+    "offline": "Stream ist momentan offline seit (if $days>0|$daysd )(if $hours>0|$hoursh )(if $minutes>0|$minutesm )(if $seconds>0|$secondss)"
+  },
+  "webpanel": {
+    "this-system-is-disabled": "Dieses System ist deaktiviert",
+    "or": "oder",
+    "loading": "Wird geladen",
+    "this-may-take-a-while": "Das <strong>könnte</strong> ein wenig dauern",
+    "display-as": "Anzeigen als",
+    "go-to-admin": "Zurück zur Admin Oberfläche",
+    "go-to-public": "Gehe zur Öffentlichen Seite",
+    "logout": "Abmelden",
+    "popout": "Popout",
+    "not-logged-in": "Nicht angemeldet",
+    "remove-widget": "Entferne <strong>$name</strong> Widget",
+    "join-channel": "Verbinde den Bot zum Kanal",
+    "leave-channel": "Entferne den Bot vom Kanal",
+    "set-default": "Als Standard festlegen",
+    "add": "Hinzufügen",
+    "placeholders": {
+      "text-url-generator": "Füge deinen Text oder HTML-Code ein, um base64 unten und die URL oben zu generieren",
+      "text-decode-base64": "Füge Deinen Base64 ein, um URL und Text oben zu generieren",
+      "creditsSpeed": "Setze die Roll-Geschwindigkeit der Credits. niedriger = schneller"
+    },
+    "timers": {
+      "title": "Timers",
+      "timer": "Timer",
+      "messages": "Nachrichten",
+      "seconds": "Sekunden",
+      "badges": {
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert"
+      },
+      "errors": {
+        "timer_name_must_be_compliant": "Dieser Wert kann nur a-zA-Z09_ enthalten",
+        "this_value_must_be_a_positive_number_or_0": "Dieser Wert muss eine positive Zahl haben oder größer als 0 sein",
+        "value_cannot_be_empty": "Dieser Wert darf nicht leer sein"
+      },
+      "dialog": {
+        "timer": "Timer",
+        "name": "Name",
+        "tickOffline": "Soll markiert werden, wenn Stream offline ist",
+        "interval": "Intervall",
+        "responses": "Rückmeldungen",
+        "messages": "Alle X Nachrichten auslösen",
+        "seconds": "Alle X Sekunden auslösen",
+        "title": {
+          "new": "Neuer Timer",
+          "edit": "Timer bearbeiten"
+        },
+        "placeholders": {
+          "name": "Name des Timers festlegen, darf nur diese Zeichen a-zA-Z0-9_ enthalten",
+          "messages": "Timer alle X Nachrichten auslösen",
+          "seconds": "Timer alle X Sekunden auslösen"
+        },
+        "alerts": {
+          "success": "Timer wurde <strong>erfolgreich</strong> gespeichert.",
+          "fail": "Etwas ist schief gelaufen."
+        }
+      },
+      "buttons": {
+        "close": "Schließen",
+        "save-changes": "Änderungen speichern",
+        "disable": "Deaktivieren",
+        "enable": "Aktivieren",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "yes": "Ja",
+        "no": "Nein"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_timer": "Bist du dir sicher, dass du diesen Timer <strong class='text-danger'>löschen</strong> willst?"
+      }
+    },
+    "events": {
+      "event": "Ereignis",
+      "noEvents": "Keine Ereignisse in der Datenbank gefunden.",
+      "whatsthis": "Was ist das?",
+      "myRewardIsNotListed": "Meine Belohnung ist nicht gelistet!",
+      "redeemAndClickRefreshToSeeReward": "Wenn Du Deine erstellte Belohnung in einer Liste vermisst, aktualisiere sie indem Du auf das Symbol klickst.",
+      "badges": {
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert"
+      },
+      "buttons": {
+        "test": "Test",
+        "enable": "Aktivieren",
+        "disable": "Deaktivieren",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "yes": "Ja",
+        "no": "Nein"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_event": "Bist du dir sicher, dass du dieses Event <strong class='text-danger'>löschen</strong> willst?",
+        "example_of_user_object_data": "Beispiel für Benutzerobjekt Daten"
+      },
+      "errors": {
+        "command_must_start_with_!": "Der Befehl muss mit einem ! beginnen",
+        "this_value_must_be_a_positive_number_or_0": "Dieser Wert muss entweder eine positive Zahl oder 0 sein",
+        "value_cannot_be_empty": "Variable darf <strong>nicht</strong> leer sein!"
+      },
+      "dialog": {
+        "title": {
+          "new": "Neuer Event-Listener",
+          "edit": "Event-Listener bearbeiten"
+        },
+        "placeholders": {
+          "name": "Setze den Namen des Ereignis-Listener fest (falls leer, wird ein Name generiert)"
+        },
+        "alerts": {
+          "success": "Event wurde <strong>erfolgreich</strong> gespeichert.",
+          "fail": "Etwas ist schief gelaufen."
+        },
+        "close": "Schließen",
+        "save-changes": "Änderungen speichern",
+        "event": "Ereignis",
+        "name": "Name",
+        "usable-events-variables": "Verwendbare Ereignis-Variablen",
+        "settings": "Einstellungen",
+        "filters": "Filter",
+        "operations": "Operationen"
+      },
+      "definitions": {
+        "taskId": {
+          "label": "Task ID"
+        },
+        "filter": {
+          "label": "Filter"
+        },
+        "linkFilter": {
+          "label": "Link Overlay Filter",
+          "placeholder": "Wenn Overlay verwendet wird, Link oder ID des Overlays hinzufügen"
+        },
+        "hashtag": {
+          "label": "Hashtag oder Schlüsselwort",
+          "placeholder": "#DeinHashtagHier oder Schlüsselwort"
+        },
+        "fadeOutXCommands": {
+          "label": "Ausblenden alle X Befehle",
+          "placeholder": "Anzahl der Befehle, die in jedem Ausblendintervall abgezogen wurden"
+        },
+        "fadeOutXKeywords": {
+          "label": "X Schlüsselwörter ausblenden",
+          "placeholder": "Anzahl der Schlüsselwörter, die in jedem Ausblendintervall abgezogen wurden"
+        },
+        "fadeOutInterval": {
+          "label": "Ausblenden Intervall (Sekunden)",
+          "placeholder": "Ausblendenintervall subtrahieren"
+        },
+        "runEveryXCommands": {
+          "label": "Alle X Befehle ausführen",
+          "placeholder": "Anzahl der Befehle, bevor das Ereignis ausgelöst wird"
+        },
+        "runEveryXKeywords": {
+          "label": "Alle X Schlüsselwörter ausführen",
+          "placeholder": "Anzahl der Schlüsselwörter, bevor das Ereignis ausgelöst wird"
+        },
+        "commandToWatch": {
+          "label": "Befehl zum Beobachten",
+          "placeholder": "Setze deinen !commandToWatch"
+        },
+        "keywordToWatch": {
+          "label": "Stichwort zum Beobachten",
+          "placeholder": "Setze dein !keywordToWatch"
+        },
+        "resetCountEachMessage": {
+          "label": "Zähler jede Nachricht zurücksetzen",
+          "true": "Zähler zurücksetzen",
+          "false": "Zähler beibehalten"
+        },
+        "viewersAtLeast": {
+          "label": "Mindestens X Zuschauer",
+          "placeholder": "Wie viele Zuschauer mindestens um das Event auszulösen"
+        },
+        "runInterval": {
+          "label": "Ausführungsintervall (0 = einmal pro Stream ausführen)",
+          "placeholder": "Ereignis alle X Sekunden auslösen"
+        },
+        "runAfterXMinutes": {
+          "label": "Nach X Minuten ausführen",
+          "placeholder": "Ereignis nach x Minuten auslösen"
+        },
+        "runEveryXMinutes": {
+          "label": "Alle X Minuten ausführen",
+          "placeholder": "Ereignis alle X Minuten auslösen"
+        },
+        "messageToSend": {
+          "label": "Zu sendende Nachricht",
+          "placeholder": "Nachricht festlegen"
+        },
+        "channel": {
+          "label": "Channel",
+          "placeholder": "Channelname oder ID"
+        },
+        "timeout": {
+          "label": "Auszeit, Unterbrechung / Zeitüberschreitung",
+          "placeholder": "Timeout in Millisekunden festlegen"
+        },
+        "timeoutType": {
+          "label": "Art des Timeouts",
+          "placeholder": "Art des Timeouts festlegen"
+        },
+        "command": {
+          "label": "Befehl",
+          "placeholder": "!Befehl festlegen"
+        },
+        "commandToRun": {
+          "label": "Befehl zum Starten",
+          "placeholder": "Setze deinen !commandToRun"
+        },
+        "isCommandQuiet": {
+          "label": "Stummschaltung der Befehlsausgabe"
+        },
+        "urlOfSoundFile": {
+          "label": "Url der Sounddatei",
+          "placeholder": "http://www.pathToYour.url/where/is/file.mp3"
+        },
+        "emotesToExplode": {
+          "label": "Emotes in Explode Overlay",
+          "placeholder": "Liste der Emotes, z.B. Kappa PurpleHeart"
+        },
+        "emotesToFirework": {
+          "label": "Emote-Feuerwerk",
+          "placeholder": "Liste der Emotes, z.B. Kappa PurpleHeart"
+        },
+        "replay": {
+          "label": "Videoclip im Overlay wiederholen",
+          "true": "Wird als Wiederholung in Overlay/Alarmen abgespielt",
+          "false": "Wiedergabe wird nicht abgespielt"
+        },
+        "announce": {
+          "label": "Im Chat ankündigen",
+          "true": "Wird angekündigt",
+          "false": "Wird nicht angekündigt"
+        },
+        "hasDelay": {
+          "label": "Clip sollte eine leichte Verzögerung haben (um näher zu sein, was der Betrachter sieht)",
+          "true": "Wird Verzögerung haben",
+          "false": "Wird keine Verzögerung haben"
+        },
+        "durationOfCommercial": {
+          "label": "Dauer der Werbung",
+          "placeholder": "Verfügbare Dauer: 30, 60, 90, 120, 150, 180"
+        },
+        "customVariable": {
+          "label": "$_",
+          "placeholder": "Benutzerdefinierte Variable zum aktualisieren"
+        },
+        "numberToIncrement": {
+          "label": "Zu erhöhende Zahl",
+          "placeholder": ""
+        },
+        "value": {
+          "label": "Wert",
+          "placeholder": ""
+        },
+        "numberToDecrement": {
+          "label": "Zu verringernde Zahl",
+          "placeholder": ""
+        },
+        "": "",
+        "reward": {
+          "label": "Belohnung",
+          "placeholder": ""
+        }
+      }
+    },
+    "eventlist-events": {
+      "follow": "<strong>folgt</strong> dir",
+      "raid": "<strong>raided</strong> you with <strong>$viewers</strong> raiders.",
+      "sub": "hat dich <strong>abonniert</strong> <strong>$subType</strong>. Sie abonnieren dich bereits seit $subCumulativeMonths $subCumulativeMonthsName.",
+      "subgift": "wurde <strong>mit</strong> von <strong>$username</strong> verschenkt",
+      "subcommunitygift": "<strong>Gönnete</strong> Abonnements für Community",
+      "resub": "<strong>Resubscribed</strong> with <strong>$subType</strong>. They've been subscribed for $subCumulativeMonths $subCumulativeMonthsName.",
+      "cheer": "<strong>Cheered</strong> you",
+      "tip": "<strong>Tipped</strong> you",
+      "tipToCharity": "<strong>donated</strong> to <strong>$campaignName</strong>"
+    },
+    "responses": {
+      "variable": {
+        "tags": "Tags",
+        "titleOfPrediction": "Twitter Vorhersage - Titel",
+        "outcomes": "Twitch Vorhersage - Ergebnisse",
+        "locksAt": "Twitch Vorhersage - Datum der Sperre",
+        "winningOutcomeTitle": "Twitch Vorhersage - Gewinnergebnis Titel",
+        "winningOutcomeTotalPoints": "Twitch Vorhersage - Gewinnergebnis Gesamtzahlpunkte",
+        "winningOutcomePercentage": "Twitch Vorhersage - Gewinnergebnis Prozentsatz",
+        "titleOfPoll": "Twitch Umfrage - Titel",
+        "bitAmountPerVote": "Twitch-Umfrage - Anzahl der Bits, die als 1 Stimme zählen",
+        "bitVotingEnabled": "Twitch Umfrage - Ist Bit-Voting aktiviert (boolesch)",
+        "channelPointsAmountPerVote": "Twitch-Umfrage - Anzahl der Kanalpunkte, die als 1 Stimme zählen",
+        "channelPointsVotingEnabled": "Twitch-Umfrage - Ist die Abstimmung über Kanalpunkte aktiviert (boolesch)",
+        "votes": "Twitch-Umfrage - Stimmenanzahl",
+        "winnerChoice": "Twitch-Umfrage - Wahl des Siegers",
+        "winnerPercentage": "Twitch Umfrage - Prozentsatz der Wahl des Siegers",
+        "winnerVotes": "Twitch Umfrage - Wählerstimmen für Sieger",
+        "goal": "Ziel",
+        "total": "Gesamt",
+        "lastContributionTotal": "Letzter Beitrag - Gesamt",
+        "lastContributionType": "Letzter Beitrag - Typ",
+        "lastContributionUserId": "Letzter Beitrag - Benutzer-ID",
+        "lastContributionUsername": "Letzter Beitrag - Benutzername",
+        "level": "Level",
+        "topContributionsBitsTotal": "Top Bits Beitrag - Gesamt",
+        "topContributionsBitsUserId": "Top-Bits Beitrag - Benutzer-ID",
+        "topContributionsBitsUsername": "Top-Bits Beitrag - Benutzername",
+        "topContributionsSubsTotal": "Top-Subs - Gesamt",
+        "topContributionsSubsUserId": "Top-Subs - Benutzer-ID",
+        "topContributionsSubsUsername": "Top Subs Beitrag - Benutzername",
+        "sender": "Benutzer der initiiert hat",
+        "title": "Aktueller Titel",
+        "game": "Aktuelle Kategorie",
+        "language": "Aktuelle Sprache des Stream",
+        "viewers": "Anzahl der aktuellen Zuschauer",
+        "hostViewers": "Anzahl der Raid-Zuschauer",
+        "followers": "Aktuelle Follower Anzahl",
+        "subscribers": "Anzahl aktueller Abonnenten",
+        "arg": "Argument",
+        "param": "Parameter (erforderlich)",
+        "touser": "Benutzername Parameter",
+        "!param": "Parameter (nicht erforderlich)",
+        "alias": "Alias",
+        "command": "Befehl",
+        "keyword": "Schlüsselwort",
+        "response": "Antwort",
+        "list": "Liste füllen",
+        "type": "Typ",
+        "days": "Tage",
+        "hours": "Stunden",
+        "minutes": "Minuten",
+        "seconds": "Sekunden",
+        "description": "Beschreibung",
+        "quiet": "Ruhe (Bool)",
+        "id": "ID",
+        "name": "Name",
+        "messages": "Nachrichten",
+        "amount": "Höhe",
+        "amountInBotCurrency": "Betrag in Bot Währung",
+        "currency": "Währung",
+        "currencyInBot": "Währung im Bot",
+        "pointsName": "Name der Punkte",
+        "points": "Punkte",
+        "rank": "Rang",
+        "nextrank": "Nächster Rang",
+        "username": "Benutzername",
+        "value": "Wert",
+        "variable": "Variable",
+        "count": "Anzahl",
+        "link": "Link (übersetzt)",
+        "winner": "Sieger",
+        "loser": "Verlierer",
+        "challenger": "Herausforderer",
+        "min": "Minimum",
+        "max": "Maximum",
+        "eligibility": "Voraussetzungen",
+        "probability": "Wahrscheinlichkeit",
+        "time": "Zeit",
+        "options": "Optionen",
+        "option": "Option",
+        "when": "Wenn",
+        "diff": "Differenz",
+        "users": "Benutzer",
+        "user": "Benutzer",
+        "bank": "Bank",
+        "nextBank": "Nächste Bank",
+        "cooldown": "Cooldown",
+        "tickets": "Tickets",
+        "ticketsName": "Ticket Name",
+        "fromUsername": "Von Benutzername",
+        "toUsername": "An Benutzername",
+        "items": "Artikel",
+        "bits": "Bits",
+        "subgifts": "Verschenkte Subs",
+        "subStreakShareEnabled": "Ist die Teilstrichfreigabe aktiviert (true/false)",
+        "subStreak": "Aktuelle Sub Reihe",
+        "subStreakName": "lokalisierter Name des Monats (1 Monat, 2 Monate) für die aktuelle Substrek",
+        "subCumulativeMonths": "Gesamte abonnierte Monate",
+        "subCumulativeMonthsName": "Lokalisierter Name des Monats (1 Monat, 2 Monate) für kumulative Abonnements Monate",
+        "message": "Nachricht",
+        "reason": "Grund",
+        "target": "Ziel",
+        "duration": "Dauer",
+        "method": "Methode",
+        "tier": "Stufe",
+        "months": "Monate",
+        "monthsName": "Lokalisierter Name des Monats (1 Monat, 2 Monate)",
+        "oldGame": "Category before change",
+        "recipientObject": "Vollständiges Empfängerobjekt",
+        "recipient": "Empfänger",
+        "ytSong": "Aktueller Song auf YouTube",
+        "spotifySong": "Aktueller Song auf Spotify",
+        "latestFollower": "Neuester Follower",
+        "latestSubscriber": "Neuester Abonnent",
+        "latestSubscriberMonths": "Letzter Abonnent kumulierter Monate",
+        "latestSubscriberStreak": "Neueste Abonnenten Monats Strähne",
+        "latestTipAmount": "Letzte Spende (Anzahl)",
+        "latestTipCurrency": "Letzte Spende (Währung)",
+        "latestTipMessage": "Letzte Spende (Nachricht)",
+        "latestTip": "Letzte Spende (Benutzername)",
+        "toptip": {
+          "overall": {
+            "username": "Top Spende - Gesamt (Benutzername)",
+            "amount": "Top Spende - Gesamt (Anzahl)",
+            "currency": "Top Spende - Gesamt (Währung)",
+            "message": "Top Spende - Gesamt (Nachricht)"
+          },
+          "stream": {
+            "username": "Top Spende - Während Stream (Benutzername)",
+            "amount": "Top Spende - Während Stream (Anzahl)",
+            "currency": "Top Spende - Während Stream (Währung)",
+            "message": "Top Spende - Während Stream (Nachricht)"
+          }
+        },
+        "latestCheerAmount": "Letzten Bits (Anzahl)",
+        "latestCheerMessage": "Letzten Bits (Nachricht)",
+        "latestCheer": "Letzten Bits (Benutzername)",
+        "version": "Bot Version",
+        "haveParam": "Haben Sie Befehlsparameter? (bool)",
+        "source": "Aktuelle Quelle (twitch oder discord)",
+        "userInput": "Benutzereingabe beim Einlösen der Belohnung",
+        "isBotSubscriber": "Ist Bot Abonnent (bool)",
+        "isStreamOnline": "Ist der Stream online (bool)",
+        "uptime": "Laufzeit des Stream",
+        "is": {
+          "moderator": "Ist Benutzer Mod? (Bool)",
+          "subscriber": "Ist Benutzer Sub? (Bool)",
+          "vip": "Ist Benutzer VIP? (bool)",
+          "newchatter": "Ist die erste Nachricht des Benutzers (Bool)",
+          "follower": "Ist Benutzer Follower? (Bool)",
+          "broadcaster": "Ist Benutzer Broadcast? (Bool)",
+          "bot": "Ist Benutzer Bot? (Bool)",
+          "owner": "Ist Benutzer der Bot-Besitzer? (Bool)"
+        },
+        "recipientis": {
+          "moderator": "Ist Teilnehmer ein Mod? (Bool)",
+          "subscriber": "Ist Teilnehmer ein Abonennt? (Bool)",
+          "vip": "Ist Teilnehmer ein VIP? (Bool)",
+          "follower": "Ist Teilnehmer ein Follower? (Bool)",
+          "broadcaster": "Ist Empfänger Broadcaster? (Bool)",
+          "bot": "Ist Teilnehmer ein Bot? (Bool)",
+          "owner": "Ist Teilnehmer der Bot-Besitzer? (Bool)"
+        },
+        "sceneName": "Name der Szene",
+        "inputName": "Name of input",
+        "inputMuted": "Mute state (bool)"
+      }
+    },
+    "page-settings": {
+      "systems": {
+        "others": {
+          "title": "Sonstiges",
+          "currency": "Währung"
+        },
+        "whispers": {
+          "title": "Flüstern",
+          "toggle": {
+            "listener": "Auf Befehle per Flüstern achten",
+            "settings": "Flüsternachricht bei geänderten Einstellungen",
+            "raffle": "Flüsternachricht bei teilnahme",
+            "permissions": "Unzureichende Berechtigungen zum Flüstern",
+            "cooldowns": "Flüster bei Abklingzeit (wenn als Benachrichtigung gesetzt)"
+          }
+        }
+      }
+    },
+    "page-logger": {
+      "buttons": {
+        "messages": "Nachrichten",
+        "follows": "Follows",
+        "subs": "Subs & ReSubs",
+        "cheers": "Bits",
+        "responses": "Bot Antworten",
+        "whispers": "Whisper",
+        "bans": "Banns",
+        "timeouts": "Zeigüberschreitung"
+      },
+      "range": {
+        "day": "ein Tag",
+        "week": "eine Woche",
+        "month": "ein Monat",
+        "year": "ein Jahr",
+        "all": "Gesamte Zeit"
+      },
+      "order": {
+        "asc": "Aufsteigend",
+        "desc": "Absteigend"
+      },
+      "labels": {
+        "order": "REIHENFOLGE",
+        "range": "Bereich",
+        "filters": "FILTER"
+      }
+    },
+    "stats-panel": {
+      "show": "Stats zeigen",
+      "hide": "Statistiken ausblenden"
+    },
+    "translations": "Benutzerdefinierte Übersetzungen",
+    "bot-responses": "Bot Antworten",
+    "duration": "Dauer",
+    "viewers-reset-attributes": "Attribute zurücksetzen",
+    "viewers-points-of-all-users": "Punkte aller Benutzer",
+    "viewers-watchtime-of-all-users": "Zugeschaute Zeit aller Benutzer ansehen",
+    "viewers-messages-of-all-users": "Nachrichten von allen Benutzern",
+    "events-game-after-change": "category after change",
+    "events-game-before-change": "category before change",
+    "events-user-triggered-event": "vom Benutzer ausgelöstes Ereignis",
+    "events-method-used-to-subscribe": "zum Abonnieren verwendete Methode",
+    "events-months-of-subscription": "Monate des Abonnements",
+    "events-monthsName-of-subscription": "Wort 'Monat' nach Nummer (1 Monat, 2 Monate)",
+    "events-user-message": "Benutzermitteilung",
+    "events-bits-user-sent": "vom Benutzer gesendete Bits",
+    "events-reason-for-ban-timeout": "Grund für Bann/Timeout",
+    "events-duration-of-timeout": "Dauer des Timeouts",
+    "events-duration-of-commercial": "dauer der Werbung",
+    "overlays-eventlist-resub": "re-Subs",
+    "overlays-eventlist-subgift": "verschenkter Sub",
+    "overlays-eventlist-subcommunitygift": "subcommunitygeschenk",
+    "overlays-eventlist-sub": "Sub",
+    "overlays-eventlist-follow": "Follow",
+    "overlays-eventlist-cheer": "Bits",
+    "overlays-eventlist-tip": "Spende",
+    "overlays-eventlist-raid": "Raid",
+    "requested-by": "Angefordert von",
+    "description": "Beschreibung",
+    "raffle-type": "Verlosungs Typ",
+    "raffle-type-keywords": "Nur Schlüsselwort",
+    "raffle-type-tickets": "Mit Tickets",
+    "raffle-tickets-range": "Ticketbereich",
+    "video_id": "Video ID",
+    "highlights": "Highlights",
+    "cooldown-quiet-header": "Cooldown-Nachricht anzeigen",
+    "cooldown-quiet-toggle-no": "Benachrichtigen",
+    "cooldown-quiet-toggle-yes": "Wird nicht benachrichtigt",
+    "cooldown-moderators": "Moderatoren",
+    "cooldown-owners": "Besitzer",
+    "cooldown-subscribers": "Abonnenten",
+    "cooldown-followers": "Followers",
+    "in-seconds": "in Sekunden",
+    "songs": "Songs",
+    "show-usernames-with-at": "Benutzernamen mit @ anzeigen",
+    "send-message-as-a-bot": "Nachricht als Bot senden",
+    "chat-as-bot": "Chat (als Bot)",
+    "product": "Produkt",
+    "optional": "Optional",
+    "placeholder-search": "Suche",
+    "placeholder-enter-product": "Produkt eintragen",
+    "placeholder-enter-keyword": "Suchbegriff eingeben",
+    "credits": "Credits",
+    "fade-out-top": "aufblenden",
+    "fade-out-zoom": "verblasst Zoom",
+    "global": "Global",
+    "user": "Benutzer",
+    "alerts": "Alert",
+    "eventlist": "Event-Liste",
+    "dashboard": "Dashboard",
+    "carousel": "BilderKarussell",
+    "text": "Text",
+    "filter": "Filter",
+    "filters": "Filters",
+    "isUsed": "Is used",
+    "permissions": "Berechtigungen",
+    "permission": "Berechtigung",
+    "viewers": "Zuschauer",
+    "systems": "Systeme",
+    "overlays": "Overlays",
+    "gallery": "Medien Galerie",
+    "aliases": "Aliase",
+    "alias": "Alias",
+    "command": "Befehl",
+    "cooldowns": "Cooldowns",
+    "title-template": "Titel-Vorlage",
+    "keyword": "Schlüsselwort",
+    "moderation": "Moderation",
+    "timer": "Timer",
+    "price": "Preis",
+    "rank": "Rang",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "close": "Schließen",
+    "save-changes": "Änderungen speichern",
+    "saving": "Speichert...",
+    "deleting": "Lösche...",
+    "done": "Fertig",
+    "error": "Fehler",
+    "title": "Titel",
+    "change-title": "Titel ändern",
+    "game": "category",
+    "tags": "Tags",
+    "change-game": "Change category",
+    "click-to-change": "Zum Ändern anklicken",
+    "uptime": "Uptime",
+    "not-affiliate-or-partner": "Kein Affiliate/Partner",
+    "not-available": "Nicht verfügbar",
+    "max-viewers": "Max. Zuschauer",
+    "new-chatters": "Neue Chatter",
+    "chat-messages": "Chat-Nachrichten",
+    "followers": "Followers",
+    "subscribers": "Abonnenten",
+    "bits": "Bits",
+    "subgifts": "Verschenkte Subs",
+    "subStreak": "Aktuelle Sub Reihe",
+    "subCumulativeMonths": "Gesamte abonnierte Monate",
+    "tips": "Spenden",
+    "tier": "Stufe",
+    "status": "Status",
+    "add-widget": "Widget hinzufügen",
+    "remove-dashboard": "Dashboard entfernen",
+    "close-bet-after": "Schließe Wette nach",
+    "refund": "Rückerstattung",
+    "roll-again": "Nochmal würfeln",
+    "no-eligible-participants": "Keine berechtigten Teilnehmer",
+    "follower": "Follower",
+    "subscriber": "Abonnent",
+    "minutes": "Minuten",
+    "seconds": "Sekunden",
+    "hours": "Stunden",
+    "months": "Monate",
+    "eligible-to-enter": "Zum Beitreten berechtigt",
+    "everyone": "Jeder",
+    "roll-a-winner": "Einen Gewinner würfeln",
+    "send-message": "Nachricht senden",
+    "messages": "Nachrichten",
+    "level": "Level",
+    "create": "Erstellen",
+    "cooldown": "Cooldown",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren",
+    "slug": "Slug",
+    "posted-by": "Gepostet von",
+    "time": "Zeit",
+    "type": "Typ",
+    "response": "Antworten",
+    "cost": "Kosten",
+    "name": "Name",
+    "playlist": "Playlist",
+    "length": "Länge",
+    "volume": "Lautstärke",
+    "start-time": "Startzeit",
+    "end-time": "Endzeit",
+    "watched-time": "Zugeschaute Zeit",
+    "currentsong": "Aktueller Titel",
+    "group": "Gruppen",
+    "followed-since": "Folgt seit",
+    "subscribed-since": "Abonniert seit",
+    "username": "Benutzername",
+    "hashtag": "Hashtag",
+    "accessToken": "AccessToken",
+    "refreshToken": "RefreshToken",
+    "scopes": "Scopes",
+    "last-seen": "Zuletzt gesehen",
+    "date": "Datum",
+    "points": "Punkte",
+    "calendar": "Kalender",
+    "string": "Zeichenkette",
+    "interval": "Intervall",
+    "number": "Nummer",
+    "minimal-messages-required": "Minimale Nachrichten erforderlich",
+    "max-duration": "Max. Dauer",
+    "shuffle": "Zufallswiedergabe",
+    "song-request": "Song-Request",
+    "format": "Format",
+    "available": "Verfügbar",
+    "one-record-per-line": "ein Eintrag pro Zeile",
+    "on": "an",
+    "off": "aus",
+    "search-by-username": "Nach Benutzernamen suchen",
+    "widget-title-custom": "Benutzerdefiniert",
+    "widget-title-eventlist": "EVENTLISTE",
+    "widget-title-chat": "CHAT",
+    "widget-title-queue": "WARTESCHLANGE",
+    "widget-title-raffles": "RAFFLES",
+    "widget-title-social": "SOCIAL",
+    "widget-title-ytplayer": "MUSIC-SPIELER",
+    "widget-title-monitor": "MONITOR",
+    "event": "Ereignis",
+    "operation": "Operation",
+    "tweet-post-with-hashtag": "Tweet mit Hashtag veröffentlicht",
+    "user-joined-channel": "Benutzer ist dem Kanal beigetreten",
+    "user-parted-channel": "Benutzer hat einen Kanal verlassen",
+    "follow": "Neuer Follower",
+    "tip": "Neue Spende",
+    "obs-scene-changed": "OBS Szene geändert",
+    "obs-input-mute-state-changed": "OBS input source mute state changed",
+    "unfollow": "Entfolgen",
+    "hypetrain-started": "Hype Zug gestartet",
+    "hypetrain-ended": "Hype Zug beendet",
+    "prediction-started": "Twitch Vorhersage gestartet",
+    "prediction-locked": "Twitch-Vorhersage gesperrt",
+    "prediction-ended": "Twitch Vorhersage beendet",
+    "poll-started": "Twitch-Umfrage gestartet",
+    "poll-ended": "Twitch-Umfrage beendet",
+    "hypetrain-level-reached": "Hype Zug hat ein neues Level erreicht",
+    "subscription": "Neuer Abonnent",
+    "subgift": "Neuer verschenkter Sub",
+    "subcommunitygift": "Neuer verschenkter Community-Sub",
+    "resub": "Benutzer hat erneut abonniert",
+    "command-send-x-times": "Befehl wurde x mal gesendet",
+    "keyword-send-x-times": "Schlüsselwort wurde x mal gesendet",
+    "number-of-viewers-is-at-least-x": "Anzahl der Zuschauer ist mindestens x",
+    "stream-started": "Stream gestartet",
+    "reward-redeemed": "Belohnung eingelöst",
+    "stream-stopped": "Stream gestoppt",
+    "stream-is-running-x-minutes": "Stream läuft seit x Minuten",
+    "chatter-first-message": "erste Nachricht des Chatters",
+    "every-x-minutes-of-stream": "alle X Minuten des Streams",
+    "game-changed": "category changed",
+    "cheer": "empfangene Bits",
+    "clearchat": "Chat wurde geleert",
+    "action": "Benutzer verwendete /me",
+    "ban": "Benutzer wurde gebannt",
+    "raid": "Dein Kanal wird geraided",
+    "mod": "Benutzer ist ein neuer Mod",
+    "timeout": "der Benutzer hatte einen Timeout",
+    "create-a-new-event-listener": "Neuen Event Listener erstellen",
+    "send-discord-message": "sende eine Discord Nachricht",
+    "send-chat-message": "sende eine Twitch Chat Nachricht",
+    "send-whisper": "einen Whisper senden",
+    "run-command": "Einen Befehl ausführen",
+    "run-obswebsocket-command": "einen OBS Websocket Befehl ausführen",
+    "do-nothing": "--- nichts tun ---",
+    "count": "Anzahl",
+    "timestamp": "Zeitstempel",
+    "message": "Nachricht",
+    "sound": "Sound",
+    "emote-explosion": "Emote Explosion",
+    "emote-firework": "Emote-Feuerwerk",
+    "quiet": "Leise",
+    "noisy": "Laut",
+    "true": "richtig",
+    "false": "falsch",
+    "light": "Helles Design",
+    "dark": "Dunkles Design",
+    "gambling": "Glücksspiel",
+    "seppukuTimeout": "Timeout für !seppuku",
+    "rouletteTimeout": "Timeout für !roulette",
+    "fightmeTimeout": "Timeout für !fightme",
+    "duelCooldown": "Cooldown für !duel",
+    "fightmeCooldown": "Cooldown für !fightme",
+    "gamblingCooldownBypass": "Abklingzeiten für Glücksspiele umgehen für Mods/Streamer",
+    "click-to-highlight": "Highlight",
+    "click-to-toggle-display": "Anzeige umschalten",
+    "commercial": "Werbung gestartet",
+    "start-commercial": "Werbung abspielen",
+    "bot-will-join-channel": "Bot tritt dem Kanal bei",
+    "bot-will-leave-channel": "Bot wird den Kanal verlassen",
+    "create-a-clip": "Clip erstellen",
+    "increment-custom-variable": "Erhöhe eine benutzerdefinierte Variable",
+    "set-custom-variable": "eine eigene Variable setzen",
+    "decrement-custom-variable": "Verringern Sie eine benutzerdefinierte Variable",
+    "omit": "weglassen",
+    "comply": "erfüllen",
+    "visible": "Sichtbar",
+    "hidden": "versteckt",
+    "gamblingChanceToWin": "Chance zu gewinnen !gamble",
+    "gamblingMinimalBet": "Minimaler Einsatz für !gamble",
+    "duelDuration": "Dauer von !duel",
+    "duelMinimalBet": "Minimaler Einsatz für !duel"
+  },
+  "raffles": {
+    "announceInterval": "Eröffnete Verlosungen werden alle $value Minuten bekannt gegeben",
+    "eligibility-followers-item": "Followers",
+    "eligibility-subscribers-item": "Abonnenten",
+    "eligibility-everyone-item": "Jeder",
+    "raffle-is-running": "Verlosung läuft ($count $l10n_entries).",
+    "to-enter-raffle": "Verlosung wird ausgeführt. Um mitzumachen, einfach $keyword eintippen. Verlosung ist offen für $eligibility.",
+    "to-enter-ticket-raffle": "Verlosung wird ausgeführt. Um mitzumachen, einfach \"$keyword <$min-$max>\" eintippen. Verlosung ist offen für $eligibility.",
+    "added-entries": "$count $l10n_entries zur Verlosung hinzugefügt ($countTotal insgesamt). {raffles.to-enter-raffle}",
+    "added-ticket-entries": "$count $l10n_entries zur Verlosung hinzugefügt ($countTotal insgesamt). {raffles.to-enter-ticket-raffle}",
+    "join-messages-will-be-deleted": "Ihre Verlosungsnachrichten werden beim Beitritt gelöscht.",
+    "announce-raffle": "{raffles.raffle-is-running} {raffles.to-enter-raffle}",
+    "announce-ticket-raffle": "{raffles.raffle-is-running} {raffles.to-enter-ticket-raffle}",
+    "announce-new-entries": "{raffles.added-entries} {raffles.to-enter-raffle}",
+    "announce-new-ticket-entries": "{raffles.added-entries} {raffles.to-enter-ticket-raffle}",
+    "cannot-create-raffle-without-keyword": "Entschuldigung, $sender, aber du kannst keine Verlosung ohne Schlüsselwort erstellen",
+    "raffle-is-already-running": "Sorry, $sender, die Verlosung läuft bereits mit dem Schlüsselwort $keyword",
+    "no-raffle-is-currently-running": "$sender, es laufen derzeit keine Verlosungen ohne Gewinner",
+    "no-participants-to-pick-winner": "$sender, niemand nimmt an der Verlosung teil.",
+    "raffle-winner-is": "Gewinner der Verlosung $keyword ist $username! Gewinnerwahrscheinlichkeit war $probability%!"
+  },
+  "bets": {
+    "running": "$sender, Wette ist bereits geöffnet! Wett-Optionen: $options. Verwende $command einsatz-$maxIndex",
+    "notRunning": "Derzeit ist keine Wette geöffnet. Frage die Mods, um eine zu eröffnen!",
+    "opened": "Neue Wette '$title' ist eröffnet! Wett-Optionen: $options. Verwende $command 1-$maxIndex <amount> , um zu gewinnen! Du hast nur $minutesmin, um zu setzen!",
+    "closeNotEnoughOptions": "$sender, Du musst eine Gewinnoption auswählen, um den Einsatz zu schließen.",
+    "notEnoughOptions": "$sender, neue Wetten benötigen mindestens 2 Optionen!",
+    "info": "Wetten '$title' ist noch geöffnet! Wetten-Optionen: $options. Verwenden Sie $command 1-$maxIndex <amount> , um zu gewinnen! Sie haben nur $minutesmin zum Wetten!",
+    "diffBet": "$sender, Sie haben bereits auf $option gesetzt und können nicht auf eine andere Option setzen!",
+    "undefinedBet": "Entschuldigung, $sender, aber diese Wette Option existiert nicht, benutze $command , um die Nutzung zu überprüfen",
+    "betPercentGain": "Prozentualer Gewinn pro Option wurde auf $value % gesetzt",
+    "betCloseTimer": "Wetten werden nach $valuemin automatisch geschlossen",
+    "refund": "Wetten wurden ohne Gewinn geschlossen, alle Benutzer werden erstattet!",
+    "notOption": "$sender, diese Option existiert nicht! Wetten ist nicht geschlossen, überprüfen Sie $command",
+    "closed": "Wetten wurden geschlossen und gewonnene Option war $option! $amount Nutzer haben insgesamt $points $pointsName gewonnen!",
+    "timeUpBet": "Ich vermute, Sie sind zu spät, $sender, Ihre Zeit zum Wetten ist abgelaufen!",
+    "locked": "Die Wettzeiten ist abgelaufen! Keine Wetten mehr.",
+    "zeroBet": "Oh Junge, $sender du kannst nicht 0 $pointsName setzten",
+    "lockedInfo": "Wetten '$title' ist noch geöffnet, aber die Zeit für Wetten ist abgelaufen!",
+    "removed": "Wettzeit ist abgelaufen! Keine Wetten wurden gesetzt -> automatisch geschlossen",
+    "error": "Entschuldigung, $sender, dieser Befehl ist nicht korrekt! Verwenden Sie $command 1-$maxIndex <amount>. Z.B. $command 0 100 setzt 100 Punkte auf Geganstand 0."
+  },
+  "alias": {
+    "alias-parse-failed": "{core.command-parse} !alias",
+    "alias-was-not-found": "$sender, Alias $alias wurde nicht in der Datenbank gefunden",
+    "alias-was-edited": "$sender, Alias $alias wurde zu $command geändert",
+    "alias-was-added": "$sender, der Alias $alias für $command wurde hinzugefügt",
+    "list-is-not-empty": "$sender, Liste von Aliasen: $list",
+    "list-is-empty": "$sender, Liste der Aliase ist leer",
+    "alias-was-enabled": "$sender, Alias $alias wurde aktiviert",
+    "alias-was-disabled": "$sender, Alias $alias wurde deaktiviert",
+    "alias-was-concealed": "$sender, Alias $alias wurde versteckt",
+    "alias-was-exposed": "$sender, Alias $alias wurde ausgesetzt",
+    "alias-was-removed": "$sender, Alias $alias wurde entfernt",
+    "alias-group-set": "$sender, Alias $alias wurde für Gruppe $group gesetzt",
+    "alias-group-unset": "$sender, Alias $alias Gruppe wurde entfernt",
+    "alias-group-list": "$sender, Liste der Aliasgruppen: $list",
+    "alias-group-list-aliases": "$sender, Liste der Aliase in $group: $list",
+    "alias-group-list-enabled": "$sender, Aliase in $group sind aktiviert.",
+    "alias-group-list-disabled": "$sender, Aliase in $group sind deaktiviert."
+  },
+  "customcmds": {
+    "commands-parse-failed": "{core.command-parse} $command",
+    "command-was-not-found": "$sender, Befehl $command wurde nicht in der Datenbank gefunden",
+    "response-was-not-found": "$sender, Antwort #$response des Befehls $command wurde nicht in der Datenbank gefunden",
+    "command-was-edited": "$sender, Befehl $command wurde zu '$response ' geändert",
+    "command-was-added": "$sender, Befehl $command wurde hinzugefügt",
+    "list-is-not-empty": "$sender, Liste der Befehle: $list",
+    "list-is-empty": "$sender, Liste der Befehle ist leer",
+    "command-was-enabled": "$sender, Befehl $command wurde aktiviert",
+    "command-was-disabled": "$sender, Befehl $command wurde deaktiviert",
+    "command-was-concealed": "$sender, Befehl $command wurde verborgen",
+    "command-was-exposed": "$sender, Befehl $command wurde freigegeben",
+    "command-was-removed": "$sender, Befehl $command wurde entfernt",
+    "response-was-removed": "$sender, Antwort #$response von $command wurde entfernt",
+    "list-of-responses-is-empty": "$sender, $command haben keine Antworten oder existiert nicht",
+    "response": "$command#$index ($permission) $after| $response"
+  },
+  "keywords": {
+    "keyword-parse-failed": "{core.command-parse} !keyword",
+    "keyword-is-ambiguous": "$sender, Stichwort $keyword ist zweideutig, benutze ID des Schlüsselworts",
+    "keyword-was-not-found": "$sender, Schlüsselwort $keyword wurde in der Datenbank nicht gefunden",
+    "response-was-not-found": "$sender, Antwort #$response des Schlüsselwortes $keyword wurde nicht in der Datenbank gefunden",
+    "keyword-was-edited": "$sender, Stichwort $keyword wurde in '$response ' geändert",
+    "keyword-was-added": "$sender, keyword $keyword ($id) wurde hinzugefügt",
+    "list-is-not-empty": "$sender, Liste der Schlüsselwörter: $list",
+    "list-is-empty": "$sender, Liste der Schlüsselwörter ist leer",
+    "keyword-was-enabled": "$sender, Stichwort $keyword wurde aktiviert",
+    "keyword-was-disabled": "$sender, Schlüsselwort $keyword wurde deaktiviert",
+    "keyword-was-removed": "$sender, Stichwort $keyword wurde entfernt",
+    "list-of-responses-is-empty": "$sender, $keyword haben keine Antworten oder existiert nicht",
+    "response": "$keyword#$index ($permission) $after| $response"
+  },
+  "points": {
+    "success": {
+      "undo": "$sender, Punkte '$command' für $username wurden zurückgesetzt ($updatedValue $updatedValuePointsLocale zu $originalValue $originalValuePointsLocale).",
+      "set": "$username wurde auf $amount $pointsName gesetzt",
+      "give": "$sender hat seinen $amount $pointsName an $username gegeben",
+      "online": {
+        "positive": "Alle Online-Nutzer haben soeben $amount $pointsName erhalten!",
+        "negative": "Alle Online-Benutzer haben $amount $pointsName verloren!"
+      },
+      "all": {
+        "positive": "Alle Benutzer haben $amount $pointsName erhalten!",
+        "negative": "Alle Benutzer haben $amount $pointsName verloren!"
+      },
+      "rain": "Lass es regen! Alle Online-Nutzer erhalten bis zu $amount $pointsName!",
+      "add": "$username hat $amount $pointsName erhalten!",
+      "remove": "Autsch, $amount $pointsName wurden von $username entfernt!"
+    },
+    "failed": {
+      "undo": "$sender, Benutzername wurde nicht in der Datenbank gefunden oder Benutzer haben keine Rückgängig Operationen",
+      "set": "{core.command-parse} $command [username] [amount]",
+      "give": "{core.command-parse} $command [username] [amount]",
+      "giveNotEnough": "Entschuldigung, $sender, Sie haben nicht genug  $amount $pointsName um sie an $username zu geben",
+      "cannotGiveZeroPoints": "Sorry, $sender, du kannst $amount $pointsName nicht an $username geben",
+      "get": "{core.command-parse} $command [username]",
+      "online": "{core.command-parse} $command [amount]",
+      "all": "{core.command-parse} $command [amount]",
+      "rain": "{core.command-parse} $command [amount]",
+      "add": "{core.command-parse} $command [username] [amount]",
+      "remove": "{core.command-parse} $command [username] [amount]"
+    },
+    "defaults": {
+      "pointsResponse": "$username hat derzeit $amount $pointsName. Ihre Position ist $order/$count."
+    }
+  },
+  "songs": {
+    "playlist-is-empty": "$sender, die zu importierende Playlist ist leer",
+    "playlist-imported": "$sender importierte $imported und übersprungen $skipped zur Wiedergabeliste",
+    "not-playing": "Keiner",
+    "song-was-banned": "Song $name wurde gebannt und wird nie wieder gespielt!",
+    "song-was-banned-timeout-message": "Du hast einen Timeout für das Posten von gesperrten Lied bekommen",
+    "song-was-unbanned": "Song wurde erfolgreich entsperrt",
+    "song-was-not-banned": "Dieser Song wurde nicht gesperrt",
+    "no-song-is-currently-playing": "Derzeit wird kein Lied abgespielt.",
+    "current-song-from-playlist": "Aktueller Song ist $name von der Playlist",
+    "current-song-from-songrequest": "Aktueller Song ist $name und wurde gewünscht von $username",
+    "songrequest-disabled": "Entschuldigung, $sender, Songanfragen sind deaktiviert",
+    "song-is-banned": "Sorry, $sender, aber dieser Song ist gesperrt",
+    "youtube-is-not-responding-correctly": "Entschuldigung, $sender, aber YouTube sendet unerwartete Antworten, bitte versuchen Sie es später erneut.",
+    "song-was-not-found": "Sorry, $sender, aber dieser Song wurde nicht gefunden",
+    "song-is-too-long": "Sorry, $sender, aber dieser Song ist zu lang",
+    "this-song-is-not-in-playlist": "Sorry, $sender, aber dieser Song ist nicht in der aktuellen Wiedergabeliste",
+    "incorrect-category": "Sorry, $sender, aber der Song muss eine Musikkategorie sein",
+    "song-was-added-to-queue": "$sender, Song $name wurde zur Warteschlange hinzugefügt",
+    "song-was-added-to-playlist": "$sender, Song $name wurde zur Wiedergabeliste hinzugefügt",
+    "song-is-already-in-playlist": "$sender, Song $name ist bereits in der Playlist",
+    "song-was-removed-from-playlist": "$sender, Song $name wurde von der Wiedergabeliste entfernt",
+    "song-was-removed-from-queue": "$sender, dein Song $name wurde aus der Warteschlange entfernt",
+    "playlist-current": "$sender, die aktuelle Playlist ist $playlist.",
+    "playlist-list": "$sender, verfügbare Playlists: $list.",
+    "playlist-not-exist": "$sender, deine angeforderte Playlist $playlist existiert nicht.",
+    "playlist-set": "$sender, du hast die Playlist zu $playlist gewechselt."
+  },
+  "price": {
+    "price-parse-failed": "{core.command-parse} !price",
+    "price-was-set": "$sender, Preis für $command wurde auf $amount $pointsName gesetzt",
+    "price-was-unset": "$sender, Preis für $command wurde entfernt",
+    "price-was-not-found": "$sender, Preis für $command wurde nicht gefunden",
+    "price-was-enabled": "$sender, Preis für $command wurde aktiviert",
+    "price-was-disabled": "$sender, der Preis für $command wurde deaktiviert",
+    "user-have-not-enough-points": "Entschuldigung, $sender, aber du hast nicht $amount $pointsName um $command zu benutzen",
+    "user-have-not-enough-points-or-bits": "Sorry, $sender, aber Sie haben nicht $amount $pointsName oder einlösen Befehl von $bitsAmount Bits um $command zu verwenden",
+    "user-have-not-enough-bits": "Sorry, $sender, aber du musse für den Befehl $bitsAmount Bits einlösen, um $command zu verwenden",
+    "list-is-empty": "$sender, Liste der Preise ist leer",
+    "list-is-not-empty": "$sender, Liste der Preise: $list"
+  },
+  "ranks": {
+    "rank-parse-failed": "{core.command-parse} !rank help",
+    "rank-was-added": "$sender, neuer Rang $type $rank ($hours$hlocale) wurde hinzugefügt",
+    "rank-was-edited": "$sender, Rang für $type $hours$hlocale wurde geändert zu $rank",
+    "rank-was-removed": "$sender, Rang für $type $hours$hlocale wurde entfernt",
+    "rank-already-exist": "$sender, Es gibt bereits einen Rang für $type $hours$hlocale",
+    "rank-was-not-found": "$sender, Rang für $type $hours$hlocale wurde nicht gefunden",
+    "custom-rank-was-set-to-user": "$sender, du setzt $rank für $username",
+    "custom-rank-was-unset-for-user": "$sender, benutzerdefinierter Rang für $username wurde nicht gesetzt",
+    "list-is-empty": "$sender, kein Rang wurde gefunden",
+    "list-is-not-empty": "$sender, Rangliste: $list",
+    "show-rank-without-next-rank": "$sender, du hast den Rank: $rank",
+    "show-rank-with-next-rank": "$sender, du hast den Rang: $rank. Nächster Rang ist - $nextrank",
+    "user-dont-have-rank": "$sender, du hast noch keinen Rang"
+  },
+  "followage": {
+    "success": {
+      "never": "$sender, $username ist kein Follower",
+      "time": "$sender, $username folgt dem Kanal $diff"
+    },
+    "successSameUsername": {
+      "never": "$sender, sie sind kein follower dieses Kanals",
+      "time": "$sender, sie folgen diesem Kanal seit $diff"
+    }
+  },
+  "subage": {
+    "success": {
+      "never": "$sender, $username ist kein Kanal subscriber.",
+      "notNow": "$sender, $username ist derzeit kein Kanal subscriber. Insgesamt $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, $username ist subscriber auf dem Kanal. Aktuelle Teilsträhne für $diff ($subStreak $subStreakMonthsName) und insgesamt von $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, $username ist Abonnent des Kanals. Insgesamt $subCumulativeMonths $subCumulativeMonthsName."
+    },
+    "successSameUsername": {
+      "never": "$sender, Du bist kein Kanal-Abonnent.",
+      "notNow": "$sender, Sie sind derzeit kein Kanal Abonnent. Insgesamt $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, Sie sind Abonnent des Kanals. Aktuelle Abostähne für $diff ($subStreak $subStreakMonthsName) und insgesamt $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, Sie sind Abonnent des Kanals. Insgesamt seit $subCumulativeMonths $subCumulativeMonthsName."
+    }
+  },
+  "age": {
+    "failed": "$sender, Ich habe keine Daten für das Konto $username",
+    "success": {
+      "withUsername": "$sender, Kontoalter für $username ist $diff",
+      "withoutUsername": "$sender, Ihr Kontoalter ist $diff"
+    }
+  },
+  "lastseen": {
+    "success": {
+      "never": "$username war nie in diesem Kanal!",
+      "time": "$username wurde das letzte mal gesehe am $when auf deisem Kanal"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !lastseen [username]"
+    }
+  },
+  "watched": {
+    "success": {
+      "time": "$username hat den Channel bereits $time Stunden zugeschaut"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !watched oder !watched [username]"
+    }
+  },
+  "permissions": {
+    "without-permission": "Du hast nicht genügend Berechtigungen für '$command'"
+  },
+  "moderation": {
+    "user-have-immunity": "$sender, Benutzer $username haben $type Immunität für $time Sekunden",
+    "user-have-immunity-parameterError": "$sender, Parameterfehler. $command <username> <type> <duration>",
+    "user-have-link-permit": "Benutzer $username kann $count $link im Chat schreiben",
+    "permit-parse-failed": "{core.command-parse} !permit [username]",
+    "user-is-warned-about-links": "Keine Links erlaubt, frage nach !permit [$count warnungen übrig]",
+    "user-is-warned-about-symbols": "Keine übermäßige Verwendung von Symbolen [$count Warnungen übrig]",
+    "user-is-warned-about-long-message": "Lange Nachrichten sind nicht erlaubt [$count warnungen übrig]",
+    "user-is-warned-about-caps": "Keine übermäßige Verwendung von Caps [$count Warnungen übrig]",
+    "user-is-warned-about-spam": "Spamming ist nicht erlaubt [$count Warnungen übrig]",
+    "user-is-warned-about-color": "Kursiv und /me ist nicht erlaubt [$count Warnungen übrig]",
+    "user-is-warned-about-emotes": "Keine Emotes Spamming [$count Warnungen übrig]",
+    "user-is-warned-about-forbidden-words": "Keine verbotenen Wörter [$count Warnungen übrig]",
+    "user-have-timeout-for-links": "Keine Links erlaubt. Frage nach !permit",
+    "user-have-timeout-for-symbols": "Keine übermäßige Verwendung von Symbolen",
+    "user-have-timeout-for-long-message": "Lange Nachricht ist nicht erlaubt",
+    "user-have-timeout-for-caps": "Keine übermäßige Verwendung von Caps",
+    "user-have-timeout-for-spam": "Spammen ist nicht erlaubt",
+    "user-have-timeout-for-color": "Kursiv und /me ist nicht erlaubt",
+    "user-have-timeout-for-emotes": "Kein Emotes Spamming",
+    "user-have-timeout-for-forbidden-words": "Keine verbotenen Wörter"
+  },
+  "queue": {
+    "list": "$sender, aktueller Warteschlangen pool: $users",
+    "info": {
+      "closed": "$sender, {queue.close}",
+      "opened": "$sender, {queue.open}"
+    },
+    "join": {
+      "closed": "Sorry, $senderist die Warteschlange geschlossen",
+      "opened": "$sender wurde zur Warteschlange hinzugefügt"
+    },
+    "open": "Warteschlange ist zur Zeit geöffnet! Schließe dich der Warteschlange mit !queue join an",
+    "close": "Warteschlange ist momentan geschlossen!",
+    "clear": "Warteschlange wurde vollständig gelöscht",
+    "picked": {
+      "single": "Dieser Benutzer wurde aus der Warteschlange ausgewählt: $users",
+      "multi": "Diese Benutzer wurden aus der Warteschlange ausgewählt: $users",
+      "none": "Keine Benutzer in der Warteschlange gefunden"
+    }
+  },
+  "marker": "Stream marker has been created at $time.",
+  "title": {
+    "current": "$sender, Titel des Stream ist '$title'.",
+    "change": {
+      "success": "$sender, der Titel wurde auf $title gesetzt"
+    }
+  },
+  "game": {
+    "current": "$sender, Streamer spielt derzeit $game.",
+    "change": {
+      "success": "$sender, category was set to: $game"
+    }
+  },
+  "cooldowns": {
+    "cooldown-was-set": "$sender, $type Abklingzeit für $command wurde auf $secondss gesetzt",
+    "cooldown-was-unset": "$sender, Abklingzeit für $command wurde nicht gesetzt",
+    "cooldown-triggered": "$sender, '$command' ist auf Abklingzeit, verbleibend $secondss",
+    "cooldown-not-found": "$sender, Abklingzeit für $command wurde nicht gefunden",
+    "cooldown-was-enabled": "$sender, Abklingzeit für $command wurde aktiviert",
+    "cooldown-was-disabled": "$sender, Abklingzeit für $command wurde deaktiviert",
+    "cooldown-was-enabled-for-moderators": "$sender, Abklingzeit für $command ist für Moderatoren aktiviert",
+    "cooldown-was-disabled-for-moderators": "$sender, die Abklingzeit für $command wurde für Moderatoren deaktiviert",
+    "cooldown-was-enabled-for-owners": "$sender, Abklingzeit für $command wurde für Besitzer aktiviert",
+    "cooldown-was-disabled-for-owners": "$sender, Abklingzeit für $command wurde für Besitzer deaktiviert",
+    "cooldown-was-enabled-for-subscribers": "$sender, Abklingzeit für $command wurde für Abonnenten aktiviert",
+    "cooldown-was-disabled-for-subscribers": "$sender, Abklingzeit für $command wurde für Abonnenten deaktiviert",
+    "cooldown-was-enabled-for-followers": "$sender, Abklingzeit für $command wurde für Follower aktiviert",
+    "cooldown-was-disabled-for-followers": "$sender, die Abklingzeit für $command wurde für Follower deaktiviert"
+  },
+  "timers": {
+    "id-must-be-defined": "$sender, Antwort ID muss definiert werden.",
+    "id-or-name-must-be-defined": "$sender, Antwort ID oder Timer Name müssen definiert werden.",
+    "name-must-be-defined": "$sender, Timer Name muss definiert werden.",
+    "response-must-be-defined": "$sender, Timer Antwort muss definiert werden.",
+    "cannot-set-messages-and-seconds-0": "$sender, Sie können nicht beide Nachrichten und Sekunden auf 0 setzen.",
+    "timer-was-set": "$sender, der Timer $name wurde mit der Nachricht $messages und $seconds Sekunden gesetzt, um ihn auszulösen",
+    "timer-was-set-with-offline-flag": "$sender, der Timer $name wurde mit $messages Nachrichten und $seconds Sekunden gesetzt, um ihn auszulösen, auch wenn der Stream offline ist",
+    "timer-not-found": "$sender, Timer (Name: $name) wurde in der Datenbank nicht gefunden. Überprüfe Timer mit der !timers list",
+    "timer-deleted": "$sender, Timer $name und seine Antworten wurden gelöscht.",
+    "timer-enabled": "$sender, timer (name: $name) wurde aktiviert",
+    "timer-disabled": "$sender, timer (name: $name) wurde deaktiviert",
+    "timers-list": "$sender, timer liste: $list",
+    "responses-list": "$sender, timer (name: $name) liste",
+    "response-deleted": "$sender, Antwort (ID: $id) wurde gelöscht.",
+    "response-was-added": "$sender, Antwort(Id: $id) füt timer (name: $name) wurde hinzugefühgt - $response",
+    "response-not-found": "$sender, antwort (ID: $id) wurd nicht in der Datenbank gefunden",
+    "response-enabled": "$sender, antwort (ID: $id) wurde aktiviert",
+    "response-disabled": "$sender, antwort (ID: $id) wurde deaktiviert"
+  },
+  "gambling": {
+    "duel": {
+      "bank": "$sender, aktuelle Bank für $command ist $points $pointsName",
+      "lowerThanMinimalBet": "$sender, minimaler Einsatz für $command ist $points $pointsName",
+      "cooldown": "$sender, sie könne nicht $command nutzen für $cooldown $minutesName.",
+      "joined": "$sender, Viel Glück mit deinen Duellfähigkeiten. Du setzt auf dich $points $pointsName!",
+      "added": "$sender denkt wirklich, er ist besser als andere, die seine Wette erhöhen auf $points $pointsName!",
+      "new": "$sender ist dein neuer Duell-Herausforderer! Zur Teilnahme verwenden $command [points], du hast $minutes $minutesName übrig zum beitreten.",
+      "zeroBet": "$sender, du kannst dich nicht mit 0 $pointsName duellieren",
+      "notEnoughOptions": "$sender, Sie müssen Punkte für das Duell angeben",
+      "notEnoughPoints": "$sender, Sie haben nicht $points $pointsName für ein duell!",
+      "noContestant": "Nur $winner haben den Mut, dem Duell beizutreten! Ihre Wette von $points $pointsName wird Ihnen zurückgeschickt.",
+      "winner": "Herzlichen Glückwunsch an $winner! Er ist der letzte Mann und er hat gewonnen $points $pointsName ($probability% mit einem Einsatz von $tickets $ticketsName)!"
+    },
+    "roulette": {
+      "trigger": "$sender versucht sein Glück und drückte den Abzug",
+      "alive": "$sender ist am Leben! Nichts ist passiert.",
+      "dead": "Das Gehirn von $sender wurde auf der Wand verteilt!",
+      "mod": "$sender ist inkompetent und hat seinen Kopf völlig verfehlt!",
+      "broadcaster": "$sender benutzt eine leere Waffe, Boo!",
+      "timeout": "Roulette Timeout auf $values gesetzt"
+    },
+    "gamble": {
+      "chanceToWin": "$sender, Chance zu gewinnen !gamble gesetzt auf $value%",
+      "zeroBet": "$sender, du kannst mit 0 $pointsName nicht spielen",
+      "minimalBet": "$sender, Mindestwette für !gamble ist auf $value gesetzt",
+      "lowerThanMinimalBet": "$sender, minimaler Einsatz für !gamble ist $points $pointsName",
+      "notEnoughOptions": "$sender, Sie müssen Punkte angeben, um zu spielen",
+      "notEnoughPoints": "$sender, Sie haben nicht $points $pointsName um zu spielen",
+      "win": "$sender, du hast gewonnen! Du hast jetzt $points $pointsName",
+      "winJackpot": "$sender, Sie haben JACKPOT getroffen! Sie haben $jackpot $jackpotName zusätzlich zu Ihrem Einsatz gewonnen. Sie haben jetzt $points $pointsName",
+      "loseWithJackpot": "$sender, du hast verloren! Du hast jetzt $points $pointsName. Der Jackpot wurde auf $jackpot $jackpotName erhöht",
+      "lose": "$sender, du hast verloren! Du hast jetzt $points $pointsName",
+      "currentJackpot": "$sender, aktueller Jackpot für $command ist $points $pointsName",
+      "winJackpotCount": "$sender, du hast $count Jackpots gewonnen",
+      "jackpotIsDisabled": "$sender, Jackpot ist für $command deaktiviert."
+    }
+  },
+  "highlights": {
+    "saved": "$sender, Hervorhebung wurde $hoursh$ Minuten lang $secondss gespeichert",
+    "list": {
+      "items": "$sender, Liste der gespeicherten Highlights für den neuesten Stream: $items",
+      "empty": "$sender, es wurden keine Highlights gespeichert"
+    },
+    "offline": "$sender, kann das Highlight nicht speichern, Stream ist offline"
+  },
+  "whisper": {
+    "settings": {
+      "disablePermissionWhispers": {
+        "true": "Der Bot sendet keine Fehler bei unzureichenden Berechtigungen",
+        "false": "Der Bot sendet keine Fehler bei unzureichenden Berechtigungen über Whispers"
+      },
+      "disableCooldownWhispers": {
+        "true": "Bot sendet keine Cooldown-Benachrichtigungen",
+        "false": "Bot wird Cooldown-Benachrichtigungen durch Whisper senden"
+      }
+    }
+  },
+  "time": "Aktuelle Zeit in der Streamer's Zeitzone ist $time",
+  "subs": "$sender, es gibt derzeit $onlineSubCount Online Abonnenten. Letzte Sub/Resub war $lastSubUsername $lastSubAgo",
+  "followers": "$sender, last follow was $lastFollowUsername $lastFollowAgo",
+  "ignore": {
+    "user": {
+      "is": {
+        "not": {
+          "ignored": "$sender, Nutzer $username wird vom Bot nicht ignoriert"
+        },
+        "added": "$sender, Benutzer $username wird zur Bot-Ignorierliste hinzugefügt",
+        "removed": "$sender, Benutzer $username wurde von der Bot-Ignorierliste entfernt",
+        "ignored": "$sender, Benutzer $username wird vom Bot ignoriert"
+      }
+    }
+  },
+  "filters": {
+    "setVariable": "$sender, $variable wurde auf $value gesetzt."
+  }
+}

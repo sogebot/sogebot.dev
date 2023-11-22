@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Stato",
+    "apiKey": {
+      "title": "Chiave Api",
+      "help": "Ottieni il token del socket dalla dashboard tipeeestream -> API -> La tua chiave API"
+    }
+  }
+}

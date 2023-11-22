@@ -1,0 +1,23 @@
+{
+  "addRandomizer": "Adicionar Aleatorizador",
+  "form": {
+    "name": "Nome",
+    "command": "Comando",
+    "permission": "Permissão do comando",
+    "simple": "Simples",
+    "tape": "Fita",
+    "wheelOfFortune": "Roda da Fortuna",
+    "type": "Tipo",
+    "options": "Opções",
+    "optionsAreEmpty": "Opções estão vazias.",
+    "color": "Cor",
+    "numOfDuplicates": "No. de duplicados",
+    "minimalSpacing": "Espaçamento mínimo",
+    "groupUp": "Agrupar",
+    "ungroup": "Desagrupar",
+    "groupedWithOptionAbove": "Agrupados com a opção acima",
+    "generatedOptionsPreview": "Pré-visualização das opções geradas",
+    "probability": "Probabilidade",
+    "tick": "Som de toque durante o giro"
+  }
+}

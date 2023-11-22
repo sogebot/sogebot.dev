@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "clearChat": "Limpar Chat",
+    "mode": "Modo",
+    "minFollowTime": "Tempo mínimo de follow",
+    "customAnnounce": "Personalizar anúncios anti hate-raid ativo"
+  }
+}

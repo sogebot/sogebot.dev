@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "conversionRate": "Conversão taxa 1 XP para x Pontos",
+    "firstLevelStartsAt": "O primeiro nível começa na XP",
+    "nextLevelFormula": {
+      "title": "Fórmula do cálculo do próximo nível",
+      "help": "Variáveis disponíveis: $prevLevel, $prevLevelXP"
+    },
+    "levelShowcaseHelp": "O exemplo de níveis será atualizado ao salvar",
+    "xpName": "Nome",
+    "interval": "Intervalo de minutos para adicionar Xp para os usuários online quando a stream estiver online",
+    "offlineInterval": "Intervalo de minutos para adicionar Xp aos usuários online quando a stream estiver offline",
+    "messageInterval": "Quantas mensagens adicionarão pontos",
+    "messageOfflineInterval": "Quantas mensagens para adicionar xp quando o stream está offline",
+    "perInterval": "Quantos Xp adicionar por intervalo online",
+    "perOfflineInterval": "Quantos Xp adicionar por intervalo offline",
+    "perMessageInterval": "Quantos xp adicionar por intervalo de mensagem",
+    "perMessageOfflineInterval": "Quantos Xp adicionar por intervalo de mensagens offline"
+  }
+}

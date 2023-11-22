@@ -1,0 +1,96 @@
+name: Releases
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # load full history
+
+      - name: install node LTS
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+
+      - name: Build a bot
+        env:
+          OPENEXCHANGE_APPID: ${{ secrets.OPENEXCHANGE_APPID }}
+          NODE_MODULES_DIR: ./node_modules
+        run: make
+
+      - name: Zip a bot
+        run: make pack
+
+      - name: Zip node_modules
+        run: make pack-modules
+
+      - name: Generate changelog
+        id: log
+        run: node tools/changelog.js generate > body.md
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sogeBot
+          path: ${{ github.workspace }}/*.zip
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: SOGEBOT ${{ github.ref_name }}
+          artifacts: "sogeBot-*.zip"
+          bodyFile: "body.md"
+          makeLatest: true
+
+  build:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+      -
+        name: Get the version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2.1.0
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2.2.1
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - uses: actions/download-artifact@master
+        with:
+          name: sogeBot
+          path: ${{ github.workspace }}/*.zip
+
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          push: true
+          tags: |
+            sogebot/release:latest
+            sogebot/release:${{ steps.get_version.outputs.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

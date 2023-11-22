@@ -1,0 +1,8 @@
+{
+  "list": "Liste deiner Berechtigungen:",
+  "excludeAddSuccessful": "$sender, Du hast $username hinzugefügt, um die Liste für die Berechtigung $permissionName auszuschließen",
+  "excludeRmSuccessful": "$sender, Du hast $username von der Ausschlussliste für Berechtigung $permissionName entfernt",
+  "userNotFound": "$sender, Benutzer $username wurde in der Datenbank nicht gefunden.",
+  "permissionNotFound": "$sender, Berechtigung $userlevel wurde in der Datenbank nicht gefunden.",
+  "cannotIgnoreForCorePermission": "$sender, Du kannst Benutzer für Kernberechtigungen nicht manuell ausschließen $userlevel"
+}

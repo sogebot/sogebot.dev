@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "responsiveVoiceKeyNotSet": "Non hai impostato correttamente la chiave <a href='#/settings/integrations/responsivevoice'>ResponsiveVoice</a>",
+    "voice": {
+      "title": "Voce",
+      "help": "Se le voci non vengono caricate correttamente dopo l'aggiornamento della chiave ResponsiveVoice, prova ad aggiornare il browser"
+    },
+    "volume": "Volume",
+    "rate": "Ritmo",
+    "pitch": "Tono",
+    "triggerTTSByHighlightedMessage": "Il testo alla voce verrà attivato dal messaggio evidenziato"
+  }
+}

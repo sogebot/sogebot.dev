@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "apiKey": {
+      "title": "API Schlüssel",
+      "help": "Erhalte deinen Schlüssel unter https://developer.pubg.com/"
+    },
+    "platform": "Plattform",
+    "playerName": "Spielername",
+    "playerId": "Spieler ID",
+    "seasonId": {
+      "title": "Sitzungs ID",
+      "help": "Aktuelle Sitzungs ID wird jede Stunde abgerufen."
+    },
+    "rankedGameModeStatsCustomization": "Benutzerdefinierte Nachricht für Ranked Statistiken",
+    "gameModeStatsCustomization": "Benutzerdefinierte Nachricht für normale Statistiken"
+  },
+  "click_to_fetch": "Klicke zum Abrufen",
+  "something_went_wrong": "Etwas ist schiefgegangen!",
+  "ok": "OK!",
+  "stats_are_automatically_refreshed_every_10_minutes": "Die Statistiken werden alle 10 Minuten automatisch aktualisiert.",
+  "player_stats_ranked": "Spielerstatistiken (Rangliste)",
+  "player_stats": "Spielerstatistiken"
+}

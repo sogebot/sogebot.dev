@@ -1,0 +1,70 @@
+{
+  "title": {
+    "edit": "Editar",
+    "add": "Adicionar"
+  },
+  "position": {
+    "settings": "Configurações de posição",
+    "anchorX": "Posição X da Âncora",
+    "anchorY": "Posição Y da âncora",
+    "left": "Esquerda",
+    "right": "Direita",
+    "middle": "Meio",
+    "top": "Superior",
+    "bottom": "Inferior",
+    "x": "X",
+    "y": "Y"
+  },
+  "font": {
+    "shadowShiftRight": "Deslocar à direita",
+    "shadowShiftDown": "Mover para Baixo",
+    "shadowBlur": "Desfoque",
+    "shadowOpacity": "Opacidade",
+    "color": "Cor"
+  },
+  "errors": {
+    "required": "Este campo não pode ficar vazio.",
+    "minValue": "O menor valor desta entrada é $value."
+  },
+  "buttons": {
+    "reorder": "Reordenar",
+    "upload": {
+      "idle": "Enviar",
+      "progress": "Enviando",
+      "done": "Enviado"
+    },
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "test": {
+      "idle": "Teste",
+      "progress": "Teste em andamento",
+      "done": "Testando concluído"
+    },
+    "saveChanges": {
+      "idle": "Salvar alterações",
+      "invalid": "Não é possível salvar alterações",
+      "progress": "Salvando alterações",
+      "done": "Alterações salvas"
+    },
+    "something-went-wrong": "Alguma coisa deu errado",
+    "mark-to-delete": "Marcar para apagar",
+    "disable": "Desativar",
+    "enable": "Ativar",
+    "disabled": "Desativado",
+    "enabled": "Ativado",
+    "edit": "Editar",
+    "delete": "Deletar",
+    "play": "Tocar",
+    "stop": "Parar",
+    "hold-to-delete": "Segure para excluir",
+    "yes": "Sim",
+    "no": "Não",
+    "permission": "Permissão",
+    "group": "Grupo",
+    "visibility": "Visibilidade",
+    "reset": "Redefinir "
+  },
+  "changesPending": "Suas alterações não foram salvas.",
+  "formNotValid": "Formulário inválido.",
+  "nothingToShow": "Nada para mostrar aqui."
+}
