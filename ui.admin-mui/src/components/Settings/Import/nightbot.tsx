@@ -9,34 +9,40 @@ import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 const PageSettingsModulesImportNightbot: React.FC<{
-  onVisible: () => void,
-}> = ({
-  onVisible,
-}) => {
-  const [ref, element]  = useRefElement<HTMLElement>();
-  const scrollY = useAppSelector(state => state.page.scrollY);
+  onVisible: () => void;
+}> = ({ onVisible }) => {
+  const [ref, element] = useRefElement<HTMLElement>();
+  const scrollY = useAppSelector((state) => state.page.scrollY);
   useEffect(() => {
     if (element) {
-      if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {
+      if (
+        element.offsetTop < scrollY + 100
+        && element.offsetTop + element.clientHeight > scrollY - 100
+      ) {
         onVisible();
       }
     }
   }, [element, scrollY, onVisible]);
 
-  const [ user, setUser ] = React.useState('Not Authorized');
+  const [user, setUser] = React.useState('Not Authorized');
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useTranslation();
 
-  const [ accessToken, setAccessToken ] = useLocalstorageState<null | string>('nightbot::accessToken', null);
-  const [ userLoadInProgress, setUserLoadInProgress ] = React.useState(false);
+  const [accessToken, setAccessToken] = useLocalstorageState<null | string>(
+    'nightbot::accessToken',
+    null
+  );
+  const [userLoadInProgress, setUserLoadInProgress] = React.useState(false);
 
   React.useEffect(() => {
-    async function getUserData () {
+    async function getUserData() {
       if (!accessToken) {
         return;
       }
       setUserLoadInProgress(true);
-      const response = await axios.get('https://api.nightbot.tv/1/me', { headers: { Authorization: 'Bearer ' + accessToken } });
+      const response = await axios.get('https://api.nightbot.tv/1/me', {
+        headers: { Authorization: 'Bearer ' + accessToken },
+      });
       if (response.status !== 200) {
         setAccessToken(null);
       } else {
@@ -45,10 +51,16 @@ const PageSettingsModulesImportNightbot: React.FC<{
       setUserLoadInProgress(false);
     }
     getUserData();
-  }, [ accessToken ]);
+  }, [accessToken]);
 
   const authorize = React.useCallback(() => {
-    const popup = window.open(window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'credentials/nightbot', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open(
+      window.location.origin +
+        (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') +
+        'credentials/nightbot',
+      'popup',
+      'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no'
+    );
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });
@@ -56,15 +68,15 @@ const PageSettingsModulesImportNightbot: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar ]);
+  }, [enqueueSnackbar]);
 
   const revoke = React.useCallback(() => {
     setAccessToken(null);
     setUser('Not Authorized');
     enqueueSnackbar('User access revoked.', { variant: 'success' });
-  }, [ enqueueSnackbar ]);
+  }, [enqueueSnackbar]);
 
-  type Track = {
+  type Command = {
     providerId: string;
     provider:   string;
     duration:   number;
@@ -74,7 +86,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
   };
 
   type PlaylistItem = {
-    track:     Track;
+    track:     Command;
     _id:       string;
     createdAt: string;
     updatedAt: string;
@@ -93,7 +105,9 @@ const PageSettingsModulesImportNightbot: React.FC<{
     await new Promise((resolve) => setTimeout(resolve, ms));
   };
 
-  const fetchPlaylistPage = async (offset: number): Promise<PlaylistResponse> => {
+  const fetchPlaylistPage = async (
+    offset: number
+  ): Promise<PlaylistResponse> => {
     const url = 'https://api.nightbot.tv/1/song_requests/playlist';
     const delay = 10 ** 4 * 6;
     const delaySeconds = delay / 10 ** 3;
@@ -117,10 +131,13 @@ const PageSettingsModulesImportNightbot: React.FC<{
     throw new Error('Failed to fetch playlist after multiple retries.');
   };
 
-  const fetchTracks = async (tracks: Track[] = [], offset = 0): Promise<Track[]> => {
+  const fetchTracks = async (
+    tracks: Command[] = [],
+    offset = 0
+  ): Promise<Command[]> => {
     try {
       const page = await fetchPlaylistPage(offset);
-      const mergedTracks = tracks.concat(page.playlist.map(t => t.track));
+      const mergedTracks = tracks.concat(page.playlist.map((t) => t.track));
       if (mergedTracks.length < page._total) {
         await fetchTracks(mergedTracks, offset + 100);
       }
@@ -153,7 +170,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
               } else {
                 resolve('resolved');
               }
-            },
+            }
           );
         });
       } catch (error) {
@@ -161,36 +178,172 @@ const PageSettingsModulesImportNightbot: React.FC<{
       }
     }
     if (failCount > 0) {
-      enqueueSnackbar(`${failCount} videos failed to import.`, { variant: 'info' });
+      enqueueSnackbar(`${failCount} videos failed to import.`, {
+        variant: 'info',
+      });
+    }
+    enqueueSnackbar('Playlist import completed.', { variant: 'success' });
+  };
+
+  type UserLevel =
+    | 'admin'
+    | 'owner'
+    | 'moderator'
+    | 'twitch_vip'
+    | 'regular'
+    | 'subscriber'
+    | 'everyone';
+
+  type CustomCommand = {
+    _id:       string;
+    createdAt: string; // timestamp date
+    updatedAt: string; // timestamp date
+    name:      string;
+    message:   string;
+    coolDown:  number;
+    count:     number;
+    userLevel: UserLevel;
+  };
+
+  type CustomCommandsResponse = {
+    _total:   number;
+    status:   number;
+    commands: CustomCommand[];
+  };
+
+  const fetchWithRetries = async (
+    url: string,
+    headers: { Authorization: string },
+    retries = 3,
+    delay = 6 * 10e4 // 60_000ms
+  ) => {
+    const delaySeconds = delay / 10e3;
+    while (retries-- > 0) {
+      try {
+        const response = await axios.get(url, { headers });
+        return response.data;
+      } catch (error: any) {
+        console.info(`Retrying after ${delaySeconds} seconds.`);
+        await sleep(delay);
+      }
+    }
+  };
+
+  const fetchCustomCommandsPage = async (): Promise<CustomCommandsResponse> => {
+    const url = 'https://api.nightbot.tv/1/commands';
+    try {
+      const page = fetchWithRetries(url, {
+        Authorization: 'Bearer ' + accessToken,
+      });
+      return page;
+    } catch {
+      console.error('Error fetching commands after multiple retries.');
+      enqueueSnackbar('Remote server error.', { variant: 'error' });
+      throw new Error('Failed to fetch commands after multiple retries.');
+    }
+  };
+
+  const fetchCustomCommands = async (): Promise<CustomCommand[]> => {
+    try {
+      const page = await fetchCustomCommandsPage();
+      return page.commands;
+    } catch (error: any) {
+      console.error('Error fetching commands.');
+      enqueueSnackbar('Remote server error.', { variant: 'error' });
+      throw new Error('Failed to fetch commands.');
+    }
+  };
+
+  const importCustomCommands = async () => {
+    const commands = await fetchCustomCommands();
+    let failCount = 0;
+    for (const command of commands) {
+      try {
+        await new Promise((resolve, reject) => {
+          getSocket('/systems/songs').emit(
+            'import.video',
+            {
+              playlist:  command.message,
+              forcedTag: 'nightbot-import',
+            },
+            (err) => {
+              if (err) {
+                failCount += 1;
+                console.error('error: ', command.name);
+                reject(err);
+              } else {
+                resolve('resolved');
+              }
+            }
+          );
+        });
+      } catch (error) {
+        console.error('ERROR DURING IMPORT: ', error);
+      }
+    }
+    if (failCount > 0) {
+      enqueueSnackbar(`${failCount} videos failed to import.`, {
+        variant: 'info',
+      });
     }
     enqueueSnackbar('Playlist import completed.', { variant: 'success' });
   };
 
   return (
-    <Box ref={ref} id='nightbot'>
-      <Typography variant='h2' sx={{ pb: 2 }}>Nightbot</Typography>
+    <Box ref={ref} id="nightbot">
+      <Typography variant="h2" sx={{ pb: 2 }}>
+        Nightbot
+      </Typography>
       <Paper elevation={1} sx={{ p: 1 }}>
         {userLoadInProgress}
         <TextField
           disabled
           fullWidth
-          variant='filled'
+          variant="filled"
           value={userLoadInProgress ? 'Loading user data...' : user}
           label={translate('integrations.lastfm.settings.username')}
           InputProps={{
-            endAdornment: <InputAdornment position='end'> { user !== 'Not Authorized'
-              ? <Button color='error' variant='contained' onClick={revoke}>Revoke</Button>
-              : <Button color='success' variant='contained' onClick={authorize}>Authorize</Button>
-            }
-            </InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">
+                {' '}
+                {user !== 'Not Authorized' ? (
+                  <Button color="error" variant="contained" onClick={revoke}>
+                    Revoke
+                  </Button>
+                ) : (
+                  <Button
+                    color="success"
+                    variant="contained"
+                    onClick={authorize}
+                  >
+                    Authorize
+                  </Button>
+                )}
+              </InputAdornment>
+            ),
           }}
         />
-        <Stack direction='row' sx={{
-          pt: 1, textAlign: 'center',
-        }}>
-          <Button sx={{ width: '300px' }} color='primary' variant='contained' disabled={user === 'Not Authorized'} onClick={importPlaylist}>Import playlist</Button>
+        <Stack direction="row">
+          <Button
+            color="primary"
+            variant="contained"
+            disabled={user === 'Not Authorized'}
+            onClick={importPlaylist}
+          >
+            Import playlist
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            disabled={user === 'Not Authorized'}
+            onClick={() => {
+              console.log(fetchCustomCommands());
+              return importCustomCommands;
+            }}
+          >
+            Import commands
+          </Button>
         </Stack>
-
       </Paper>
     </Box>
   );
