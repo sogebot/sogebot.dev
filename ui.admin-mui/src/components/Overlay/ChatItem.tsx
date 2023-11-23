@@ -4,6 +4,7 @@ import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { orderBy } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
@@ -74,11 +75,13 @@ function hexToHSL(hexColor: string) {
   return `hsl(${hue}, ${saturation * 100}%, ${Math.max(70, lightness)}%)`;
 }
 
-export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
+export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, active, height, zoom }) => {
   const messages = useAppSelector(state => state.overlay.chat.messages);
   const posY = useAppSelector(state => state.overlay.chat.posY);
   const fontSize = useAppSelector(state => state.overlay.chat.fontSize);
   const dispatch = useAppDispatch();
+
+  const [ id ] = React.useState(nanoid());
 
   const moveNicoNico = React.useCallback((elementId: string) => {
     const element = document.getElementById(`nico-${elementId}`);
@@ -127,75 +130,77 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
     return orderBy(messages, 'timestamp', item.reverseOrder ? 'desc' :'asc');
   }, [ messages, item.reverseOrder ]);
 
-  React.useEffect(() => {
-    // we need to wait little bit for the messages to be rendered
-    setTimeout(() => {
-      const elements = document.getElementsByClassName('message');
-      if (item.type === 'vertical') {
-        const toHide: string[] = [];
+  useIntervalWhen(() => {
+    const elements = Array.from(document.getElementsByClassName(`message-${id}`)).filter(el => el.getAttribute('data-hidden') !== 'true');
+    if (elements.length === 0) {
+      return;
+    }
 
-        if (item.reverseOrder) {
+    if (item.type === 'vertical') {
+      const toHide: string[] = [];
+
+      if (item.reverseOrder) {
         // reverse order goes from top to bottom, we want to hide elements that are below the height
-          let parent: number | null = null;
-          for (const el of elements) {
-            if (!parent) {
-              parent = (el.parentElement?.getBoundingClientRect().top ?? 0) + height;
-            }
-
-            if (parent) {
-              if (parent - el.getBoundingClientRect().bottom < 0) {
-                toHide.push(el.id);
-              }
-            }
-          }
-        } else {
-          let parent: number | null = null;
-          for (const el of elements) {
-            if (!parent) {
-              parent = (el.parentElement?.getBoundingClientRect().bottom ?? 0) - height;
-            }
-
-            if (parent) {
-              if (parent - el.getBoundingClientRect().top > 0) {
-                toHide.push(el.id);
-              }
-            }
+        let parent: number | null = null;
+        for (const el of elements) {
+          if (!parent) {
+            parent = (el.parentElement?.getBoundingClientRect().top ?? 0) + (height * zoom);
           }
 
+          if (parent) {
+            if (parent - el.getBoundingClientRect().bottom < 0) {
+              toHide.push(el.id);
+            }
+          }
         }
-        Array.from<HTMLElement>(elements as any).forEach(el => {
-          const message = messages.find(o => o.id === el.id);
-          if (!message) {
-            return;
+      } else {
+        let parent: number | null = null;
+        for (const el of elements) {
+          if (!parent) {
+            parent = (el.parentElement?.getBoundingClientRect().bottom ?? 0) - (height * zoom);
           }
 
-          const shouldShow = message.timestamp + item.hideMessageAfter > timestamp;
-          if (shouldShow && !toHide.includes(el.id)) {
-            el.style.opacity = '1';
-          } else {
-            el.style.opacity = '0';
+          if (parent) {
+            if (parent - el.getBoundingClientRect().top > (-10 * zoom)) {
+              toHide.push(el.id);
+            }
           }
-        });
-      } else {
-        Array.from<HTMLElement>(elements as any).forEach(el => el.style.opacity = '1');
+        }
+
       }
-    }), 10;
-  }, [ messages, item.reverseOrder, height, timestamp ]);
+      Array.from<HTMLElement>(elements as any).forEach(el => {
+        const message = messages.find(o => o.id === el.id);
+        if (!message) {
+          return;
+        }
+
+        const shouldShow = message.timestamp + item.hideMessageAfter > timestamp;
+        if (shouldShow && !toHide.includes(el.id)) {
+          el.style.opacity = '1';
+        } else {
+          el.setAttribute('data-hidden', 'true');
+          el.style.opacity = '0';
+        }
+      });
+    } else {
+      Array.from<HTMLElement>(elements as any).forEach(el => el.style.opacity = '1');
+    }
+  }, 100, true, true);
 
   React.useEffect(() => {
     loadFont(item.font.family);
 
     if (active) {
-      console.log(`====== CHAT ======`);
+      console.log(`====== CHAT#${id} ======`);
     }
-  }, [item]);
+  }, [item, id]);
 
   const boxStyle = React.useMemo(() => {
     if (item.type === 'vertical') {
       return item.reverseOrder ? {
-        top: '5px', width: '100%',
+        top: '0px', width: '100%',
       } : {
-        bottom: '5px', width: '100%',
+        bottom: '0px', width: '100%',
       };
     }
     if (item.type === 'horizontal') {
@@ -211,7 +216,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
 
   return <>
     <Box sx={{
-      width: '100%', height: '100%', overflow: 'hidden', position: 'relative', textTransform: 'none !important',
+      width: '100%', height: '100%', overflow: 'visible', position: 'relative', textTransform: 'none !important',
     }}>
       {item.type === 'niconico' && messages.map(message => <Box
         id={`nico-${message.id}`}
@@ -267,7 +272,7 @@ export const ChatItem: React.FC<Props<Chat>> = ({ item, active, height }) => {
         ...boxStyle,
       }}>
         {orderedMessages
-          .map(message => <Box className="message" id={message.id} key={message.id} sx={{
+          .map(message => <Box className={`message-${id}`} id={message.id} key={message.id} sx={{
             transition: 'all 0.5s ease-in-out',
             opacity:    0,
             p:          `${item.messagePadding}px`,
