@@ -1,0 +1,23 @@
+{
+  "addRandomizer": "Přidat náhodný generátor",
+  "form": {
+    "name": "Název",
+    "command": "Příkaz",
+    "permission": "Oprávnění příkazu",
+    "simple": "Jednoduchý výběr",
+    "tape": "Páska",
+    "wheelOfFortune": "Kolo štěstí",
+    "type": "Typ",
+    "options": "Možnosti",
+    "optionsAreEmpty": "Možnosti jsou zatím prázdné.",
+    "color": "Barva",
+    "numOfDuplicates": "Počet duplikátů",
+    "minimalSpacing": "Minimální rozestup",
+    "groupUp": "Seskupit",
+    "ungroup": "Rozdělit",
+    "groupedWithOptionAbove": "Seskupeno s předchozí možností",
+    "generatedOptionsPreview": "Náhled vygenerovaných možností",
+    "probability": "Pravděpodobnost",
+    "tick": "Zvuk točícího kola"
+  }
+}

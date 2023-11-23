@@ -1,0 +1,14 @@
+{
+  "emitRedeemEvent": "Trigger custom alerts on bit redeem",
+  "price": {
+    "name": "Preis",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Dieser Wert darf nicht leer sein"
+  },
+  "warning": "Diese Aktion kann nicht rückgängig gemacht werden!",
+  "settings": {
+    "enabled": "Status"
+  }
+}

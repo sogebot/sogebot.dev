@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "cCreditsSpeed": "Geschwindigkeit",
+    "cCreditsAggregated": "Zusammengefasste Credits",
+    "cShowGameThumbnail": "Show game thumbnail",
+    "cShowFollowers": "Follower anzeigen",
+    "cShowRaids": "Raids anzeigen",
+    "cShowSubscribers": "Abonnenten anzeigen",
+    "cShowSubgifts": "Verschenkte Subs anzeigen",
+    "cShowSubcommunitygifts": "Verschenkte Community-Subs anzeigen",
+    "cShowResubs": "Re-Subs anzeigen",
+    "cShowCheers": "Zeige Cheers",
+    "cShowClips": "Clips anzeigen",
+    "cShowTips": "Spenden anzeigen",
+    "cTextLastMessage": "Letzte Nachricht",
+    "cTextLastSubMessage": "Letzte Sub-Nachricht",
+    "cTextStreamBy": "Gestreamt von",
+    "cTextFollow": "Gefolgt von",
+    "cTextRaid": "Raided von",
+    "cTextCheer": "Cheer von",
+    "cTextSub": "Abonniert von",
+    "cTextResub": "Re-Sub von",
+    "cTextSubgift": "Verschenkte Subs",
+    "cTextSubcommunitygift": "Verschenkte Community-Subs",
+    "cTextTip": "Spenden von",
+    "cClipsPeriod": "Zeitintervall",
+    "cClipsCustomPeriodInDays": "Benutzerdefinierter Zeitintervall (Tage)",
+    "cClipsNumOfClips": "Anzahl der Clips",
+    "cClipsShouldPlay": "Clips sollen abgespielt werden",
+    "cClipsVolume": "Lautstärke"
+  }
+}

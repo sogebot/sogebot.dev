@@ -1,0 +1,7 @@
+{
+  "runTask": {
+    "EntityNotFound": "$sender, не установлено действие для id:$id!",
+    "ParameterError": "$sender, вы должны указать id!",
+    "UnknownError": "$sender, что-то пошло не так. Проверьте логи ботов для дополнительной информации."
+  }
+}

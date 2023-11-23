@@ -1,0 +1,9 @@
+{
+  "command": "Command",
+  "hour": "Heure",
+  "day": "Jour",
+  "week": "Semaine",
+  "month": "Mois",
+  "year": "Year",
+  "total": "Total"
+}

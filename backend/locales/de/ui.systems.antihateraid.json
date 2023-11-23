@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "clearChat": "Chat leeren",
+    "mode": "Modus",
+    "minFollowTime": "Minimale Folgezeit",
+    "customAnnounce": "Ankündigungen für Anti-Hass-Schlachtzug anpassen"
+  }
+}

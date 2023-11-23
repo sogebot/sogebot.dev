@@ -1,0 +1,27 @@
+{
+  "new": "Nové Klíčové Slovo",
+  "empty": "Žádná klíčová slova nebyla vytvořena.",
+  "emptyAfterSearch": "Žádná klíčová slova nebyla nalezena pro tvé hledání <strong>\"$search\"</strong>.",
+  "keyword": {
+    "name": "Klíčové slovo / Regulární výraz",
+    "placeholder": "Nastavte klíčové slovo nebo regulární výraz.",
+    "help": "Můžete použít regulární výrazy (bez ohledu na malá a velká písmena), např. <strong>hello.*|hi</strong>"
+  },
+  "response": {
+    "name": "Odpověď",
+    "placeholder": "Nastavte odpověď bota zde."
+  },
+  "error": {
+    "isEmpty": "Tato hodnota nesmí být prázdná"
+  },
+  "no-responses-set": "Bez odpovědí",
+  "addResponse": "Nová odpověď",
+  "filter": {
+    "name": "filtr",
+    "placeholder": "Přidat filtr k této odpovědi"
+  },
+  "warning": "Tato akce nemůže být vrácena!",
+  "settings": {
+    "enabled": "Status"
+  }
+}

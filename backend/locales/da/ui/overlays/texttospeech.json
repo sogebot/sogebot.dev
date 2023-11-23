@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "responsiveVoiceKeyNotSet": "Du har ikke angivet korrekt <a href='#/settings/integrations/responsivevoice'>ResponsiveVoice key</a>",
+    "voice": {
+      "title": "Stemme",
+      "help": "Hvis stemmer ikke indlæses korrekt efter opdatering af ResponsiveVoice-nøgle, så prøv at opdatere browseren"
+    },
+    "volume": "Lydstyrke",
+    "rate": "Hastighed",
+    "pitch": "Toneleje",
+    "triggerTTSByHighlightedMessage": "Tekst-til-Tale vil blive udløst af fremhævet besked"
+  }
+}

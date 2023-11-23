@@ -1,0 +1,8 @@
+{
+  "viewers": {
+    "eventHistory": "Vis begivenhedshistorik",
+    "hostAndRaidViewersCount": "Seere: $value",
+    "receivedSubscribeFrom": "Modtog abonnement fra <strong>$value</strong>",
+    "giftedSubscribeTo": "Modtog gave-abonnement fra <strong>$value</strong>"
+  }
+}

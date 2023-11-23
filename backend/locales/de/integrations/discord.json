@@ -1,0 +1,13 @@
+{
+  "your-account-is-not-linked": "dein Konto ist nicht verknüpft, benutze `$command`",
+  "all-your-links-were-deleted": "Alle Ihre Links wurden gelöscht",
+  "all-your-links-were-deleted-with-sender": "$sender, {integrations.discord.all-your-links-were-deleted}",
+  "this-account-was-linked-with": "$sender, dieses Konto wurde mit $discordTag verknüpft.",
+  "invalid-or-expired-token": "$sender, ungültiger oder abgelaufener Token.",
+  "help-message": "$sender, um deinen Account auf Discord zu verlinken. 1. Gehe zum Discord Server und sende $command im Bot channel. | 2. Warte auf eine PM vom Bot | 3. Senden den Befehl von deiner Discord PM hier im twitch Chat.",
+  "started-at": "Gestartet am",
+  "announced-by": "Benachrichtigung durch",
+  "streamed-at": "Streamed am",
+  "link-whisper": "Hallo $tag, um diesen Discord Account mit deinem Twitch Account auf dem Kanal von $broadcaster zu verknüpfen, gehe auf <https://twitch.tv/$broadcaster>, Melden Sie sich an und senden Sie diesen Befehl an den Chat \n\n\t\t`$command $id`\n\nHINWEIS: Dies läuft in 10 Minuten ab.",
+  "check-your-dm": "Überprüfen Sie Ihre Direktnachrichten auf Schritte zum Verknüpfen Ihres Kontos."
+}

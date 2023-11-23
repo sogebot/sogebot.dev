@@ -1,0 +1,27 @@
+{
+  "new": "Nova Palavra-chave",
+  "empty": "Nenhuma palavra-chave foi criada ainda.",
+  "emptyAfterSearch": "Nenhuma palavra-chave foi encontrada em sua busca por <strong>\"$search\"</strong>.",
+  "keyword": {
+    "name": "Palavra-chave / Expressão regular",
+    "placeholder": "Defina sua palavra-chave ou expressão regular para ativar a palavra-chave.",
+    "help": "Você pode usar regexp (diferencia maiúsculas de minúsculas) para usar palavras-chave, por exemplo, <strong>hello.*➲ hi</strong>"
+  },
+  "response": {
+    "name": "Resposta",
+    "placeholder": "Defina sua resposta aqui."
+  },
+  "error": {
+    "isEmpty": "Este valor não pode ficar vazio"
+  },
+  "no-responses-set": "Não há respostas",
+  "addResponse": "Adicione resposta",
+  "filter": {
+    "name": "filtrar",
+    "placeholder": "Adicionar filtro para esta resposta"
+  },
+  "warning": "Esta ação não pode ser revertida!",
+  "settings": {
+    "enabled": "Situação"
+  }
+}

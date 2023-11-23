@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "ignorelist": "Seznam ignorovaných (ID nebo uživatelské jméno)",
+    "showWithAt": "Zobraz uzivatele s @",
+    "sendWithMe": "Posílat zprávy s /me",
+    "sendAsReply": "Odeslat zprávy bota jako odpovědi",
+    "mute": "Bot je ztišen",
+    "whisperListener": "Provádět příkazy pres whisper"
+  }
+}

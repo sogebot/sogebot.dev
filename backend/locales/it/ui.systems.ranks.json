@@ -1,0 +1,20 @@
+{
+  "new": "Nuovo Rango",
+  "empty": "Nessun rango è stato ancora creato.",
+  "emptyAfterSearch": "Non sono stati trovati ranghi dalla tua ricerca per <strong>\"$search\"</strong>.",
+  "rank": {
+    "name": "rango",
+    "placeholder": ""
+  },
+  "value": {
+    "name": "ore",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Questo valore non può essere vuoto"
+  },
+  "warning": "Questa azione non può essere annullata!",
+  "settings": {
+    "enabled": "Stato"
+  }
+}

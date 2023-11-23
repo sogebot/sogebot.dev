@@ -1,0 +1,8 @@
+{
+  "announce": "Ce chat a été réglé sur $mode par $username pour se débarrasser du raid haineux. Désolé pour le dérangement !",
+  "mode": {
+    "0": "subs-only",
+    "1": "follow-only",
+    "2": "emotes-only"
+  }
+}

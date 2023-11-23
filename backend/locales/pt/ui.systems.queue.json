@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "eligibilityAll": "Todos",
+    "eligibilityFollowers": "Seguidores",
+    "eligibilitySubscribers": "Inscritos"
+  }
+}

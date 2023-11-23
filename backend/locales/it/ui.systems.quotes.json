@@ -1,0 +1,34 @@
+{
+  "no-quotes-found": "Siamo spiacenti, nessuna citazione è stata trovata nel database.",
+  "new": "Aggiungi una nuova citazione",
+  "empty": "La lista delle citazioni è vuota, crea una nuova citazione.",
+  "emptyAfterSearch": "La lista delle citazioni è vuota nella ricerca di \"<strong>$search</strong>\"",
+  "quote": {
+    "name": "Citazione",
+    "placeholder": "Imposta qui la tua citazione"
+  },
+  "by": {
+    "name": "Citato da"
+  },
+  "tags": {
+    "name": "Etichette",
+    "placeholder": "Imposta qui le tue etichette",
+    "help": "Etichette separate da virgole. Esempio: tag 1, tag 2, tag 3"
+  },
+  "date": {
+    "name": "Data"
+  },
+  "error": {
+    "isEmpty": "Questo campo non può essere vuoto",
+    "atLeastOneTag": "È necessario impostare almeno un tag"
+  },
+  "tag-filter": "Filtraggio per tag",
+  "warning": "Questa azione non può essere annullata!",
+  "settings": {
+    "enabled": "Stato",
+    "urlBase": {
+      "title": "Base URL",
+      "help": "Dovresti usare endpoint pubblico per le quotazioni, per essere accessibile da <strong>tutti</strong>"
+    }
+  }
+}

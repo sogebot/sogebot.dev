@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "name": {
+      "title": "Nome",
+      "help": "<strong>Possíveis formatos:</strong><br> ponto|pontos <br> bod|4:body|bodu"
+    },
+    "isPointResetIntervalEnabled": "Intervalo de pontos redefinidos",
+    "resetIntervalCron": {
+      "name": "Intervalo do Cron",
+      "help": "<a href='https://crontab.guru/'>CronTab generator</a>"
+    },
+    "interval": "Intervalo de minutos para adicionar pontos aos usuários online quando a stream estiver online",
+    "offlineInterval": "Intervalo de minutos para adicionar pontos aos usuários online quando a stream estiver offline",
+    "messageInterval": "Quantas mensagens adicionarão pontos",
+    "messageOfflineInterval": "Quantas mensagens para adicionar pontos quando o streaming está offline",
+    "perInterval": "Quantos pontos adicionar por intervalo online",
+    "perOfflineInterval": "Quantos pontos adicionar por intervalo offline",
+    "perMessageInterval": "Quantos pontos adicionar por intervalo de mensagem",
+    "perMessageOfflineInterval": "Quantos pontos adicionar por intervalo offline de mensagens"
+  }
+}

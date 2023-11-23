@@ -1,0 +1,41 @@
+{
+  "artists": "Artists",
+  "settings": {
+    "enabled": "Stato",
+    "songRequests": "Richieste Brano",
+    "fetchCurrentSongWhenOffline": {
+      "title": "Recupera il brano corrente quando la diretta è offline",
+      "help": "Si consiglia di avere questo disabilitato per evitare di raggiungere i limiti delle API"
+    },
+    "allowApprovedArtistsOnly": "Consenti solo artisti approvati",
+    "approvedArtists": {
+      "title": "Artisti approvati",
+      "help": "Nome o SpotifyURI dell'artista, un elemento per riga"
+    },
+    "queueWhenOffline": {
+      "title": "Accoda i brani quando la diretta è offline",
+      "help": "Si consiglia di disabilitare questo per evitare la coda quando si sta solo ascoltando musica"
+    },
+    "clientId": "clientId",
+    "clientSecret": "clientSecret",
+    "manualDeviceId": {
+      "title": "Id Dispositivo Forzato",
+      "help": "Vuoto = disabilitato, forza l'ID del dispositivo di spotify per essere usato per mettere in coda le canzoni. Controlla i registri per il dispositivo attivo corrente o usa il pulsante quando riproduci il brano per almeno 10 secondi."
+    },
+    "redirectURI": "redirectURI",
+    "format": {
+      "title": "Formato",
+      "help": "Variabili disponibili: $song, $artist, $artists"
+    },
+    "username": "Utente autorizzato",
+    "revokeBtn": "Revoca autorizzazione utente",
+    "authorizeBtn": "Autorizza utente",
+    "scopes": "Campi",
+    "playlistToPlay": {
+      "title": "Spotify URI della scaletta principale",
+      "help": "Se impostata, una volta completata la richiesta, questa scaletta continuerà"
+    },
+    "continueOnPlaylistAfterRequest": "Continua a riprodurre la scaletta dopo la richiesta del brano",
+    "notify": "Invia messaggio al cambiamento del brano"
+  }
+}

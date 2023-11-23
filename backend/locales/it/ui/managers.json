@@ -1,0 +1,8 @@
+{
+  "viewers": {
+    "eventHistory": "Cronologia eventi dell'utente",
+    "hostAndRaidViewersCount": "Spettatori: $value",
+    "receivedSubscribeFrom": "Ricevuto abbonamento da <strong>$value</strong>",
+    "giftedSubscribeTo": "Abbonamento donato a <strong>$value</strong>"
+  }
+}

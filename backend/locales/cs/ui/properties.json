@@ -1,0 +1,12 @@
+{
+  "alias": "Alias",
+  "command": "Příkaz",
+  "variableName": "Název proměnné",
+  "price": "Cena (body)",
+  "priceBits": "Cena (bity)",
+  "thisvalue": "Tato hodnota",
+  "promo": {
+    "shoutoutMessage": "Zpráva vyhlášení",
+    "enableShoutoutMessage": "Poslat zprávu vyhlášení do chatu"
+  }
+}

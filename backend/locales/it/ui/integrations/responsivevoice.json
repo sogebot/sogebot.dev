@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "key": {
+      "title": "Chiave",
+      "help": "Ottieni la tua chiave Api su http://responsivevoice.org"
+    }
+  }
+}

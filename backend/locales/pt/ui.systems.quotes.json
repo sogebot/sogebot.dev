@@ -1,0 +1,34 @@
+{
+  "no-quotes-found": "Desculpe, nenhuma citação foi encontrada no banco de dados.",
+  "new": "Adicionar nova citação",
+  "empty": "A lista de citações está vazia, crie uma nova citação.",
+  "emptyAfterSearch": "Lista de citações está vazia na busca por \"<strong>$search</strong>\"",
+  "quote": {
+    "name": "Citação",
+    "placeholder": "Defina sua citação aqui"
+  },
+  "by": {
+    "name": "Citação por"
+  },
+  "tags": {
+    "name": "Tags",
+    "placeholder": "Defina suas tags aqui",
+    "help": "Tags separadas por vírgula. Exemplo: tag 1, tag 2, tag 3"
+  },
+  "date": {
+    "name": "Data"
+  },
+  "error": {
+    "isEmpty": "Este valor não pode ficar vazio",
+    "atLeastOneTag": "É preciso definir pelo menos uma tag"
+  },
+  "tag-filter": "Filtrando por tag",
+  "warning": "Não é possível reverter esta ação!",
+  "settings": {
+    "enabled": "Situação",
+    "urlBase": {
+      "title": "Base de URL",
+      "help": "Você deve usar um endpoint público para citações, para ser acessível por <strong>todos</strong>"
+    }
+  }
+}

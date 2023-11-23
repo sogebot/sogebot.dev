@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "enabled": "Statut",
+    "timeout": {
+      "title": "Durée d'expiration",
+      "help": "Secondes"
+    },
+    "winnerWillGet": "Combien de points seront ajoutés à la victoire",
+    "loserWillLose": "Combien de points seront perdus en cas de perte"
+  }
+}

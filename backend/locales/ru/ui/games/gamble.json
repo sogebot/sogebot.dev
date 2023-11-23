@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "minimalBet": "Минимальная ставка",
+    "chanceToWin": {
+      "title": "Шанс на победу",
+      "help": "Процент"
+    },
+    "enableJackpot": "Включить джекпот",
+    "chanceToTriggerJackpot": "Шанс получить джекпот в %",
+    "maxJackpotValue": "Максимальный выигрыш в джекпоте",
+    "lostPointsAddedToJackpot": "Сколько потерянных очков должно быть добавлено в % джекпот"
+  }
+}

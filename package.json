@@ -5,14 +5,24 @@
     "backend",
     "ui.public"
   ],
+  "main": "main.js",
   "scripts": {
     "postinstall": "custompatch || (exit 0)",
-    "tunnel": "ssh -L 5432:community.sogebot.xyz:15432 root@community.sogebot.xyz"
+    "tunnel": "ssh -L 5432:community.sogebot.xyz:15432 root@community.sogebot.xyz",
+    "prepare": "husky install",
+    "test": "node backend/tools/runTests.js",
+    "test:migration": "node backend/tools/migrationCheck.js",
+    "test:config:mysql": "cp backend/src/data/.env.mysql .env",
+    "test:config:postgres": "cp backend/src/data/.env.postgres .env",
+    "test:config:sqlite": "cp backend/src/data/.env.sqlite .env"
   },
   "dependencies": {
     "custompatch": "^1.0.22"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.2"
+    "@prantlf/jsonlint": "^14.0.3",
+    "@types/uuid": "^9.0.2",
+    "husky": "^8.0.0",
+    "lint-staged": "15.0.2"
   }
 }

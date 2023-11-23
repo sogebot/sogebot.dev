@@ -1,0 +1,23 @@
+{
+  "addRandomizer": "Aggiungi Randomizer",
+  "form": {
+    "name": "Nome",
+    "command": "Comando",
+    "permission": "Autorizzazione comando",
+    "simple": "Semplice",
+    "tape": "Nastro",
+    "wheelOfFortune": "Ruota della Fortuna",
+    "type": "Tipo",
+    "options": "Opzioni",
+    "optionsAreEmpty": "Le opzioni sono vuote.",
+    "color": "Colore",
+    "numOfDuplicates": "N. di duplicati",
+    "minimalSpacing": "Spaziatura minima",
+    "groupUp": "Raggruppa Su",
+    "ungroup": "Separa",
+    "groupedWithOptionAbove": "Raggruppato con l'opzione sopra",
+    "generatedOptionsPreview": "Anteprima delle opzioni generate",
+    "probability": "Probabilità",
+    "tick": "Tick suono durante il giro"
+  }
+}

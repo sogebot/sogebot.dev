@@ -1,0 +1,20 @@
+{
+  "new": "Nová Hodnost",
+  "empty": "Žádná hodnost nebyla vytvořena.",
+  "emptyAfterSearch": "Žádná hodnost nebyla nalezena pro tvé hledání <strong>\"$search\"</strong>.",
+  "rank": {
+    "name": "hodnost",
+    "placeholder": ""
+  },
+  "value": {
+    "name": "hodiny",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Tato hodnota nesmí být prázdná"
+  },
+  "warning": "Tato akce nemůže být vrácena!",
+  "settings": {
+    "enabled": "Status"
+  }
+}

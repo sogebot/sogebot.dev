@@ -1,0 +1,70 @@
+{
+  "title": {
+    "edit": "Éditer",
+    "add": "Ajouter"
+  },
+  "position": {
+    "settings": "Paramètres de positionnement",
+    "anchorX": "Ancrer la position X",
+    "anchorY": "Ancrer la position Y",
+    "left": "Gauche",
+    "right": "Droite",
+    "middle": "Milieu",
+    "top": "Haut",
+    "bottom": "Bas",
+    "x": "X",
+    "y": "Y"
+  },
+  "font": {
+    "shadowShiftRight": "Déplacer à droite",
+    "shadowShiftDown": "Déplacer vers le bas",
+    "shadowBlur": "Flouter",
+    "shadowOpacity": "Opacité",
+    "color": "Couleur"
+  },
+  "errors": {
+    "required": "Cette valeur ne peut pas être vide.",
+    "minValue": "La valeur la plus basse de cette entrée est $value."
+  },
+  "buttons": {
+    "reorder": "Réordonner",
+    "upload": {
+      "idle": "Télécharger",
+      "progress": "En cours de téléchargement",
+      "done": "Téléchargé"
+    },
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "test": {
+      "idle": "Test",
+      "progress": "Test en cours",
+      "done": "Test effectué"
+    },
+    "saveChanges": {
+      "idle": "Enregistrer les modifications",
+      "invalid": "Impossible d'enregistrer les changements",
+      "progress": "Enregistrement des modifications",
+      "done": "Modifications enregistrées"
+    },
+    "something-went-wrong": "Une erreur s'est produite",
+    "mark-to-delete": "Sélectionner pour suppression",
+    "disable": "Désactiver",
+    "enable": "Activer",
+    "disabled": "Désactivé",
+    "enabled": "Activé",
+    "edit": "Éditer",
+    "delete": "Supprimer",
+    "play": "Play",
+    "stop": "Arrêt",
+    "hold-to-delete": "Maintenir pour supprimer",
+    "yes": "Oui",
+    "no": "Non",
+    "permission": "Permission",
+    "group": "Groupe",
+    "visibility": "Visibilité",
+    "reset": "Réinitialiser "
+  },
+  "changesPending": "Vos modifications n'ont pas été enregistrées.",
+  "formNotValid": "Formulaire non valide.",
+  "nothingToShow": "Il n'y a rien à voir ici !"
+}

@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "formatSeparator": "Separador de Formato",
+    "order": "Formato",
+    "lastSeenFormat": {
+      "title": "Formato de hora",
+      "help": "Formatos possíveis em https://momentjs.com/docs/#/displaying/format/"
+    }
+  }
+}

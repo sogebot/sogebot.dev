@@ -1,0 +1,220 @@
+{
+  "enabled": "Status",
+  "testDlg": {
+    "alertTester": "Tester upozornění",
+    "command": "Příkaz",
+    "username": "Uživatelské jméno",
+    "recipient": "Příjemce",
+    "message": "Zpráva",
+    "tier": "Tier",
+    "amountOfViewers": "Počet diváků",
+    "amountOfBits": "Počet bitů",
+    "amountOfGifts": "Počet obdarovaných",
+    "amountOfMonths": "Počet měsíců",
+    "amountOfTips": "Spropitné",
+    "event": "Událost",
+    "service": "Služba"
+  },
+  "empty": "Registr alertů je prázdný, vytvořte nový.",
+  "emptyAfterSearch": "Registr alertů je prázdný při hledání \"<strong>$search</strong>\"",
+  "revertcode": "Vrátit kód do výchozího stavu",
+  "name": {
+    "name": "Název",
+    "placeholder": "Zadejte název svých alertů"
+  },
+  "alertDelayInMs": {
+    "name": "Zpoždění alertů"
+  },
+  "parryEnabled": {
+    "name": "Parírování alertů"
+  },
+  "parryDelay": {
+    "name": "Zpoždění parírování alertu"
+  },
+  "profanityFilterType": {
+    "name": "Filtr vulgarit",
+    "disabled": "Vypnuto",
+    "replace-with-asterisk": "Zaměnit za hvězdičky",
+    "replace-with-happy-words": "Zaměnit za šťastná slova",
+    "hide-messages": "Schovat zprávu",
+    "disable-alerts": "Vypnout alerty"
+  },
+  "loadStandardProfanityList": "Nahrát standardní seznam vulgarit",
+  "customProfanityList": {
+    "name": "Vlastní list vulgarit",
+    "help": "Slova musí být oddělena čárkou."
+  },
+  "event": {
+    "follow": "Follow",
+    "cheer": "Cheer",
+    "sub": "Sub",
+    "resub": "Resub",
+    "subgift": "Subgift",
+    "subcommunitygift": "Subgift to community",
+    "tip": "Spropitné",
+    "raid": "Raid",
+    "custom": "Vlastní",
+    "promo": "Promo",
+    "rewardredeem": "Vyplácení odměn"
+  },
+  "title": {
+    "name": "Název varianty",
+    "placeholder": "Zadejte název varianty"
+  },
+  "variant": {
+    "name": "Výskyt varianty"
+  },
+  "filter": {
+    "name": "Filtr",
+    "operator": "Operátor",
+    "rule": "Pravidlo",
+    "addRule": "Přidat pravidlo",
+    "addGroup": "Přidat skupinu",
+    "comparator": "Porovnání",
+    "value": "Hodnota",
+    "valueSplitByComma": "Hodnoty rozdělené čárkou (např. val1, val2)",
+    "isEven": "je sudé",
+    "isOdd": "je liché",
+    "lessThan": "menší než",
+    "lessThanOrEqual": "menší nebo rovno",
+    "contain": "obsahuje",
+    "contains": "obsahuje",
+    "equal": "rovná se",
+    "notEqual": "nerovná se",
+    "present": "je přítomen",
+    "includes": "zahrnuje",
+    "greaterThan": "větší než",
+    "greaterThanOrEqual": "větší nebo rovno",
+    "noFilter": "žádný filtr"
+  },
+  "speed": {
+    "name": "Rychlost"
+  },
+  "maxTimeToDecrypt": {
+    "name": "Maximální čas dešifrování"
+  },
+  "characters": {
+    "name": "Znaky"
+  },
+  "random": "Náhodně",
+  "exact-amount": "Přesný počet",
+  "greater-than-or-equal-to-amount": "Více nebo stejně jako počet",
+  "tier-exact-amount": "Tier je přesně",
+  "tier-greater-than-or-equal-to-amount": "Tier je vyšší nebo roven",
+  "months-exact-amount": "Počet měsíců je přesně",
+  "months-greater-than-or-equal-to-amount": "Počet měsíců je vyšší nebo rovno",
+  "gifts-exact-amount": "Počet obdarovaných je přesně",
+  "gifts-greater-than-or-equal-to-amount": "Počet obdarovaných je vyšší nebo roven",
+  "very-rarely": "Velmi zřídka",
+  "rarely": "Zřídka",
+  "default": "Normálně",
+  "frequently": "Často",
+  "very-frequently": "Velmi často",
+  "exclusive": "Výhradní",
+  "messageTemplate": {
+    "name": "Šablona zprávy",
+    "placeholder": "Zadejte svou šablonu zprávy",
+    "help": "Dostupné proměnné: {name}, {amount} (bits, subs, tips, subgifts, sub community gifts, command redeems), {recipient} (subgifts, command redeems), {monthsName} (subs, subgifts), {currency} (tips), {game} (promo). Pokud přidáte | (viz promo), tak se zobrazí v sekvenci za sebou."
+  },
+  "ttsTemplate": {
+    "name": "TTS šablona",
+    "placeholder": "Nastavte si šablonu TTS",
+    "help": "Dostupné proměnné: {name}, {amount} {monthsName} {currency} {message}"
+  },
+  "animationText": {
+    "name": "Animace textu"
+  },
+  "animationType": {
+    "name": "Typ animace"
+  },
+  "animationIn": {
+    "name": "Vstupní animace"
+  },
+  "animationOut": {
+    "name": "Výstupní animace"
+  },
+  "alertDurationInMs": {
+    "name": "Trvání alertu"
+  },
+  "alertTextDelayInMs": {
+    "name": "Zpoždění textu alertu"
+  },
+  "layoutPicker": {
+    "name": "Rozvržení"
+  },
+  "loop": {
+    "name": "Přehrát ve smyčce"
+  },
+  "scale": {
+    "name": "Měřítko"
+  },
+  "translateY": {
+    "name": "Posunout -nahoru / +dolů"
+  },
+  "translateX": {
+    "name": "Posunout -vlevo / +vpravo"
+  },
+  "image": {
+    "name": "Obrázek / Video(.webm)",
+    "setting": "Nastavení obrázku / videa (.webm)"
+  },
+  "sound": {
+    "name": "Zvuk",
+    "setting": "Nastavení zvuku"
+  },
+  "soundVolume": {
+    "name": "Hlasitost upozornění"
+  },
+  "enableAdvancedMode": "Zapnout pokročilý mód",
+  "font": {
+    "setting": "Nastavení fontu",
+    "name": "Font",
+    "overrideGlobal": "Přepsat globální nastavení písma",
+    "align": {
+      "name": "Zarovnání",
+      "left": "Vlevo",
+      "center": "Uprostřed",
+      "right": "Vpravo"
+    },
+    "size": {
+      "name": "Velikost fontu"
+    },
+    "weight": {
+      "name": "Tloušťka fontu"
+    },
+    "borderPx": {
+      "name": "Ohraničení fontu"
+    },
+    "borderColor": {
+      "name": "Barva ohraničení fontu"
+    },
+    "color": {
+      "name": "Barva fontu"
+    },
+    "highlightcolor": {
+      "name": "Barva zvýraznění"
+    }
+  },
+  "minAmountToShow": {
+    "name": "Minimální počet k zobrazení"
+  },
+  "minAmountToPlay": {
+    "name": "Minimální počet k přehrání"
+  },
+  "allowEmotes": {
+    "name": "Povolit emotikony"
+  },
+  "message": {
+    "setting": "Nastavení zprávy"
+  },
+  "voice": "Hlas",
+  "keepAlertShown": "Alert zůstane zobrazen během TTS",
+  "skipUrls": "Přeskočit URL během TTS",
+  "volume": "Hlasitost",
+  "rate": "Tempo",
+  "pitch": "Výška",
+  "test": "Otestovat",
+  "tts": {
+    "setting": "Nastavení TTS"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "list": "Список ваших прав:",
+  "excludeAddSuccessful": "$sender, вы добавили $username для исключения в группе $permissionName",
+  "excludeRmSuccessful": "$sender, вы добавили $username для исключения в группе $permissionName",
+  "userNotFound": "$sender, пользователь $username не найден в базе данных.",
+  "permissionNotFound": "$sender, право $userlevel не найдено в базе данных.",
+  "cannotIgnoreForCorePermission": "$sender, вы не можете вручную исключить пользователя для права $userlevel"
+}

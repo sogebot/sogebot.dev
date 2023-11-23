@@ -1,0 +1,48 @@
+{
+	"settings": {
+		"btnRemoveCache": "Vider le cache",
+		"hypeMessagesEnabled": "Afficher les messages hype dans le chat",
+		"btnTestExplosion": "Tester l'explosion des emotes",
+		"btnTestEmote": "Émote de test",
+		"btnTestFirework": "Tester le feu d'artifice d'emotes",
+		"cEmotesSize": "Taille des emotes",
+		"cEmotesMaxEmotesPerMessage": "Maximum of emotes per message",
+		"cEmotesMaxRotation": "Maximal rotation of emote",
+		"cEmotesOffsetX": "Maximal offset on X-axis",
+		"cEmotesAnimation": "Animation",
+		"cEmotesAnimationTime": "Durée de l'animation",
+		"cExplosionNumOfEmotes": "Nbre d'emotes",
+		"cExplosionNumOfEmotesPerExplosion": "Nbre d'emotes par explosion",
+		"cExplosionNumOfExplosions": "Nbre d'explosions",
+		"enableEmotesCombo": "Activer le combo d'emotes",
+		"comboBreakMessages": "Messages de rupture de combo",
+		"threshold": "Seuil",
+		"noMessagesFound": "Aucun message trouvé.",
+		"message": "Message ",
+		"showEmoteInOverlayThreshold": "Seuil minimal de message pour afficher l'emote sur l'overlay",
+		"hideEmoteInOverlayAfter": {
+			"title": "Masquer l'emote sur l'overlay après inactivité",
+			"help": "Masquera l'emote sur l'overlay après un certain temps en secondes"
+		},
+		"comboCooldown": {
+			"title": "Cooldown de combo",
+			"help": "Cooldown du combo en secondes"
+		},
+		"comboMessageMinThreshold": {
+			"title": "Seuil minimal du message",
+			"help": "Seuil minimal de message pour compter les emotes comme un combo (jusqu'à ce que cela ne déclenche le cooldown)"
+		},
+		"comboMessages": "Messages de combo"
+	},
+	"hype": {
+		"5": "Let's go! Nous avons un combo de $amountx pour l'emote $emote jusqu'à présent ! SeemsGood",
+		"15": "Continuez comme ça ! Est-ce qu'on peut obtenir plus que $amountx $emote? Trihard"
+	},
+	"message": {
+		"3": "Combo $amountx $emote",
+		"5": "$amountx $emote combo SeemsGood",
+		"10": "$amountx $emote combo PogChamp",
+		"15": "$amountx $emote combo TriHard",
+		"20": "$sender a ruiné le combo $emote qui était de $amountx ! NotLikeThis"
+	}
+}

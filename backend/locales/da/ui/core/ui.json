@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "theme": "Standardtema",
+    "domain": {
+      "title": "Domain",
+      "help": "Format uden http/https: ditdomain.dk eller dit.domain.dk"
+    },
+    "percentage": "Procentsats forskel i statistik",
+    "shortennumbers": "Kort format for numre",
+    "showdiff": "Vis forskel",
+    "enablePublicPage": "Enable public page"
+  }
+}

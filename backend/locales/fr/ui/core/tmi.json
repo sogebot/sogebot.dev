@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "ignorelist": "Ignorer la liste (ID ou nom d'utilisateur)",
+    "showWithAt": "Afficher les utilisateurs avec @",
+    "sendWithMe": "Envoyer des messages avec /me",
+    "sendAsReply": "Envoyer les messages du bot en réponse",
+    "mute": "Le bot est mute",
+    "whisperListener": "Accepter les commandes en whispers"
+  }
+}

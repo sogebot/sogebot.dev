@@ -1,0 +1,86 @@
+{
+  "addGoalGroup": "Aggiungi Gruppo Obiettivi",
+  "addGoal": "Aggiungi Obiettivo",
+  "newGoal": "nuovo Obiettivo",
+  "newGoalGroup": "nuovo Gruppo Obiettivo",
+  "goals": "Obiettivi",
+  "general": "Generale",
+  "display": "Visualizza",
+  "fontSettings": "Impostazioni Carattere",
+  "barSettings": "Impostazioni Della Barra",
+  "selectGoalOnLeftSide": "Selezionare o aggiungere un obiettivo sul lato sinistro",
+  "input": {
+    "description": {
+      "title": "Descrizione"
+    },
+    "goalAmount": {
+      "title": "Importo Obiettivo"
+    },
+    "countBitsAsTips": {
+      "title": "Conta bit come suggerimenti"
+    },
+    "currentAmount": {
+      "title": "Importo Corrente"
+    },
+    "endAfter": {
+      "title": "Termina dopo"
+    },
+    "endAfterIgnore": {
+      "title": "L'obiettivo non scadrà"
+    },
+    "borderPx": {
+      "title": "Bordo",
+      "help": "La dimensione del bordo è in pixel"
+    },
+    "barHeight": {
+      "title": "Altezza Barra",
+      "help": "L'altezza della barra è in pixel"
+    },
+    "color": {
+      "title": "Colore"
+    },
+    "borderColor": {
+      "title": "Colore dei margini"
+    },
+    "backgroundColor": {
+      "title": "Colore sfondo"
+    },
+    "type": {
+      "title": "Tipo"
+    },
+    "nameGroup": {
+      "title": "Nome di questo gruppo di obiettivi"
+    },
+    "name": {
+      "title": "Nome di questo gruppo di obiettivi"
+    },
+    "displayAs": {
+      "title": "Visualizza come",
+      "help": "Imposta come verrà mostrato il gruppo di obiettivi"
+    },
+    "durationMs": {
+      "title": "Durata",
+      "help": "Questo valore è in millisecondi",
+      "placeholder": "Per quanto tempo dovrebbe essere mostrato l'obiettivo"
+    },
+    "animationInMs": {
+      "title": "Durata animazione",
+      "help": "Questo valore è in millisecondi",
+      "placeholder": "Imposta la tua animazione In durata"
+    },
+    "animationOutMs": {
+      "title": "Durata animazione in uscita",
+      "help": "Questo valore è in millisecondi",
+      "placeholder": "Imposta durata dell'animazione in uscita"
+    },
+    "interval": {
+      "title": "Quale intervallo contare"
+    },
+    "spaceBetweenGoalsInPx": {
+      "title": "Spazio tra gli obiettivi",
+      "help": "Questo valore è in pixel",
+      "placeholder": "Imposta il tuo spazio tra gli obiettivi"
+    }
+  },
+  "groupSettings": "Impostazioni di gruppo"
+}

@@ -1,0 +1,8 @@
+{
+  "viewers": {
+    "eventHistory": "Історія подій користувача",
+    "hostAndRaidViewersCount": "Переглядів: $value",
+    "receivedSubscribeFrom": "Отримано підписку від <strong>$value</strong>",
+    "giftedSubscribeTo": "Отримано підписку від <strong>$value</strong>"
+  }
+}

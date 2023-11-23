@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "enabled": "Estado",
+    "guild": "Servidor",
+    "listenAtChannels": "Escutar comandos neste canal",
+    "sendOnlineAnnounceToChannel": "Enviar anúncio online para este canal",
+    "onlineAnnounceMessage": "Mensagem em anúncio de online (pode incluir menções)",
+    "sendAnnouncesToChannel": "Configuração de envio de avisos para canais",
+    "deleteMessagesAfterWhile": "Excluir mensagem após um tempo",
+    "clientId": "ClientId",
+    "token": "Token",
+    "joinToServerBtn": "Clique para adicionar o bot no seu servidor",
+    "joinToServerBtnDisabled": "Por favor salve suas alterações para habilitar o bot a juntar-se a seu servidor",
+    "cannotJoinToServerBtn": "Defina o token, e o clientId para poder adicionar o bot no seu servidor",
+    "noChannelSelected": "nenhum canal selecionado",
+    "noRoleSelected": "nenhuma função selecionada",
+    "noGuildSelected": "nenhum servidor selecionado",
+    "noGuildSelectedBox": "Selecione o servidor que o bot irá funcionar, e você conseguirá ver mais opções",
+    "onlinePresenceStatusDefault": "Situação Padrão",
+    "onlinePresenceStatusDefaultName": "Mensagem de status padrão",
+    "onlinePresenceStatusOnStream": "Status ao transmitir",
+    "onlinePresenceStatusOnStreamName": "Mensagem de status ao transmitir",
+    "ignorelist": {
+      "title": "Lista de ignorados",
+      "help": "nome-de-usuario#0000 ou userID"
+    }
+  }
+}

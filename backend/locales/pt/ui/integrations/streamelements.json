@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Estado",
+    "jwtToken": {
+      "title": "Token JWT",
+      "help": "Obtenha o token JWT na <a href=\"https://streamelements.com/dashboard/account/channels\" target=\"_blank\">configuração de Canais de StreamElements</a> e ative o Show Secrets"
+    }
+  }
+}

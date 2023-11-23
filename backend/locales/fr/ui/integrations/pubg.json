@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "enabled": "Statut",
+    "apiKey": {
+      "title": "Clé d'API",
+      "help": "Obtenez votre clé d'API sur https://developer.pubg.com/"
+    },
+    "platform": "Plateforme",
+    "playerName": "Nom de joueur",
+    "playerId": "ID du joueur",
+    "seasonId": {
+      "title": "ID de la saison",
+      "help": "L'ID de la saison actuelle se vérifiera toutes les heures."
+    },
+    "rankedGameModeStatsCustomization": "Message personnalisé pour les statistiques classées",
+    "gameModeStatsCustomization": "Message personnalisé pour les statistiques normales"
+  },
+  "click_to_fetch": "Cliquer pour récupérer",
+  "something_went_wrong": "Une erreur s'est produite!",
+  "ok": "OK!",
+  "stats_are_automatically_refreshed_every_10_minutes": "Les statistiques sont automatiquement actualisées toutes les 10 minutes.",
+  "player_stats_ranked": "Statistiques du joueur (classé)",
+  "player_stats": "Statistiques du joueur"
+}

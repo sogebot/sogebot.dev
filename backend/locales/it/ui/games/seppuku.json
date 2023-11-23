@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Stato",
+    "timeout": {
+      "title": "Durata dell'intervallo",
+      "help": "Secondi"
+    }
+  }
+}

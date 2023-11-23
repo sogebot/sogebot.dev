@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "verification_token": {
+      "title": "Ověřovací token",
+      "help": "Získejte ověřovací token na <a href='https://ko-fi.com/manage/webhooks' target='_blank'>https://ko-fi.com/manage/webhooks</a>"
+    },
+    "webhook_url": {
+      "title": "URL webhooku",
+      "help": "Nastavte URL webhooku na <a href='https://ko-fi.com/manage/webhooks' target='_blank'>https://ko-fi.com/manage/webhooks</a>",
+      "errors": {
+        "https": "URL musí mít HTTPS",
+        "origin": "Nelze použít localhost pro webhooky"
+      }
+    }
+  }
+}

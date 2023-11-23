@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Estado",
+    "apiKey": {
+      "title": "Chave API",
+      "help": "Obtenha o token de acesso em: tipeeestream dashboard -> API -> Your API Key"
+    }
+  }
+}

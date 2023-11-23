@@ -1,0 +1,8 @@
+{
+  "announce": "Tento chat byl nastaven na $mode od $username , aby se zbavil hate raidu. Omlouváme se za nepříjemnosti!",
+  "mode": {
+    "0": "pouze pro předplatitele",
+    "1": "pouze pro sledující",
+    "2": "pouze pro emotikony"
+  }
+}

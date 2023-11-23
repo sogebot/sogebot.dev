@@ -1,0 +1,70 @@
+{
+  "title": {
+    "edit": "Upravit",
+    "add": "Přidat"
+  },
+  "position": {
+    "settings": "Nastavení pozice",
+    "anchorX": "Pozice ukotvení X",
+    "anchorY": "Pozice ukotvení Y",
+    "left": "Vlevo",
+    "right": "Vpravo",
+    "middle": "Střed",
+    "top": "Nahoře",
+    "bottom": "Dole",
+    "x": "X",
+    "y": "Y"
+  },
+  "font": {
+    "shadowShiftRight": "Posunout doprava",
+    "shadowShiftDown": "Posunout dolů",
+    "shadowBlur": "Rozostření",
+    "shadowOpacity": "Průhlednost",
+    "color": "Barva"
+  },
+  "errors": {
+    "required": "Toto pole nesmí být prázdné.",
+    "minValue": "Nejnižší hodnota tohoto pole je $value."
+  },
+  "buttons": {
+    "reorder": "Uspořádat",
+    "upload": {
+      "idle": "Nahrát",
+      "progress": "Nahrávání",
+      "done": "Nahráno"
+    },
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "test": {
+      "idle": "Otestovat",
+      "progress": "Testování probíhá",
+      "done": "Testování dokončeno"
+    },
+    "saveChanges": {
+      "idle": "Uložit změny",
+      "invalid": "Nelze uložit změny",
+      "progress": "Ukládání změn",
+      "done": "Změny uloženy"
+    },
+    "something-went-wrong": "Něco se pokazilo",
+    "mark-to-delete": "Označit ke smazání",
+    "disable": "Vypnout",
+    "enable": "Zapnout",
+    "disabled": "Vypnuto",
+    "enabled": "Zapnuto",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "play": "Přehrát",
+    "stop": "Zastavit",
+    "hold-to-delete": "Podržte pro smazání",
+    "yes": "Ano",
+    "no": "Ne",
+    "permission": "Oprávnění",
+    "group": "Skupina",
+    "visibility": "Viditelnost",
+    "reset": "Reset"
+  },
+  "changesPending": "Vaše změny nebyly uloženy.",
+  "formNotValid": "Opravte chyby ve formuláři.",
+  "nothingToShow": "Zde není nic k vidění"
+}

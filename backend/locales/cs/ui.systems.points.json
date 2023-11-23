@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "name": {
+      "title": "Název",
+      "help": "<strong>Možné formáty:</strong><br> point|points <br> bod|4:body|bodu"
+    },
+    "isPointResetIntervalEnabled": "Interval mazání bodů",
+    "resetIntervalCron": {
+      "name": "Interval cronu",
+      "help": "<a href='https://crontab.guru/'>CronTab generátor</a>"
+    },
+    "interval": "Minutový interval pro přidání bodů online uživatelům při online streamu",
+    "offlineInterval": "Minutový interval pro přidání bodů online uživatelům při offline streamu",
+    "messageInterval": "Kolik zpráv pro přidání body",
+    "messageOfflineInterval": "Kolik zpráv pro přidání body při offline streamu",
+    "perInterval": "Kolik bodů přidat na online interval",
+    "perOfflineInterval": "Kolik bodů přidat na offline interval",
+    "perMessageInterval": "Kolik bodů přidat na interval zpráv",
+    "perMessageOfflineInterval": "Kolik bodů přidat na offline interval zpráv"
+  }
+}

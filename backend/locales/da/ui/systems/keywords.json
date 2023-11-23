@@ -1,0 +1,27 @@
+{
+  "new": "Nyt Keyword",
+  "empty": "Ingen keywords er blevet oprettet endnu.",
+  "emptyAfterSearch": "Ingen keywords blev fundet ved din søgning efter <strong>\"$search\"</strong>.",
+  "keyword": {
+    "name": "Keyword / Regular Expression",
+    "placeholder": "Sæt dit keyword eller regular expression for at aktivere keyword.",
+    "help": "Du kan bruge regexp (ingen forskel på store og små-bogstaver) til keywords, f.eks <strong>hello.*|hi</strong>"
+  },
+  "response": {
+    "name": "Svar",
+    "placeholder": "Sæt dit svar her."
+  },
+  "error": {
+    "isEmpty": "Dette input må ikke være tomt"
+  },
+  "no-responses-set": "Intet svar",
+  "addResponse": "Tilføj svar",
+  "filter": {
+    "name": "filter",
+    "placeholder": "Tilføj filter for dette svar"
+  },
+  "warning": "Denne handling kan ikke fortrydes!",
+  "settings": {
+    "enabled": "Status"
+  }
+}

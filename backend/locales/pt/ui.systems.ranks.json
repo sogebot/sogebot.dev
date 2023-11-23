@@ -1,0 +1,20 @@
+{
+  "new": "Nova Colocação",
+  "empty": "Nenhuma colocação foi criada ainda.",
+  "emptyAfterSearch": "Nenhuma colocação foi encontrada na sua pesquisa por <strong>\"$search\"</strong>.",
+  "rank": {
+    "name": "colocação",
+    "placeholder": ""
+  },
+  "value": {
+    "name": "horas",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Este valor não pode ficar vazio"
+  },
+  "warning": "Esta ação não pode ser desfeita!",
+  "settings": {
+    "enabled": "Situação"
+  }
+}

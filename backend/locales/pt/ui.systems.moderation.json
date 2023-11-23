@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "enabled": "Situação",
+    "cListsEnabled": "Impor a regra",
+    "cLinksEnabled": "Impor a regra",
+    "cSymbolsEnabled": "Impor a regra",
+    "cLongMessageEnabled": "Impor a regra",
+    "cCapsEnabled": "Impor a regra",
+    "cSpamEnabled": "Impor a regra",
+    "cColorEnabled": "Impor a regra",
+    "cEmotesEnabled": "Impor a regra",
+    "cListsWhitelist": {
+      "title": "Palavras permitidas",
+      "help": "Para permitir domínios, use \"domain:prtzl.io\""
+    },
+    "autobanMessages": "Mensagens de Autoban",
+    "cListsBlacklist": "Palavras proibidas",
+    "cListsTimeout": "Duração do tempo limite",
+    "cLinksTimeout": "Duração do tempo limite",
+    "cSymbolsTimeout": "Duração do tempo limite",
+    "cLongMessageTimeout": "Duração do tempo limite",
+    "cCapsTimeout": "Duração do tempo limite",
+    "cSpamTimeout": "Duração do tempo limite",
+    "cColorTimeout": "Duração do tempo limite",
+    "cEmotesTimeout": "Duração do tempo limite",
+    "cWarningsShouldClearChat": "Deve limpar o chat (expirará em 1s)",
+    "cLinksIncludeSpaces": "Incluir espaços",
+    "cLinksIncludeClips": "Incluir clipes",
+    "cSymbolsTriggerLength": "Gatilho de comprimento da mensagem",
+    "cLongMessageTriggerLength": "Gatilho de comprimento da mensagem",
+    "cCapsTriggerLength": "Gatilho de comprimento da mensagem",
+    "cSpamTriggerLength": "Gatilho de comprimento da mensagem",
+    "cSymbolsMaxSymbolsConsecutively": "Max de símbolos consecutivamente",
+    "cSymbolsMaxSymbolsPercent": "Símbolos máximos %",
+    "cCapsMaxCapsPercent": "Max de caps %",
+    "cSpamMaxLength": "Comprimento máximo",
+    "cEmotesMaxCount": "Contagem máxima",
+    "cWarningsAnnounceTimeouts": "Anunciar timeouts no chat para todos",
+    "cWarningsAllowedCount": "Contagem de avisos",
+    "cEmotesEmojisAreEmotes": "Tratar Emojis como Emotes"
+  }
+}

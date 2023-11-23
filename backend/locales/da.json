@@ -1,0 +1,1206 @@
+{
+  "core": {
+    "loaded": "er indlæst og",
+    "enabled": "slået til",
+    "disabled": "slået fra",
+    "usage": "Anvendelse",
+    "lang-selected": "Bot-sprog er i øjeblikket sat til dansk",
+    "refresh-panel": "Du er nødsaget til at opdatere brugergrænsefladen for at se ændringerne.",
+    "command-parse": "Beklager, $sender, men denne kommando er ikke korrekt, brug",
+    "error": "Desværre, $sender, men noget gik galt!",
+    "no-response": "",
+    "no-response-bool": {
+      "true": "",
+      "false": ""
+    },
+    "api": {
+      "error": "$sender, API svare ikke korrekt!",
+      "not-available": "ikke tilgængelig"
+    },
+    "percentage": {
+      "true": "",
+      "false": ""
+    },
+    "years": "år|år",
+    "months": "måned|måneder",
+    "days": "dag|dage",
+    "hours": "time|timer",
+    "minutes": "minut|minutter",
+    "seconds": "sekund|sekunder",
+    "messages": "besked|beskeder",
+    "bits": "bit|bits",
+    "links": "link|links",
+    "entries": "indtastning|indtastninger",
+    "empty": "tom",
+    "isRegistered": "$sender, du kan ikke bruge !$keyword, fordi den allerede er i brug i en anden handling!"
+  },
+  "clip": {
+    "notCreated": "Something went wrong and clip was not created.",
+    "offline": "Stream is currently offline and clip cannot be created."
+  },
+  "uptime": {
+    "online": "Stream har været online i (if $days>0|$daysd )(if $hours>0|$hoursh )(if $minutes>0|$minutesm )(if $seconds>0|$secondss)",
+    "offline": "Stream har været OFFLINE i (if $days>0|$daysd )(if $hours>0|$hours )(if $minutes>0|$minutesm )(if $seconds>0|$secondss)"
+  },
+  "webpanel": {
+    "this-system-is-disabled": "Dette system er deaktiveret",
+    "or": "or",
+    "loading": "Indlæser",
+    "this-may-take-a-while": "Dette <strong>kan</strong> tage et stykke tid",
+    "display-as": "Vis som",
+    "go-to-admin": "Gå til Administrator",
+    "go-to-public": "Gå til Offentlig",
+    "logout": "Log ud",
+    "popout": "Popout",
+    "not-logged-in": "Ikke logget ind",
+    "remove-widget": "Remove <strong>$name</strong> widget",
+    "join-channel": "Tilslut bot til kanal",
+    "leave-channel": "Fjern bot fra kanal",
+    "set-default": "Angiv som standard",
+    "add": "Tilføj",
+    "placeholders": {
+      "text-url-generator": "Indsæt din tekst eller html for at generere base64 nedenfor og URL ovenfor",
+      "text-decode-base64": "Indsæt din base64 for at generere URL og tekst ovenfor",
+      "creditsSpeed": "Set speed of credits rolling, lower = faster"
+    },
+    "timers": {
+      "title": "Tidsur",
+      "timer": "Timer",
+      "messages": "beskeder",
+      "seconds": "sekunder",
+      "badges": {
+        "enabled": "Aktiveret",
+        "disabled": "Deaktiveret"
+      },
+      "errors": {
+        "timer_name_must_be_compliant": "This value can contain only a-zA-Z09_",
+        "this_value_must_be_a_positive_number_or_0": "This value must be a positive number or 0",
+        "value_cannot_be_empty": "Value cannot be empty"
+      },
+      "dialog": {
+        "timer": "Timer",
+        "name": "Navn",
+        "tickOffline": "Should tick if stream offline",
+        "interval": "Interval",
+        "responses": "Svar",
+        "messages": "Udløs hver X beskeder",
+        "seconds": "Udløs hver X sekunder",
+        "title": {
+          "new": "Ny timer",
+          "edit": "Rediger timer"
+        },
+        "placeholders": {
+          "name": "Set name of your timer, can contain only these characters a-zA-Z0-9_",
+          "messages": "Trigger timer each X messages",
+          "seconds": "Trigger timer each X seconds"
+        },
+        "alerts": {
+          "success": "Timer was <strong>successfully</strong> saved.",
+          "fail": "Noget gik <strong>galt</strong>."
+        }
+      },
+      "buttons": {
+        "close": "Luk",
+        "save-changes": "Gem ændringer",
+        "disable": "Deaktivér",
+        "enable": "Aktivér",
+        "edit": "Rediger",
+        "delete": "Slet",
+        "yes": "Ja",
+        "no": "Nej"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_timer": "Are you sure you want to <strong class='text-danger'>delete</strong> timer"
+      }
+    },
+    "events": {
+      "event": "Hændelse",
+      "noEvents": "Ingen hændelser fundet i database.",
+      "whatsthis": "Hvad er det her?",
+      "myRewardIsNotListed": "My reward is not listed!",
+      "redeemAndClickRefreshToSeeReward": "If you are missing your created reward in a list, refresh by clicking on refresh icon.",
+      "badges": {
+        "enabled": "Aktiveret",
+        "disabled": "Deaktiveret"
+      },
+      "buttons": {
+        "test": "Test",
+        "enable": "Aktivér",
+        "disable": "Deaktivér",
+        "edit": "Redigér",
+        "delete": "Slet",
+        "yes": "Ja",
+        "no": "Nej"
+      },
+      "popovers": {
+        "are_you_sure_you_want_to_delete_event": "Are you sure you want to <strong class='text-danger'>delete</strong> event",
+        "example_of_user_object_data": "Example of user object data"
+      },
+      "errors": {
+        "command_must_start_with_!": "Kommando skal starte med !",
+        "this_value_must_be_a_positive_number_or_0": "Denne værdi skal være et positivt tal eller 0",
+        "value_cannot_be_empty": "Value cannot be empty"
+      },
+      "dialog": {
+        "title": {
+          "new": "New event listener",
+          "edit": "Edit event listener"
+        },
+        "placeholders": {
+          "name": "Set name of your event listener (if empty, name will be generated)"
+        },
+        "alerts": {
+          "success": "Event was <strong>successfully</strong> saved.",
+          "fail": "Something went <strong>wrong</strong>."
+        },
+        "close": "Luk",
+        "save-changes": "Save changes",
+        "event": "Event",
+        "name": "Navn",
+        "usable-events-variables": "Usable events variables",
+        "settings": "Indstillinger",
+        "filters": "Filters",
+        "operations": "Opgaver"
+      },
+      "definitions": {
+        "taskId": {
+          "label": "Task ID"
+        },
+        "filter": {
+          "label": "Filter"
+        },
+        "linkFilter": {
+          "label": "Link Overlay Filter",
+          "placeholder": "If using overlay, add link or id of your overlay"
+        },
+        "hashtag": {
+          "label": "Hashtag eller Keyword",
+          "placeholder": "#yourHashtagHere or Keyword"
+        },
+        "fadeOutXCommands": {
+          "label": "Fade Out X Commands",
+          "placeholder": "Number of commands subtracted every fade out interval"
+        },
+        "fadeOutXKeywords": {
+          "label": "Fade Out X Keywords",
+          "placeholder": "Number of keywords subtracted every fade out interval"
+        },
+        "fadeOutInterval": {
+          "label": "Fade Out Interval (seconds)",
+          "placeholder": "Fade out interval subtracting"
+        },
+        "runEveryXCommands": {
+          "label": "Run Every X Commands",
+          "placeholder": "Number of commands before event is triggered"
+        },
+        "runEveryXKeywords": {
+          "label": "Run Every X Keywords",
+          "placeholder": "Number of keywords before event is triggered"
+        },
+        "commandToWatch": {
+          "label": "Command To Watch",
+          "placeholder": "Set your !commandToWatch"
+        },
+        "keywordToWatch": {
+          "label": "Keyword To Watch",
+          "placeholder": "Set your keywordToWatch"
+        },
+        "resetCountEachMessage": {
+          "label": "Reset count each message",
+          "true": "Nulstil tæller",
+          "false": "Behold tælling"
+        },
+        "viewersAtLeast": {
+          "label": "Seere Er Mindst",
+          "placeholder": "How many viewers at least to trigger event"
+        },
+        "runInterval": {
+          "label": "Run Interval (0 = run once per stream)",
+          "placeholder": "Trigger event every x seconds"
+        },
+        "runAfterXMinutes": {
+          "label": "Run After X Minutes",
+          "placeholder": "Trigger event after x minutes"
+        },
+        "runEveryXMinutes": {
+          "label": "Run Every X Minutes",
+          "placeholder": "Trigger event every x minutes"
+        },
+        "messageToSend": {
+          "label": "Besked At sende",
+          "placeholder": "Indstil din besked"
+        },
+        "channel": {
+          "label": "Kanal",
+          "placeholder": "Kanalnavn eller ID"
+        },
+        "timeout": {
+          "label": "Timeout",
+          "placeholder": "Set timeout in milliseconds"
+        },
+        "timeoutType": {
+          "label": "Type of timeout",
+          "placeholder": "Set type of timeout"
+        },
+        "command": {
+          "label": "Command",
+          "placeholder": "Set your !command"
+        },
+        "commandToRun": {
+          "label": "Kommando at kører",
+          "placeholder": "Sæt din !KommandoTilKørsel"
+        },
+        "isCommandQuiet": {
+          "label": "Mute command output"
+        },
+        "urlOfSoundFile": {
+          "label": "Url på din lydfil",
+          "placeholder": "http://www.pathToYour.url/where/is/file.mp3"
+        },
+        "emotesToExplode": {
+          "label": "Emotes At Eksplodere",
+          "placeholder": "List of emotes to explode, e.g. Kappa PurpleHeart"
+        },
+        "emotesToFirework": {
+          "label": "Emotes Til Fyrværkeri",
+          "placeholder": "List of emotes to firework, e.g. Kappa PurpleHeart"
+        },
+        "replay": {
+          "label": "Replay clip in overlay",
+          "true": "Will play in as replay in overlay/alerts",
+          "false": "Replay won't be played"
+        },
+        "announce": {
+          "label": "Annoncer i chat",
+          "true": "Vil blive annonceret",
+          "false": "Vil ikke blive annonceret"
+        },
+        "hasDelay": {
+          "label": "Clip should have slight delay (to be closer what viewer see)",
+          "true": "Vil have forsinkelse",
+          "false": "Vil ikke have forsinkelse"
+        },
+        "durationOfCommercial": {
+          "label": "Duration Of Commercial",
+          "placeholder": "Available durations - 30, 60, 90, 120, 150, 180"
+        },
+        "customVariable": {
+          "label": "$_",
+          "placeholder": "Brugerdefineret variabel til opdatering"
+        },
+        "numberToIncrement": {
+          "label": "Number to increment",
+          "placeholder": ""
+        },
+        "value": {
+          "label": "Værdi",
+          "placeholder": ""
+        },
+        "numberToDecrement": {
+          "label": "Number to decrement",
+          "placeholder": ""
+        },
+        "": "",
+        "reward": {
+          "label": "Reward",
+          "placeholder": ""
+        }
+      }
+    },
+    "eventlist-events": {
+      "follow": "<strong>Followed</strong> you",
+      "raid": "<strong>Raided</strong> you with <strong>$viewers</strong> raiders.",
+      "sub": "<strong>Subscribed</strong> to you with <strong>$subType</strong>. They've been subscribed for $subCumulativeMonths $subCumulativeMonthsName.",
+      "subgift": "has been <strong>gifted</strong> subscription from <strong>$username</strong>",
+      "subcommunitygift": "<strong>Gifted</strong> subscriptions for community",
+      "resub": "<strong>Resubscribed</strong> with <strong>$subType</strong>. They've been subscribed for $subCumulativeMonths $subCumulativeMonthsName.",
+      "cheer": "<strong>Cheered</strong> you",
+      "tip": "<strong>Tipped</strong> you",
+      "tipToCharity": "<strong>donated</strong> to <strong>$campaignName</strong>"
+    },
+    "responses": {
+      "variable": {
+        "tags": "Tags",
+        "titleOfPrediction": "Twitch Prediction - Title",
+        "outcomes": "Twitch Prediction - Outcomes",
+        "locksAt": "Twitch Prediction - Locks At Date",
+        "winningOutcomeTitle": "Twitch Prediction - Winning outcome title",
+        "winningOutcomeTotalPoints": "Twitch Prediction - Winning outcome total points",
+        "winningOutcomePercentage": "Twitch Prediction - Winning outcome percentage",
+        "titleOfPoll": "Twitch Poll - Title",
+        "bitAmountPerVote": "Twitch Poll - Amount of bits to count as 1 vote",
+        "bitVotingEnabled": "Twitch Poll - Is bit voting enabled (boolean)",
+        "channelPointsAmountPerVote": "Twitch Poll - Amount of channel points to count as 1 vote",
+        "channelPointsVotingEnabled": "Twitch Poll - Is channel points voting enabled (boolean)",
+        "votes": "Twitch Poll - votes count",
+        "winnerChoice": "Twitch Poll - Winner choice",
+        "winnerPercentage": "Twitch Poll - Winner choice percentage",
+        "winnerVotes": "Twitch Poll - Winner choice votes",
+        "goal": "Goal",
+        "total": "Total",
+        "lastContributionTotal": "Last Contribution - Total",
+        "lastContributionType": "Last Contribution - Type",
+        "lastContributionUserId": "Last Contribution - User ID",
+        "lastContributionUsername": "Last Contribution - Username",
+        "level": "Level",
+        "topContributionsBitsTotal": "Top Bits Contribution - Total",
+        "topContributionsBitsUserId": "Top Bits Contribution - User ID",
+        "topContributionsBitsUsername": "Top Bits Contribution - Username",
+        "topContributionsSubsTotal": "Top Subs Contribution - Total",
+        "topContributionsSubsUserId": "Top Subs Contribution - User ID",
+        "topContributionsSubsUsername": "Top Subs Contribution - Username",
+        "sender": "User who initiated",
+        "title": "Nuværende titel",
+        "game": "Current category",
+        "language": "Current stream language",
+        "viewers": "Antal aktuelle seere",
+        "hostViewers": "Raid viewers count",
+        "followers": "Current followers count",
+        "subscribers": "Antal nuværende abonnenter",
+        "arg": "Argument",
+        "param": "Parameter (påkrævet)",
+        "touser": "Brugernavns parameter",
+        "!param": "Parameter (ikke påkrævet)",
+        "alias": "Alias",
+        "command": "Kommando",
+        "keyword": "Keyword",
+        "response": "Svar",
+        "list": "Populated list",
+        "type": "Type",
+        "days": "Dage",
+        "hours": "Timer",
+        "minutes": "Minutter",
+        "seconds": "Sekunder",
+        "description": "Beskrivelse",
+        "quiet": "Quiet (bool)",
+        "id": "ID",
+        "name": "Navn",
+        "messages": "Beskeder",
+        "amount": "Antal",
+        "amountInBotCurrency": "Valuta i bot",
+        "currency": "Valuta",
+        "currencyInBot": "Valuta i bot",
+        "pointsName": "Points name",
+        "points": "Points",
+        "rank": "Rank",
+        "nextrank": "Next rank",
+        "username": "Brugernavn",
+        "value": "Værdi",
+        "variable": "Variabel",
+        "count": "Antal",
+        "link": "Link (translated)",
+        "winner": "Vinder",
+        "loser": "Taber",
+        "challenger": "Challenger",
+        "min": "Minimum",
+        "max": "Maksimum",
+        "eligibility": "Eligibility",
+        "probability": "Probability",
+        "time": "Time",
+        "options": "Indstillinger",
+        "option": "Option",
+        "when": "Når",
+        "diff": "Forskel",
+        "users": "Brugere",
+        "user": "User",
+        "bank": "Bank",
+        "nextBank": "Next bank",
+        "cooldown": "Nedkøling",
+        "tickets": "Sager",
+        "ticketsName": "Sagens navn",
+        "fromUsername": "Fra brugernavn",
+        "toUsername": "Til brugernavn",
+        "items": "Elementer",
+        "bits": "Bits",
+        "subgifts": "Subgifts",
+        "subStreakShareEnabled": "Is substreak share enabled (true/false)",
+        "subStreak": "Current sub streak",
+        "subStreakName": "localized name of month (1 month, 2 months) for current sub strek",
+        "subCumulativeMonths": "Cumulative subscribe months",
+        "subCumulativeMonthsName": "localized name of month (1 month, 2 months) for cumulative subscribe months",
+        "message": "Besked",
+        "reason": "Årsag",
+        "target": "Destination",
+        "duration": "Varighed",
+        "method": "Metode",
+        "tier": "Niveau",
+        "months": "Måneder",
+        "monthsName": "lokalt navn på måneden (1 måned, 2 måneder)",
+        "oldGame": "Category before change",
+        "recipientObject": "Full recipient object",
+        "recipient": "Modtager",
+        "ytSong": "Nuværende sang på YouTube",
+        "spotifySong": "Nuværende sang på Spotify",
+        "latestFollower": "Seneste Følger",
+        "latestSubscriber": "Seneste Subscriber",
+        "latestSubscriberMonths": "Seneste abonnent samlede måneder",
+        "latestSubscriberStreak": "Seneste abonnent måneder i træk",
+        "latestTipAmount": "Seneste Tip (beløb)",
+        "latestTipCurrency": "Seneste Tip (valuta)",
+        "latestTipMessage": "Seneste Tip (besked)",
+        "latestTip": "Seneste Tip (brugernavn)",
+        "toptip": {
+          "overall": {
+            "username": "Top Tip - overall (username)",
+            "amount": "Top Tip - overall (amount)",
+            "currency": "Top Tip - overall (currency)",
+            "message": "Top Tip - overall (message)"
+          },
+          "stream": {
+            "username": "Top Tip - during stream (username)",
+            "amount": "Top Tip - during stream (amount)",
+            "currency": "Top Tip - during stream (currency)",
+            "message": "Top Tip - during stream (message)"
+          }
+        },
+        "latestCheerAmount": "Seneste Bits (beløb)",
+        "latestCheerMessage": "Seneste Bits (besked)",
+        "latestCheer": "Seneste Bits (brugernavn)",
+        "version": "Bot version",
+        "haveParam": "Har kommando parameter? (bool)",
+        "source": "Nuværende kilde (Twitch eller Discord)",
+        "userInput": "User input during reward redeem",
+        "isBotSubscriber": "Er bot sub? (bool)",
+        "isStreamOnline": "Is stream online (bool)",
+        "uptime": "Uptime of stream",
+        "is": {
+          "moderator": "Er bruger mod? (bool)",
+          "subscriber": "Er bruger sub? (bool)",
+          "vip": "Er bruger VIP? (bool)",
+          "newchatter": "Is user's first message? (bool)",
+          "follower": "Er bruger følger? (bool)",
+          "broadcaster": "Er bruger broadcaster? (bool)",
+          "bot": "Er bruger bot? (bool)",
+          "owner": "Er bruger ejer af bot? (bool)"
+        },
+        "recipientis": {
+          "moderator": "Er modtageren mod? (bool)",
+          "subscriber": "Er modtageren sub? (bool)",
+          "vip": "Er modtageren VIP? (bool)",
+          "follower": "Er modtageren følger? (bool)",
+          "broadcaster": "Er modtageren broadcaster? (bool)",
+          "bot": "Er modtageren bot? (bool)",
+          "owner": "Er modtageren ejer af bot? (bool)"
+        },
+        "sceneName": "Navn på scene",
+        "inputName": "Name of input",
+        "inputMuted": "Mute state (bool)"
+      }
+    },
+    "page-settings": {
+      "systems": {
+        "others": {
+          "title": "Andet",
+          "currency": "Valuta"
+        },
+        "whispers": {
+          "title": "Whispers",
+          "toggle": {
+            "listener": "Lyt til kommandoer på Whisper",
+            "settings": "Whispers ved ændring af indstillinger",
+            "raffle": "Whispers på Raffle-tilmelding",
+            "permissions": "Whispers on insufficient permissions",
+            "cooldowns": "Whispers on cooldown (if set as notify)"
+          }
+        }
+      }
+    },
+    "page-logger": {
+      "buttons": {
+        "messages": "Messages",
+        "follows": "Follows",
+        "subs": "Subs & Resubs",
+        "cheers": "Bits",
+        "responses": "Bot svar",
+        "whispers": "Whispers",
+        "bans": "Udelukninger",
+        "timeouts": "Timeout"
+      },
+      "range": {
+        "day": "en dag",
+        "week": "en uge",
+        "month": "en måned",
+        "year": "et år",
+        "all": "Altid"
+      },
+      "order": {
+        "asc": "Ascending",
+        "desc": "Descending"
+      },
+      "labels": {
+        "order": "ORDER",
+        "range": "RANGE",
+        "filters": "FILTERS"
+      }
+    },
+    "stats-panel": {
+      "show": "Show stats",
+      "hide": "Hide stats"
+    },
+    "translations": "Custom translations",
+    "bot-responses": "Bot svar",
+    "duration": "Varighed",
+    "viewers-reset-attributes": "Nulstil attributter",
+    "viewers-points-of-all-users": "Points of all users",
+    "viewers-watchtime-of-all-users": "Watch time of all users",
+    "viewers-messages-of-all-users": "Messages of all users",
+    "events-game-after-change": "category after change",
+    "events-game-before-change": "category before change",
+    "events-user-triggered-event": "user triggered event",
+    "events-method-used-to-subscribe": "method used to subscribe",
+    "events-months-of-subscription": "måneder som abonnent",
+    "events-monthsName-of-subscription": "ord 'måned' efter antal (1 måned, 2 måneder)",
+    "events-user-message": "bruger besked",
+    "events-bits-user-sent": "bits user sent",
+    "events-reason-for-ban-timeout": "årsag til ban/timeout",
+    "events-duration-of-timeout": "varighed af timeout",
+    "events-duration-of-commercial": "varighed af reklame",
+    "overlays-eventlist-resub": "gentegning af abonnement",
+    "overlays-eventlist-subgift": "abonnements-gave",
+    "overlays-eventlist-subcommunitygift": "fællesskabs-abonnements-gave",
+    "overlays-eventlist-sub": "abonnent",
+    "overlays-eventlist-follow": "følg",
+    "overlays-eventlist-cheer": "bits",
+    "overlays-eventlist-tip": "tip",
+    "overlays-eventlist-raid": "raid",
+    "requested-by": "Anmodet af",
+    "description": "Beskrivelse",
+    "raffle-type": "Raffle type",
+    "raffle-type-keywords": "Kun nøgleord",
+    "raffle-type-tickets": "Med billetter",
+    "raffle-tickets-range": "Billetters rækkevidde",
+    "video_id": "Video ID",
+    "highlights": "Fremhævninger",
+    "cooldown-quiet-header": "Vis nedkølingsmeddelelse",
+    "cooldown-quiet-toggle-no": "Underret",
+    "cooldown-quiet-toggle-yes": "Ingen underretning",
+    "cooldown-moderators": "Moderatoroere",
+    "cooldown-owners": "Ejere",
+    "cooldown-subscribers": "Abonnenter",
+    "cooldown-followers": "Følgere",
+    "in-seconds": "i sekunder",
+    "songs": "Sange",
+    "show-usernames-with-at": "Vis brugere med @",
+    "send-message-as-a-bot": "Send besked som a bot",
+    "chat-as-bot": "Chat (som bot)",
+    "product": "Produkt",
+    "optional": "valgfrit",
+    "placeholder-search": "Søg",
+    "placeholder-enter-product": "Indtast produkt",
+    "placeholder-enter-keyword": "Indtast søgeord",
+    "credits": "Kreditter",
+    "fade-out-top": "fade op",
+    "fade-out-zoom": "fade zoom",
+    "global": "Global",
+    "user": "Bruger",
+    "alerts": "Advarsler",
+    "eventlist": "Begivenhedliste",
+    "dashboard": "Kontrolpanel",
+    "carousel": "Billede Karrusel",
+    "text": "Tekst",
+    "filter": "Filter",
+    "filters": "Filters",
+    "isUsed": "Is used",
+    "permissions": "Tilladelser",
+    "permission": "Tilladelse",
+    "viewers": "Seere",
+    "systems": "Systemer",
+    "overlays": "Overlag",
+    "gallery": "Mediegalleri",
+    "aliases": "Aliaser",
+    "alias": "Alias",
+    "command": "Kommando",
+    "cooldowns": "Nedkøling",
+    "title-template": "Titel skabelon",
+    "keyword": "Keyword",
+    "moderation": "Moderation",
+    "timer": "Timer",
+    "price": "Pris",
+    "rank": "Rangering",
+    "previous": "Forrige",
+    "next": "Næste",
+    "close": "Luk",
+    "save-changes": "Gem ændringer",
+    "saving": "Gemmer...",
+    "deleting": "Sletter…",
+    "done": "Færdig",
+    "error": "Fejl",
+    "title": "Titel",
+    "change-title": "Skift titel",
+    "game": "category",
+    "tags": "Tags",
+    "change-game": "Change category",
+    "click-to-change": "klik for at ændre",
+    "uptime": "uptime",
+    "not-affiliate-or-partner": "Ikke affiliate/partner",
+    "not-available": "Ikke tilgængelig",
+    "max-viewers": "Max seere",
+    "new-chatters": "Nye Chattere",
+    "chat-messages": "Chatbeskeder",
+    "followers": "Følgere",
+    "subscribers": "Abonnenter",
+    "bits": "Bits",
+    "subgifts": "Abonnements-gaver",
+    "subStreak": "Nuværende abonnement forløb",
+    "subCumulativeMonths": "Samlede abonnements-måneder",
+    "tips": "Tips",
+    "tier": "Niveau",
+    "status": "Status",
+    "add-widget": "Tilføj widget",
+    "remove-dashboard": "Fjern kontrolpanel",
+    "close-bet-after": "Luk indsats efter",
+    "refund": "refundering",
+    "roll-again": "Rul igen",
+    "no-eligible-participants": "Ingen kvalificerede deltagere",
+    "follower": "Følger",
+    "subscriber": "Abonnent",
+    "minutes": "minutter",
+    "seconds": "sekunder",
+    "hours": "timer",
+    "months": "måneder",
+    "eligible-to-enter": "Eligible to enter",
+    "everyone": "Alle",
+    "roll-a-winner": "Rul en vinder",
+    "send-message": "Send Besked",
+    "messages": "Beskeder",
+    "level": "Level",
+    "create": "Opret",
+    "cooldown": "Nedkøling",
+    "confirm": "Bekræft",
+    "delete": "Slet",
+    "enabled": "Aktiveret",
+    "disabled": "Deaktiveret",
+    "enable": "Aktivér",
+    "disable": "Deaktivér",
+    "slug": "Slug",
+    "posted-by": "Indsendt af",
+    "time": "Tidspunkt",
+    "type": "Type",
+    "response": "Svar",
+    "cost": "Pris",
+    "name": "Navn",
+    "playlist": "Spilleliste",
+    "length": "Længde",
+    "volume": "Lydstyrke",
+    "start-time": "Starttidspunkt",
+    "end-time": "Sluttidspunkt",
+    "watched-time": "Set tid",
+    "currentsong": "Nuværende sang",
+    "group": "Gruppe",
+    "followed-since": "Følger siden",
+    "subscribed-since": "Abonnent siden",
+    "username": "Brugernavn",
+    "hashtag": "Hashtag",
+    "accessToken": "AccessToken",
+    "refreshToken": "RefreshToken",
+    "scopes": "Områder",
+    "last-seen": "Sidst set",
+    "date": "Dato",
+    "points": "Points",
+    "calendar": "Kalender",
+    "string": "streng",
+    "interval": "Interval",
+    "number": "nummer",
+    "minimal-messages-required": "Minimum Beskeder Nødvendige",
+    "max-duration": "Maks. varighed",
+    "shuffle": "Bland",
+    "song-request": "Sang-Ønske",
+    "format": "Format",
+    "available": "Tilgængelig",
+    "one-record-per-line": "én post pr. linje",
+    "on": "til",
+    "off": "fra",
+    "search-by-username": "Søg på brugernavn",
+    "widget-title-custom": "CUSTOM",
+    "widget-title-eventlist": "EVENTLISTE",
+    "widget-title-chat": "CHAT",
+    "widget-title-queue": "KØ",
+    "widget-title-raffles": "RAFFLER",
+    "widget-title-social": "SOCIAL",
+    "widget-title-ytplayer": "MUSIC PLAYER",
+    "widget-title-monitor": "MONITOR",
+    "event": "hændelse",
+    "operation": "opgave",
+    "tweet-post-with-hashtag": "Tweet sendt med hashtag",
+    "user-joined-channel": "bruger tilsluttede sig kanalen",
+    "user-parted-channel": "bruger forlod kanalen",
+    "follow": "ny følger",
+    "tip": "nyt tip",
+    "obs-scene-changed": "OBS-scene skiftet",
+    "obs-input-mute-state-changed": "OBS input source mute state changed",
+    "unfollow": "stop med at følge",
+    "hypetrain-started": "Hype Train started",
+    "hypetrain-ended": "Hype Train ended",
+    "prediction-started": "Twitch Prediction started",
+    "prediction-locked": "Twitch Prediction locked",
+    "prediction-ended": "Twitch Prediction ended",
+    "poll-started": "Twitch Poll started",
+    "poll-ended": "Twitch Poll ended",
+    "hypetrain-level-reached": "Hype Train new level reached",
+    "subscription": "ny abonnent",
+    "subgift": "ny abonnements-gave",
+    "subcommunitygift": "ny abonnements-gave givet til fællesskabet",
+    "resub": "bruger gentegnede abonnement",
+    "command-send-x-times": "kommando blev sendt x gange",
+    "keyword-send-x-times": "keyword was send x times",
+    "number-of-viewers-is-at-least-x": "number of viewers is at least x",
+    "stream-started": "stream startet",
+    "reward-redeemed": "belønning indløst",
+    "stream-stopped": "stream afsluttet",
+    "stream-is-running-x-minutes": "stream kører x minutter",
+    "chatter-first-message": "first message of chatter",
+    "every-x-minutes-of-stream": "hvert x minutter af stream",
+    "game-changed": "category changed",
+    "cheer": "bit modtaget",
+    "clearchat": "chatten blev ryddet",
+    "action": "bruger brugte /me",
+    "ban": "bruger blev udelukket",
+    "raid": "din kanal blev raided",
+    "mod": "bruger blev ny mod",
+    "timeout": "bruger fik timeout",
+    "create-a-new-event-listener": "Opret en ny begivenheds-lytter",
+    "send-discord-message": "send en Discord-besked",
+    "send-chat-message": "send en Twitch-chatbesked",
+    "send-whisper": "send en whisper",
+    "run-command": "kør en kommando",
+    "run-obswebsocket-command": "run an OBS Websocket command",
+    "do-nothing": "--- gør intet ---",
+    "count": "tæller",
+    "timestamp": "tidsstempel",
+    "message": "besked",
+    "sound": "lyd",
+    "emote-explosion": "emote eksplosion",
+    "emote-firework": "emote fyrværkeri",
+    "quiet": "stille",
+    "noisy": "støjende",
+    "true": "sand",
+    "false": "falsk",
+    "light": "lyst tema",
+    "dark": "mørkt tema",
+    "gambling": "Gambling",
+    "seppukuTimeout": "Timeout for !seppuku",
+    "rouletteTimeout": "Timeout for !roulette",
+    "fightmeTimeout": "Timeout for !roulette",
+    "duelCooldown": "Nedkøling for !duel",
+    "fightmeCooldown": "Nedkøling for !fightme",
+    "gamblingCooldownBypass": "Omgå gambling cooldown for mods/caster",
+    "click-to-highlight": "fremhæv",
+    "click-to-toggle-display": "slå visning til/fra",
+    "commercial": "reklame påbegyndt",
+    "start-commercial": "kør en reklame",
+    "bot-will-join-channel": "bot vil tilslutte kanal",
+    "bot-will-leave-channel": "bot vil forlade kanal",
+    "create-a-clip": "opret et klip",
+    "increment-custom-variable": "increment a custom variable",
+    "set-custom-variable": "sæt en brugerdefineret variabel",
+    "decrement-custom-variable": "decrement a custom variable",
+    "omit": "omgå",
+    "comply": "comply",
+    "visible": "synlig",
+    "hidden": "skjult",
+    "gamblingChanceToWin": "Chance for at vinde !gamble",
+    "gamblingMinimalBet": "Minimal indsats for !gamble",
+    "duelDuration": "Varighed af !duel",
+    "duelMinimalBet": "Minimal indsats for !duel"
+  },
+  "raffles": {
+    "announceInterval": "Opened raffles will be announced every $value minute",
+    "eligibility-followers-item": "følgere",
+    "eligibility-subscribers-item": "abonnenter",
+    "eligibility-everyone-item": "alle",
+    "raffle-is-running": "Raffle is running ($count $l10n_entries).",
+    "to-enter-raffle": "To enter type \"$keyword\". Raffle is opened for $eligibility.",
+    "to-enter-ticket-raffle": "To enter type \"$keyword <$min-$max>\". Raffle is opened for $eligibility.",
+    "added-entries": "Added $count $l10n_entries to raffle ($countTotal total). {raffles.to-enter-raffle}",
+    "added-ticket-entries": "Added $count $l10n_entries to raffle ($countTotal total). {raffles.to-enter-ticket-raffle}",
+    "join-messages-will-be-deleted": "Your raffle messages will be deleted on join.",
+    "announce-raffle": "{raffles.raffle-is-running} {raffles.to-enter-raffle}",
+    "announce-ticket-raffle": "{raffles.raffle-is-running} {raffles.to-enter-ticket-raffle}",
+    "announce-new-entries": "{raffles.added-entries} {raffles.to-enter-raffle}",
+    "announce-new-ticket-entries": "{raffles.added-entries} {raffles.to-enter-ticket-raffle}",
+    "cannot-create-raffle-without-keyword": "Sorry, $sender, but you cannot create raffle without keyword",
+    "raffle-is-already-running": "Sorry, $sender, raffle is already running with keyword $keyword",
+    "no-raffle-is-currently-running": "$sender, no raffles without winners are currently running",
+    "no-participants-to-pick-winner": "$sender, nobody joined a raffle",
+    "raffle-winner-is": "Winner of raffle $keyword is $username! Win probability was $probability%!"
+  },
+  "bets": {
+    "running": "$sender, bet is already opened! Bet options: $options. Use $command close 1-$maxIndex",
+    "notRunning": "No bet is currently opened, ask mods to open it!",
+    "opened": "New bet '$title' is opened! Bet options: $options. Use $command 1-$maxIndex <amount> to win! You have only $minutesmin to bet!",
+    "closeNotEnoughOptions": "$sender, you need to select winning option for bet close.",
+    "notEnoughOptions": "$sender, new bets needs at least 2 options!",
+    "info": "Bet '$title' is still opened! Bet options: $options. Use $command 1-$maxIndex <amount> to win! You have only $minutesmin to bet!",
+    "diffBet": "$sender, you already made a bet on $option and you cannot bet to different option!",
+    "undefinedBet": "Sorry, $sender, but this bet option doesn't exist, use $command to check usage",
+    "betPercentGain": "Bet percent gain per option was set to $value%",
+    "betCloseTimer": "Bets will be automatically closed after $valuemin",
+    "refund": "Bets were closed without a winning. All users are refunded!",
+    "notOption": "$sender, this option doesn't exist! Bet is not closed, check $command",
+    "closed": "Bets was closed and winning option was $option! $amount users won in total $points $pointsName!",
+    "timeUpBet": "I guess you are too late, $sender, your time for betting is up!",
+    "locked": "Betting time is up! No more bets.",
+    "zeroBet": "Oh boy, $sender, you cannot bet 0 $pointsName",
+    "lockedInfo": "Bet '$title' is still opened, but time for betting is up!",
+    "removed": "Betting time is up! No bets were sent -> automatically closing",
+    "error": "Sorry, $sender, this command is not correct! Use $command 1-$maxIndex <amount>. E.g. $command 0 100 will bet 100 points to item 0."
+  },
+  "alias": {
+    "alias-parse-failed": "{core.command-parse} !alias",
+    "alias-was-not-found": "$sender, alias $alias was not found in database",
+    "alias-was-edited": "$sender, alias $alias is changed to $command",
+    "alias-was-added": "$sender, alias $alias for $command was added",
+    "list-is-not-empty": "$sender, list of aliases: $list",
+    "list-is-empty": "$sender, list of aliases is empty",
+    "alias-was-enabled": "$sender, alias $alias was enabled",
+    "alias-was-disabled": "$sender, alias $alias was disabled",
+    "alias-was-concealed": "$sender, alias $alias was concealed",
+    "alias-was-exposed": "$sender, alias $alias was exposed",
+    "alias-was-removed": "$sender, alias $alias was removed",
+    "alias-group-set": "$sender, alias $alias was set to group $group",
+    "alias-group-unset": "$sender, alias $alias group was unset",
+    "alias-group-list": "$sender, list of aliases groups: $list",
+    "alias-group-list-aliases": "$sender, list of aliases in $group: $list",
+    "alias-group-list-enabled": "$sender, aliases in $group are enabled.",
+    "alias-group-list-disabled": "$sender, aliases in $group are disabled."
+  },
+  "customcmds": {
+    "commands-parse-failed": "{core.command-parse} $command",
+    "command-was-not-found": "$sender, command $command was not found in database",
+    "response-was-not-found": "$sender, response #$response of command $command was not found in database",
+    "command-was-edited": "$sender, command $command is changed to '$response'",
+    "command-was-added": "$sender, command $command was added",
+    "list-is-not-empty": "$sender, list of commands: $list",
+    "list-is-empty": "$sender, list of commands is empty",
+    "command-was-enabled": "$sender, command $command was enabled",
+    "command-was-disabled": "$sender, command $command was disabled",
+    "command-was-concealed": "$sender, command $command was concealed",
+    "command-was-exposed": "$sender, command $command was exposed",
+    "command-was-removed": "$sender, command $command was removed",
+    "response-was-removed": "$sender, response #$response of $command was removed",
+    "list-of-responses-is-empty": "$sender, $command have no responses or doesn't exists",
+    "response": "$command#$index ($permission) $after| $response"
+  },
+  "keywords": {
+    "keyword-parse-failed": "{core.command-parse} !keyword",
+    "keyword-is-ambiguous": "$sender, keyword $keyword is ambiguous, use ID of keyword",
+    "keyword-was-not-found": "$sender, keyword $keyword was not found in database",
+    "response-was-not-found": "$sender, response #$response of keyword $keyword was not found in database",
+    "keyword-was-edited": "$sender, keyword $keyword is changed to '$response'",
+    "keyword-was-added": "$sender, keyword $keyword ($id) was added",
+    "list-is-not-empty": "$sender, list of keywords: $list",
+    "list-is-empty": "$sender, list of keywords is empty",
+    "keyword-was-enabled": "$sender, keyword $keyword was enabled",
+    "keyword-was-disabled": "$sender, keyword $keyword was disabled",
+    "keyword-was-removed": "$sender, keyword $keyword was removed",
+    "list-of-responses-is-empty": "$sender, $keyword have no responses or doesn't exists",
+    "response": "$keyword#$index ($permission) $after| $response"
+  },
+  "points": {
+    "success": {
+      "undo": "$sender, points '$command' for $username was reverted ($updatedValue $updatedValuePointsLocale to $originalValue $originalValuePointsLocale).",
+      "set": "$username was set to $amount $pointsName",
+      "give": "$sender just gave his $amount $pointsName to $username",
+      "online": {
+        "positive": "All online users just received $amount $pointsName!",
+        "negative": "All online users just lost $amount $pointsName!"
+      },
+      "all": {
+        "positive": "All users just received $amount $pointsName!",
+        "negative": "All users just lost $amount $pointsName!"
+      },
+      "rain": "Make it rain! All online users just received up to $amount $pointsName!",
+      "add": "$username just received $amount $pointsName!",
+      "remove": "Ouch, $amount $pointsName was removed from $username!"
+    },
+    "failed": {
+      "undo": "$sender, username wasn't found in database or user have no undo operations",
+      "set": "{core.command-parse} $command [username] [amount]",
+      "give": "{core.command-parse} $command [username] [amount]",
+      "giveNotEnough": "Sorry, $sender, you don't have $amount $pointsName to give it to $username",
+      "cannotGiveZeroPoints": "Sorry, $sender, you cannot give $amount $pointsName to $username",
+      "get": "{core.command-parse} $command [username]",
+      "online": "{core.command-parse} $command [amount]",
+      "all": "{core.command-parse} $command [amount]",
+      "rain": "{core.command-parse} $command [amount]",
+      "add": "{core.command-parse} $command [username] [amount]",
+      "remove": "{core.command-parse} $command [username] [amount]"
+    },
+    "defaults": {
+      "pointsResponse": "$username has currently $amount $pointsName. Your position is $order/$count."
+    }
+  },
+  "songs": {
+    "playlist-is-empty": "$sender, playlist to import is empty",
+    "playlist-imported": "$sender, imported $imported and skipped $skipped to playlist",
+    "not-playing": "Afspiller Ikke",
+    "song-was-banned": "Song $name was banned and will never play again!",
+    "song-was-banned-timeout-message": "You've got timeout for posting banned song",
+    "song-was-unbanned": "Song was succesfully unbanned",
+    "song-was-not-banned": "Denne sang blev ikke udelukket",
+    "no-song-is-currently-playing": "Ingen sang spiller i øjeblikket",
+    "current-song-from-playlist": "Current song is $name from playlist",
+    "current-song-from-songrequest": "Current song is $name requested by $username",
+    "songrequest-disabled": "Sorry, $sender, song requests are disabled",
+    "song-is-banned": "Sorry, $sender, but this song is banned",
+    "youtube-is-not-responding-correctly": "Sorry, $sender, but YouTube is sending unexpected responses, please try again later.",
+    "song-was-not-found": "Sorry, $sender, but this song was not found",
+    "song-is-too-long": "Sorry, $sender, but this song is too long",
+    "this-song-is-not-in-playlist": "Sorry, $sender, but this song is not in current playlist",
+    "incorrect-category": "Sorry, $sender, but this song must be music category",
+    "song-was-added-to-queue": "$sender, song $name was added to queue",
+    "song-was-added-to-playlist": "$sender, song $name was added to playlist",
+    "song-is-already-in-playlist": "$sender, song $name is already in playlist",
+    "song-was-removed-from-playlist": "$sender, song $name was removed from playlist",
+    "song-was-removed-from-queue": "$sender, your song $name was removed from queue",
+    "playlist-current": "$sender, current playlist is $playlist.",
+    "playlist-list": "$sender, available playlists: $list.",
+    "playlist-not-exist": "$sender, your requested playlist $playlist doesn't exist.",
+    "playlist-set": "$sender, you changed playlist to $playlist."
+  },
+  "price": {
+    "price-parse-failed": "{core.command-parse} !price",
+    "price-was-set": "$sender, price for $command was set to $amount $pointsName",
+    "price-was-unset": "$sender, price for $command was unset",
+    "price-was-not-found": "$sender, price for $command was not found",
+    "price-was-enabled": "$sender, price for $command was enabled",
+    "price-was-disabled": "$sender, price for $command was disabled",
+    "user-have-not-enough-points": "Sorry, $sender, but you don't have $amount $pointsName to use $command",
+    "user-have-not-enough-points-or-bits": "Sorry, $sender, but you don't have $amount $pointsName or redeem command by $bitsAmount bits to use $command",
+    "user-have-not-enough-bits": "Sorry, $sender, but you need to redeem command by $bitsAmount bits to use $command",
+    "list-is-empty": "$sender, list of prices is empty",
+    "list-is-not-empty": "$sender, list of prices: $list"
+  },
+  "ranks": {
+    "rank-parse-failed": "{core.command-parse} !rank help",
+    "rank-was-added": "$sender, new rank $type $rank($hours$hlocale) was added",
+    "rank-was-edited": "$sender, rank for $type $hours$hlocale was changed to $rank",
+    "rank-was-removed": "$sender, rank for $type $hours$hlocale was removed",
+    "rank-already-exist": "$sender, there is already a rank for $type $hours$hlocale",
+    "rank-was-not-found": "$sender, rank for $type $hours$hlocale was not found",
+    "custom-rank-was-set-to-user": "$sender, you set $rank to $username",
+    "custom-rank-was-unset-for-user": "$sender, custom rank for $username was unset",
+    "list-is-empty": "$sender, no ranks was found",
+    "list-is-not-empty": "$sender, ranks list: $list",
+    "show-rank-without-next-rank": "$sender, you have $rank rank",
+    "show-rank-with-next-rank": "$sender, you have $rank rank. Next rank - $nextrank",
+    "user-dont-have-rank": "$sender, you don't have a rank yet"
+  },
+  "followage": {
+    "success": {
+      "never": "$sender, $username følger ikke denne kanal",
+      "time": "$sender, $username har fulgt denne kanal i $diff"
+    },
+    "successSameUsername": {
+      "never": "$sender, du er ikke følger af denne kanal",
+      "time": "$sender, du har fulgt denne kanal i $diff"
+    }
+  },
+  "subage": {
+    "success": {
+      "never": "$sender, $username er ikke abonnent på kanalen.",
+      "notNow": "$sender, $username er på nuværende tidspunkt ikke abonnent på kanalen, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, $username er abonnent på kanalen og har været det i $diff ($subStreak $subStreakMonthsName) i træk, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, $username er abonnent på kanalen, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName."
+    },
+    "successSameUsername": {
+      "never": "$sender, du er ikke abonnent på denne kanal.",
+      "notNow": "$sender, du er på nuværende tidspunkt ikke abonnent på kanalen, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName.",
+      "timeWithSubStreak": "$sender, du er abonnent på kanalen og har været det i $diff ($subStreak $subStreakMonthsName) i træk, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName.",
+      "time": "$sender, er abonnent på kanalen, og har i alt været abonnent på kanalen i $subCumulativeMonths $subCumulativeMonthsName."
+    }
+  },
+  "age": {
+    "failed": "$sender, jeg har ingen data for alderen på kontoen tilhørende $username",
+    "success": {
+      "withUsername": "$sender, alderen på kontoen tilhørende $username er $diff",
+      "withoutUsername": "$sender, alderen på din konto er $diff"
+    }
+  },
+  "lastseen": {
+    "success": {
+      "never": "$username har aldrig været forbi denne kanal!",
+      "time": "$username blev sidst set $when på denne kanal"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !lastseen [username]"
+    }
+  },
+  "watched": {
+    "success": {
+      "time": "$username har set denne kanal i $time timer"
+    },
+    "failed": {
+      "parse": "{core.command-parse} !watched or !watched [username]"
+    }
+  },
+  "permissions": {
+    "without-permission": "Du har ikke nok tilladelser til '$command'"
+  },
+  "moderation": {
+    "user-have-immunity": "$sender, bruger $username har $type immunitet i $time sekunder",
+    "user-have-immunity-parameterError": "$sender, parameterfejl. $command <username> <type> <duration>",
+    "user-have-link-permit": "Brugeren $username kan sende $count $link i chatten",
+    "permit-parse-failed": "{core.command-parse} !permit [username]",
+    "user-is-warned-about-links": "Links er ikke tilladt, bed om tilladelse først (!permit) [$count advarsler tilbage]",
+    "user-is-warned-about-symbols": "Ingen overdreven brug af store bogstaver [$count advarsler tilbage]",
+    "user-is-warned-about-long-message": "Lange beskeder er ikke tilladt [$count advarsler tilbage]",
+    "user-is-warned-about-caps": "Ingen overdreven brug af store bogstaver [$count advarsler tilbage]",
+    "user-is-warned-about-spam": "Spamming er ikke tilladt [$count advarsler tilbage]",
+    "user-is-warned-about-color": "Italic and /me is not allowed [$count warnings left]",
+    "user-is-warned-about-emotes": "Ingen emotes spamming [$count advarsler tilbage]",
+    "user-is-warned-about-forbidden-words": "Ingen forbudte ord [$count advarsler tilbage]",
+    "user-have-timeout-for-links": "Links er ikke tilladt, spørg om tilladelse først (!permit)",
+    "user-have-timeout-for-symbols": "Ingen overdreven brug af symboler",
+    "user-have-timeout-for-long-message": "Lange beskeder er ikke tilladt",
+    "user-have-timeout-for-caps": "Ingen overdreven brug af store bogstaver",
+    "user-have-timeout-for-spam": "Spamming er ikke tilladt",
+    "user-have-timeout-for-color": "Italic and /me is not allowed",
+    "user-have-timeout-for-emotes": "Ingen emotes spamming",
+    "user-have-timeout-for-forbidden-words": "Ingen forbudte ord"
+  },
+  "queue": {
+    "list": "$sender, current queue pool: $users",
+    "info": {
+      "closed": "$sender, {queue.close}",
+      "opened": "$sender, {queue.open}"
+    },
+    "join": {
+      "closed": "Sorry $sender, queue is currently closed",
+      "opened": "$sender were added into queue"
+    },
+    "open": "Queue is currently OPENED! Join to queue with !queue join",
+    "close": "Queue is currently closed!",
+    "clear": "Queue were completely cleared",
+    "picked": {
+      "single": "This user was picked from queue: $users",
+      "multi": "These users were picked from queue: $users",
+      "none": "No users were found in queue"
+    }
+  },
+  "marker": "Stream marker has been created at $time.",
+  "title": {
+    "current": "$sender, nuværende titel på stream er '$title'.",
+    "change": {
+      "success": "$sender, titlen er nu ændret til: $title"
+    }
+  },
+  "game": {
+    "current": "$sender, streamer spiller i øjeblikket $game.",
+    "change": {
+      "success": "$sender, category was set to: $game"
+    }
+  },
+  "cooldowns": {
+    "cooldown-was-set": "$sender, $type cooldown for $command er nu sat til $secondss",
+    "cooldown-was-unset": "$sender, cooldown for $command blev ikke sat",
+    "cooldown-triggered": "$sender, '$command' is on cooldown, remaining $secondss",
+    "cooldown-not-found": "$sender, cooldown for $command blev ikke fundet",
+    "cooldown-was-enabled": "$sender, cooldown for $command blev slået til",
+    "cooldown-was-disabled": "$sender, cooldown for $command blev slået fra",
+    "cooldown-was-enabled-for-moderators": "$sender, nedkøling for $command blev slået til for moderatorer",
+    "cooldown-was-disabled-for-moderators": "$sender, nedkøling for $command blev slået fra for moderatorer",
+    "cooldown-was-enabled-for-owners": "$sender, nedkøling for $command blev slået til for ejere",
+    "cooldown-was-disabled-for-owners": "$sender, nedkøling for $command blev slået fra for ejere",
+    "cooldown-was-enabled-for-subscribers": "$sender, nedkøling for $command blev slået til for abonnenter",
+    "cooldown-was-disabled-for-subscribers": "$sender, nedkøling for $command blev slået fra for abonnenter",
+    "cooldown-was-enabled-for-followers": "$sender, nedkøling for $command blev slået til for følgere",
+    "cooldown-was-disabled-for-followers": "$sender, nedkøling for $command blev slået fra for følgere"
+  },
+  "timers": {
+    "id-must-be-defined": "$sender, svar-id skal defineres.",
+    "id-or-name-must-be-defined": "$sender, response id or timer name must be defined.",
+    "name-must-be-defined": "$sender, timer name must be defined.",
+    "response-must-be-defined": "$sender, timer response must be defined.",
+    "cannot-set-messages-and-seconds-0": "$sender, you cannot set both messages and seconds to 0.",
+    "timer-was-set": "$sender, timer $name was set with $messages messages and $seconds seconds to trigger",
+    "timer-was-set-with-offline-flag": "$sender, timer $name was set with $messages messages and $seconds seconds to trigger even when stream is offline",
+    "timer-not-found": "$sender, timer (name: $name) was not found in database. Check timers with !timers list",
+    "timer-deleted": "$sender, timer $name and its responses was deleted.",
+    "timer-enabled": "$sender, timer (name: $name) was enabled",
+    "timer-disabled": "$sender, timer (name: $name) was disabled",
+    "timers-list": "$sender, timers list: $list",
+    "responses-list": "$sender, timer (name: $name) list",
+    "response-deleted": "$sender, response (id: $id) was deleted.",
+    "response-was-added": "$sender, response (id: $id) for timer (name: $name) was added - '$response'",
+    "response-not-found": "$sender, response (id: $id) was not found in database",
+    "response-enabled": "$sender, svar (id: $id) blev aktiveret",
+    "response-disabled": "$sender, svar (id: $id) blev deaktiveret"
+  },
+  "gambling": {
+    "duel": {
+      "bank": "$sender, current bank for $command is $points $pointsName",
+      "lowerThanMinimalBet": "$sender, minimal bet for $command is $points $pointsName",
+      "cooldown": "$sender, you cannot use $command for $cooldown $minutesName.",
+      "joined": "$sender, good luck with your dueling skills. You bet on yourself $points $pointsName!",
+      "added": "$sender really thinks he is better than others raising his bet to $points $pointsName!",
+      "new": "$sender is your new duel challenger! To participate use $command [points], you have $minutes $minutesName left to join.",
+      "zeroBet": "$sender, you cannot duel 0 $pointsName",
+      "notEnoughOptions": "$sender, you need to specify points to dueling",
+      "notEnoughPoints": "$sender, you don't have $points $pointsName to duel!",
+      "noContestant": "Only $winner have courage to join duel! Your bet of $points $pointsName are returned to you.",
+      "winner": "Congratulations to $winner! He is last man standing and he won $points $pointsName ($probability% with bet of $tickets $ticketsName)!"
+    },
+    "roulette": {
+      "trigger": "$sender is trying his luck and pulled a trigger",
+      "alive": "$sender er i live! Intet skete.",
+      "dead": "$sender's brain was splashed on the wall!",
+      "mod": "$sender is incompetent and completely missed his head!",
+      "broadcaster": "$sender is using blanks, boo!",
+      "timeout": "Roulette timeout set to $values"
+    },
+    "gamble": {
+      "chanceToWin": "$sender, chance to win !gamble set to $value%",
+      "zeroBet": "$sender, you cannot gamble 0 $pointsName",
+      "minimalBet": "$sender, minimal bet for !gamble is set to $value",
+      "lowerThanMinimalBet": "$sender, minimal bet for !gamble is $points $pointsName",
+      "notEnoughOptions": "$sender, you need to specify points to gamble",
+      "notEnoughPoints": "$sender, you don't have $points $pointsName to gamble",
+      "win": "$sender, you WON! You now have $points $pointsName",
+      "winJackpot": "$sender, you hit JACKPOT! You won $jackpot $jackpotName in addition to your bet. You now have $points $pointsName",
+      "loseWithJackpot": "$sender, you LOST! You now have $points $pointsName. Jackpot increased to $jackpot $jackpotName",
+      "lose": "$sender, you LOST! You now have $points $pointsName",
+      "currentJackpot": "$sender, current jackpot for $command is $points $pointsName",
+      "winJackpotCount": "$sender, you won $count jackpots",
+      "jackpotIsDisabled": "$sender, jackpot is disabled for $command."
+    }
+  },
+  "highlights": {
+    "saved": "$sender, highlight was saved for $hoursh$minutesm$secondss",
+    "list": {
+      "items": "$sender, list of saved highlights for latest stream: $items",
+      "empty": "$sender, no highlights were saved"
+    },
+    "offline": "$sender, cannot save highlight, stream is offline"
+  },
+  "whisper": {
+    "settings": {
+      "disablePermissionWhispers": {
+        "true": "Bot won't send errors on insufficient permissions",
+        "false": "Bot won't send errors on insufficient permissions through whispers"
+      },
+      "disableCooldownWhispers": {
+        "true": "Bot sender ikke nedkølingsmeddelelser",
+        "false": "Bot vil sende nedkølingsmeddelelser via whispers"
+      }
+    }
+  },
+  "time": "Current time in streamer's timezone is $time",
+  "subs": "$sender, der er i øjeblikket $onlineSubCount abonnenter online. Sidste abonnerende var $lastSubUsername $lastSubAgo",
+  "followers": "$sender, last follow was $lastFollowUsername $lastFollowAgo",
+  "ignore": {
+    "user": {
+      "is": {
+        "not": {
+          "ignored": "$sender, bruger $username ignoreres ikke af bot"
+        },
+        "added": "$sender, bruger $username er tilføjet til bottens ignoreringsliste",
+        "removed": "$sender, bruger $username er fjernet fra bottens ignoreringsliste",
+        "ignored": "$sender, bruger $username ignoreres af bot"
+      }
+    }
+  },
+  "filters": {
+    "setVariable": "$sender, $variable blev sat til $value."
+  }
+}

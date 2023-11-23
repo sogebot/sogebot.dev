@@ -1,0 +1,59 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "accessBy": {
+      "title": "Zugriff durch",
+      "help": "Direkt - direkt von einem Bot verbinden | Overlay - via Overlay Browser Quelle verbinden"
+    },
+    "address": "Adresse",
+    "password": "Passwort"
+  },
+  "noSourceSelected": "Keine Quelle ausgewählt",
+  "noSceneSelected": "Keine Szene ausgewählt",
+  "empty": "Es wurden noch keine Aktionssätze erstellt.",
+  "emptyAfterSearch": "Ihre Suche nach <strong>\"$search\"</strong> hat keine Aktionssätze gefunden.",
+  "command": "Befehl",
+  "new": "Neue OBS Websocket Aktion erstellen",
+  "actions": "Aktionen",
+  "name": {
+    "name": "Name"
+  },
+  "mute": "Stumm schalten",
+  "unmute": "Stummschaltung aufheben",
+  "SetCurrentScene": {
+    "name": "Aktuelle Szene setzen"
+  },
+  "StartReplayBuffer": {
+    "name": "Replaypuffer starten"
+  },
+  "StopReplayBuffer": {
+    "name": "Replaypuffer stoppen"
+  },
+  "SaveReplayBuffer": {
+    "name": "Replaypuffer speichern"
+  },
+  "WaitMs": {
+    "name": "Warte X Millisekunden"
+  },
+  "Log": {
+    "name": "Log-Meldung"
+  },
+  "StartRecording": {
+    "name": "Aufnahme starten"
+  },
+  "StopRecording": {
+    "name": "Aufnahme stoppen"
+  },
+  "PauseRecording": {
+    "name": "Aufnahme pausieren"
+  },
+  "ResumeRecording": {
+    "name": "Aufnahme fortsetzen"
+  },
+  "SetMute": {
+    "name": "Stummschaltung setzen"
+  },
+  "SetVolume": {
+    "name": "Lautstärke setzen"
+  }
+}

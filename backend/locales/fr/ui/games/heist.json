@@ -1,0 +1,30 @@
+{
+  "name": "Braquage",
+  "settings": {
+    "enabled": "Statut",
+    "showMaxUsers": "Nombre maximum d'utilisateurs à afficher dans le paiement",
+    "copsCooldownInMinutes": {
+      "title": "Cooldown entre les braquages",
+      "help": "Minutes"
+    },
+    "entryCooldownInSeconds": {
+      "title": "Temps pour participer au braquage",
+      "help": "Secondes"
+    },
+    "started": "Message de début de braquage",
+    "nextLevelMessage": "Message lorsque le niveau suivant est atteint",
+    "maxLevelMessage": "Message lorsque le niveau max est atteint",
+    "copsOnPatrol": "Réponse du bot quand le braquage est toujours en cooldown",
+    "copsCooldown": "Annonce du bot quand le braquage peut être démarré",
+    "singleUserSuccess": "Message de succès pour un utilisateur",
+    "singleUserFailed": "Message d'échec pour un utilisateur",
+    "noUser": "Message si aucun utilisateur n'a participé"
+  },
+  "message": "Message ",
+  "winPercentage": "Pourcentage de victoire",
+  "payoutMultiplier": "Multiplicateur de gains",
+  "maxUsers": "Nombre maximum d'utilisateurs pour le niveau",
+  "percentage": "Pourcentage",
+  "noResultsFound": "Aucun résultat trouvé. Cliquez sur le bouton ci-dessous pour ajouter un nouveau résultat.",
+  "noLevelsFound": "Aucun niveau trouvé. Cliquez sur le bouton ci-dessous pour ajouter un nouveau niveau."
+}

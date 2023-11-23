@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "enabled": "Status",
+    "cListsEnabled": "Erzwinge die Regel",
+    "cLinksEnabled": "Erzwinge die Regel",
+    "cSymbolsEnabled": "Erzwinge die Regel",
+    "cLongMessageEnabled": "Erzwinge die Regel",
+    "cCapsEnabled": "Erzwinge die Regel",
+    "cSpamEnabled": "Erzwinge die Regel",
+    "cColorEnabled": "Erzwinge die Regel",
+    "cEmotesEnabled": "Erzwinge die Regel",
+    "cListsWhitelist": {
+      "title": "Erlaubte Wörter",
+      "help": "Um Domains zu erlauben, verwenden Sie \"domain:prtzl.io\""
+    },
+    "autobanMessages": "Autoban-Nachrichten",
+    "cListsBlacklist": "Verbotene Wörter",
+    "cListsTimeout": "Dauer der Zeitüberschreitung",
+    "cLinksTimeout": "Dauer der Zeitüberschreitung",
+    "cSymbolsTimeout": "Dauer der Zeitüberschreitung",
+    "cLongMessageTimeout": "Dauer der Zeitüberschreitung",
+    "cCapsTimeout": "Dauer der Zeitüberschreitung",
+    "cSpamTimeout": "Dauer der Zeitüberschreitung",
+    "cColorTimeout": "Dauer der Zeitüberschreitung",
+    "cEmotesTimeout": "Dauer der Zeitüberschreitung",
+    "cWarningsShouldClearChat": "Soll Chat löschen (Timeout für 1s)",
+    "cLinksIncludeSpaces": "Leerzeichen einbeziehen",
+    "cLinksIncludeClips": "Clips einbeziehen",
+    "cSymbolsTriggerLength": "Auslöserlänge der Nachricht",
+    "cLongMessageTriggerLength": "Auslöserlänge der Nachricht",
+    "cCapsTriggerLength": "Auslöserlänge der Nachricht",
+    "cSpamTriggerLength": "Auslöserlänge der Nachricht",
+    "cSymbolsMaxSymbolsConsecutively": "Maximale Zeichen hintereinander",
+    "cSymbolsMaxSymbolsPercent": "Max. Symbole %",
+    "cCapsMaxCapsPercent": "Max. Caps %",
+    "cSpamMaxLength": "Maximale Länge",
+    "cEmotesMaxCount": "Maximale Anzahl",
+    "cWarningsAnnounceTimeouts": "Timeouts im Chat für alle ankündigen",
+    "cWarningsAllowedCount": "Anzahl der Warnungen",
+    "cEmotesEmojisAreEmotes": "Emojis als Emotes behandeln"
+  }
+}

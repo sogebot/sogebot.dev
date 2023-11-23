@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "enabled": "Стан",
+    "jwtToken": {
+      "title": "JWT token",
+      "help": "Отримати токен JWT на <a href=\"https://streamelements.com/dashboard/account/channels\" target=\"_blank\">Налаштування каналів StreamElements</a> та показати"
+    }
+  }
+}

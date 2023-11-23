@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "enabled": "Stato",
+    "volume": "Volume",
+    "calculateVolumeByLoudness": "Volume dinamico per intensità",
+    "duration": {
+      "title": "Durata massima del brano",
+      "help": "In minuti"
+    },
+    "shuffle": "Casuale",
+    "songrequest": "Riproduci dalla richiesta del brano",
+    "playlist": "Riproduci dalla scaletta",
+    "onlyMusicCategory": "Permetti solo musica di categoria",
+    "allowRequestsOnlyFromPlaylist": "Consenti richieste di brani solo dalla scaletta corrente",
+    "notify": "Invia messaggio al cambiamento del brano"
+  },
+  "error": {
+    "isEmpty": "Questo valore non può essere vuoto"
+  },
+  "startTime": "Avvia il brano alle",
+  "endTime": "Termina brano alle",
+  "add_song": "Aggiungi brano",
+  "add_or_import": "Aggiungi brano o importa dalla scaletta",
+  "importing": "Importazione",
+  "importing_done": "Importazione Completata",
+  "seconds": "Secondi",
+  "calculated": "Calcolato",
+  "set_manually": "Imposta manualmente",
+  "bannedSongsEmptyAfterSearch": "Non sono stati trovati brani banditi dalla tua ricerca per <strong>\"$search\"</strong>.",
+  "emptyAfterSearch": "Non sono stati trovati brani dalla tua ricerca per <strong>\"$search\"</strong>.",
+  "empty": "Non sono stati ancora aggiunti brani.",
+  "bannedSongsEmpty": "Nessun brano è stato ancora aggiunto alla lista brani banditi."
+}

@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "access_token": {
+      "title": "Access token",
+      "help": "Получить access token по адресу https://www.sogebot.xyz/integrations/#DonationAlerts"
+    },
+    "refresh_token": {
+      "title": "Refresh token"
+    },
+    "accessTokenBtn": "Получить токен к сервису \"DonationAlerts\""
+  }
+}

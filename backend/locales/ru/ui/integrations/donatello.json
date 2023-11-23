@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "token": {
+      "title": "Ваш Токен:",
+      "help": "Получите свой API ключ на https://donatello.to/panel/doc-api"
+    }
+  }
+}

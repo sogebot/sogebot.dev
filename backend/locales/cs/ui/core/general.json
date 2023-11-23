@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "lang": "Jazyk bota",
+    "numberFormat": "Formát čísel v chatu",
+    "gracefulExitEachXHours": {
+      "title": "Automatické vypnutí každých X hodin",
+      "help": "0 - vypnuto"
+    },
+    "shouldGracefulExitHelp": "Zapnutí automatického vypnutí bota je <strong>doporučeno</strong> pokud váš bot běží neomezeně na vašem serveru. Bot by měl být spuštěn přes pm2 (nebo podobnou službu) nebo přes docker, abyste zajistili automatický restart. Bot <strong>se nevypne</strong> při online streamu."
+  }
+}

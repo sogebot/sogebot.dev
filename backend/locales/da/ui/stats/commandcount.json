@@ -1,0 +1,9 @@
+{
+  "command": "Kommando",
+  "hour": "Time",
+  "day": "Dag",
+  "week": "Uge",
+  "month": "Måned",
+  "year": "År",
+  "total": "I alt"
+}

@@ -1,0 +1,220 @@
+{
+  "enabled": "Activé",
+  "testDlg": {
+    "alertTester": "Testeur d'alerte",
+    "command": "Commande",
+    "username": "Nom d'utilisateur",
+    "recipient": "Destinataire",
+    "message": "Message ",
+    "tier": "Niveau",
+    "amountOfViewers": "Nombre de spectateurs",
+    "amountOfBits": "Nombre de bits",
+    "amountOfGifts": "Nombre de gifts",
+    "amountOfMonths": "Nombre de mois",
+    "amountOfTips": "Don",
+    "event": "Événement",
+    "service": "Service"
+  },
+  "empty": "Le registre des alertes est vide, créez de nouvelles alertes.",
+  "emptyAfterSearch": "Le registre des alertes est vide dans la recherche de \"<strong>$search</strong>\"",
+  "revertcode": "Revenir au code par défaut",
+  "name": {
+    "name": "Nom",
+    "placeholder": "Définir le nom de vos alertes"
+  },
+  "alertDelayInMs": {
+    "name": "Délai d'alerte"
+  },
+  "parryEnabled": {
+    "name": "Esquives d'alertes"
+  },
+  "parryDelay": {
+    "name": "Délai d'esquive d'alerte"
+  },
+  "profanityFilterType": {
+    "name": "Filtre de profanité",
+    "disabled": "Désactivé",
+    "replace-with-asterisk": "Remplacer par un astérisque",
+    "replace-with-happy-words": "Remplacer par des mots heureux",
+    "hide-messages": "Masquer les messages",
+    "disable-alerts": "Désactiver les alertes"
+  },
+  "loadStandardProfanityList": "Charger la liste de profanité standard",
+  "customProfanityList": {
+    "name": "Liste de profanités personnalisée",
+    "help": "Les mots doivent être séparés par des virgules."
+  },
+  "event": {
+    "follow": "Follow",
+    "cheer": "Cheer",
+    "sub": "Sub",
+    "resub": "Resub",
+    "subgift": "Subgift",
+    "subcommunitygift": "Subgift to community",
+    "tip": "Tip",
+    "raid": "Raid",
+    "custom": "Custom",
+    "promo": "Promo",
+    "rewardredeem": "Reward Redeem"
+  },
+  "title": {
+    "name": "Nom de la variante",
+    "placeholder": "Définissez le nom de votre variante"
+  },
+  "variant": {
+    "name": "Occurence de variante"
+  },
+  "filter": {
+    "name": "Filter",
+    "operator": "Opérateur",
+    "rule": "Règle",
+    "addRule": "Ajouter une règle",
+    "addGroup": "Ajouter un groupe",
+    "comparator": "Comparateur",
+    "value": "Valeur",
+    "valueSplitByComma": "Valeurs séparées par virgules (ex : val1, val2)",
+    "isEven": "est même",
+    "isOdd": "est impair",
+    "lessThan": "plus petit que",
+    "lessThanOrEqual": "inférieur ou égal à",
+    "contain": "contient",
+    "contains": "contains",
+    "equal": "égal",
+    "notEqual": "n'est pas égal à",
+    "present": "est présent",
+    "includes": "inclut",
+    "greaterThan": "est supérieur à",
+    "greaterThanOrEqual": "supérieur ou égal à",
+    "noFilter": "sans filtre"
+  },
+  "speed": {
+    "name": "Vitesse"
+  },
+  "maxTimeToDecrypt": {
+    "name": "Temps maximum pour décrypter"
+  },
+  "characters": {
+    "name": "Caractères"
+  },
+  "random": "Aléatoire",
+  "exact-amount": "Montant exact",
+  "greater-than-or-equal-to-amount": "Supérieur ou égal au montant",
+  "tier-exact-amount": "Le niveau est exactement",
+  "tier-greater-than-or-equal-to-amount": "Le niveau est supérieur ou égal à",
+  "months-exact-amount": "Le montant des mois est exactement",
+  "months-greater-than-or-equal-to-amount": "Le montant des mois est supérieur ou égal à",
+  "gifts-exact-amount": "Le montant des gifts est exactement",
+  "gifts-greater-than-or-equal-to-amount": "Le montant des gifts est supérieur ou égal à",
+  "very-rarely": "Très rarement",
+  "rarely": "Rarement",
+  "default": "Par défaut",
+  "frequently": "Fréquemment",
+  "very-frequently": "Très fréquemment",
+  "exclusive": "Exclusif",
+  "messageTemplate": {
+    "name": "Modèle de message",
+    "placeholder": "Mettez votre modèle de message",
+    "help": "Available variables: {name}, {amount} (cheers, subs, tips, subgifts, sub community gifts, command redeems), {recipient} (subgifts, command redeems), {monthsName} (subs, subgifts), {currency} (tips), {game} (promo). If | is added (see promo) then it will show those values in sequence."
+  },
+  "ttsTemplate": {
+    "name": "TTS template",
+    "placeholder": "Set your TTS template",
+    "help": "Available variables: {name}, {amount} {monthsName} {currency} {message}"
+  },
+  "animationText": {
+    "name": "Animation du texte"
+  },
+  "animationType": {
+    "name": "Type of animation"
+  },
+  "animationIn": {
+    "name": "Arrivée de l'animation"
+  },
+  "animationOut": {
+    "name": "Sortie de l'animation"
+  },
+  "alertDurationInMs": {
+    "name": "Durée de l'alerte"
+  },
+  "alertTextDelayInMs": {
+    "name": "Délai du texte d'alerte"
+  },
+  "layoutPicker": {
+    "name": "Mise en page"
+  },
+  "loop": {
+    "name": "Play on loop"
+  },
+  "scale": {
+    "name": "Echelle"
+  },
+  "translateY": {
+    "name": "Déplacer -Haut / +Bas"
+  },
+  "translateX": {
+    "name": "Déplacer -Gauche / +Droite"
+  },
+  "image": {
+    "name": "Image / Vidéo (.webm)",
+    "setting": "Paramètres de l'image / Vidéo(.webm)"
+  },
+  "sound": {
+    "name": "Son",
+    "setting": "Paramètres audio"
+  },
+  "soundVolume": {
+    "name": "Volume d'alerte"
+  },
+  "enableAdvancedMode": "Activer le mode avancé",
+  "font": {
+    "setting": "Paramètres de la police",
+    "name": "Famille de polices",
+    "overrideGlobal": "Remplacer les paramètres globaux de police",
+    "align": {
+      "name": "Alignement",
+      "left": "Gauche",
+      "center": "Centre",
+      "right": "Droite"
+    },
+    "size": {
+      "name": "Taille de la police"
+    },
+    "weight": {
+      "name": "Épaisseur de la police"
+    },
+    "borderPx": {
+      "name": "Contour de la police"
+    },
+    "borderColor": {
+      "name": "Couleur de la bordure de la police"
+    },
+    "color": {
+      "name": "Couleur de la police"
+    },
+    "highlightcolor": {
+      "name": "Couleur de surlignage du texte"
+    }
+  },
+  "minAmountToShow": {
+    "name": "Montant minimum à afficher"
+  },
+  "minAmountToPlay": {
+    "name": "Montant minimum pour jouer"
+  },
+  "allowEmotes": {
+    "name": "Autoriser les emotes"
+  },
+  "message": {
+    "setting": "Paramètres des messages"
+  },
+  "voice": "Voix",
+  "keepAlertShown": "L'alerte reste visible pendant le TTS",
+  "skipUrls": "Ignorer les URL pendant les TTS",
+  "volume": "Volume",
+  "rate": "Taux",
+  "pitch": "Pitch",
+  "test": "Test",
+  "tts": {
+    "setting": "Paramètres TTS"
+  }
+}

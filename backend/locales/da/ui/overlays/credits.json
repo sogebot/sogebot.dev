@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "cCreditsSpeed": "Hastighed",
+    "cCreditsAggregated": "Sammenlæg credits",
+    "cShowGameThumbnail": "Show game thumbnail",
+    "cShowFollowers": "Vis følgere",
+    "cShowRaids": "Vis raids",
+    "cShowSubscribers": "Vis abonnementer",
+    "cShowSubgifts": "Vis gave-abonnementer",
+    "cShowSubcommunitygifts": "Vis gave-abonnementer til fællesskabet",
+    "cShowResubs": "Vis gentegning af abonnementer",
+    "cShowCheers": "Show cheers",
+    "cShowClips": "Vis klips",
+    "cShowTips": "Vis tips",
+    "cTextLastMessage": "Sidste besked",
+    "cTextLastSubMessage": "Seneste abonnement-besked",
+    "cTextStreamBy": "Streamed af",
+    "cTextFollow": "Fulgt af",
+    "cTextRaid": "Raided af",
+    "cTextCheer": "Cheer by",
+    "cTextSub": "Abonnementer fra",
+    "cTextResub": "Gentegnede abonnementer fra",
+    "cTextSubgift": "Gave-abonnementer",
+    "cTextSubcommunitygift": "Gave-abonnementer til fællesskabet",
+    "cTextTip": "Tips fra",
+    "cClipsPeriod": "Tidsinterval",
+    "cClipsCustomPeriodInDays": "Tilpasset tidsinterval (dage)",
+    "cClipsNumOfClips": "Antal klip",
+    "cClipsShouldPlay": "Klip skal afspilles",
+    "cClipsVolume": "Lydstyrke"
+  }
+}

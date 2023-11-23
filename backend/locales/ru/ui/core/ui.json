@@ -1,0 +1,13 @@
+{
+  "settings": {
+    "theme": "Тема по умолчанию",
+    "domain": {
+      "title": "Домен",
+      "help": "Формат без http/https: yourdomain.com или ваш.домена"
+    },
+    "percentage": "Разница в процентах для статистики",
+    "shortennumbers": "Короткий формат чисел",
+    "showdiff": "Показать различия",
+    "enablePublicPage": "Включить публичную страницу"
+  }
+}

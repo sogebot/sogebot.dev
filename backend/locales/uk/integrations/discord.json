@@ -1,0 +1,13 @@
+{
+  "your-account-is-not-linked": "ваш обліковий запис не підключено, використовуйте `$command`",
+  "all-your-links-were-deleted": "всі ваші посилання були видалені",
+  "all-your-links-were-deleted-with-sender": "$sender, {integrations.discord.all-your-links-were-deleted}",
+  "this-account-was-linked-with": "$sender, цей обліковий запис був пов'язаний з $discordTag.",
+  "invalid-or-expired-token": "$sender, неприпустимий або прострочений Токен.",
+  "help-message": "$sender, щоб прив'язати ваш обліковий запис у Discord: 1. Перейдіть до серверу Discord та надішліть $command у каналі ботів. | 2. Зачекайте на ПП від бота | 3. Надішліть команду з Discord ПП в чаті Twitch.",
+  "started-at": "Розпочато о",
+  "announced-by": "Оголошення від sogebot",
+  "streamed-at": "Стрімить в",
+  "link-whisper": "Вітаємо, $tag, щоб прив'язати цей обліковий запис Discord до вашого облікового запису Twitch на каналі $broadcaster, перейдіть на <https://twitch.tv/$broadcaster>увійдіть у свій обліковий запис і надішліть цю команду у чат \n\n\t\t`$command $id`\n\nПРИМІТКА: Це закінчується через 10 хвилин.",
+  "check-your-dm": "перевірте особисті повідомлення для прив'язки до облікового запису."
+}

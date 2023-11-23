@@ -1,0 +1,14 @@
+{
+  "emitRedeemEvent": "Disparar alertas personalizados ao resgatar bits",
+  "price": {
+    "name": "preço",
+    "placeholder": ""
+  },
+  "error": {
+    "isEmpty": "Este valor não pode ficar vazio"
+  },
+  "warning": "Esta ação não pode ser revertida!",
+  "settings": {
+    "enabled": "Situação"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "artists": "Umělci",
+  "settings": {
+    "enabled": "Status",
+    "songRequests": "Požadavky na skladbu",
+    "fetchCurrentSongWhenOffline": {
+      "title": "Načíst aktuální skladbu, i když je stream offline",
+      "help": "Doporučuje se, aby byla tato funkce vypnuta, aby nedošlo k dosažení limitů API"
+    },
+    "allowApprovedArtistsOnly": "Povolit pouze schválené umělce",
+    "approvedArtists": {
+      "title": "Schválení umělci",
+      "help": "Jméno nebo SpotifyURI umělce, jedna položka na řádek"
+    },
+    "queueWhenOffline": {
+      "title": "Zařadit skladbu do fronty, i když je stream offline",
+      "help": "Doporučujeme mít toto vypnuto, abyste se vyhnuli přidáváním skladeb do fronty jen při poslechu hudby"
+    },
+    "clientId": "clientId",
+    "clientSecret": "clientSecret",
+    "manualDeviceId": {
+      "title": "Vynucené ID zařízení",
+      "help": "Prázdné = vypnuté, vynucené spotify ID zařízení, které bude použito pro skladby ve frontě. Zkontrolujte logy aktuálního aktivního zařízení nebo použijte tlačítko při přehrávání písně po dobu nejméně 10 sekund."
+    },
+    "redirectURI": "redirectURI",
+    "format": {
+      "title": "Formát",
+      "help": "Dostupné proměnné: $song, $artist, $artists"
+    },
+    "username": "Autorizovaný uživatel",
+    "revokeBtn": "Zrušit autorizaci uživatele",
+    "authorizeBtn": "Autorizovat uživatele",
+    "scopes": "Scopes",
+    "playlistToPlay": {
+      "title": "Spotify URI hlavního playlistu",
+      "help": "Pokud bude nastaveno, po requestu bude hrát tento playlist"
+    },
+    "continueOnPlaylistAfterRequest": "Pokračovat v přehrávání playlistu po požadavku na skladbu",
+    "notify": "Odeslat zprávu při změně skladby"
+  }
+}

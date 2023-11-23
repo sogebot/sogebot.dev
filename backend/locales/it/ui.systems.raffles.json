@@ -1,0 +1,36 @@
+{
+  "widget": {
+    "subscribers-luck": "Abbonati fortunati"
+  },
+  "settings": {
+    "enabled": "Status",
+    "announceNewEntries": {
+      "title": "Annunciare nuove voci",
+      "help": "Se gli utenti si uniscono alla lotteria, il messaggio di annuncio verrà inviato alla chat dopo tempo."
+    },
+    "announceNewEntriesBatchTime": {
+      "title": "Per quanto tempo attendere prima di annunciare nuove voci (in secondi)",
+      "help": "Più tempo manterrà la chat più pulita, le voci saranno aggregate insieme."
+    },
+    "deleteRaffleJoinCommands": {
+      "title": "Elimina il comando join della lotteria utente",
+      "help": "Questo eliminerà il messaggio dell'utente se userà il comando !yourraffle. Dovrebbe mantenere la chat più pulita."
+    },
+    "allowOverTicketing": {
+      "title": "Consenti la sovra-emissione di biglietti",
+      "help": "Consenti all'utente di unirsi alla lotteria con sovraemissione del biglietto dei suoi punti. l'utente ha 10 punti ma può unirsi con !lotteria 100 che userà tutti i suoi punti."
+    },
+    "raffleAnnounceInterval": {
+      "title": "Intervallo annunci",
+      "help": "Minuti"
+    },
+    "raffleAnnounceMessageInterval": {
+      "title": "Intervallo annunci messaggi",
+      "help": "Quanti messaggi devono essere inviati in chat fino a quando annunciare può essere pubblicato."
+    },
+    "subscribersPercent": {
+      "title": "Fortuna abbonati aggiuntiva",
+      "help": "in percentuale"
+    }
+  }
+}

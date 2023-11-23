@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "purgeAllConnections": "Ryd Alle Godkendte Forbindelser (også din egen)",
+    "accessTokenExpirationTime": "AccessToken udløbstid (sekunder)",
+    "refreshTokenExpirationTime": "RefreshToken udløbstid (sekunder)",
+    "socketToken": {
+      "title": "SocketToken",
+      "help": "Dette token vil give dig fuld admin-adgang ved brug af sockets. Del den ikke med andre!"
+    }
+  }
+}

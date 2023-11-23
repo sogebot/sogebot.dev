@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "enabled": "Статус",
+    "volume": "Громкость",
+    "calculateVolumeByLoudness": "Динамический уровень громкости",
+    "duration": {
+      "title": "Максимальная длительность",
+      "help": "В минутах"
+    },
+    "shuffle": "Перемешать",
+    "songrequest": "Воспроизвести из запросов песен",
+    "playlist": "Воспроизвести из плейлиста",
+    "onlyMusicCategory": "Разрешить только категории музыки",
+    "allowRequestsOnlyFromPlaylist": "Разрешить запросы треков только из текущего плейлиста",
+    "notify": "Отправить сообщение при смене песни"
+  },
+  "error": {
+    "isEmpty": "Это поле не может быть пустым"
+  },
+  "startTime": "Начать трек с",
+  "endTime": "Конец песни в",
+  "add_song": "Добавить песню",
+  "add_or_import": "Добавить песню или импортировать из плейлиста",
+  "importing": "Импортируется",
+  "importing_done": "Импорт выполнен",
+  "seconds": "Секунды",
+  "calculated": "Рассчитано",
+  "set_manually": "Настроить вручную",
+  "bannedSongsEmptyAfterSearch": "Забаненные песни не были найдены по вашему запросу <strong>\"$search\"</strong>.",
+  "emptyAfterSearch": "Не найдено песен по вашему запросу <strong>\"$search\"</strong>.",
+  "empty": "Треки не были добавлены.",
+  "bannedSongsEmpty": "Треки еще не были добавлены в банлист."
+}
