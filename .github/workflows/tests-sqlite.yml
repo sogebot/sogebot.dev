@@ -1,4 +1,4 @@
-name: Backend - tests - SQLite
+name: Tests|Backend
 
 concurrency:
   group: sqlite-${{ github.head_ref || github.ref }}

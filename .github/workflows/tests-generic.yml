@@ -1,4 +1,4 @@
-name: Backend - tests - generic
+name: Tests|Backend
 
 concurrency:
   group: generic-${{ github.head_ref || github.ref }}

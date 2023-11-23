@@ -1,4 +1,4 @@
-name: Backend - tests - PostgreSQL
+name: Tests|Backend
 
 concurrency:
   group: postgres-${{ github.head_ref || github.ref }}
