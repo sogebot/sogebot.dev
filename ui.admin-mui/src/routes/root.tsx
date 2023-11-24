@@ -18,7 +18,6 @@ import { DashboardWidgetAction } from '../components/Dashboard/Widget/Action';
 import { DashboardWidgetBot } from '../components/Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../components/Dashboard/Widget/Twitch';
 import DebugBar from '../components/DebugBar';
-import DevelopmentAlert from '../components/DevelopmentAlert';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { LoginWarning } from '../components/LoginWarning';
 import NavDrawer from '../components/NavDrawer/navDrawer';
@@ -189,7 +188,6 @@ export default function Root() {
       <CookieBar/>
       <DebugBar/>
       <ServerRouterQueryParam/>
-      <DevelopmentAlert/>
 
       {state && <>
         <OnboardingTokens/>

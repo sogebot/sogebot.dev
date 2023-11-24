@@ -1,6 +1,6 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Divider, Grid, IconButton, InputAdornment, LinearProgress, Paper, Switch, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Grid, IconButton, InputAdornment, LinearProgress, Paper, Switch, TextField, Typography } from '@mui/material';
 import { EventInterface, Events } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -13,6 +13,7 @@ import { v4 } from 'uuid';
 import { CopyButton } from './Input/Adornment/Copy';
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import { EventsDefinitions } from './Input/EventsDefinitions';
+import { EventsTester } from './Input/EventsTester';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
@@ -164,7 +165,7 @@ export const EventsEdit: React.FC = () => {
 
   return(<>
     {loading && <LinearProgress />}
-    <DialogContent sx={{ minHeight: '75vh' }}>
+    <DialogContent dividers sx={{ minHeight: '75vh' }}>
       <Collapse in={!loading} mountOnEnter unmountOnExit>
         {item && <Grid container spacing={1}>
           <Grid item xs={4}>
@@ -401,17 +402,9 @@ export const EventsEdit: React.FC = () => {
       </Collapse>
     </DialogContent>
     <DialogActions>
-      <Box sx={{ width: '100%' }}>
-        <Divider sx={{ my: 1 }}/>
-        <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-          <Grid item>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-          </Grid>
-          <Grid item>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-          </Grid>
-        </Grid>
-      </Box>
+      <EventsTester variables={availableVariables} eventId={id}/>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
     </DialogActions>
   </>);
 };
