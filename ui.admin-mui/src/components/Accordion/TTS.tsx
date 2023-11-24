@@ -72,7 +72,11 @@ export const AccordionTTS: React.FC<Props> = (props) => {
       setTimeout(() => getVoicesFromResponsiveVoice(), 200);
       return;
     }
-    window.responsiveVoice.init();
+    try {
+      window.responsiveVoice.init();
+    } catch (e) {
+      console.warn(e);
+    }
     setVoices(window.responsiveVoice.getVoices().map((o: { name: string }) => o.name));
   };
 
@@ -143,7 +147,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
 
   return <>
     <Helmet>
-      {configuration.core.tts.responsiveVoiceKey.length > 0 && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`}></script>}
+      {window.responsiveVoice === undefined && configuration.core.tts.responsiveVoiceKey.length > 0 && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`}></script>}
     </Helmet>
     <Accordion {...accordionProps} disabled={props.disabled} expanded={open === accordionId && !props.disabled && isConfigured}>
       <AccordionSummary
