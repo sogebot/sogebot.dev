@@ -35,7 +35,6 @@ export const EventsEdit: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ item, setItem ] = useState<EventInterface | null>(null);
-  const previousItemName = React.useRef<string | null>(null);
   const [ availableEvents, setAvailableEvents ] = useState<Events.SupportedEvent[]>([]);
   const [ availableOperations, setAvailableOperations ] = useState<Events.SupportedOperation[]>([]);
   const [ loading, setLoading ] = useState(true);
@@ -45,22 +44,6 @@ export const EventsEdit: React.FC = () => {
   const availableVariables = React.useMemo(() => {
     return (availableEvents.find(o => o.id === item?.name ?? '') || { variables: [] }).variables;
   }, [ availableEvents, item ]);
-
-  React.useEffect(() => {
-    if (previousItemName.current === null || !item || item.name === previousItemName.current) {
-      return;
-    }
-    const defaultEvent = availableEvents.find(o => o.id === item.name);
-    if (defaultEvent) {
-      setItem(it => {
-        if (!it) {
-          return it;
-        }
-        return { ...it, definitions: defaultEvent.definitions ?? {} };
-      });
-    }
-    previousItemName.current = item.name;
-  }, [ item?.name, previousItemName ]);
 
   useEffect(() => {
     setLoading(true);
@@ -72,7 +55,6 @@ export const EventsEdit: React.FC = () => {
               console.error(err);
             } else {
               setItem(res as EventInterface);
-              previousItemName.current = res!.name;
             }
             resolve();
           });
@@ -199,9 +181,12 @@ export const EventsEdit: React.FC = () => {
                 value={item.name}
                 disableClearable
                 onChange={(ev, value) => {
-                  setItem({
-                    ...item, name: value,
-                  });
+                  const defaultEvent = availableEvents.find(o => o.id === value);
+                  if (defaultEvent) {
+                    setItem({
+                      ...item, name: value, definitions: defaultEvent.definitions ?? {}
+                    });
+                  }
                 }}
                 options={availableEvents.map(e => e.id)}
                 filterOptions={(options, state) => {
@@ -338,6 +323,7 @@ export const EventsEdit: React.FC = () => {
                   disableClearable
                   sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
                   onChange={(ev, value) => {
+                    console.log('change');
                     setItem((it) => {
                       if (!it) {
                         return null;
