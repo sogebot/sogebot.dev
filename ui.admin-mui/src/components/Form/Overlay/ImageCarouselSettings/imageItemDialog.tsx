@@ -56,7 +56,7 @@ export function ImageItemDialog(props: {
     }}>
       <IconButton onClick={handleClickOpen}><SettingsTwoTone/></IconButton>
       <Dialog open={open} fullWidth maxWidth='sm'>
-        <DialogContent>
+        <DialogContent dividers>
           <Stack spacing={1}>
             <Box sx={{ width: '100%' }}>
               <img src={`${server}/gallery/${model.url}`} style={{

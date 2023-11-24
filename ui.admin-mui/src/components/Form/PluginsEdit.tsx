@@ -1,6 +1,6 @@
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, Fade, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { nanoid } from 'nanoid';
@@ -286,220 +286,214 @@ export const PluginsEdit: React.FC = () => {
   return (<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
     {(loading || !plugin) ? <>
       <LinearProgress />
-      <DialogContent />
+      <DialogContent dividers sx={{ p: 0 }}/>
     </>
-      : <DialogContent sx={{
-        p: 0, overflowX: 'hidden',
-      }}>
-        <Grid container spacing={0} sx={{
-          height: '100%', m: 0,
-        }}>
-          <Grid sx={{
-            p: 1, width: leftPanelWidth + 'px', pb: 0,
+      : <Fade in={true}>
+        <DialogContent dividers sx={{ p: 0 }}>
+          <Grid container spacing={0} sx={{
+            height: '100%', m: 0,
           }}>
-            <Stack sx={{ p: 1 }} direction='row'>
-              <Box sx={{ width: '100%' }}>
-                <ExportDialog model={plugin}/>
-                <ImportDialog onImport={(items) => {
-                  setPlugin(o => ({
-                    ...o, workflow: items,
-                  } as Plugin));
-                }}/>
-              </Box>
-              <FormControlLabel
-                value="end"
-                control={<Checkbox checked={plugin.enabled} onChange={(_, checked) => setPlugin(o => ({
-                  ...o, enabled: checked,
-                }) as Plugin)} />}
-                label="Enabled"
-                labelPlacement="end"
+            <Grid sx={{
+              p: 1, width: leftPanelWidth + 'px', pb: 0,
+            }}>
+              <Stack sx={{ p: 1 }} direction='row'>
+                <Box sx={{ width: '100%' }}>
+                  <ExportDialog model={plugin}/>
+                  <ImportDialog onImport={(items) => {
+                    setPlugin(o => ({
+                      ...o, workflow: items,
+                    } as Plugin));
+                  }}/>
+                </Box>
+                <FormControlLabel
+                  value="end"
+                  control={<Checkbox checked={plugin.enabled} onChange={(_, checked) => setPlugin(o => ({
+                    ...o, enabled: checked,
+                  }) as Plugin)} />}
+                  label="Enabled"
+                  labelPlacement="end"
+                />
+              </Stack>
+
+              <TextField
+                {...propsError('name')}
+                sx={{ mb: 0.5 }}
+                label={'Name'}
+                defaultValue={plugin.name}
+                onChange={(ev) => setPlugin(o => ({
+                  ...o, name: ev.target.value ?? '',
+                } as Plugin))}
+                fullWidth
               />
-            </Stack>
 
-            <TextField
-              {...propsError('name')}
-              sx={{ mb: 0.5 }}
-              label={'Name'}
-              defaultValue={plugin.name}
-              onChange={(ev) => setPlugin(o => ({
-                ...o, name: ev.target.value ?? '',
-              } as Plugin))}
-              fullWidth
-            />
+              <List
+                sx={{
+                  width:    '100%',
+                  bgcolor:  'background.paper',
+                  overflow: 'auto',
+                  height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                  p:        0,
+                  '& ul':   { padding: 0 },
+                }}
+                subheader={<li />}
+              >
+                <li key={`section-source-files`}>
+                  <ul>
+                    <ListSubheader sx={{
+                      display: 'flex', justifyContent: 'space-between', py: 0.5, alignItems: 'center',
+                    }}>
+                      <Button fullWidth color={fileType === 'definition' ? 'primary' : 'light'} onClick={() => setFileType('definition')}>Definition</Button>
+                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
+                      <Button fullWidth color={fileType === 'code' ? 'primary' : 'light'} onClick={() => setFileType('code')}>Source</Button>
+                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
+                      <Button fullWidth color={fileType === 'overlay' ? 'primary' : 'light'} onClick={() => setFileType('overlay')}>Overlay</Button>
+                    </ListSubheader>
 
-            <List
-              sx={{
-                width:    '100%',
-                bgcolor:  'background.paper',
-                overflow: 'auto',
-                height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
-                p:        0,
-                '& ul':   { padding: 0 },
-              }}
-              subheader={<li />}
-            >
-              <li key={`section-source-files`}>
-                <ul>
-                  <ListSubheader sx={{
-                    display: 'flex', justifyContent: 'space-between', py: 0.5, alignItems: 'center',
-                  }}>
-                    <Button fullWidth color={fileType === 'definition' ? 'primary' : 'light'} onClick={() => setFileType('definition')}>Definition</Button>
-                    <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                    <Button fullWidth color={fileType === 'code' ? 'primary' : 'light'} onClick={() => setFileType('code')}>Source</Button>
-                    <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                    <Button fullWidth color={fileType === 'overlay' ? 'primary' : 'light'} onClick={() => setFileType('overlay')}>Overlay</Button>
-                  </ListSubheader>
+                    {fileType === 'definition' && <>
+                      <ListItem
+                        dense
+                        sx={{
+                          px: '8px', py: 0,
+                        }}>
+                        <ListItemButton sx={{ height: '48px' }} onClick={() => setEditFile('global.d.ts')} selected={'global.d.ts' === editFile}>
+                          <ListItemText>global.d.ts</ListItemText >
+                        </ListItemButton>
+                      </ListItem>
+                    </>}
 
-                  {fileType === 'definition' && <>
-                    <ListItem
+                    {fileType !== 'definition' && codeFiles.map(file => <ListItem
                       dense
+                      key={file.id}
                       sx={{
                         px: '8px', py: 0,
                       }}>
-                      <ListItemButton sx={{ height: '48px' }} onClick={() => setEditFile('global.d.ts')} selected={'global.d.ts' === editFile}>
-                        <ListItemText>global.d.ts</ListItemText >
-                      </ListItemButton>
-                    </ListItem>
-                  </>}
+                      <Tooltip title="Right click for menu" disableInteractive>
+                        <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
+                          <ListItemText>{file.name}</ListItemText >
+                        </ListItemButton>
+                      </Tooltip>
+                    </ListItem>)}
+                  </ul>
+                </li>
+              </List>
 
-                  {fileType !== 'definition' && codeFiles.map(file => <ListItem
-                    dense
-                    key={file.id}
-                    sx={{
-                      px: '8px', py: 0,
-                    }}>
-                    <Tooltip title="Right click for menu" disableInteractive>
-                      <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
-                        <ListItemText>{file.name}</ListItemText >
-                      </ListItemButton>
-                    </Tooltip>
-                  </ListItem>)}
-                </ul>
-              </li>
-            </List>
-
-            <Menu
-              open={contextMenu !== null}
-              onClose={() => setContextMenu(null)}
-              anchorReference="anchorPosition"
-              anchorPosition={
-                contextMenu !== null
-                  ? {
-                    top: contextMenu.mouseY, left: contextMenu.mouseX,
-                  }
-                  : undefined
-              }
-            >
-              <PopupState variant="popover" popupId="demo-popup-popover">
-                {(popupState) => (
-                  <div>
-                    {fileType === 'overlay' && <MenuItem sx={{ width: '100%' }} dense onClick={() => {
-                      if (!contextMenuFile) {
-                        return;
-                      }
-                      copyToClipboard(plugin.id, contextMenuFile.id);
-                      setContextMenu(null);
-                    }}>Copy link to clipboard</MenuItem>}
-                    <MenuItem sx={{
-                      mb: 1, width: '200px',
-                    }} dense onClick={(ev) => {
-                      if (!contextMenuFile) {
-                        return;
-                      }
-                      newFilename[contextMenuFile.id] = contextMenuFile.name;
-                      bindTrigger(popupState).onClick(ev);
-                    }}>Rename</MenuItem>
-                    <Popover
-                      {...bindPopover(popupState)}
-                      anchorOrigin={{
-                        vertical:   'bottom',
-                        horizontal: 'center',
-                      }}
-                      transformOrigin={{
-                        vertical:   'top',
-                        horizontal: 'center',
-                      }}
-                    >
-                      {contextMenuFile && <Stack direction='row' sx={{
-                        p: 1, pt: 1.5,
-                      }} spacing={1}>
-                        <TextField
-                          defaultValue={contextMenuFile.name}
-                          label="New filename"
-                          size='small'
-                          variant='outlined'
-                          onKeyDown={(ev) => {
-                            if (ev.key === 'Enter') {
-                              ev.preventDefault();
-                              updateFileName(contextMenuFile.id) && popupState.close();
-                            }
-                          }}
-                          onChange={(ev) => setNewFilename(o => ({
-                            ...o, [contextMenuFile.id]: ev.target.value ?? '',
-                          }))}
-                          fullWidth
-                        />
-                        <Button size='small' onClick={() => {
-                          updateFileName(contextMenuFile.id);
-                          setContextMenu(null);
-                          popupState.close();
-                        }} disabled={!newFilename[contextMenuFile.id] || newFilename[contextMenuFile.id].length === 0}>Change</Button>
-                      </Stack>}
-                    </Popover>
-                  </div>
-                )}
-              </PopupState>
-
-              <Divider />
-              <MenuItem sx={{ mt: 1 }} dense onClick={() => {
-                if (!contextMenuFile) {
-                  return;
+              <Menu
+                open={contextMenu !== null}
+                onClose={() => setContextMenu(null)}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                  contextMenu !== null
+                    ? {
+                      top: contextMenu.mouseY, left: contextMenu.mouseX,
+                    }
+                    : undefined
                 }
-                removeFile(contextMenuFile.id);
-                setContextMenu(null);
-              }}>Delete file</MenuItem>
-            </Menu>
+              >
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {(popupState) => (
+                    <div>
+                      {fileType === 'overlay' && <MenuItem sx={{ width: '100%' }} dense onClick={() => {
+                        if (!contextMenuFile) {
+                          return;
+                        }
+                        copyToClipboard(plugin.id, contextMenuFile.id);
+                        setContextMenu(null);
+                      }}>Copy link to clipboard</MenuItem>}
+                      <MenuItem sx={{
+                        mb: 1, width: '200px',
+                      }} dense onClick={(ev) => {
+                        if (!contextMenuFile) {
+                          return;
+                        }
+                        newFilename[contextMenuFile.id] = contextMenuFile.name;
+                        bindTrigger(popupState).onClick(ev);
+                      }}>Rename</MenuItem>
+                      <Popover
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical:   'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical:   'top',
+                          horizontal: 'center',
+                        }}
+                      >
+                        {contextMenuFile && <Stack direction='row' sx={{
+                          p: 1, pt: 1.5,
+                        }} spacing={1}>
+                          <TextField
+                            defaultValue={contextMenuFile.name}
+                            label="New filename"
+                            size='small'
+                            variant='outlined'
+                            onKeyDown={(ev) => {
+                              if (ev.key === 'Enter') {
+                                ev.preventDefault();
+                                updateFileName(contextMenuFile.id) && popupState.close();
+                              }
+                            }}
+                            onChange={(ev) => setNewFilename(o => ({
+                              ...o, [contextMenuFile.id]: ev.target.value ?? '',
+                            }))}
+                            fullWidth
+                          />
+                          <Button size='small' onClick={() => {
+                            updateFileName(contextMenuFile.id);
+                            setContextMenu(null);
+                            popupState.close();
+                          }} disabled={!newFilename[contextMenuFile.id] || newFilename[contextMenuFile.id].length === 0}>Change</Button>
+                        </Stack>}
+                      </Popover>
+                    </div>
+                  )}
+                </PopupState>
 
-            {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
-              bgcolor:              'background.paper',
-              borderTopLeftRadius:  0,
-              borderTopRightRadius: 0,
-              '&:hover':            {
-                bgcolor: '#ffa000', color: 'black',
-              },
-            }}>Add new {fileType}</Button>}
+                <Divider />
+                <MenuItem sx={{ mt: 1 }} dense onClick={() => {
+                  if (!contextMenuFile) {
+                    return;
+                  }
+                  removeFile(contextMenuFile.id);
+                  setContextMenu(null);
+                }}>Delete file</MenuItem>
+              </Menu>
+
+              {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
+                bgcolor:              'background.paper',
+                borderTopLeftRadius:  0,
+                borderTopRightRadius: 0,
+                '&:hover':            {
+                  bgcolor: '#ffa000', color: 'black',
+                },
+              }}>Add new {fileType}</Button>}
+            </Grid>
+            <Grid xs sx={{
+              height:          '100%',
+              backgroundColor: '#1e1e1e',
+              p:               1,
+              width:           '1px', /* fixes editor width extending over 100% when ctrl+space is pressed */
+            }}>
+              {openedFileSource && <Editor
+                height="100%"
+                width="100%"
+                language={openedFileType === 'overlay' ? 'html' : 'typescript'}
+                theme='vs-dark'
+                options={{ readOnly: editFile.endsWith('d.ts') }}
+                onChange={(value) => updateFileSource(value ?? '')}
+                key={openedFileSource.id}
+                defaultValue={openedFileSource.source}
+                beforeMount={configureMonaco}
+              />}
+            </Grid>
           </Grid>
-          <Grid xs sx={{
-            height:          '100%',
-            backgroundColor: '#1e1e1e',
-            p:               1,
-            width:           '1px', /* fixes editor width extending over 100% when ctrl+space is pressed */
-          }}>
-            {openedFileSource && <Editor
-              height="100%"
-              width="100%"
-              language={openedFileType === 'overlay' ? 'html' : 'typescript'}
-              theme='vs-dark'
-              options={{ readOnly: editFile.endsWith('d.ts') }}
-              onChange={(value) => updateFileSource(value ?? '')}
-              key={openedFileSource.id}
-              defaultValue={openedFileSource.source}
-              beforeMount={configureMonaco}
-            />}
-          </Grid>
-        </Grid>
-      </DialogContent>
+        </DialogContent>
+      </Fade>
     }
 
-    <DialogActions sx={{ p: 0 }}>
-      <Grid container justifyContent={'end'} spacing={1} sx={{ p: 1 }}>
-        <Grid item>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-        </Grid>
-      </Grid>
+    <DialogActions>
+      <Button onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
     </DialogActions>
   </Dialog>);
 };

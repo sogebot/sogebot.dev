@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControl, FormLabel, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, Collapse, DialogActions, DialogContent, FormControl, FormLabel, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import humanizeDuration from 'humanize-duration';
@@ -341,8 +341,8 @@ export const CustomVariablesEdit: React.FC = () => {
 
   return(<>
     {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent sx={{ overflowX: 'hidden' }}>
+    <Collapse in={!loading}>
+      <DialogContent dividers>
         { page === 0 && <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -540,35 +540,34 @@ export const CustomVariablesEdit: React.FC = () => {
         </Box>}
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
+    <DialogActions>
       {!loading ? <>
         <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
           <Grid item sx={{ marginRight: 'auto' }}>
             { page === 0
-              ? <Button sx={{ width: 200 }} onClick={() => setPage(1)} color='light'>Configure REST Access</Button>
-              : <Button sx={{ width: 200 }} onClick={() => setPage(0)} color='light'>Configure Variable</Button>
+              ? <Button sx={{ width: '200px !important' }} onClick={() => setPage(1)} color='light'>Configure REST Access</Button>
+              : <Button sx={{ width: '200px !important' }} onClick={() => setPage(0)} color='light'>Configure Variable</Button>
             }
           </Grid>
           {item?.type === 'eval' && <Grid item>
-            <LoadingButton loading={scriptIsRunning} sx={{ width: 150 }} color='light' variant='contained' onClick={handleRunScript}>Run Script</LoadingButton>
+            <LoadingButton loading={scriptIsRunning} color='light' variant='contained' onClick={handleRunScript}>Run Script</LoadingButton>
           </Grid>}
           { page === 1 && <Grid item>
-            <Button sx={{ width: 150 }} color='light' variant='contained' onClick={addURLOption}>Add new URL</Button>
+            <Button color='light' variant='contained' onClick={addURLOption}>Add new URL</Button>
           </Grid>}
           <Grid item>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+            <Button onClick={handleClose}>Close</Button>
           </Grid>
           <Grid item>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+            <LoadingButton variant='contained' color='primary' onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Grid>
         </Grid>
       </>
         : <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
           <Grid item>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+            <Button onClick={handleClose}>Close</Button>
           </Grid>
         </Grid>}
-    </Box>
+    </DialogActions>
   </>);
 };

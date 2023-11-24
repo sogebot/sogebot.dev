@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField } from '@mui/material';
+import { Box, Button, Checkbox, Collapse, DialogActions, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField } from '@mui/material';
 import { Price } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
@@ -79,7 +79,7 @@ export const PriceEdit: React.FC<{
   return(<>
     {loading && <LinearProgress />}
     <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
+      <DialogContent dividers>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -155,16 +155,9 @@ export const PriceEdit: React.FC<{
         </Box>
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid item>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-        </Grid>
-      </Grid>
-    </Box>
+    <DialogActions>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+    </DialogActions>
   </>);
 };

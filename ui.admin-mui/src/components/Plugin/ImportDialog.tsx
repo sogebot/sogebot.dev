@@ -184,7 +184,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       <DialogTitle>
       Import Plugin
       </DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <Stack direction='row' spacing={0.5}>
           <Box sx={{ flexGrow: 1 }}>
             <TextField label="Search" fullWidth onChange={(ev) => setSearch(ev.currentTarget.value ?? '')}/>

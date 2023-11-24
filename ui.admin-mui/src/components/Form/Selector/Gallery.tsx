@@ -200,7 +200,7 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
               <Skeleton width={200}/>
             </Box>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent dividers>
             <Grid container>
               {[...Array(9).keys()].map((_, idx) => <Grid key={idx} xs={4} sx={{ p: 0.5 }}>
                 <Skeleton variant='rectangular' width='100%' height='100%' sx={{ aspectRatio: '1.5/1' }}/>
@@ -241,7 +241,7 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
             </Stack>
           </DialogTitle>
 
-          <DialogContent>
+          <DialogContent dividers>
             <Grid container>
               {getDirectoriesOf(items, folder.split('/').filter(Boolean) ).map(directory => <Grid key={directory} xs={4} sx={{ p: 0.5 }}>
                 <IconButton sx={{

@@ -1,6 +1,6 @@
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, DialogContent, Divider, Grid, LinearProgress, TextField } from '@mui/material';
+import { Box, Button, Collapse, DialogActions, DialogContent, Grid, LinearProgress, TextField } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
@@ -130,7 +130,7 @@ export const OBSWebsocketEdit: React.FC<{
   return(<>
     {loading && <LinearProgress />}
     <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent sx={{ overflowX: 'hidden' }}>
+      <DialogContent dividers>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -157,8 +157,7 @@ export const OBSWebsocketEdit: React.FC<{
         </Box>
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
+    <DialogActions>
       {!loading ? <>
         <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
           <Grid item>
@@ -177,6 +176,6 @@ export const OBSWebsocketEdit: React.FC<{
             <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
           </Grid>
         </Grid>}
-    </Box>
+    </DialogActions>
   </>);
 };

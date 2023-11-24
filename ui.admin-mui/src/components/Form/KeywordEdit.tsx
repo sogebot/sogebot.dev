@@ -1,7 +1,7 @@
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogContent, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
 import { Keyword, KeywordGroup, KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
@@ -165,7 +165,7 @@ export const KeywordEdit: React.FC<{
   return(<>
     {loading && <LinearProgress />}
     <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
+      <DialogContent dividers>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -262,8 +262,7 @@ export const KeywordEdit: React.FC<{
         </Box>
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
+    <DialogActions>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
           <Button onClick={addResponse} disabled={loading} sx={{ width: 200 }}>
@@ -272,11 +271,11 @@ export const KeywordEdit: React.FC<{
         </Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+            <Button onClick={handleClose}>Close</Button>
+            <LoadingButton variant='contained' color='primary' onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>
-    </Box>
+    </DialogActions>
   </>);
 };

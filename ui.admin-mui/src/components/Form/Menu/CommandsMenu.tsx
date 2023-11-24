@@ -20,6 +20,7 @@ export const CommandsMenu: React.FC<Props> = ({ onClick }) => {
 
   return <>
     <Button
+      sx={{ width: 'fit-content !important' }}
       id="demo-positioned-button"
       aria-controls={open ? 'demo-positioned-menu' : undefined}
       aria-haspopup="true"

@@ -255,7 +255,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       <DialogTitle>
       Import Overlay
       </DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <ButtonGroup sx={{ pb: 1 }}>
           <Button fullWidth variant={type === 'remote' ? 'contained' : undefined} color='light' onClick={() => setType('remote')}>Remote</Button>
           <Button fullWidth variant={type === 'local' ? 'contained' : undefined} color='light' onClick={() => setType('local')}>Local</Button>

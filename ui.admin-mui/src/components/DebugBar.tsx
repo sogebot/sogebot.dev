@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, TextField, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
@@ -74,13 +74,8 @@ export default function DebugBar() {
   }, [open, dispatch]);
 
   return (<Dialog open={open} fullWidth>
-    <DialogContent>
-      <DialogContentText>
-        <Typography variant={'h5'} sx={{
-          fontWeight: 'bold', pb: 2,
-        }}>Debug</Typography>
-      </DialogContentText>
-
+    <DialogTitle>Debug</DialogTitle>
+    <DialogContent dividers>
       <TextField
         fullWidth
         variant="outlined"

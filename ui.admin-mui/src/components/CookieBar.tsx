@@ -90,7 +90,7 @@ export default function CookieBar() {
     </Fade>
     }
     <Dialog open={open}>
-      <DialogContent>
+      <DialogContent dividers>
         <DialogContentText>
           <Typography variant={'h5'} sx={{
             fontWeight: 'bold', pb: 2,

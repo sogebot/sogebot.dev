@@ -377,8 +377,8 @@ export const RandomizerEdit: React.FC = () => {
   }, [ item.items ]);
 
   return(<>
-    {loading && <><LinearProgress /><DialogContent></DialogContent></>}
-    { (!loading && item) && <DialogContent>
+    {loading && <LinearProgress />}
+    { (!loading && item) && <DialogContent dividers>
       <Grid container spacing={1}>
         <Grid lg={6} md={12}>
           <Box
@@ -570,14 +570,8 @@ export const RandomizerEdit: React.FC = () => {
       </Grid>
     </DialogContent>}
     <DialogActions>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        <Grid>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-        </Grid>
-      </Grid>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
     </DialogActions>
   </>);
 };

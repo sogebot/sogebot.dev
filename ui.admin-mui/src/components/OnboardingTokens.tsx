@@ -73,7 +73,7 @@ export const OnboardingTokens: React.FC = () => {
     <DialogTitle>
       Some accounts are not connected to Twitch on this server
     </DialogTitle>
-    <DialogContent>
+    <DialogContent dividers>
       <Alert variant='standard' severity='info'>To continue, please authorize your accounts. You need to have different accounts for bot and broadcaster.</Alert>
       {settings && <>
         <Stack sx={{
@@ -105,8 +105,6 @@ export const OnboardingTokens: React.FC = () => {
       </>
       }
     </DialogContent>
-    <DialogActions sx={{ justifyContent: 'space-between' }}>
-    </DialogActions>
     <DialogActions>
       <Button variant='contained' onClick={handleContinue}>Continue</Button>
       <Button color="error" variant='contained' onClick={handleServerLogout}>Leave server</Button>

@@ -1,7 +1,7 @@
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { CheckCircleTwoTone, DeleteTwoTone, DragIndicatorTwoTone, RadioButtonUncheckedTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, Collapse, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
+import { Box, Button, Checkbox, DialogActions, DialogContent, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
 import { Timer, TimerResponse } from '@sogebot/backend/dest/database/entity/timer';
 import axios from 'axios';
 import { capitalize, cloneDeep, orderBy } from 'lodash';
@@ -164,111 +164,108 @@ export const TimerEdit: React.FC<{
 
   return(<>
     {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
-        <Box
-          component="form"
-          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            fullWidth
-            {...propsError('name')}
-            variant="filled"
-            value={item?.name || ''}
-            required
-            label={capitalize(translate('name'))}
-            onChange={(event) => handleValueChange('name', event.target.value)}
-          />
+    <DialogContent dividers>
+      <Box
+        component="form"
+        sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          fullWidth
+          {...propsError('name')}
+          variant="filled"
+          value={item?.name || ''}
+          required
+          label={capitalize(translate('name'))}
+          onChange={(event) => handleValueChange('name', event.target.value)}
+        />
 
-          <TextField
-            fullWidth
-            {...propsError('triggerEverySecond')}
-            variant="filled"
-            type='number'
-            value={item?.triggerEverySecond}
-            required
-            label={capitalize(translate('seconds'))}
-            onChange={(event) => handleValueChange('triggerEverySecond', Number(event.target.value))}
-          />
+        <TextField
+          fullWidth
+          {...propsError('triggerEverySecond')}
+          variant="filled"
+          type='number'
+          value={item?.triggerEverySecond}
+          required
+          label={capitalize(translate('seconds'))}
+          onChange={(event) => handleValueChange('triggerEverySecond', Number(event.target.value))}
+        />
 
-          <TextField
-            fullWidth
-            {...propsError('triggerEveryMessage')}
-            variant="filled"
-            type='number'
-            value={item?.triggerEveryMessage}
-            required
-            label={capitalize(translate('messages'))}
-            onChange={(event) => handleValueChange('triggerEveryMessage', Number(event.target.value))}
-          />
+        <TextField
+          fullWidth
+          {...propsError('triggerEveryMessage')}
+          variant="filled"
+          type='number'
+          value={item?.triggerEveryMessage}
+          required
+          label={capitalize(translate('messages'))}
+          onChange={(event) => handleValueChange('triggerEveryMessage', Number(event.target.value))}
+        />
 
-          <Grid container>
-            <Grid item xs={6}>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
-                <FormHelperText sx={{
-                  position: 'relative', top: '-10px',
-                }}>
-                  {item?.isEnabled ? 'Timer is enabled': 'Timer is disabled'}
-                </FormHelperText>
-              </FormGroup>
-            </Grid>
-            <Grid item xs={6}>
-              <FormGroup>
-                <FormControlLabel control={<Checkbox checked={item?.tickOffline || false} onChange={(event) => handleValueChange('tickOffline', event.target.checked)}/>} label={capitalize(translate('timers.dialog.tickOffline'))} />
-                <FormHelperText sx={{
-                  position: 'relative', top: '-10px',
-                }}>
-                  {item?.tickOffline
-                    ? 'Timers will be ticking, when stream is offline.'
-                    : 'Timers will be stopped, when stream is offline.'}
-                </FormHelperText>
-              </FormGroup>
-            </Grid>
+        <Grid container>
+          <Grid item xs={6}>
+            <FormGroup>
+              <FormControlLabel control={<Checkbox checked={item?.isEnabled || false} onChange={(event) => handleValueChange('isEnabled', event.target.checked)}/>} label={translate('enabled')} />
+              <FormHelperText sx={{
+                position: 'relative', top: '-10px',
+              }}>
+                {item?.isEnabled ? 'Timer is enabled': 'Timer is disabled'}
+              </FormHelperText>
+            </FormGroup>
           </Grid>
+          <Grid item xs={6}>
+            <FormGroup>
+              <FormControlLabel control={<Checkbox checked={item?.tickOffline || false} onChange={(event) => handleValueChange('tickOffline', event.target.checked)}/>} label={capitalize(translate('timers.dialog.tickOffline'))} />
+              <FormHelperText sx={{
+                position: 'relative', top: '-10px',
+              }}>
+                {item?.tickOffline
+                  ? 'Timers will be ticking, when stream is offline.'
+                  : 'Timers will be stopped, when stream is offline.'}
+              </FormHelperText>
+            </FormGroup>
+          </Grid>
+        </Grid>
 
-          <DragDropContext onDragEnd={onDragEndHandler}>
-            <Droppable droppableId="droppable">
-              {(droppableProvided) => (<>
-                <div
-                  ref={droppableProvided.innerRef}
-                >
-                  {orderBy(item.messages, 'timestamp', 'asc').map((o, idx) => (
-                    <Draggable key={o.id} draggableId={o.id} index={idx}>
-                      {(draggableProvided) => (
-                        <Grid container spacing={2}
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.dragHandleProps}
-                          {...draggableProvided.draggableProps}>
-                          <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
-                            <DragIndicatorTwoTone/>
-                          </Grid>
-                          <Grid item sm>
-                            <FormResponse value={o} idx={idx} onChange={(value) => updateResponse(value)} disableExecution disableFilter disablePermission/>
-                          </Grid>
-                          <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
-                            <IconButton color={ o.isEnabled ? 'success' : 'error' }  onClick={() => toggleResponseEnabled(o.id)} sx={{ mx: 0 }}>
-                              {o.isEnabled ? <CheckCircleTwoTone/> : <RadioButtonUncheckedTwoTone/>}
-                            </IconButton>
-                            <IconButton color="error"  onClick={() => deleteResponse(o.id)} sx={{ mx: 0 }}><DeleteTwoTone/></IconButton>
-                          </Grid>
+        <DragDropContext onDragEnd={onDragEndHandler}>
+          <Droppable droppableId="droppable">
+            {(droppableProvided) => (<>
+              <div
+                ref={droppableProvided.innerRef}
+              >
+                {orderBy(item.messages, 'timestamp', 'asc').map((o, idx) => (
+                  <Draggable key={o.id} draggableId={o.id} index={idx}>
+                    {(draggableProvided) => (
+                      <Grid container spacing={2}
+                        ref={draggableProvided.innerRef}
+                        {...draggableProvided.dragHandleProps}
+                        {...draggableProvided.draggableProps}>
+                        <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
+                          <DragIndicatorTwoTone/>
                         </Grid>
-                      )}
-                    </Draggable>
-                  ))}
-                </div>
-                {droppableProvided.placeholder}
-              </>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Box>
-      </DialogContent>
-    </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
+                        <Grid item sm>
+                          <FormResponse value={o} idx={idx} onChange={(value) => updateResponse(value)} disableExecution disableFilter disablePermission/>
+                        </Grid>
+                        <Grid item sm='auto' sx={{ placeSelf: 'center' }}>
+                          <IconButton color={ o.isEnabled ? 'success' : 'error' }  onClick={() => toggleResponseEnabled(o.id)} sx={{ mx: 0 }}>
+                            {o.isEnabled ? <CheckCircleTwoTone/> : <RadioButtonUncheckedTwoTone/>}
+                          </IconButton>
+                          <IconButton color="error"  onClick={() => deleteResponse(o.id)} sx={{ mx: 0 }}><DeleteTwoTone/></IconButton>
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Draggable>
+                ))}
+              </div>
+              {droppableProvided.placeholder}
+            </>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Box>
+    </DialogContent>
+    <DialogActions>
       <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
         <Grid item>
           <Button onClick={addResponse} disabled={loading} sx={{ width: 200 }}>
@@ -282,6 +279,6 @@ export const TimerEdit: React.FC<{
           </Stack>
         </Grid>
       </Grid>
-    </Box>
+    </DialogActions>
   </>);
 };

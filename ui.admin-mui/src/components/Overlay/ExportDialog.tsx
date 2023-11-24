@@ -216,7 +216,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       <DialogTitle>
       Export Overlay
       </DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <TabContext value={tab}>
           <Box sx={{
             borderBottom: 1, borderColor: 'divider',

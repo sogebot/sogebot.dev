@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, DialogContent, Divider, Fade, FormControl, Grid, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Button, Collapse, DialogActions, DialogContent, Fade, FormControl, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -96,7 +96,7 @@ export const BotCommandEdit: React.FC<{
   return(<>
     {loading && <LinearProgress />}
     <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
+      <DialogContent dividers>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -154,16 +154,9 @@ export const BotCommandEdit: React.FC<{
         </Box>
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid item>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-        </Grid>
-      </Grid>
-    </Box>
+    <DialogActions>
+      <Button onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+    </DialogActions>
   </>);
 };

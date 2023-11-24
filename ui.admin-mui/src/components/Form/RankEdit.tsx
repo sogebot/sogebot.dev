@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, DialogContent, Divider, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, FormControl, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { Rank } from '@sogebot/backend/dest/database/entity/rank';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
@@ -75,61 +75,51 @@ export const RankEdit: React.FC<{
 
   return(<>
     {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
-        <Box
-          component="form"
-          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            {...propsError('value')}
-            variant="filled"
-            value={item?.value ?? 0}
-            required
-            type="number"
-            label={capitalize(translate('responses.variable.value'))}
-            fullWidth
-            onChange={(event) => handleValueChange('value', Number(event.target.value))}
-          />
-          <TextField
-            {...propsError('rank')}
-            variant="filled"
-            value={item?.rank ?? ''}
-            required
-            label={capitalize(translate('rank'))}
-            fullWidth
-            onChange={(event) => handleValueChange('rank', event.target.value)}
-          />
+    <DialogContent dividers>
+      <Box
+        component="form"
+        sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          {...propsError('value')}
+          variant="filled"
+          value={item?.value ?? 0}
+          required
+          type="number"
+          label={capitalize(translate('responses.variable.value'))}
+          fullWidth
+          onChange={(event) => handleValueChange('value', Number(event.target.value))}
+        />
+        <TextField
+          {...propsError('rank')}
+          variant="filled"
+          value={item?.rank ?? ''}
+          required
+          label={capitalize(translate('rank'))}
+          fullWidth
+          onChange={(event) => handleValueChange('rank', event.target.value)}
+        />
 
-          <FormControl fullWidth>
-            <InputLabel variant='filled' id="poll-options-label">{capitalize(translate('type'))}</InputLabel>
-            <Select
-              variant='filled'
-              labelId="poll-options-label"
-              value={item?.type ?? 'viewer'}
-              label={capitalize(translate('type'))}
-              onChange={(event) => handleValueChange('type', event.target.value as any)}
-            >
-              <MenuItem value='viewer'>Watch Time</MenuItem>
-              <MenuItem value='subscriber'>Subscriber months</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </DialogContent>
-    </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
-        <Grid item/>
-        <Grid item>
-          <Stack spacing={1} direction='row'>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+        <FormControl fullWidth>
+          <InputLabel variant='filled' id="poll-options-label">{capitalize(translate('type'))}</InputLabel>
+          <Select
+            variant='filled'
+            labelId="poll-options-label"
+            value={item?.type ?? 'viewer'}
+            label={capitalize(translate('type'))}
+            onChange={(event) => handleValueChange('type', event.target.value as any)}
+          >
+            <MenuItem value='viewer'>Watch Time</MenuItem>
+            <MenuItem value='subscriber'>Subscriber months</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+    </DialogContent>
+    <DialogActions>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+    </DialogActions>
   </>);
 };

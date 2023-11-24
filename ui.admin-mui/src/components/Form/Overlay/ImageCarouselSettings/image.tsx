@@ -66,7 +66,7 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
       <DialogTitle>
         Images
       </DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <Grid container spacing={2}>
           <DndContext
             sensors={sensors}

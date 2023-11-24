@@ -1,6 +1,6 @@
 import { CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock, LockTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, Container, createFilterOptions, Dialog, Divider, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, createFilterOptions, Dialog, DialogActions, DialogContent, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography } from '@mui/material';
 import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
 import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/dest/helpers/constants';
@@ -171,9 +171,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
       maxWidth='lg'
       PaperProps={{ sx: { height: '100% !important' } }}
     >
-      <Container disableGutters sx={{
-        p: 1, height: 'calc(100% - 50px)', maxHeight: 'calc(100% - 50px)', overflow: 'auto',
-      }}>
+      <DialogContent dividers>
         <Autocomplete
           selectOnFocus
           onBlur={handleBlur}
@@ -321,7 +319,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
             <Typography component="div" variant="caption" sx={{
               p: 2, pb: 0,
             }}>Last used titles for {inputValue}</Typography>
-            <SimpleBar style={{ height: 'calc(100% - 420px)' }} autoHide={false}>
+            <SimpleBar style={{ height: 'calc(100% - 483px)' }} autoHide={false}>
               <List>
                 {lastTitles.map((title) => {
                   return (
@@ -363,18 +361,11 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
             </SimpleBar>
           </>
         }
-      </Container>
-      <Divider/>
-      <Box sx={{
-        height: '50px', p: 1,
-      }}>
-        <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-          <Grid item alignSelf={'end'}><Button sx={{ width: 150 }} onClick={() => props.setOpen(false)}>Close</Button></Grid>
-          <Grid item alignSelf={'center'}>
-            <LoadingButton sx={{ width: 150 }} variant="contained" loading={isSaving} onClick={() => save()}>Save</LoadingButton>
-          </Grid>
-        </Grid>
-      </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button sx={{ width: 150 }} onClick={() => props.setOpen(false)}>Close</Button>
+        <LoadingButton sx={{ width: 150 }} variant="contained" loading={isSaving} onClick={() => save()}>Save</LoadingButton>
+      </DialogActions>
     </Dialog>
   );
 };

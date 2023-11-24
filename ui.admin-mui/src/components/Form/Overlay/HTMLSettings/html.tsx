@@ -37,7 +37,7 @@ export const HTMLDialog: React.FC<Props> = ({ onChange, model }) => {
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
         HTML
       </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 0 }} dividers>
         <Box className="monaco-editor no-user-select  showUnused showDeprecated vs-dark"
           sx={{
             background: 'repeating-linear-gradient( -45deg, #000000, #392222 0px)',

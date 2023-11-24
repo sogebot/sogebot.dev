@@ -80,7 +80,7 @@ function SortableCard(props: {
               {props.item.type === 'custom' && <CreditsSettingsCustom model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               {props.item.type === 'events' && <CreditsSettingsEvents model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
               {props.item.type === 'clips' && <CreditsSettingsClips model={props.item} canvas={props.canvas} onUpdate={(value) => props.onUpdate ? props.onUpdate(value) : null}/>}
-              <DialogActions sx={{ px: 2 }}>
+              <DialogActions>
                 <Grid container sx={{ height: '100%' }} justifyContent={'space-between'}>
                   <Grid>
                     <Button sx={{ width: 300 }} variant='contained' color='error' onClick={() => {

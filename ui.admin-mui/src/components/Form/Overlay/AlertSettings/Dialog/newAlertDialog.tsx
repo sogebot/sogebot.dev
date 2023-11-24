@@ -14,7 +14,7 @@ const NewAlertDialog: React.FC<NewAlertDialogProps> = (props) => {
   return <>
     <Button onClick={() => setOpen(true)} fullWidth startIcon={<AddTwoTone />}>Add new alert</Button>
     <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogContent>
+      <DialogContent dividers>
         <Grid container spacing={1}>
           {Object.entries(alertList).map(([type, val]) => <Grid item xs={6} key={type}>
             <Card>

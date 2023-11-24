@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Autocomplete, Box, Button, Collapse, DialogContent, Divider, FormLabel, Grid, LinearProgress, Slider, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, FormLabel, LinearProgress, Slider, Stack, TextField, Typography } from '@mui/material';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
@@ -185,7 +185,7 @@ export const HLTBEdit: React.FC<{
   return(<>
     {loading && <LinearProgress />}
     <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent>
+      <DialogContent dividers>
         <Box
           component="form"
           sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -238,17 +238,9 @@ export const HLTBEdit: React.FC<{
         </Box>
       </DialogContent>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'space-between'} spacing={1}>
-        <Grid item></Grid>
-        <Grid item>
-          <Stack spacing={1} direction='row'>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+    <DialogActions>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+    </DialogActions>
   </>);
 };

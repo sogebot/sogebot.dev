@@ -139,7 +139,7 @@ const NewComponentDialog: React.FC<NewComponentDialogProps> = (props) => {
   return <>
     <Button onClick={() => setOpen(true)} fullWidth startIcon={<AddTwoTone />}>Add new component</Button>
     <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogContent>
+      <DialogContent dividers>
         <Grid container spacing={1}>
           {Object.entries(componentList).map(([type, val]) => <Grid item xs={6} key={type}>
             <Card>

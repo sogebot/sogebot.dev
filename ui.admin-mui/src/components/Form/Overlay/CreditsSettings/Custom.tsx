@@ -269,358 +269,355 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
     });
   };
 
-  return(<>
-    <DialogContent sx={{
-      p: 0, overflowX: 'hidden',
+  return(<DialogContent sx={{
+    p: 0, overflowX: 'hidden',
+  }} dividers>
+    <Grid container spacing={0} sx={{
+      height: '100%', m: 0,
     }}>
-      <Grid container spacing={0} sx={{
-        height: '100%', m: 0,
+      <Grid sx={{
+        backgroundColor: '#1e1e1e', p: 1, width: '352px',
       }}>
-        <Grid sx={{
-          backgroundColor: '#1e1e1e', p: 1, width: '352px',
-        }}>
-          <Box sx={{ p: 1 }}>
-            <Tooltip title="Snap">
-              <IconButton onClick={() => setSnapEnabled(o => !o)} sx={{ backgroundColor: snapEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderInnerTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Bounds">
-              <IconButton  onClick={() => setBoundsEnabled(o => !o)} sx={{ backgroundColor: boundsEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderStyleTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Zoom in">
-              <IconButton onClick={() => setZoom(o => o + 0.05)}><ZoomInTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Zoom out">
-              <IconButton onClick={() => setZoom(o => o - 0.05)}><ZoomOutTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Fit screen">
-              <IconButton onClick={() => fitZoomOnScreen()}><FitScreenTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title='Reset zoom'>
-              <IconButton onClick={() => {
-                setZoom(1);
-                setPosition([50, 0]);
-              }}><CropFreeTwoTone/></IconButton>
-            </Tooltip>
-          </Box>
+        <Box sx={{ p: 1 }}>
+          <Tooltip title="Snap">
+            <IconButton onClick={() => setSnapEnabled(o => !o)} sx={{ backgroundColor: snapEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderInnerTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Bounds">
+            <IconButton  onClick={() => setBoundsEnabled(o => !o)} sx={{ backgroundColor: boundsEnabled ? `${theme.palette.primary.main}55` : undefined }}><BorderStyleTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom in">
+            <IconButton onClick={() => setZoom(o => o + 0.05)}><ZoomInTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom out">
+            <IconButton onClick={() => setZoom(o => o - 0.05)}><ZoomOutTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Fit screen">
+            <IconButton onClick={() => fitZoomOnScreen()}><FitScreenTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title='Reset zoom'>
+            <IconButton onClick={() => {
+              setZoom(1);
+              setPosition([50, 0]);
+            }}><CropFreeTwoTone/></IconButton>
+          </Tooltip>
+        </Box>
 
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
-            <Stack spacing={0.5}>
-              <TextField
-                sx={{ mb: 0.5 }}
-                label={'Name'}
-                fullWidth
-                value={item.name}
-                onChange={(ev) => {
-                  setItem({
-                    ...item, name: ev.currentTarget.value,
-                  });
-                }}
-              />
+        <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
+          <Stack spacing={0.5}>
+            <TextField
+              sx={{ mb: 0.5 }}
+              label={'Name'}
+              fullWidth
+              value={item.name}
+              onChange={(ev) => {
+                setItem({
+                  ...item, name: ev.currentTarget.value,
+                });
+              }}
+            />
 
-              <FormNumericInput
-                min={0}
-                value={item.height}
-                label='Height'
-                InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
-                onChange={val => {
-                  setItem({
-                    ...item,
-                    height: val as number,
-                  });
-                }}
-              />
+            <FormNumericInput
+              min={0}
+              value={item.height}
+              label='Height'
+              InputProps={{ endAdornment: <InputAdornment position='end'>px</InputAdornment> }}
+              onChange={val => {
+                setItem({
+                  ...item,
+                  height: val as number,
+                });
+              }}
+            />
 
-              <FormControl fullWidth>
-                <InputLabel id="type-select-label" shrink>Rolling Speed</InputLabel>
-                <Select
-                  MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-                  label='Speed'
-                  displayEmpty
-                  value={item.speed ?? ''}
-                  onChange={(ev) => setItem({
-                    ...item, speed: ev.target.value === '' ? null : (ev.target.value as typeof item.speed),
-                  })}
-                >
-                  <MenuItem value={''}>--- use global value ---</MenuItem>
-                  {['very slow', 'slow', 'medium', 'fast', 'very fast'].map(
-                    it => <MenuItem value={it} key={it}>{it}</MenuItem>,
-                  )}
-                </Select>
-              </FormControl>
-
-              <FormNumericInput
-                min={0}
-                value={item.waitBetweenScreens}
+            <FormControl fullWidth>
+              <InputLabel id="type-select-label" shrink>Rolling Speed</InputLabel>
+              <Select
+                MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                label='Speed'
                 displayEmpty
-                placeholder='Use global value'
-                label='Wait between screens'
-                helperText='Pauses rolling on screen end.'
-                InputProps={{ endAdornment: <InputAdornment position='end'>ms</InputAdornment> }}
-                onChange={val => {
-                  setItem({
-                    ...item,
-                    waitBetweenScreens: val as number,
-                  });
-                }}
-              />
-
-              <Divider variant='middle'/>
-
-              <DndContext
-                sensors={sensors}
-                modifiers={[restrictToVerticalAxis]}
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
+                value={item.speed ?? ''}
+                onChange={(ev) => setItem({
+                  ...item, speed: ev.target.value === '' ? null : (ev.target.value as typeof item.speed),
+                })}
               >
-                <SortableContext
-                  items={item.items}
-                  strategy={rectSortingStrategy}
-                >
-                  {item.items.map((o, idx) => <SortableCard
-                    isDragging={o.id === activeId}
-                    id={o.id}
-                    key={o.id}
-                    item={o}
-                    onClick={() => setMoveableId(moveableId === o.id.replace(/-/g, '') ? null : o.id.replace(/-/g, ''))}
-                    isSelected={moveableId === o.id.replace(/-/g, '')}
-                    name={`Item ${Number(idx + 1)}`}/>)}
-                </SortableContext>
-                <DragOverlay>
-                  {activeId ? (
-                    <SortableCard
-                      isDragging={false}
-                      id={activeId}
-                      key={activeId}
-                      name={`Item ${item.items.findIndex(it => it.id === activeId) + 1}`}/>
-                  ) : null }
-                </DragOverlay>
-              </DndContext>
+                <MenuItem value={''}>--- use global value ---</MenuItem>
+                {['very slow', 'slow', 'medium', 'fast', 'very fast'].map(
+                  it => <MenuItem value={it} key={it}>{it}</MenuItem>,
+                )}
+              </Select>
+            </FormControl>
 
-              <Button variant='contained' onClick={addNewItem} fullWidth>Add new item</Button>
-            </Stack>
+            <FormNumericInput
+              min={0}
+              value={item.waitBetweenScreens}
+              displayEmpty
+              placeholder='Use global value'
+              label='Wait between screens'
+              helperText='Pauses rolling on screen end.'
+              InputProps={{ endAdornment: <InputAdornment position='end'>ms</InputAdornment> }}
+              onChange={val => {
+                setItem({
+                  ...item,
+                  waitBetweenScreens: val as number,
+                });
+              }}
+            />
 
-          </SimpleBar>
-        </Grid>
-        <Grid xs sx={{ height: '100%' }}
-          onContextMenu={(e) => {
-            setMoveableId(null);
-            e.stopPropagation();
-            e.preventDefault();
-          }}>
-          <Box id="container"
-            onMouseDown={() => isPositionChanging = true}
-            onWheel={(e) => {
-              setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
-            }}
+            <Divider variant='middle'/>
+
+            <DndContext
+              sensors={sensors}
+              modifiers={[restrictToVerticalAxis]}
+              onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+            >
+              <SortableContext
+                items={item.items}
+                strategy={rectSortingStrategy}
+              >
+                {item.items.map((o, idx) => <SortableCard
+                  isDragging={o.id === activeId}
+                  id={o.id}
+                  key={o.id}
+                  item={o}
+                  onClick={() => setMoveableId(moveableId === o.id.replace(/-/g, '') ? null : o.id.replace(/-/g, ''))}
+                  isSelected={moveableId === o.id.replace(/-/g, '')}
+                  name={`Item ${Number(idx + 1)}`}/>)}
+              </SortableContext>
+              <DragOverlay>
+                {activeId ? (
+                  <SortableCard
+                    isDragging={false}
+                    id={activeId}
+                    key={activeId}
+                    name={`Item ${item.items.findIndex(it => it.id === activeId) + 1}`}/>
+                ) : null }
+              </DragOverlay>
+            </DndContext>
+
+            <Button variant='contained' onClick={addNewItem} fullWidth>Add new item</Button>
+          </Stack>
+
+        </SimpleBar>
+      </Grid>
+      <Grid xs sx={{ height: '100%' }}
+        onContextMenu={(e) => {
+          setMoveableId(null);
+          e.stopPropagation();
+          e.preventDefault();
+        }}>
+        <Box id="container"
+          onMouseDown={() => isPositionChanging = true}
+          onWheel={(e) => {
+            setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
+          }}
+          sx={{
+            backgroundColor: '#343434',
+            width:           '100%',
+            height:          '100%',
+            position:        'relative',
+            overflow:        'hidden',
+            cursor:          isPositionChanging ? 'grabbing' : 'grab',
+            p:               5,
+          }}  ref={containerRef}>
+          <Paper
             sx={{
-              backgroundColor: '#343434',
-              width:           '100%',
-              height:          '100%',
-              position:        'relative',
-              overflow:        'hidden',
-              cursor:          isPositionChanging ? 'grabbing' : 'grab',
-              p:               5,
-            }}  ref={containerRef}>
-            <Paper
-              sx={{
-                height:          `${item.height}px`,
-                width:           `${canvas.width}px`,
-                position:        'absolute',
-                border:          `${1/zoom}px solid grey !important`,
-                transformOrigin: '0 0',
-                transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
-                backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
+              height:          `${item.height}px`,
+              width:           `${canvas.width}px`,
+              position:        'absolute',
+              border:          `${1/zoom}px solid grey !important`,
+              transformOrigin: '0 0',
+              transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
+              backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
                                       linear-gradient(135deg, #222 25%, transparent 25%),
                                       linear-gradient(45deg, transparent 75%, #222 75%),
                                       linear-gradient(135deg, transparent 75%, #222 75%)`,
-                backgroundSize:     `20px 20px`, /* Must be a square */
-                backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
-              }}>
-              {item.items.map(o => <Paper
-                id={o.id.replace(/-/g, '')}
-                key={`${o.id}`}
-                onMouseDown={(e) => {
-                  if (e.button !== 1) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }
-                }}
-                onClick={(e) => {
-                  setMoveableId(o.id.replace(/-/g, ''));
+              backgroundSize:     `20px 20px`, /* Must be a square */
+              backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
+            }}>
+            {item.items.map(o => <Paper
+              id={o.id.replace(/-/g, '')}
+              key={`${o.id}`}
+              onMouseDown={(e) => {
+                if (e.button !== 1) {
                   e.stopPropagation();
                   e.preventDefault();
-                }}
-                elevation={0}
-                sx={{
-                  position:        'absolute',
-                  width:           `${o.width}px`,
-                  height:          `${o.height}px`,
-                  backgroundColor: `transparent`,
-                  border:          `0 !important`,
-                  left:            `${o.alignX}px`,
-                  top:             `${o.alignY}px`,
-                  userSelect:      'none',
-                  cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
-                  transform:       `rotate(${ o.rotation ?? 0 }deg)`,
-                }}
-              >
-                <Box key={`${o.id}-${JSON.stringify(o)}` /* force refresh on opts change */} sx={{
-                  width: '100%', height: '100%',
-                }}>
-                  <CreditsCustomItem height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>
-                </Box>
-              </Paper>)}
-              {moveableId && <Moveable
-                key={`${moveableId}-${key}-${snapEnabled}`}
-                ables={[DimensionViewable, RemoveButton]}
-                props={{
-                  dimensionViewable: true, removeButton: true,
-                }}
-                target={moveableRef}
-                resizable={true}
-                origin={false}
-                bounds={bounds}
-                onDelete={() => {
-                  setItem(o => ({
-                    ...o,
-                    items: o.items.filter(i => i.id.replace(/-/g, '') !== moveableId),
-                  }) as any);
-                  setMoveableId(null);
-                }}
-                horizontalGuidelines={[item.height / 4, item.height / 2, (item.height / 4) * 3]}
-                verticalGuidelines={[canvas.width / 4, canvas.width / 2, (canvas.width / 4) * 3]}
-                isDisplayInnerSnapDigit={true}
-                elementGuidelines={elementGuidelines}
-                snappable={true}
-                snapThreshold={5}
-                isDisplaySnapDigit={true}
-                snapGap={true}
-                snapDirections={{
-                  top:    snapEnabled,
-                  right:  snapEnabled,
-                  bottom: snapEnabled,
-                  left:   snapEnabled,
-                  center: snapEnabled,
-                  middle: snapEnabled,
+                }
+              }}
+              onClick={(e) => {
+                setMoveableId(o.id.replace(/-/g, ''));
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              elevation={0}
+              sx={{
+                position:        'absolute',
+                width:           `${o.width}px`,
+                height:          `${o.height}px`,
+                backgroundColor: `transparent`,
+                border:          `0 !important`,
+                left:            `${o.alignX}px`,
+                top:             `${o.alignY}px`,
+                userSelect:      'none',
+                cursor:          moveableId === o.id.replace(/-/g, '') ? 'move' : 'pointer',
+                transform:       `rotate(${ o.rotation ?? 0 }deg)`,
+              }}
+            >
+              <Box key={`${o.id}-${JSON.stringify(o)}` /* force refresh on opts change */} sx={{
+                width: '100%', height: '100%',
+              }}>
+                <CreditsCustomItem height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>
+              </Box>
+            </Paper>)}
+            {moveableId && <Moveable
+              key={`${moveableId}-${key}-${snapEnabled}`}
+              ables={[DimensionViewable, RemoveButton]}
+              props={{
+                dimensionViewable: true, removeButton: true,
+              }}
+              target={moveableRef}
+              resizable={true}
+              origin={false}
+              bounds={bounds}
+              onDelete={() => {
+                setItem(o => ({
+                  ...o,
+                  items: o.items.filter(i => i.id.replace(/-/g, '') !== moveableId),
+                }) as any);
+                setMoveableId(null);
+              }}
+              horizontalGuidelines={[item.height / 4, item.height / 2, (item.height / 4) * 3]}
+              verticalGuidelines={[canvas.width / 4, canvas.width / 2, (canvas.width / 4) * 3]}
+              isDisplayInnerSnapDigit={true}
+              elementGuidelines={elementGuidelines}
+              snappable={true}
+              snapThreshold={5}
+              isDisplaySnapDigit={true}
+              snapGap={true}
+              snapDirections={{
+                top:    snapEnabled,
+                right:  snapEnabled,
+                bottom: snapEnabled,
+                left:   snapEnabled,
+                center: snapEnabled,
+                middle: snapEnabled,
 
-                }}
-                elementSnapDirections={{
-                  top:    snapEnabled,
-                  right:  snapEnabled,
-                  bottom: snapEnabled,
-                  left:   snapEnabled,
-                  center: snapEnabled,
-                  middle: snapEnabled,
+              }}
+              elementSnapDirections={{
+                top:    snapEnabled,
+                right:  snapEnabled,
+                bottom: snapEnabled,
+                left:   snapEnabled,
+                center: snapEnabled,
+                middle: snapEnabled,
 
-                }}
-                snapDigit={0}
-                draggable={true}
-                checkInput
-                throttleDrag={0}
-                startDragRotate={0}
-                throttleDragRotate={0}
-                padding={{
-                  'left': 0,'top': 0,'right': 0,'bottom': 0,
-                }}
-                rotationPosition={'top'}
-                rotatable={true}
-                throttleRotate={0}
-                onRotateStart={e => {
-                  e.set(frame.rotate);
-                }}
-                onRotate={e => {
-                  frame.rotate =  e.beforeRotate;
-                  e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
-                }}
-                onRotateEnd={e => {
-                  if (selectedItem) {
-                    handleItemChange('rotation', frame.rotate);
-                    // reset things
-                    e.target.style.removeProperty('transform');
-                    refresh();
-                  }
-                }}
-                onResizeEnd={e => {
-                  if (selectedItem) {
-                    handleItemChange('width', Math.round((e.target as any).offsetWidth));
-                    handleItemChange('height', Math.round((e.target as any).offsetHeight));
-                    handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
-                    handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
-                    // reset things
-                    e.target.style.removeProperty('width');
-                    e.target.style.removeProperty('height');
-                    e.target.style.removeProperty('transform');
-                    refresh();
-                  }
-                }}
-                onResizeStart={e => {
-                  e.setOrigin(['%', '%']);
-                  e.dragStart && e.dragStart.set(frame.translate);
-                }}
-                onResize={e => {
-                  const beforeTranslate = e.drag.beforeTranslate;
+              }}
+              snapDigit={0}
+              draggable={true}
+              checkInput
+              throttleDrag={0}
+              startDragRotate={0}
+              throttleDragRotate={0}
+              padding={{
+                'left': 0,'top': 0,'right': 0,'bottom': 0,
+              }}
+              rotationPosition={'top'}
+              rotatable={true}
+              throttleRotate={0}
+              onRotateStart={e => {
+                e.set(frame.rotate);
+              }}
+              onRotate={e => {
+                frame.rotate =  e.beforeRotate;
+                e.target.style.transform = `rotate(${ e.beforeRotate}deg)`;
+              }}
+              onRotateEnd={e => {
+                if (selectedItem) {
+                  handleItemChange('rotation', frame.rotate);
+                  // reset things
+                  e.target.style.removeProperty('transform');
+                  refresh();
+                }
+              }}
+              onResizeEnd={e => {
+                if (selectedItem) {
+                  handleItemChange('width', Math.round((e.target as any).offsetWidth));
+                  handleItemChange('height', Math.round((e.target as any).offsetHeight));
+                  handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
+                  handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
+                  // reset things
+                  e.target.style.removeProperty('width');
+                  e.target.style.removeProperty('height');
+                  e.target.style.removeProperty('transform');
+                  refresh();
+                }
+              }}
+              onResizeStart={e => {
+                e.setOrigin(['%', '%']);
+                e.dragStart && e.dragStart.set(frame.translate);
+              }}
+              onResize={e => {
+                const beforeTranslate = e.drag.beforeTranslate;
 
-                  frame.translate = beforeTranslate;
-                  e.target.style.width = `${e.width}px`;
-                  e.target.style.height = `${e.height}px`;
-                  e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
-                }}
-                onDragEnd={(e) => {
-                  if (selectedItem) {
-                    handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
-                    handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
-                    e.target.style.transform = `translate(0px, 0px) rotate(${selectedItem?.rotation ?? 0}deg)`;
-                    refresh();
-                  }
-                }}
-                onDragStart={(e) => {
-                  if (e.clientY < e.target.getBoundingClientRect().top) {
-                    // disable drag if clicking outside of the box
-                    // checking currently only top side of moveable
-                    e.stopDrag();
-                    return;
-                  }
-                  setFrame(val => ({
-                    translate: [0, 0], rotate: val.rotate,
-                  }));
-                }}
-                onDrag={e => {
-                  setFrame(val => ({
-                    translate: e.beforeTranslate, rotate: val.rotate,
-                  }));
-                  e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
-                }}
-              />}
-            </Paper>
-          </Box>
-        </Grid>
-        {selectedItem && <Grid sx={{
-          backgroundColor: '#1e1e1e', p: 1, width: '352px',
-        }}>
-          <SimpleBar style={{
-            maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
-          }} autoHide={false}>
-            <Settings model={selectedItem} onUpdate={(path, value) => {
-              handleItemChange(path, value);
-              refresh();
-            }}>
-              <AccordionFont
-                disableExample
-                label='Font'
-                model={selectedItem.font}
-                open={accordion}
-                onOpenChange={(val) => setAccordion(val)}
-                onChange={(val) => {
-                  handleItemChange('font', val);
-                }}/>
-              <Divider variant='middle'/>
-              <HTMLDialog model={selectedItem.html} onChange={value =>  handleItemChange('html', value ?? '')}/>
-              <CSSDialog model={selectedItem.css} onChange={value =>  handleItemChange('css', value ?? '')}/>
-            </Settings>
-          </SimpleBar>
-        </Grid>}
+                frame.translate = beforeTranslate;
+                e.target.style.width = `${e.width}px`;
+                e.target.style.height = `${e.height}px`;
+                e.target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
+              }}
+              onDragEnd={(e) => {
+                if (selectedItem) {
+                  handleItemChange('alignX', Math.round(selectedItem.alignX + frame.translate[0]));
+                  handleItemChange('alignY', Math.round(selectedItem.alignY + frame.translate[1]));
+                  e.target.style.transform = `translate(0px, 0px) rotate(${selectedItem?.rotation ?? 0}deg)`;
+                  refresh();
+                }
+              }}
+              onDragStart={(e) => {
+                if (e.clientY < e.target.getBoundingClientRect().top) {
+                  // disable drag if clicking outside of the box
+                  // checking currently only top side of moveable
+                  e.stopDrag();
+                  return;
+                }
+                setFrame(val => ({
+                  translate: [0, 0], rotate: val.rotate,
+                }));
+              }}
+              onDrag={e => {
+                setFrame(val => ({
+                  translate: e.beforeTranslate, rotate: val.rotate,
+                }));
+                e.target.style.transform = `translate(${e.beforeTranslate[0]}px, ${e.beforeTranslate[1]}px) rotate(${selectedItem?.rotation ?? 0}deg)`;
+              }}
+            />}
+          </Paper>
+        </Box>
       </Grid>
-    </DialogContent>
-    <Divider/>
-  </>);
+      {selectedItem && <Grid sx={{
+        backgroundColor: '#1e1e1e', p: 1, width: '352px',
+      }}>
+        <SimpleBar style={{
+          maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
+        }} autoHide={false}>
+          <Settings model={selectedItem} onUpdate={(path, value) => {
+            handleItemChange(path, value);
+            refresh();
+          }}>
+            <AccordionFont
+              disableExample
+              label='Font'
+              model={selectedItem.font}
+              open={accordion}
+              onOpenChange={(val) => setAccordion(val)}
+              onChange={(val) => {
+                handleItemChange('font', val);
+              }}/>
+            <Divider variant='middle'/>
+            <HTMLDialog model={selectedItem.html} onChange={value =>  handleItemChange('html', value ?? '')}/>
+            <CSSDialog model={selectedItem.css} onChange={value =>  handleItemChange('css', value ?? '')}/>
+          </Settings>
+        </SimpleBar>
+      </Grid>}
+    </Grid>
+  </DialogContent>);
 };

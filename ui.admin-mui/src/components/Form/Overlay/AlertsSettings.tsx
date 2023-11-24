@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, Grid } from '@mui/material';
+import { Button, Dialog, DialogActions } from '@mui/material';
 import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import React from 'react';
@@ -69,24 +69,18 @@ export const AlertsSettings: React.FC<Props> = ({ onUpdate }) => {
       <AlertSettingsGroup canvas={canvas} onUpdate={(items) => {
         setChanges(items);
       }}/>
-      <DialogActions sx={{ px: 2 }}>
-        <Grid container sx={{ height: '100%' }} justifyContent={'space-between'}>
-          <Grid>
-          </Grid>
-          <Grid>
-            <Button color='error' sx={{ width: 150 }} onClick={() => {
-              setOpen(false);
-            }}>Discard</Button>
-            <Button sx={{ width: 150 }} onClick={() => {
-              if (changes) {
-                onUpdate({
-                  ...model, items: changes,
-                });
-              }
-              setOpen(false);
-            }}>Close</Button>
-          </Grid>
-        </Grid>
+      <DialogActions>
+        <Button color='error' sx={{ width: 150 }} onClick={() => {
+          setOpen(false);
+        }}>Discard</Button>
+        <Button sx={{ width: 150 }} onClick={() => {
+          if (changes) {
+            onUpdate({
+              ...model, items: changes,
+            });
+          }
+          setOpen(false);
+        }}>Close</Button>
       </DialogActions>
     </Dialog>
 

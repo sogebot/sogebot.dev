@@ -1,6 +1,6 @@
 import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, DialogContent, DialogTitle, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Button, Collapse, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
@@ -85,7 +85,7 @@ export const KeywordGroupEdit: React.FC<{
     <Collapse in={!loading} mountOnEnter unmountOnExit>
       <Box>
         <DialogTitle>{group?.name}</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <FormControl fullWidth variant="filled" sx={{ mt: 1 }}>
             <InputLabel id="permission-select-label">Group Permission</InputLabel>
             <Select
@@ -129,16 +129,9 @@ export const KeywordGroupEdit: React.FC<{
         </DialogContent>
       </Box>
     </Collapse>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'}spacing={1}>
-        <Grid item>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        {group && <Grid item>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>
-        </Grid>}
-      </Grid>
-    </Box>
+    <DialogActions>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      {group && <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving}>Save</LoadingButton>}
+    </DialogActions>
   </>);
 };

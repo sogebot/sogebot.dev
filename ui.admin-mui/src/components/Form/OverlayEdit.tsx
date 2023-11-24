@@ -1,6 +1,6 @@
 import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip } from '@mui/material';
 import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
@@ -285,14 +285,9 @@ export const OverlayEdit: React.FC = () => {
   }, [ zoom ]);
 
   return(<>
-    {loading && <>
-      <LinearProgress />
-      <DialogContent sx={{
-        p: 0, overflowX: 'hidden',
-      }}/>
-    </>}
+    {loading && (<LinearProgress /> && <DialogContent dividers/>)}
     <Fade in={!loading} mountOnEnter unmountOnExit>
-      { item && <DialogContent sx={{
+      { item && <DialogContent dividers sx={{
         p: 0, overflowX: 'hidden',
       }}>
         <Grid container spacing={0} sx={{
@@ -332,7 +327,7 @@ export const OverlayEdit: React.FC = () => {
               }) as Overlay)}/>
             </Box>
 
-            <SimpleBar style={{ maxHeight: 'calc(100vh - 189px)' }} autoHide={false}>
+            <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
               <TextField
                 sx={{ mb: 0.5 }}
                 label={'Name'}
@@ -733,19 +728,10 @@ export const OverlayEdit: React.FC = () => {
         </Grid>
       </DialogContent>}
     </Fade>
-    <Divider/>
-    <Box sx={{ p: 1 }}>
-      <Grid container sx={{ height: '100%' }} justifyContent={'end'} spacing={1}>
-        <Grid sx={{ mr: 'auto' }}>
-          <Button sx={{ width: 150 }} onClick={handleLinkCopy}>overlay link</Button>
-        </Grid>
-        <Grid>
-          <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-        </Grid>
-        <Grid>
-          <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
-        </Grid>
-      </Grid>
-    </Box>
+    <DialogActions>
+      <Button sx={{ width: 150 }} onClick={handleLinkCopy}>overlay link</Button>
+      <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+    </DialogActions>
   </>);
 };

@@ -181,7 +181,7 @@ export const CommandsEdit: React.FC<{
 
   return(<>
     {loading && <LinearProgress />}
-    <DialogContent>
+    <DialogContent dividers>
       <Collapse in={!loading} mountOnEnter unmountOnExit>
         <Box
           component="form"
@@ -321,8 +321,8 @@ export const CommandsEdit: React.FC<{
         </Grid>
         <Grid item>
           <Stack spacing={1} direction='row'>
-            <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-            <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+            <Button onClick={handleClose}>Close</Button>
+            <LoadingButton variant='contained' color='primary' onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
           </Stack>
         </Grid>
       </Grid>

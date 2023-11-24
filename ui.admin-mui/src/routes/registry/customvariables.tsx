@@ -322,7 +322,6 @@ const PageRegistryCustomVariables = () => {
       <Dialog
         open={open}
         fullWidth
-        PaperProps={{ sx: { height: '100% !important' } }}
         maxWidth='md'>
         {open && <CustomVariablesEdit/>}
       </Dialog>

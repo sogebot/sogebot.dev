@@ -180,7 +180,7 @@ export const Layers: React.FC<Props> = ({ items, moveableId, setMoveableId, onUp
         </IconButton>
 
         <Dialog open={openDialog} maxWidth="lg" fullWidth>
-          <DialogContent>
+          <DialogContent dividers>
             <Grid container spacing={1}>
               {Object.entries(layers).map(([key, val]) => <Grid item xs={3} key={key}>
                 <Card>

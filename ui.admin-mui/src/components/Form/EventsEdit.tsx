@@ -165,8 +165,8 @@ export const EventsEdit: React.FC = () => {
 
   return(<>
     {loading && <LinearProgress />}
-    <DialogContent dividers sx={{ minHeight: '75vh' }}>
-      <Collapse in={!loading} mountOnEnter unmountOnExit>
+    <Collapse in={!loading} mountOnEnter unmountOnExit>
+      <DialogContent dividers sx={{ minHeight: '75vh' }}>
         {item && <Grid container spacing={1}>
           <Grid item xs={4}>
             <Box
@@ -399,8 +399,8 @@ export const EventsEdit: React.FC = () => {
             }}>Add operation</Button>
           </Grid>
         </Grid>}
-      </Collapse>
-    </DialogContent>
+      </DialogContent>
+    </Collapse>
     <DialogActions>
       <EventsTester variables={availableVariables} eventId={id}/>
       <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>

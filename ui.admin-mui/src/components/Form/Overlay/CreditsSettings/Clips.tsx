@@ -80,235 +80,232 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
     setZoomRemoveButton(zoom);
   }, [ zoom ]);
 
-  return(<>
-    <DialogContent sx={{
-      p: 0, overflowX: 'hidden',
+  return(<DialogContent dividers sx={{
+    p: 0, overflowX: 'hidden',
+  }}>
+    <Grid container spacing={0} sx={{
+      height: '100%', m: 0,
     }}>
-      <Grid container spacing={0} sx={{
-        height: '100%', m: 0,
+      <Grid sx={{
+        backgroundColor: '#1e1e1e', p: 1, width: '352px',
       }}>
-        <Grid sx={{
-          backgroundColor: '#1e1e1e', p: 1, width: '352px',
-        }}>
-          <Box sx={{ p: 1 }}>
-            <Tooltip title="Zoom in">
-              <IconButton onClick={() => setZoom(o => o + 0.05)}><ZoomInTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Zoom out">
-              <IconButton onClick={() => setZoom(o => o - 0.05)}><ZoomOutTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title="Fit screen">
-              <IconButton onClick={() => fitZoomOnScreen()}><FitScreenTwoTone/></IconButton>
-            </Tooltip>
-            <Tooltip title='Reset zoom'>
-              <IconButton onClick={() => {
-                setZoom(1);
-                setPosition([50, 0]);
-              }}><CropFreeTwoTone/></IconButton>
-            </Tooltip>
-          </Box>
+        <Box sx={{ p: 1 }}>
+          <Tooltip title="Zoom in">
+            <IconButton onClick={() => setZoom(o => o + 0.05)}><ZoomInTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom out">
+            <IconButton onClick={() => setZoom(o => o - 0.05)}><ZoomOutTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title="Fit screen">
+            <IconButton onClick={() => fitZoomOnScreen()}><FitScreenTwoTone/></IconButton>
+          </Tooltip>
+          <Tooltip title='Reset zoom'>
+            <IconButton onClick={() => {
+              setZoom(1);
+              setPosition([50, 0]);
+            }}><CropFreeTwoTone/></IconButton>
+          </Tooltip>
+        </Box>
 
-          <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
-            <Stack spacing={0.5}>
-              <TextField
-                sx={{ mb: 0.5 }}
-                label={'Name'}
-                fullWidth
-                value={item.name}
-                onChange={(ev) => {
-                  setItem({
-                    ...item, name: ev.currentTarget.value,
-                  });
-                }}
-              />
+        <SimpleBar style={{ maxHeight: 'calc(100vh - 125px)' }} autoHide={false}>
+          <Stack spacing={0.5}>
+            <TextField
+              sx={{ mb: 0.5 }}
+              label={'Name'}
+              fullWidth
+              value={item.name}
+              onChange={(ev) => {
+                setItem({
+                  ...item, name: ev.currentTarget.value,
+                });
+              }}
+            />
 
-              <TextField
-                value={'Set automatically by canvas height'}
-                label='Height'
-                InputProps={{ readOnly: true }}
-              />
+            <TextField
+              value={'Set automatically by canvas height'}
+              label='Height'
+              InputProps={{ readOnly: true }}
+            />
 
-              <FormControl fullWidth>
-                <InputLabel id="type-select-label" shrink>Rolling Speed</InputLabel>
-                <Select
-                  MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
-                  label='Speed'
-                  displayEmpty
-                  value={item.speed ?? ''}
-                  onChange={(ev) => setItem({
-                    ...item, speed: ev.target.value === '' ? null : (ev.target.value as typeof item.speed),
-                  })}
-                >
-                  <MenuItem value={''}>--- use global value ---</MenuItem>
-                  {['very slow', 'slow', 'medium', 'fast', 'very fast'].map(
-                    it => <MenuItem value={it} key={it}>{it}</MenuItem>,
-                  )}
-                </Select>
-              </FormControl>
-
-              <FormNumericInput
-                min={0}
-                value={item.waitBetweenScreens}
+            <FormControl fullWidth>
+              <InputLabel id="type-select-label" shrink>Rolling Speed</InputLabel>
+              <Select
+                MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+                label='Speed'
                 displayEmpty
-                placeholder='Use global value'
-                label='Wait between screens'
-                helperText='Pauses rolling on screen end.'
-                InputProps={{ endAdornment: <InputAdornment position='end'>ms</InputAdornment> }}
-                onChange={val => {
-                  setItem({
-                    ...item,
-                    waitBetweenScreens: val as number,
-                  });
-                }}
-              />
-            </Stack>
-          </SimpleBar>
-        </Grid>
-        <Grid xs sx={{ height: '100%' }}
-          onContextMenu={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}>
-          <Box id="container"
-            onMouseDown={() => isPositionChanging = true}
-            onWheel={(e) => {
-              setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
-            }}
+                value={item.speed ?? ''}
+                onChange={(ev) => setItem({
+                  ...item, speed: ev.target.value === '' ? null : (ev.target.value as typeof item.speed),
+                })}
+              >
+                <MenuItem value={''}>--- use global value ---</MenuItem>
+                {['very slow', 'slow', 'medium', 'fast', 'very fast'].map(
+                  it => <MenuItem value={it} key={it}>{it}</MenuItem>,
+                )}
+              </Select>
+            </FormControl>
+
+            <FormNumericInput
+              min={0}
+              value={item.waitBetweenScreens}
+              displayEmpty
+              placeholder='Use global value'
+              label='Wait between screens'
+              helperText='Pauses rolling on screen end.'
+              InputProps={{ endAdornment: <InputAdornment position='end'>ms</InputAdornment> }}
+              onChange={val => {
+                setItem({
+                  ...item,
+                  waitBetweenScreens: val as number,
+                });
+              }}
+            />
+          </Stack>
+        </SimpleBar>
+      </Grid>
+      <Grid xs sx={{ height: '100%' }}
+        onContextMenu={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}>
+        <Box id="container"
+          onMouseDown={() => isPositionChanging = true}
+          onWheel={(e) => {
+            setZoom(o => o + (e.deltaY < 0 ? 0.025 : -0.025));
+          }}
+          sx={{
+            backgroundColor: '#343434',
+            width:           '100%',
+            height:          '100%',
+            position:        'relative',
+            overflow:        'hidden',
+            cursor:          isPositionChanging ? 'grabbing' : 'grab',
+            p:               5,
+          }}  ref={containerRef}>
+          <Paper
             sx={{
-              backgroundColor: '#343434',
-              width:           '100%',
-              height:          '100%',
-              position:        'relative',
-              overflow:        'hidden',
-              cursor:          isPositionChanging ? 'grabbing' : 'grab',
-              p:               5,
-            }}  ref={containerRef}>
-            <Paper
-              sx={{
-                height:          `${canvas.height}px`,
-                width:           `${canvas.width}px`,
-                position:        'absolute',
-                border:          `${1/zoom}px solid grey !important`,
-                transformOrigin: '0 0',
-                transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
-                backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
+              height:          `${canvas.height}px`,
+              width:           `${canvas.width}px`,
+              position:        'absolute',
+              border:          `${1/zoom}px solid grey !important`,
+              transformOrigin: '0 0',
+              transform:       `scale(${zoom}) translate(${position[0]}px, ${position[1]}px)`,
+              backgroundImage: `linear-gradient(45deg, #222 25%, transparent 25%),
                                       linear-gradient(135deg, #222 25%, transparent 25%),
                                       linear-gradient(45deg, transparent 75%, #222 75%),
                                       linear-gradient(135deg, transparent 75%, #222 75%)`,
-                backgroundSize:     `20px 20px`, /* Must be a square */
-                backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
-              }}>
+              backgroundSize:     `20px 20px`, /* Must be a square */
+              backgroundPosition: `0 0, 10px 0, 10px -10px, 0px 10px`, /* Must be half of one side of the square */
+            }}>
 
-              <CreditsClips height={canvas.height} width={canvas.width} item={item} groupId={''} id={item.id} active={false}/>
-            </Paper>
-          </Box>
-        </Grid>
-        <Grid sx={{
-          backgroundColor: '#1e1e1e', p: 1, width: '352px',
-        }}>
-          <SimpleBar style={{
-            maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
-          }} autoHide={false}>
-            <Stack spacing={0.5}>
-              <FormNumericInput
-                min={1}
-                fullWidth
-                value={item.numOfClips}
-                label='No. of clips'
-                onChange={val => setItem({
-                  ...item, numOfClips: val as number,
+            <CreditsClips height={canvas.height} width={canvas.width} item={item} groupId={''} id={item.id} active={false}/>
+          </Paper>
+        </Box>
+      </Grid>
+      <Grid sx={{
+        backgroundColor: '#1e1e1e', p: 1, width: '352px',
+      }}>
+        <SimpleBar style={{
+          maxHeight: 'calc(100vh - 70px)', paddingRight: '15px',
+        }} autoHide={false}>
+          <Stack spacing={0.5}>
+            <FormNumericInput
+              min={1}
+              fullWidth
+              value={item.numOfClips}
+              label='No. of clips'
+              onChange={val => setItem({
+                ...item, numOfClips: val as number,
+              })}
+            />
+
+            <FormNumericInput
+              sx={{
+                '& .MuiInputAdornment-positionStart .MuiInputBase-root': {
+                  position: 'relative', top: '4px',
+                },
+                '& .MuiInputAdornment-positionStart .MuiInputBase-root:before': { border: '0 !important' },
+              }}
+              min={1}
+              disabled={item.period === 'stream'}
+              value={item.periodValue}
+              label='Period'
+              InputProps={{
+                startAdornment: <InputAdornment position='start'>
+                  <Select
+                    variant='standard'
+                    onChange={(event) => setItem({
+                      ...item, period: event.target.value as typeof item.period,
+                    })}
+                    value={item.period}
+                  >
+                    <MenuItem value={'custom'}>Custom</MenuItem>
+                    <MenuItem value={'stream'}>Stream</MenuItem>
+                  </Select>
+
+                </InputAdornment>,
+                endAdornment: <InputAdornment position='end'>days</InputAdornment>,
+              }}
+              onChange={val => {
+                setItem({
+                  ...item,
+                  periodValue: val as number,
+                });
+              }}
+            />
+
+            <Box>
+              <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
+              <Slider
+                value={item.volume}
+                max={100}
+                valueLabelDisplay="on"
+                valueLabelFormat={(value) => `${value}%`}
+                size='small'
+                onChange={(_, newValue) => setItem({
+                  ...item, volume: Number(newValue),
                 })}
               />
+            </Box>
 
-              <FormNumericInput
-                sx={{
-                  '& .MuiInputAdornment-positionStart .MuiInputBase-root': {
-                    position: 'relative', top: '4px',
-                  },
-                  '& .MuiInputAdornment-positionStart .MuiInputBase-root:before': { border: '0 !important' },
-                }}
-                min={1}
-                disabled={item.period === 'stream'}
-                value={item.periodValue}
-                label='Period'
-                InputProps={{
-                  startAdornment: <InputAdornment position='start'>
-                    <Select
-                      variant='standard'
-                      onChange={(event) => setItem({
-                        ...item, period: event.target.value as typeof item.period,
-                      })}
-                      value={item.period}
-                    >
-                      <MenuItem value={'custom'}>Custom</MenuItem>
-                      <MenuItem value={'stream'}>Stream</MenuItem>
-                    </Select>
+            <Divider variant='middle'/>
 
-                  </InputAdornment>,
-                  endAdornment: <InputAdornment position='end'>days</InputAdornment>,
-                }}
-                onChange={val => {
-                  setItem({
-                    ...item,
-                    periodValue: val as number,
-                  });
-                }}
-              />
-
-              <Box>
-                <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
-                <Slider
-                  value={item.volume}
-                  max={100}
-                  valueLabelDisplay="on"
-                  valueLabelFormat={(value) => `${value}%`}
-                  size='small'
-                  onChange={(_, newValue) => setItem({
-                    ...item, volume: Number(newValue),
-                  })}
-                />
-              </Box>
-
-              <Divider variant='middle'/>
-
-              <AccordionFont
-                disableExample
-                label='Game font'
-                model={item.gameFont}
-                open={accordion}
-                onOpenChange={(val) => setAccordion(val)}
-                onChange={(val) => {
-                  setItem({
-                    ...item, gameFont: val,
-                  });
-                }}/>
-              <AccordionFont
-                disableExample
-                label='Title font'
-                model={item.titleFont}
-                open={accordion}
-                onOpenChange={(val) => setAccordion(val)}
-                onChange={(val) => {
-                  setItem({
-                    ...item, titleFont: val,
-                  });
-                }}/>
-              <AccordionFont
-                disableExample
-                label='Created by font'
-                model={item.createdByFont}
-                open={accordion}
-                onOpenChange={(val) => setAccordion(val)}
-                onChange={(val) => {
-                  setItem({
-                    ...item, createdByFont: val,
-                  });
-                }}/>
-            </Stack>
-          </SimpleBar>
-        </Grid>
+            <AccordionFont
+              disableExample
+              label='Game font'
+              model={item.gameFont}
+              open={accordion}
+              onOpenChange={(val) => setAccordion(val)}
+              onChange={(val) => {
+                setItem({
+                  ...item, gameFont: val,
+                });
+              }}/>
+            <AccordionFont
+              disableExample
+              label='Title font'
+              model={item.titleFont}
+              open={accordion}
+              onOpenChange={(val) => setAccordion(val)}
+              onChange={(val) => {
+                setItem({
+                  ...item, titleFont: val,
+                });
+              }}/>
+            <AccordionFont
+              disableExample
+              label='Created by font'
+              model={item.createdByFont}
+              open={accordion}
+              onOpenChange={(val) => setAccordion(val)}
+              onChange={(val) => {
+                setItem({
+                  ...item, createdByFont: val,
+                });
+              }}/>
+          </Stack>
+        </SimpleBar>
       </Grid>
-    </DialogContent>
-    <Divider/>
-  </>);
+    </Grid>
+  </DialogContent>);
 };

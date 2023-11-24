@@ -37,7 +37,7 @@ export const CSSDialog: React.FC<Props> = ({ onChange, model }) => {
       <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
         CSS
       </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 0 }} dividers>
         <Editor
           height="44vh"
           width="100%"
