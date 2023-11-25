@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, FormLabel, LinearProgress, Slider, Stack, TextField, Typography } from '@mui/material';
-import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
+import { HowLongToBeatGame, HowLongToBeatGameSchema } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import debounce from 'lodash/debounce';
@@ -14,7 +14,7 @@ import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidator';
+import { useValidator } from '../../hooks/useValidatorZod';
 
 export const HLTBEdit: React.FC<{
   items: HowLongToBeatGame[]
@@ -29,7 +29,7 @@ export const HLTBEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: HowLongToBeatGameSchema });
 
   const handleValueChange = useCallback(<T extends keyof HowLongToBeatGame>(key: T, value: HowLongToBeatGame[T]) => {
     if (!item) {
@@ -66,9 +66,10 @@ export const HLTBEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(HowLongToBeatGame, item);
+      console.log({ item });
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/manage/howlongtobeat');

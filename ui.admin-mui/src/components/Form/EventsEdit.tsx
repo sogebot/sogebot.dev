@@ -1,7 +1,7 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Grid, IconButton, InputAdornment, LinearProgress, Paper, Switch, TextField, Typography } from '@mui/material';
-import { EventInterface, Events } from '@sogebot/backend/dest/database/entity/event';
+import { Event, EventSchema, SupportedEvent, SupportedOperation } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { capitalize, cloneDeep } from 'lodash';
@@ -16,10 +16,10 @@ import { EventsDefinitions } from './Input/EventsDefinitions';
 import { EventsTester } from './Input/EventsTester';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidator';
+import { useValidator } from '../../hooks/useValidatorZod';
 import theme from '../../theme';
 
-const newEvent: EventInterface = {
+const newEvent = {
   definitions: {},
   filter:      '',
   isEnabled:   true,
@@ -35,15 +35,23 @@ export const EventsEdit: React.FC = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [ item, setItem ] = useState<EventInterface | null>(null);
-  const [ availableEvents, setAvailableEvents ] = useState<Events.SupportedEvent[]>([]);
-  const [ availableOperations, setAvailableOperations ] = useState<Events.SupportedOperation[]>([]);
+  const [ item, setItem ] = useState<Event | null>(null);
+  const [ availableEvents, setAvailableEvents ] = useState<SupportedEvent[]>([]);
+  const [ availableOperations, setAvailableOperations ] = useState<SupportedOperation[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
-  const { reset, haveErrors } = useValidator();
+  const { reset, haveErrors, validate, showErrors, propsError, dirtify } = useValidator({
+    schema: EventSchema,
+  });
+
+  React.useEffect(() => {
+    if (item) {
+      validate(item);
+    }
+  }, [ item ]);
 
   const availableVariables = React.useMemo(() => {
-    return (availableEvents.find(o => o.id === item?.name ?? '') || { variables: [] }).variables;
+    return (availableEvents.find(o => o.id === item?.event.name ?? '') || { variables: [] }).variables;
   }, [ availableEvents, item ]);
 
   useEffect(() => {
@@ -52,23 +60,23 @@ export const EventsEdit: React.FC = () => {
       new Promise<void>(resolve => {
         if (id) {
           getSocket('/core/events').emit('generic::getOne', id, (err, res) => {
-            if (err) {
+            if (err || !res) {
               console.error(err);
             } else {
-              setItem(res as EventInterface);
+              setItem(Event.create(res));
             }
             resolve();
           });
         } else {
-          setItem({
+          setItem(Event.create({
             ...cloneDeep(newEvent),
             id: v4(),
-          });
+          }));
           resolve();
         }
       }),
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('list.supported.operations', (err, data: Events.SupportedOperation[]) => {
+        getSocket('/core/events').emit('list.supported.operations', (err, data: SupportedOperation[]) => {
           if (err) {
             console.error(err);
           } else {
@@ -88,8 +96,7 @@ export const EventsEdit: React.FC = () => {
         });
       }),
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('list.supported.events', (err, data: Events.SupportedEvent[]) => {
-          console.log({ data, err });
+        getSocket('/core/events').emit('list.supported.events', (err, data: SupportedEvent[]) => {
           if (err) {
             console.error(err);
           } else {
@@ -141,7 +148,7 @@ export const EventsEdit: React.FC = () => {
     setSaving(true);
     getSocket('/core/events').emit('events::save', item, (err, savedItem) => {
       if (err) {
-        console.error(err);
+        showErrors(err as any);
       } else {
         enqueueSnackbar('Event saved.', { variant: 'success' });
         navigate(`/manage/events/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
@@ -179,14 +186,19 @@ export const EventsEdit: React.FC = () => {
               autoComplete="off"
             >
               <Autocomplete
-                value={item.name}
+                value={item.event.name}
                 disableClearable
                 onChange={(ev, value) => {
                   const defaultEvent = availableEvents.find(o => o.id === value);
                   if (defaultEvent) {
-                    setItem({
-                      ...item, name: value, definitions: defaultEvent.definitions ?? {}
-                    });
+                    setItem(Event.create({
+                      ...item,
+                      event: {
+                        name:        value,
+                        triggered:   {},
+                        definitions: (defaultEvent.definitions ?? {}) as any
+                      },
+                    }));
                   }
                 }}
                 options={availableEvents.map(e => e.id)}
@@ -208,9 +220,10 @@ export const EventsEdit: React.FC = () => {
                       }}
                       checked={item.isEnabled}
                       onClick={ev => ev.stopPropagation()}
-                      onChange={(_, val) => setItem({
-                        ...item, isEnabled: val,
-                      })}
+                      onChange={(_, val) => setItem(Event.create({
+                        ...item,
+                        isEnabled: val
+                      }))}
                     />
                     {params.InputProps.endAdornment}
                   </InputAdornment>,
@@ -243,14 +256,14 @@ export const EventsEdit: React.FC = () => {
                 fullWidth
                 label={translate('filter')}
                 value={item.filter}
-                onChange={(ev) => setItem({
+                onChange={(ev) => setItem(Event.create({
                   ...item, filter: ev.target.value,
-                })}
+                }))}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">
-                    <FormInputAdornmentCustomVariable additionalVariables={availableVariables} onSelect={filter => setItem({
+                    <FormInputAdornmentCustomVariable additionalVariables={availableVariables} onSelect={filter => setItem(Event.create({
                       ...item, filter: item.filter + filter,
-                    })}/>
+                    }))}/>
                   </InputAdornment>,
                 }}/>
 
@@ -266,17 +279,21 @@ export const EventsEdit: React.FC = () => {
                   </InputAdornment>,
                 }}/>
 
-              {Object.keys(item.definitions).map((key, index) => <EventsDefinitions
+              {Object.keys(item.event.definitions).map((key, index) => <EventsDefinitions
                 key={`${key}-${index}`}
                 additionalVariables={availableVariables}
-                attribute={key}
-                value={item.definitions[key]}
-                onChange={(value: any) => setItem({
+                error={propsError}
+                attribute={`event.definitions.${key}`}
+                value={(item.event.definitions as any)[key]}
+                onChange={(value: any) => setItem(Event.create({
                   ...item,
-                  definitions: {
-                    ...item.definitions, [key]: value,
+                  event: {
+                    ...item.event,
+                    definitions: {
+                      ...item.event.definitions, [key]: value,
+                    } as any
                   }
-                })}
+                }))}
               />)}
             </Box>
           </Grid>
@@ -301,12 +318,12 @@ export const EventsEdit: React.FC = () => {
                   color:           'white !important'
                 },
               }} onClick={() => {
-                setItem({
+                setItem(Event.create({
                   ...item,
                   operations: [
                     ...item.operations.filter(op => op.id !== operation.id)
                   ]
-                });
+                }));
               }}><DeleteTwoTone/></IconButton>
 
               <Box
@@ -324,14 +341,14 @@ export const EventsEdit: React.FC = () => {
                   disableClearable
                   sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
                   onChange={(ev, value) => {
-                    console.log('change');
+                    dirtify(`operations.${index}.name`);
                     setItem((it) => {
                       if (!it) {
                         return null;
                       }
                       it.operations[index].name = value;
                       it.operations[index].definitions = getEmptyDefinitionOf(value);
-                      return { ...it };
+                      return Event.create(it);
                     });
                   }}
                   options={availableOperations.map(e => e.id)}
@@ -342,7 +359,7 @@ export const EventsEdit: React.FC = () => {
                     return options.filter(o => capitalize(translate(o)).toLowerCase().includes(state.inputValue.toLowerCase()));
                   }}
                   getOptionLabel={(option) => capitalize(translate(option))}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <TextField {...params} {...propsError(`operations.${index}.name`)}/>}
                   renderOption={(p, option, { inputValue }) => {
                     const matches = match(capitalize(translate(option)), inputValue, { insideWords: true });
                     const parts = parse(capitalize(translate(option)), matches);
@@ -369,7 +386,8 @@ export const EventsEdit: React.FC = () => {
 
                 {Object.keys(operation.definitions).map((key, index_op) => <EventsDefinitions
                   key={`${key}-${index_op}`}
-                  attribute={key}
+                  attribute={`operations.${index}.definitions.${key}`}
+                  error={propsError}
                   additionalVariables={availableVariables}
                   value={operation.definitions[key]}
                   onChange={(value: any) =>
@@ -378,7 +396,7 @@ export const EventsEdit: React.FC = () => {
                         return null;
                       }
                       it.operations[index].definitions = { ...it.operations[index].definitions, [key]: value };
-                      return { ...it };
+                      return Event.create(it);
                     })
                   }
                 />)}
@@ -386,7 +404,7 @@ export const EventsEdit: React.FC = () => {
             </Paper>)}
 
             <Button variant='contained' sx={{ width: '300px', m: 'auto', display: 'block' }} onClick={() => {
-              setItem({
+              setItem(Event.create({
                 ...item,
                 operations: [
                   ...item.operations, {
@@ -395,7 +413,7 @@ export const EventsEdit: React.FC = () => {
                     definitions: getEmptyDefinitionOf(availableOperations[0]!.id),
                   }
                 ]
-              });
+              }));
             }}>Add operation</Button>
           </Grid>
         </Grid>}

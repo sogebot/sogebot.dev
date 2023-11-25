@@ -69,7 +69,8 @@
     "typeorm": "^0.3.17",
     "typescript": "latest",
     "uuid": "^9.0.1",
-    "worker-timers": "^7.0.77"
+    "worker-timers": "^7.0.77",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
@@ -105,7 +106,7 @@
     }
   },
   "scripts": {
-    "start": "cd ../backend && make bot && cd ../ui.admin-mui && react-scripts start",
+    "start": "react-scripts start",
     "build": "cross-env CI=false react-scripts build",
     "postinstall": "patch-package || (exit 0)",
     "test": "react-scripts test",

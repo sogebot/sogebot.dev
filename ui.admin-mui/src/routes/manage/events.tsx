@@ -2,7 +2,7 @@ import { DataTypeProvider, DataTypeProviderProps, FilteringState, IntegratedFilt
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
 import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { EventInterface } from '@sogebot/backend/dest/database/entity/event';
+import { Event } from '@sogebot/backend/dest/database/entity/event';
 import { useAtomValue } from 'jotai';
 import { useSnackbar } from 'notistack';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
@@ -36,8 +36,8 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
   }, [ rewards]);
 
   return <DataTypeProvider
-    formatterComponent={({ row }: { row?: EventInterface }) => <>
-      <Typography variant='body2'>{capitalize(translate(row!.name))}</Typography>
+    formatterComponent={({ row }: { row?: Event }) => <>
+      <Typography variant='body2'>{capitalize(translate(row!.event.name))}</Typography>
 
       {row!.filter.length > 0 && <Box sx={{ pt: '0.2rem', paddingLeft: '1rem' }}>
         <Paper sx={{
@@ -65,10 +65,10 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
         </Paper>
       </Box>}
 
-      {Object.keys(row!.definitions).length > 0 && <ul style={{
+      {Object.keys(row!.event.definitions).length > 0 && <ul style={{
         padding: 0, paddingLeft: '1rem', listStyle: 'none', margin: 0, paddingTop: '0.2rem'
       }}>
-        {Object.keys(row!.definitions).map((key, idx2) => <li key={idx2}>
+        {Object.keys(row!.event.definitions).map((key, idx2) => <li key={idx2}>
           { key === 'rewardId' ? translate('events.definitions.reward.label') : translate('events.definitions.' + key + '.label') }
           <Typography sx={{
             display:      'inline-block',
@@ -80,8 +80,8 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
           }} variant="caption">
             {
               key === 'rewardId'
-                ? getReward(String(row!.definitions[key]))
-                : String(row!.definitions[key])
+                ? getReward(String((row!.event.definitions as any)[key]))
+                : String((row!.event.definitions as any)[key])
             }
           </Typography>
         </li>)}
@@ -98,22 +98,22 @@ const PageManageEvents = () => {
   const { type, id } = useParams();
   const { translate } = useTranslation();
 
-  const [ items, setItems ] = useState<EventInterface[]>([]);
+  const [ items, setItems ] = useState<Event[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useAppSelector(state => state.appbar);
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<EventInterface>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Event>([
     {
-      columnName:  'name',
+      columnName:  'event.name',
       table:       { width: '30%' },
       translation: 'Event name',
       filtering:   {
         type:    'list' ,
         options: {
           showDisabled: false,
-          listValues:   Array.from(new Set(items.map(o => o.name))),
+          listValues:   Array.from(new Set(items.map(o => o.event.name))),
         },
       },
     }, {
@@ -178,9 +178,9 @@ const PageManageEvents = () => {
     },
   ]);
 
-  const { element: filterElement, filters } = useFilter<EventInterface>(useFilterSetup);
+  const { element: filterElement, filters } = useFilter<Event>(useFilterSetup);
 
-  const deleteItem = useCallback((item: EventInterface) => {
+  const deleteItem = useCallback((item: Event) => {
     getSocket('/core/events').emit('events::remove', item.id, () => {
       enqueueSnackbar(`Event ${item.id} deleted successfully.`, { variant: 'success' });
       refresh();
@@ -194,7 +194,7 @@ const PageManageEvents = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('generic::getAll', (err, res: EventInterface[]) => {
+        getSocket('/core/events').emit('generic::getAll', (err, res: Event[]) => {
           if (err) {
             resolve();
             return console.error(err);
@@ -230,7 +230,7 @@ const PageManageEvents = () => {
     return false;
   }, [ selection, items ]);
 
-  const bulkToggleAttribute = useCallback(async <T extends keyof EventInterface>(attribute: T, value: EventInterface[T]) => {
+  const bulkToggleAttribute = useCallback(async <T extends keyof Event>(attribute: T, value: Event[T]) => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item && item[attribute] !== value) {
@@ -324,7 +324,7 @@ const PageManageEvents = () => {
             />
 
             <EventNameProvider
-              for={['name']}
+              for={['event.name']}
             />
 
             <SortingState

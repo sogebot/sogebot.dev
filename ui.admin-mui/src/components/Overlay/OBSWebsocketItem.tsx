@@ -1,4 +1,4 @@
-import { Events } from '@sogebot/backend/dest/database/entity/event';
+import { Attributes } from '@sogebot/backend/dest/database/entity/event';
 import { OBSWebsocket as Entity } from '@sogebot/backend/dest/database/entity/overlay';
 import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
 import axios from 'axios';
@@ -58,7 +58,7 @@ function createHash(string: string) {
 
 /* eslint-disable */
 const evaluateScript = async(tasks: string, opts: {
-  event: Events.Attributes | undefined,
+  event: Attributes | undefined,
   obs: OBSWebSocket ,
   waitMs: (ms: number) => Promise<void>,
   log: (logMessage: string) => void,
@@ -68,7 +68,7 @@ const evaluateScript = async(tasks: string, opts: {
 };
 /* eslint-enable */
 
-const taskRunner = async (obs: ObsWebSocket, opts: { code: string, hash?: string, attributes?: Events.Attributes }): Promise<void> => {
+const taskRunner = async (obs: ObsWebSocket, opts: { code: string, hash?: string, attributes?: Attributes }): Promise<void> => {
   const hash = opts.hash ?? await createHash(opts.code);
   const tasks = opts.code;
   if (runningTasks.includes(hash)) {

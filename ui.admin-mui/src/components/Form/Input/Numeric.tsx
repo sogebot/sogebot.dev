@@ -16,6 +16,7 @@ export const FormNumericInput: React.FC<{
   displayEmpty,
   ...props
 }) => {
+
   const [propsValue, setPropsValue] = useState<number | ''>(value || 0);
 
   const keydownHandler: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
@@ -79,6 +80,7 @@ export const FormNumericInput: React.FC<{
   }, []);
 
   useEffect(() => {
+    props.onInput && props.onInput({} as any);
     if (onChange) {
       onChange(propsValue);
     }
