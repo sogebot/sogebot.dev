@@ -8,13 +8,16 @@ import React from 'react';
 import { rewardsAtom } from '../../../atoms';
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidatorZod';
 
 export const FormRewardInput: React.FC<{
   value?:    string | null
   onChange?: (value: { id: string, name: string }) => void,
+  error?:    ReturnType<ReturnType<typeof useValidator>['propsError']>
 }> = ({
   value,
   onChange,
+  error,
 }) => {
   const { translate } = useTranslation();
 
@@ -47,6 +50,7 @@ export const FormRewardInput: React.FC<{
 
   React.useEffect(() => {
     if (onChange && selectedReward) {
+      error?.onInput && error.onInput();
       onChange(selectedReward);
     }
   }, [ selectedReward, onChange ]);
@@ -56,7 +60,7 @@ export const FormRewardInput: React.FC<{
   }, [ ]);
 
   return (<>
-    <FormControl fullWidth>
+    <FormControl fullWidth error={error?.error}>
       <InputLabel id="reward-label" shrink>{capitalize(translate('event'))}</InputLabel>
       <Select
         MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
@@ -109,7 +113,8 @@ export const FormRewardInput: React.FC<{
           </Typography>
         </MenuItem>)}
       </Select>
-      <FormHelperText>
+      {error?.helperText && <FormHelperText error>{error.helperText}</FormHelperText>}
+      <FormHelperText error={false}>
         {translate('events.myRewardIsNotListed')}
         {' '}
         {translate('events.redeemAndClickRefreshToSeeReward')}

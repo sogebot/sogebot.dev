@@ -7,12 +7,14 @@ import { FormOBSWebsocketSelect } from './OBSWebsocketSelect';
 import { FormRewardInput } from './Reward';
 import { FormInputTime } from './Time';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidatorZod';
 
 type Props = {
   attribute:            string,
   value:                any,
   additionalVariables?: string[],
   onChange:             (value: any) => void;
+  error:                ReturnType<ReturnType<typeof useValidator>['propsError']>,
 };
 
 const EventsDefinitions: React.FC<Props> = (props) => {
@@ -26,6 +28,7 @@ const EventsDefinitions: React.FC<Props> = (props) => {
     </FormGroup>}
 
     {props.attribute === 'rewardId' && <FormRewardInput
+      error={props.error}
       value={String(props.value)}
       onChange={value => props.onChange(value.id)}/>
     || props.attribute === 'taskId' && <FormOBSWebsocketSelect value={String(props.value)}
@@ -47,11 +50,12 @@ const EventsDefinitions: React.FC<Props> = (props) => {
       helperText={translate(`events.definitions.${props.attribute}.placeholder`)}
       onChange={val => props.onChange(val)}/>
     || typeof props.value === 'string' && <TextField
+      {...props.error}
       fullWidth
       label={translate(`events.definitions.${props.attribute}.label`)}
-      helperText={translate(`events.definitions.${props.attribute}.placeholder`)}
       value={props.value}
       onChange={ev => props.onChange(ev.currentTarget.value)}
+      helperText={props.error.helperText ? props.error.helperText : translate(`events.definitions.${props.attribute}.placeholder`)}
       InputProps={['commandToRun', 'messageToSend'].includes(props.attribute) && {
         endAdornment: <InputAdornment position="end">
           <FormInputAdornmentCustomVariable additionalVariables={props.additionalVariables} onSelect={filter =>
@@ -59,10 +63,11 @@ const EventsDefinitions: React.FC<Props> = (props) => {
         </InputAdornment>,
       } || undefined}/>
     || typeof props.value === 'number' && <FormNumericInput
+      {...props.error}
       fullWidth
       min={0}
       label={translate(`events.definitions.${props.attribute}.label`)}
-      helperText={translate(`events.definitions.${props.attribute}.placeholder`)}
+      helperText={props.error.helperText ? props.error.helperText : translate(`events.definitions.${props.attribute}.placeholder`)}
       value={Number(props.value)}
       onChange={value => props.onChange(value)}/>}
   </>;

@@ -69,7 +69,8 @@
     "typeorm": "^0.3.17",
     "typescript": "latest",
     "uuid": "^9.0.1",
-    "worker-timers": "^7.0.77"
+    "worker-timers": "^7.0.77",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",

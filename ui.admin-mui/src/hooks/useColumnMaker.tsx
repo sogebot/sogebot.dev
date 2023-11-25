@@ -6,8 +6,8 @@ import { useFilter } from './useFilter';
 import { useTranslation } from './useTranslation';
 import { customPredicate } from '../helpers/customPredicate';
 
-export type ColumnMakerProps<T> = {
-  columnName:      keyof T | 'actions';
+export type ColumnMakerProps<T extends Record<string, any>> = {
+  columnName:      keyof Flatten<T> | 'actions';
   translationKey?: string;
   translation?:    string;
   table?:          Omit<VirtualTable.ColumnExtension, 'columnName'>;
@@ -29,7 +29,7 @@ export type ColumnMakerProps<T> = {
   predicate?: (value: string, filter: Filter, row: any) => boolean;
 }[];
 
-export const useColumnMaker = <T,>(props: ColumnMakerProps<T>) => {
+export const useColumnMaker = <T extends Record<string, any>>(props: ColumnMakerProps<T>) => {
   const { translate } = useTranslation();
 
   const tableColumnExtensions = useMemo(() => props.map((item: typeof props[number]) => ({
