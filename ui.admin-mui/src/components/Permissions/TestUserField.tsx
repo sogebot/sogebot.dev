@@ -58,7 +58,7 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
           err, r,
         });
         if (err) {
-          setError(err instanceof Error ? err.stack ?? '' : err);
+          setError(err instanceof Error ? err.stack ?? '' : String(err));
           setIsTesting(false);
           return console.error(translate('core.permissions.' + err));
         }

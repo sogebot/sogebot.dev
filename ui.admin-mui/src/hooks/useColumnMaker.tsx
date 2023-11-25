@@ -7,7 +7,7 @@ import { useTranslation } from './useTranslation';
 import { customPredicate } from '../helpers/customPredicate';
 
 export type ColumnMakerProps<T extends Record<string, any>> = {
-  columnName:      keyof Flatten<T> | 'actions';
+  columnName:      keyof T | 'actions';
   translationKey?: string;
   translation?:    string;
   table?:          Omit<VirtualTable.ColumnExtension, 'columnName'>;

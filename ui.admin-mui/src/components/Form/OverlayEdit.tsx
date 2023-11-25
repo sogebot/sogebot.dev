@@ -47,7 +47,6 @@ import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
 import { getSocket } from '../../helpers/socket';
 import { useAppSelector } from '../../hooks/useAppDispatch';
-import { useValidator } from '../../hooks/useValidator';
 import { getParentDelKeyStatus } from '../../store/overlaySlice';
 import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
@@ -188,7 +187,6 @@ export const OverlayEdit: React.FC = () => {
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, haveErrors, validate } = useValidator();
 
   React.useEffect(() => {
     if (id) {
@@ -215,8 +213,7 @@ export const OverlayEdit: React.FC = () => {
       setItem(Object.assign(new Overlay(), emptyItem));
       setLoading(false);
     }
-    reset();
-  }, [id, reset, enqueueSnackbar, navigate]);
+  }, [id, enqueueSnackbar, navigate]);
 
   React.useEffect(() => {
     if (!loading && item) {
@@ -229,12 +226,6 @@ export const OverlayEdit: React.FC = () => {
       }
     }
   }, [item, loading]);
-
-  React.useEffect(() => {
-    if (!loading && item) {
-      validate(Overlay, item);
-    }
-  }, [item, loading, validate]);
 
   const handleClose = () => {
     navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
@@ -731,7 +722,7 @@ export const OverlayEdit: React.FC = () => {
     <DialogActions>
       <Button sx={{ width: 150 }} onClick={handleLinkCopy}>overlay link</Button>
       <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
-      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
+      <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={loading}>Save</LoadingButton>
     </DialogActions>
   </>);
 };

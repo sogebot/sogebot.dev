@@ -79,7 +79,7 @@ const PageSettingsModulesSystemsPoints: React.FC<{
           if (err instanceof Error) {
             setCronError(err.stack || err.message);
           } else {
-            setCronError(err);
+            setCronError(String(err));
           }
         } else {
           setCronError('');

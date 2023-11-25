@@ -1,19 +1,18 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Checkbox, FormControlLabel, FormGroup, Paper, Stack, TextField, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import { IsNotEmpty, validateOrReject } from 'class-validator';
 import React, { useEffect } from 'react';
 import { useRefElement } from 'rooks';
+import { z } from 'zod';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
-class Settings {
-  @IsNotEmpty()
-    domain: string;
-}
+const schema = z.object({
+  domain: z.string().min(1),
+});
 
 const PageSettingsModulesCoreUI: React.FC<{
   onVisible: () => void,
@@ -25,17 +24,16 @@ const PageSettingsModulesCoreUI: React.FC<{
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/core/ui');
   const { translate } = useTranslation();
 
-  const { propsError, setErrors, haveErrors } = useValidator({ translations: { domain: translate('core.ui.settings.domain.title') } });
+  const { propsError, haveErrors, validate } = useValidator({
+    schema,
+    translations: { domain: translate('core.ui.settings.domain.title') }
+  });
 
   useEffect(() => {
     if (!loading && settings) {
-      const toCheck = new Settings();
-      toCheck.domain = settings.domain[0];
-      validateOrReject(toCheck, { always: true })
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate({ domain: settings.domain[0] }, true);
     }
-  }, [loading, settings, setErrors]);
+  }, [loading, settings]);
 
   useEffect(() => {
     refresh();

@@ -29,7 +29,7 @@ export const HLTBEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: HowLongToBeatGameSchema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new HowLongToBeatGame().schema });
 
   const handleValueChange = useCallback(<T extends keyof HowLongToBeatGame>(key: T, value: HowLongToBeatGame[T]) => {
     if (!item) {

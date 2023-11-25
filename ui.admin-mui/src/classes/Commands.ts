@@ -1,15 +1,13 @@
-import { IsCommand } from '@sogebot/backend/dest/database/validators/IsCommand';
-import { IsNotEmpty, MinLength } from 'class-validator';
+import { command } from '@sogebot/backend/src/database/validators/IsCommand';
+import { z } from 'zod';
 
-export class Commands {
-  id:           string;
-  defaultValue: string;
-  type:         string;
-  name:         string;
+export const schema = z.object({
+  id:           z.string(),
+  defaultValue: z.string(),
+  type:         z.string(),
+  name:         z.string(),
+  permission:   z.string().nullable(),
+  command:      command(),
+});
 
-  @IsNotEmpty()
-  @MinLength(2)
-  @IsCommand()
-    command: string;
-  permission: string | null;
-}
+export type Commands = z.infer<typeof schema>;

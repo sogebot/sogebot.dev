@@ -5,9 +5,9 @@ import { Plugin } from '@sogebot/backend/src/database/entity/plugins';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
-import { IsNotEmpty, MinLength } from 'class-validator';
 import { useSnackbar } from 'notistack';
 import React from 'react';
+import { z } from 'zod';
 
 import type { Plugin as RemotePlugin } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -15,19 +15,14 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
 
+const schema = z.object({
+  name:        z.string().min(2),
+  description: z.string().min(2),
+});
+
 type Props = {
   model: Plugin
 };
-
-class RemotePluginValidator {
-  @IsNotEmpty()
-  @MinLength(2)
-    name: string;
-
-  @MinLength(2)
-  @IsNotEmpty()
-    description: string;
-}
 
 const endpoint = 'https://registry.sogebot.xyz';
 
@@ -46,7 +41,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   const [ remotePlugin, setRemotePlugin ] = React.useState<undefined | RemotePlugin>(undefined);
   const [ remotePlugins, setRemotePlugins ] = React.useState<null | RemotePlugin[]>(null);
 
-  const { reset, haveErrors, validate, propsError } = useValidator();
+  const { reset, haveErrors, validate, propsError } = useValidator({ schema });
 
   const getUserId = () => {
     return JSON.parse(localStorage['cached-logged-user']).id;
@@ -57,7 +52,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [model.workflow]);
 
   React.useEffect(() => {
-    validate(RemotePluginValidator, {
+    validate({
       name, description,
     });
   }, [name, description]);
@@ -98,7 +93,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       compatibleWith: string,
     };
 
-    const isValid = await validate(RemotePluginValidator, toSave, true);
+    const isValid = await validate(toSave, true);
     if (!isValid) {
       return;
     }

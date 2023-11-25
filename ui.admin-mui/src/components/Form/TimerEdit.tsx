@@ -28,7 +28,7 @@ export const TimerEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Timer().schema });
 
   const handleValueChange = useCallback(<T extends keyof Timer>(key: T, value: Timer[T]) => {
     if (!item) {
@@ -53,9 +53,9 @@ export const TimerEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Timer, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/manage/timers');

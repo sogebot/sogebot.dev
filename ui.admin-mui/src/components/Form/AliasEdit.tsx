@@ -35,7 +35,7 @@ export const AliasEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, validate, haveErrors, showErrors } = useValidator();
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Alias().schema });
 
   const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
     if (!alias) {
@@ -64,9 +64,9 @@ export const AliasEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && alias) {
-      validate(Alias, alias);
+      validate(alias);
     }
-  }, [alias, loading, validate]);
+  }, [alias, loading]);
 
   const handleClose = () => {
     setTimeout(() => {
