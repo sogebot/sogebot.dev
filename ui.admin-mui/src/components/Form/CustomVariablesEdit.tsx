@@ -5,7 +5,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, Button, Checkbox, Collapse, DialogActions, DialogContent, FormControl, FormLabel, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { Variable } from '@sogebot/backend/dest/database/entity/variable';
+import { Variable, variableSchema } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
@@ -18,7 +18,7 @@ import { useLocalstorageState } from 'rooks';
 import { getSocket } from '../../helpers/socket';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidator';
+import { useValidator } from '../../hooks/useValidatorZod';
 
 // This is ugly hack but we need it to import lodash bindings
 /* eslint-disable */
@@ -80,7 +80,7 @@ export const CustomVariablesEdit: React.FC = () => {
   const { configuration } = useAppSelector(state => state.loader);
   const { translate } = useTranslation();
   const { propsError, reset, showErrors, validate, haveErrors } = useValidator({
-    mustBeDirty: true, translations: { variableName: translate('name') },
+    mustBeDirty: true, translations: { variableName: translate('name') }, schema: variableSchema,
   });
   const [ page, setPage ] = useState(0);
   const [ item, setItem ] = useState<Variable>();
@@ -305,12 +305,12 @@ export const CustomVariablesEdit: React.FC = () => {
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Variable, item);
+      validate(item);
     }
     if (loading) {
       reset();
     }
-  }, [item, loading, validate, reset]);
+  }, [item, loading, reset]);
 
   const handleClose = () => {
     navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
