@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
+import getAccessToken from '../../../getAccessToken';
 import { getSocket } from '../../../helpers/socket';
 
 type UserLevel =
@@ -35,14 +36,14 @@ export const sleep = async (ms: number) => {
 
 const fetchWithRetries = async (
   url: string,
-  headers: { Authorization: string },
+  options: AxiosRequestConfig,
   retries = 3,
-  delay = 6 * 10e4 // 60_000ms
+  delaySeconds = 60
 ) => {
-  const delaySeconds = delay / 10e3;
+  const delay = delaySeconds * 10e3; // 60_000ms
   while (retries-- > 0) {
     try {
-      const response = await axios.get(url, { headers });
+      const response = await axios.get(url,  options );
       return response.data;
     } catch (error: any) {
       console.info(`Retrying after ${delaySeconds} seconds.`);
@@ -57,7 +58,7 @@ const fetchCustomCommandsPage = async (
   const url = 'https://api.nightbot.tv/1/commands';
   try {
     const page = fetchWithRetries(url, {
-      Authorization: 'Bearer ' + accessToken,
+      headers: { Authorization: 'Bearer ' + accessToken, }
     });
     return page;
   } catch {
@@ -85,30 +86,26 @@ export const importCustomCommands = async (accessToken: string | null) => {
   let failCount = 0;
   for (const command of commands) {
     try {
-      await new Promise((resolve, reject) => {
-        getSocket('/systems/songs').emit(
-          'import.video',
-          {
-            playlist:  '!nb_' + command.name,
-            forcedTag: 'nightbot-import',
-          },
-          (err) => {
-            if (err) {
-              failCount += 1;
-              console.error('error: ', command.name);
-              reject(err);
-            } else {
-              resolve('resolved');
-            }
-          }
-        );
-      });
-    } catch (error) {
-      console.error('ERROR DURING COMMANDS IMPORT: ', error);
+      console.info(command);
+      // const response = await axios.post(
+      //   `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+      //   { foo: command.name },
+      //   { headers: { authorization: `Bearer ${getAccessToken()}` } }
+      // );
+      // if (response.status !== 200) {
+      //   failCount += 1;
+      // }
+    } catch (error: any) {
+      console.error(
+        'ERROR DURING COMMANDS IMPORT: ',
+        error.response.data.errors
+      );
+      enqueueSnackbar('ERROR DURING COMMANDS IMPORT: ', { variant: 'error' });
     }
   }
+
   if (failCount > 0) {
-    enqueueSnackbar(`${failCount} videos failed to import.`, {
+    enqueueSnackbar(`${failCount} commands failed to import.`, {
       variant: 'info',
     });
   }
@@ -127,8 +124,8 @@ type Command = {
 type PlaylistItem = {
   track:     Command;
   _id:       string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string; // timestamp date
+  updatedAt: string; // timestamp date
 };
 
 type PlaylistResponse = {
@@ -140,28 +137,25 @@ type PlaylistResponse = {
   playlist: PlaylistItem[];
 };
 
-const fetchPlaylistPage = async (offset: number, accessToken: string | null): Promise<PlaylistResponse> => {
+const fetchPlaylistPage = async (
+  offset: number,
+  accessToken: string | null
+): Promise<PlaylistResponse> => {
   const url = 'https://api.nightbot.tv/1/song_requests/playlist';
-  const delay = 10 ** 4 * 6;
-  const delaySeconds = delay / 10 ** 3;
-  for (let retries = 3; retries > 0; retries--) {
-    try {
-      const response = await axios.get(url, {
-        params: {
-          limit:  100,
-          offset: offset,
-        },
-        headers: { Authorization: 'Bearer ' + accessToken },
-      });
-      return response.data;
-    } catch (error: any) {
-      console.info(`Retrying after ${delaySeconds} seconds.`);
-      await sleep(delay);
-    }
+  try {
+    const page = fetchWithRetries(url, {
+      params: {
+        limit:  100,
+        offset: offset,
+      },
+      headers: { Authorization: 'Bearer ' + accessToken },
+    });
+    return page;
+  } catch {
+    console.error('Error fetching commands after multiple retries.');
+    enqueueSnackbar('Remote server error.', { variant: 'error' });
+    throw new Error('Failed to fetch commands after multiple retries.');
   }
-  console.error('Error fetching playlist page after multiple retries.');
-  enqueueSnackbar('Remote server error.', { variant: 'error' });
-  throw new Error('Failed to fetch playlist after multiple retries.');
 };
 
 const fetchTracks = async (
@@ -173,7 +167,7 @@ const fetchTracks = async (
     const page = await fetchPlaylistPage(offset, accessToken);
     const mergedTracks = tracks.concat(page.playlist.map((t) => t.track));
     if (mergedTracks.length < page._total) {
-      await fetchTracks( accessToken, mergedTracks, offset + 100,);
+      await fetchTracks(accessToken, mergedTracks, offset + 100);
     }
     return mergedTracks;
   } catch (error: any) {
