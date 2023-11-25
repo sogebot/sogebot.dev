@@ -10,7 +10,6 @@ type Props = {
   translations?: Record<string, string>;
   /** Values needs to be changed to trigger errors  */
   mustBeDirty?:  boolean;
-  localize?:     (key: string) => string;
   schema:        z.AnyZodObject;
 };
 
@@ -36,7 +35,7 @@ export const useValidator = (props: Props) => {
 
   const haveErrors = useMemo(() => {
     if (props.mustBeDirty) {
-      const filteredErrors = errors.filter(o => dirty.includes(o.path[o.path.length - 1] as string));
+      const filteredErrors = errors.filter(o => dirty.includes(o.path.join('.') as string));
       return filteredErrors.length > 0;
     } else {
       return errors.length > 0;
@@ -45,7 +44,7 @@ export const useValidator = (props: Props) => {
 
   useEffect(() => {
     if (props.mustBeDirty) {
-      const filteredErrors = errors.filter(o => dirty.includes(o.path[o.path.length - 1] as string));
+      const filteredErrors = errors.filter(o => dirty.includes(o.path.join('.') as string));
       if (!isEqual(filteredErrors, errors)) {
         setErrors(filteredErrors);
       }
@@ -57,52 +56,32 @@ export const useValidator = (props: Props) => {
     for (const error of errors) {
       let translation = '';
       if (error.code === 'too_small') {
-        translation = translate(`errors.minLength`)
-          .replace('$property', translate('properties.thisvalue'))
-          .replace('$constraint1', error.minimum.toString());
+        if (error.type === 'number') {
+          translation = translate(`errors.min`)
+            .replace('$property', translate('properties.thisvalue'))
+            .replace('$constraint1', error.minimum.toString());
+        } else {
+          translation = translate(`errors.minLength`)
+            .replace('$property', translate('properties.thisvalue'))
+            .replace('$constraint1', error.minimum.toString());
+        }
       } else if (error.code ==='custom') {
         translation = translate(`errors.` + error.message)
           .replace('$property', translate('properties.thisvalue'));
+      } else if (error.code === 'invalid_union_discriminator') {
+        translation = `${translate('properties.thisvalue')} must be one of these options: ${error.options.join(', ')}`;
       } else {
+        console.error({ error });
         throw Error('Unknown error code: ' + error.code);
       }
 
-      if (_errors[error.path[error.path.length - 1] as string] === undefined) {
-        _errors[error.path[error.path.length - 1] as string] = [];
+      if (_errors[error.path.join('.')] === undefined) {
+        _errors[error.path.join('.')] = [];
       }
-      _errors[error.path[error.path.length - 1] as string].push(capitalize(translation));
+      _errors[error.path.join('.')].push(capitalize(translation));
     }
     return _errors;
   }, [ errors, translate, props.translations ]);
-
-  const errorsList = useCallback((errorsArg: z.ZodIssue[]) => {
-    const _errors: string[] = [];
-    for (const error of errorsArg) {
-      let translation = '';
-      let property = error.path[error.path.length - 1] as string;
-      if (property === 'rewardId') {
-        property = capitalize(translate('event'));
-      } else {
-        if (props.localize) {
-          property = capitalize(props.localize(property));
-        }
-      }
-      property += ' - ';
-
-      if (error.code === 'too_small') {
-        translation = translate(`errors.minLength`)
-          .replace('$property', property)
-          .replace('$constraint1', error.minimum.toString());
-      } else if (error.code ==='custom') {
-        translation = translate(`errors.` + error.message)
-          .replace('$property', property);
-      } else {
-        throw Error('Unknown error code: ' + error.code);
-      }
-      _errors.push(capitalize(translation));
-    }
-    return _errors;
-  }, [ translate ]);
 
   const reset = useCallback(() => {
     setDirty([]);
@@ -137,7 +116,7 @@ export const useValidator = (props: Props) => {
   /**
    * Validate values defined by zod schema
    */
-  const validate = useCallback(async (values: any, dirtifyValues?: boolean) => {
+  const validate = async (values: any, dirtifyValues?: boolean) => {
     if (dirtifyValues) {
       setDirty(v => [...v, ...Object.keys(values)]);
     }
@@ -147,7 +126,6 @@ export const useValidator = (props: Props) => {
       setErrors(null);
       return true;
     } catch (e) {
-      console.error('Errors during validation', e);
       if (e instanceof z.ZodError) {
         setErrors(e.errors);
       } else {
@@ -155,26 +133,41 @@ export const useValidator = (props: Props) => {
       }
       return false;
     }
-  }, [setErrors]);
+  };
 
   const showErrors = useCallback((err: z.ZodError | string) => {
-    console.error('Errors during validation', { err });
+    console.error(err);
 
     if (typeof err === 'string') {
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{err}</Typography>
       </Stack>), { variant: 'error' });
     } else {
-      setDirty(err.issues.map(o => o.path[o.path.length - 1] as string));
+      setDirty(err.issues.map(o => o.path.join('.') as string));
       setErrors(err.issues);
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{translate('errors.errorDialogHeader')}</Typography>
-        <ul>{errorsList(err.issues).map((o, i) => <li key={i}>{o}</li>)}</ul>
       </Stack>), { variant: 'error' });
     }
-  }, [errorsList, setDirty, enqueueSnackbar, translate]);
+  }, [setDirty, enqueueSnackbar, translate]);
+
+  const dirtify = (attribute: string) => {
+    setDirty(val => {
+      if (!val.includes(attribute)) {
+        return [...val, attribute];
+      } else {
+        return val;
+      }
+    });
+  };
 
   return {
-    propsError, reset, setErrors, errorsList, validate, showErrors, haveErrors,
+    dirtify,
+    propsError,
+    reset,
+    setErrors,
+    validate,
+    showErrors,
+    haveErrors,
   };
 };

@@ -106,7 +106,7 @@
     }
   },
   "scripts": {
-    "start": "cd ../backend && make bot && cd ../ui.admin-mui && react-scripts start",
+    "start": "react-scripts start",
     "build": "cross-env CI=false react-scripts build",
     "postinstall": "patch-package || (exit 0)",
     "test": "react-scripts test",

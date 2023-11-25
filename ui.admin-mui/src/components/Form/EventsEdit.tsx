@@ -40,11 +40,8 @@ export const EventsEdit: React.FC = () => {
   const [ availableOperations, setAvailableOperations ] = useState<SupportedOperation[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
-  const { reset, haveErrors, validate, showErrors, propsError } = useValidator({
-    schema:   EventSchema,
-    localize: (key) => {
-      return translate(`events.definitions.${key}.label`);
-    }
+  const { reset, haveErrors, validate, showErrors, propsError, dirtify } = useValidator({
+    schema: EventSchema,
   });
 
   React.useEffect(() => {
@@ -100,7 +97,6 @@ export const EventsEdit: React.FC = () => {
       }),
       new Promise<void>(resolve => {
         getSocket('/core/events').emit('list.supported.events', (err, data: SupportedEvent[]) => {
-          console.log({ data, err });
           if (err) {
             console.error(err);
           } else {
@@ -286,8 +282,8 @@ export const EventsEdit: React.FC = () => {
               {Object.keys(item.event.definitions).map((key, index) => <EventsDefinitions
                 key={`${key}-${index}`}
                 additionalVariables={availableVariables}
-                error={propsError(key)}
-                attribute={key}
+                error={propsError}
+                attribute={`event.definitions.${key}`}
                 value={(item.event.definitions as any)[key]}
                 onChange={(value: any) => setItem(Event.create({
                   ...item,
@@ -345,7 +341,7 @@ export const EventsEdit: React.FC = () => {
                   disableClearable
                   sx={{ '& .MuiFilledInput-root': { p: '10px' } }}
                   onChange={(ev, value) => {
-                    console.log('change');
+                    dirtify(`operations.${index}.name`);
                     setItem((it) => {
                       if (!it) {
                         return null;
@@ -363,7 +359,7 @@ export const EventsEdit: React.FC = () => {
                     return options.filter(o => capitalize(translate(o)).toLowerCase().includes(state.inputValue.toLowerCase()));
                   }}
                   getOptionLabel={(option) => capitalize(translate(option))}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <TextField {...params} {...propsError(`operations.${index}.name`)}/>}
                   renderOption={(p, option, { inputValue }) => {
                     const matches = match(capitalize(translate(option)), inputValue, { insideWords: true });
                     const parts = parse(capitalize(translate(option)), matches);
@@ -390,8 +386,8 @@ export const EventsEdit: React.FC = () => {
 
                 {Object.keys(operation.definitions).map((key, index_op) => <EventsDefinitions
                   key={`${key}-${index_op}`}
-                  attribute={key}
-                  error={propsError(key)}
+                  attribute={`operations.${index_op}.definitions.${key}`}
+                  error={propsError}
                   additionalVariables={availableVariables}
                   value={operation.definitions[key]}
                   onChange={(value: any) =>
