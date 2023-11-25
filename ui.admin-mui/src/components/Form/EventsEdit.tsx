@@ -386,7 +386,7 @@ export const EventsEdit: React.FC = () => {
 
                 {Object.keys(operation.definitions).map((key, index_op) => <EventsDefinitions
                   key={`${key}-${index_op}`}
-                  attribute={`operations.${index_op}.definitions.${key}`}
+                  attribute={`operations.${index}.definitions.${key}`}
                   error={propsError}
                   additionalVariables={availableVariables}
                   value={operation.definitions[key]}

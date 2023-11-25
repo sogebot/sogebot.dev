@@ -70,6 +70,8 @@ export const useValidator = (props: Props) => {
           .replace('$property', translate('properties.thisvalue'));
       } else if (error.code === 'invalid_union_discriminator') {
         translation = `${translate('properties.thisvalue')} must be one of these options: ${error.options.join(', ')}`;
+      } else if (error.code === 'invalid_type') {
+        translation = `${translate('properties.thisvalue')} expected type is ${error.expected}, got ${error.received}. To fix this, please remove it and create again.`;
       } else {
         console.error({ error });
         throw Error('Unknown error code: ' + error.code);

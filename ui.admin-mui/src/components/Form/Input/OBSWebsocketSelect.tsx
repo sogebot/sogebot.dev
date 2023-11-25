@@ -1,5 +1,5 @@
 import { RefreshTwoTone } from '@mui/icons-material';
-import { CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { CircularProgress, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
@@ -7,13 +7,16 @@ import React from 'react';
 
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { useValidator } from '../../../hooks/useValidatorZod';
 
 export const FormOBSWebsocketSelect: React.FC<{
   value?:    string | null
   onChange?: (value: { id: string, name: string }) => void,
+  error?:    ReturnType<ReturnType<typeof useValidator>['propsError']>
 }> = ({
   value,
   onChange,
+  error,
 }) => {
   const { translate } = useTranslation();
 
@@ -46,6 +49,7 @@ export const FormOBSWebsocketSelect: React.FC<{
 
   React.useEffect(() => {
     if (onChange && selectedItem) {
+      error?.onInput && error.onInput();
       onChange(selectedItem);
     }
   }, [ selectedItem, onChange ]);
@@ -55,7 +59,7 @@ export const FormOBSWebsocketSelect: React.FC<{
   }, [ ]);
 
   return (<>
-    <FormControl fullWidth>
+    <FormControl fullWidth error={error?.error}>
       <InputLabel id="reward-label" shrink>{translate(`events.definitions.taskId.label`)}</InputLabel>
       <Select
         MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
@@ -108,6 +112,7 @@ export const FormOBSWebsocketSelect: React.FC<{
           </Typography>
         </MenuItem>)}
       </Select>
+      {error?.helperText && <FormHelperText error>{error.helperText}</FormHelperText>}
     </FormControl>
   </>
   );

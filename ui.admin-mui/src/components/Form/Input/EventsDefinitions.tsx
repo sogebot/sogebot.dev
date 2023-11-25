@@ -28,12 +28,14 @@ const EventsDefinitions: React.FC<Props> = (props) => {
     }}>
       <FormControlLabel control={<Checkbox checked={Boolean(props.value)} onChange={(_, checked) => props.onChange(checked)}/>} label={translate(`events.definitions.${lastAttribute}.label`)} />
     </FormGroup>}
-
+    
     {lastAttribute === 'rewardId' && <FormRewardInput
       error={props.error(props.attribute)}
       value={String(props.value)}
       onChange={value => props.onChange(value.id)}/>
-    || lastAttribute === 'taskId' && <FormOBSWebsocketSelect value={String(props.value)}
+    || lastAttribute === 'taskId' && <FormOBSWebsocketSelect
+      error={props.error(props.attribute)}
+      value={String(props.value)}
       onChange={value => props.onChange(value.id)}/>
     || lastAttribute === 'durationOfCommercial' && <FormControl variant="filled" fullWidth>
       <InputLabel id="demo-simple-select-standard-label">{translate(`events.definitions.${lastAttribute}.label`)}</InputLabel>
