@@ -1,12 +1,11 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IsInt, IsNotEmpty, Min, validateOrReject } from 'class-validator';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
-
+import { z } from 'zod';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -14,17 +13,10 @@ import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 import { ConfirmButton } from '../../Buttons/ConfirmButton';
 
-class Settings {
-  @IsNotEmpty()
-  @Min(120, { message: '$constraint1' })
-  @IsInt()
-    accessTokenExpirationTime: number;
-
-  @IsNotEmpty()
-  @Min(400000, { message: '$constraint1' })
-  @IsInt()
-    refreshTokenExpirationTime: number;
-}
+const schema = z.object({
+  accessTokenExpirationTime: z.number().min(120),
+  refreshTokenExpirationTime: z.number().min(400000),
+});
 
 const PageSettingsModulesCoreSocket: React.FC<{
   onVisible: () => void,
@@ -39,7 +31,8 @@ const PageSettingsModulesCoreSocket: React.FC<{
   }, [ refresh ]);
 
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, setErrors, haveErrors } = useValidator({
+  const { propsError, setErrors, haveErrors, validate } = useValidator({
+    schema,
     translations: {
       accessTokenExpirationTime:  translate('core.socket.settings.accessTokenExpirationTime'),
       refreshTokenExpirationTime: translate('core.socket.settings.refreshTokenExpirationTime'),
@@ -48,12 +41,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
 
   useEffect(() => {
     if (!loading && settings) {
-      const toCheck = new Settings();
-      toCheck.accessTokenExpirationTime = Number(settings.connection.accessTokenExpirationTime[0]);
-      toCheck.refreshTokenExpirationTime = Number(settings.connection.refreshTokenExpirationTime[0]);
-      validateOrReject(toCheck, { always: true })
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate({ accessTokenExpirationTime: settings.connection.accessTokenExpirationTime[0], refreshTokenExpirationTime: settings.connection.refreshTokenExpirationTime[0] }, true);
     }
   }, [loading, settings, setErrors]);
 

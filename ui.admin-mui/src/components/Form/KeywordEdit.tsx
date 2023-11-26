@@ -34,7 +34,7 @@ export const KeywordEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Keyword().schema });
 
   const handleValueChange = <T extends keyof Keyword>(key: T, value: Keyword[T]) => {
     if (!item) {
@@ -84,9 +84,9 @@ export const KeywordEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Keyword, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/commands/keywords');

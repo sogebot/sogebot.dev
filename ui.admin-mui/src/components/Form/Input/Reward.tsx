@@ -8,7 +8,7 @@ import React from 'react';
 import { rewardsAtom } from '../../../atoms';
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { useValidator } from '../../../hooks/useValidatorZod';
+import { useValidator } from '../../../hooks/useValidator';
 
 export const FormRewardInput: React.FC<{
   value?:    string | null

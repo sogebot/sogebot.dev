@@ -44,7 +44,7 @@ export const CommandsEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Commands().schema });
 
   const handleValueChange = useCallback(<T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
@@ -99,9 +99,9 @@ export const CommandsEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Commands, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/commands/customcommands');

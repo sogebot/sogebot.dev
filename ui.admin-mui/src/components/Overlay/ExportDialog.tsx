@@ -7,11 +7,11 @@ import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
-import { IsNotEmpty, MinLength } from 'class-validator';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
+import { z } from 'zod';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -20,19 +20,14 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
 
+const schema = z.object({
+  name:        z.string().min(2),
+  description: z.string().min(2),
+});
+
 type Props = {
   model: Overlay
 };
-
-class RemoteOverlayValidator {
-  @IsNotEmpty()
-  @MinLength(2)
-    name: string;
-
-  @MinLength(2)
-  @IsNotEmpty()
-    description: string;
-}
 
 const endpoint = 'https://registry.sogebot.xyz';
 
@@ -53,7 +48,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   const [ remoteOverlay, setRemoteOverlay ] = React.useState<undefined | RemoteOverlay>(undefined);
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
 
-  const { reset, haveErrors, validate, propsError } = useValidator();
+  const { reset, haveErrors, validate, propsError } = useValidator({ schema });
 
   const getUserId = () => {
     return JSON.parse(localStorage['cached-logged-user']).id;
@@ -64,7 +59,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
   }, [model.items]);
 
   React.useEffect(() => {
-    validate(RemoteOverlayValidator, {
+    validate({
       name, description,
     });
   }, [name, description]);
@@ -144,7 +139,7 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
       compatibleWith: string,
     };
 
-    const isValid = await validate(RemoteOverlayValidator, toSave, true);
+    const isValid = await validate(toSave, true);
     if (!isValid) {
       return;
     }

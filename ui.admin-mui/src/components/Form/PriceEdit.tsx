@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { FormNumericInput } from './Input/Numeric';
 import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
@@ -28,12 +29,17 @@ export const PriceEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors, dirtify } = useValidator({ schema: new Price().schema });
 
   const handleValueChange = <T extends keyof Price>(key: T, value: Price[T]) => {
     if (!item) {
       return;
     }
+
+    if (key === 'price' || key === 'priceBits') {
+      dirtify('invalidPrice');
+    }
+
     const update = cloneDeep(item);
     update[key] = value;
     setItem(update);
@@ -53,9 +59,9 @@ export const PriceEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Price, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/commands/price');
@@ -102,31 +108,35 @@ export const PriceEdit: React.FC<{
 
           <Grid container>
             <Grid item xs>
-              <TextField
+              <FormNumericInput
+                min={0}
                 fullWidth
                 {...propsError('price')}
+                error={propsError('invalidPrice').error || propsError('price').error}
                 variant="filled"
-                type="number"
                 value={item?.price || 0}
                 label={`${translate('price')} (${translate('points')})`}
-                onChange={(event) => handleValueChange('price', Number(event.target.value))}
+                onChange={(value) => handleValueChange('price', Number(value))}
               />
             </Grid>
             <Divider orientation="vertical" flexItem>
               {translate('or')}
             </Divider>
             <Grid item xs>
-              <TextField
+              <FormNumericInput
+                min={0}
                 fullWidth
                 {...propsError('priceBits')}
+                error={propsError('invalidPrice').error || propsError('priceBits').error}
                 variant="filled"
-                type="number"
                 value={item?.priceBits || 0}
                 label={`${translate('price')} (${translate('bits')})`}
-                onChange={(event) => handleValueChange('priceBits', Number(event.target.value))}
+                onChange={(value) => handleValueChange('priceBits', Number(value))}
               />
             </Grid>
           </Grid>
+
+          {propsError('invalidPrice').error && <FormHelperText error sx={{ ml: '14px', position: 'relative', top: '-5px' }}>One of the prices must be set above 0.</FormHelperText>}
 
           <Grid container>
             <Grid item>

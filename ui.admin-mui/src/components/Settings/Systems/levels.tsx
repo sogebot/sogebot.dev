@@ -87,7 +87,7 @@ const PageSettingsModulesSystemsLevels: React.FC<{
       }, (err, _data: string[]) => {
         if (err) {
           console.error(String(err));
-          setShowcase(typeof err === 'string' ? err : err.message);
+          setShowcase(typeof err === 'string' ? err : (err as Error).message);
         } else {
           setShowcase(_data);
         }

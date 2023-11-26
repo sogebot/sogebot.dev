@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, DragIndicatorTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import { Box, Button, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip } from '@mui/material';
 import orange from '@mui/material/colors/orange';
-import { CreditsScreenCustom, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { CreditsScreenCustom } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { cloneDeep } from 'lodash';
 import set from 'lodash/set';
@@ -16,7 +16,6 @@ import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
 
 import { cssWrapper } from './src/Templates';
-import { useValidator } from '../../../../hooks/useValidator';
 import theme from '../../../../theme';
 import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
@@ -203,8 +202,6 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
     }
   }, [moveableId, item, boundsEnabled]);
 
-  const { validate } = useValidator();
-
   React.useEffect(() => {
     // load fonts
     for (const items of item.items) {
@@ -214,10 +211,6 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
       });
     }
   }, []);
-
-  React.useEffect(() => {
-    validate(Overlay, item);
-  }, [item, validate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
     if (containerRef.current) {

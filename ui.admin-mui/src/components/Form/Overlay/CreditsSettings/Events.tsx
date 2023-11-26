@@ -1,12 +1,11 @@
 import { CropFreeTwoTone, ExpandMoreTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { CreditsScreenEvents, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { CreditsScreenEvents } from '@sogebot/backend/dest/database/entity/overlay';
 import { capitalize } from 'lodash';
 import React from 'react';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
-import { useValidator } from '../../../../hooks/useValidator';
 import { AccordionFont, loadFont } from '../../../Accordion/Font';
 import { setZoomDimensionViewable } from '../../../Moveable/DimensionViewable';
 import { setZoomRemoveButton } from '../../../Moveable/RemoveButton';
@@ -48,17 +47,11 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
     onUpdate(item);
   }, [ item ]);
 
-  const { validate } = useValidator();
-
   React.useEffect(() => {
     loadFont(item.headerFont.family);
     loadFont(item.itemFont.family);
     loadFont(item.highlightFont.family);
   }, [item.headerFont.family, item.highlightFont.family, item.itemFont.family]);
-
-  React.useEffect(() => {
-    validate(Overlay, item);
-  }, [item, validate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {
     if (containerRef.current) {

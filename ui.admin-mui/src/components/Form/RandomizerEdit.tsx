@@ -209,7 +209,7 @@ export const RandomizerEdit: React.FC = () => {
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Randomizer().schema });
 
   const [ emptyItemToAdd, setEmptyItemToAdd ] = React.useState<Randomizer['items'][number]>({
     id:              v4(),
@@ -302,9 +302,9 @@ export const RandomizerEdit: React.FC = () => {
 
   React.useEffect(() => {
     if (!loading && item) {
-      validate(Randomizer, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate(`/registry/randomizer?server=${JSON.parse(localStorage.server)}`);
@@ -389,7 +389,7 @@ export const RandomizerEdit: React.FC = () => {
           >
             <TextField
               fullWidth
-              {...propsError('item')}
+              {...propsError('name')}
               variant="filled"
               required
               value={item?.name || ''}

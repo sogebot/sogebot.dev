@@ -1,40 +1,42 @@
-import { Stack, Typography } from '@mui/material';
-import { validateOrReject , ValidationError } from 'class-validator';
-import { isEqual, merge } from 'lodash';
-import capitalize from 'lodash/capitalize';
+import { capitalize, Stack, Typography } from '@mui/material';
+import { BotEntity } from '@sogebot/backend/src/database/BotEntity';
+import { isEqual } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { z } from 'zod';
 
 import { useTranslation } from './useTranslation';
 
 type Props = {
-  translations?: Record<string, string>
+  translations?: Record<string, string>;
   /** Values needs to be changed to trigger errors  */
-  mustBeDirty?:  boolean,
+  mustBeDirty?:  boolean;
+  schema:        NonNullable<BotEntity['schema']>;
 };
 
-const regexps = { 'minLength': 'must be longer than or equal to (\\d+) characters' };
+export const useValidator = (props: Props) => {
+  if (props.mustBeDirty === undefined) {
+    props.mustBeDirty = true;
+  }
 
-export const useValidator = (props: Props = { mustBeDirty: true }) => {
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ dirty, setDirty ] = useState<string[]>([]);
-  const [ errors, setErrors ] = useReducer((_state: ValidationError[], err: string | ValidationError[] | Error | null) => {
-    if (typeof err === 'string' || err instanceof Error || err === null) {
+  const [ errors, setErrors ] = useReducer((_state: z.ZodIssue[], err: string | z.ZodIssue[] | Error | null) => {
+    if (typeof err === 'string' || (err instanceof Error) || err === null) {
       if (err !== null) {
         console.error(err);
       }
       return [];
     } else {
-      console.log(err);
       return err;
     }
   }, []);
 
   const haveErrors = useMemo(() => {
     if (props.mustBeDirty) {
-      const filteredErrors = errors.filter(o => dirty.includes(o.property));
+      const filteredErrors = errors.filter(o => dirty.includes(o.path.join('.') as string));
       return filteredErrors.length > 0;
     } else {
       return errors.length > 0;
@@ -43,7 +45,7 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
 
   useEffect(() => {
     if (props.mustBeDirty) {
-      const filteredErrors = errors.filter(o => dirty.includes(o.property));
+      const filteredErrors = errors.filter(o => dirty.includes(o.path.join('.') as string));
       if (!isEqual(filteredErrors, errors)) {
         setErrors(filteredErrors);
       }
@@ -53,64 +55,39 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
   const errorsPerAttribute = useMemo(() => {
     const _errors: { [field:string]: string[] } = {};
     for (const error of errors) {
-      if (!error.constraints) {
-        continue;
-      }
-      for (const [type, constraint] of Object.entries(error.constraints)) {
-        if (!_errors[error.property]) {
-          _errors[error.property] = [];
-        }
-
-        const property = props.translations && props.translations[error.property] ? props.translations[error.property] : translate('properties.' + error.property);
-        const constraints = constraint.split('|');
-        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`);
-        if (translation.startsWith('{')) {
-          _errors[error.property].push(capitalize(`${constraint}`)
-            .replace('$property', property)
-            .replace('$constraint1', constraints[0]),
-          );
-        } else {
-          if (type === 'minLength') {
-            // we need to parse argument
-            const match = new RegExp(regexps.minLength).exec(constraints[0]);
-            constraints[0] = match ? match[1] : '0';
-          }
-          _errors[error.property].push(capitalize(translate(`errors.${type[0].toLowerCase() + type.substring(1)}`)
+      let translation = '';
+      if (error.code === 'too_small') {
+        if (error.type === 'number') {
+          translation = translate(`errors.min`)
             .replace('$property', translate('properties.thisvalue'))
-            .replace('$constraint1', constraints[0]),
-          ));
+            .replace('$constraint1', error.minimum.toString());
+        } else {
+          translation = translate(`errors.minLength`)
+            .replace('$property', translate('properties.thisvalue'))
+            .replace('$constraint1', error.minimum.toString());
         }
+      } else if (error.code ==='custom') {
+        translation = translate(`errors.` + error.message)
+          .replace('$property', translate('properties.thisvalue'));
+      } else if (error.code === 'invalid_union_discriminator') {
+        translation = `${translate('properties.thisvalue')} must be one of these options: ${error.options.join(', ')}`;
+      } else if (error.code === 'invalid_type') {
+        translation = `${translate('properties.thisvalue')} expected type is ${error.expected}, got ${error.received}. To fix this, please remove it and create again.`;
+      } else if (error.code === 'invalid_string') {
+        translation = translate(`errors.invalid_format`)
+          .replace('$property', translate('properties.thisvalue'));
+      } else {
+        console.error({ error });
+        throw Error('Unknown error code: ' + error.code);
       }
+
+      if (_errors[error.path.join('.')] === undefined) {
+        _errors[error.path.join('.')] = [];
+      }
+      _errors[error.path.join('.')].push(capitalize(translation));
     }
     return _errors;
   }, [ errors, translate, props.translations ]);
-
-  const errorsList = useCallback((errorsArg: ValidationError[]) => {
-    const _errors: string[] = [];
-    for (const error of errorsArg) {
-      if (!error.constraints) {
-        continue;
-      }
-      for (let [type, constraint] of Object.entries(error.constraints)) {
-        const translation = translate(`errors.${type[0].toLowerCase() + type.substring(1)}`).replace('$property', translate('properties.' + error.property));
-        if (translation.startsWith('{')) {
-          // no translation found
-          _errors.push(capitalize(`${constraint}`));
-        } else {
-          if (type === 'minLength') {
-            // we need to parse argument
-            const match = new RegExp(regexps.minLength).exec(constraint);
-            console.log({
-              constraint, match,
-            });
-            constraint = match ? match[1] : 'n/a';
-          }
-          _errors.push(capitalize(translation).replace('$constraint1', constraint));
-        }
-      }
-    }
-    return _errors;
-  }, [ translate ]);
 
   const reset = useCallback(() => {
     setDirty([]);
@@ -125,7 +102,7 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
     };
 
     if (errorsPerAttribute[attribute] && errorsPerAttribute[attribute].length > 0 && (!props.mustBeDirty || dirty.includes(attribute))) {
-      const helperText = <Typography component='span'>{errorsPerAttribute[attribute][0]}</Typography>;
+      const helperText = errorsPerAttribute[attribute][0];
       return {
         className: 'prop-' + attribute,
         error:     true,
@@ -143,46 +120,61 @@ export const useValidator = (props: Props = { mustBeDirty: true }) => {
 
   // TODO: fix typings
   /**
-   * Validate values defined by class validator
+   * Validate values defined by zod schema
    */
-  const validate = useCallback(async (classValidator: any, values: any, dirtifyValues?: boolean) => {
-    const toCheck = new classValidator();
-    merge(toCheck, values);
-
+  const validate = async (values: any, dirtifyValues?: boolean) => {
     if (dirtifyValues) {
       setDirty(v => [...v, ...Object.keys(values)]);
     }
 
     try {
-      await validateOrReject(toCheck);
+      props.schema.parse(values);
       setErrors(null);
       return true;
     } catch (e) {
-      setErrors(e as any);
+      if (e instanceof z.ZodError) {
+        setErrors(e.errors);
+      } else {
+        setErrors(e as any);
+      }
       return false;
     }
-  }, [setErrors]);
+  };
 
-  const showErrors = useCallback((err: typeof errors) => {
-    console.error('Errors during validation', { err });
+  const showErrors = useCallback((err: z.ZodError | string) => {
+    console.error(err);
 
     if (typeof err === 'string') {
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{err}</Typography>
       </Stack>), { variant: 'error' });
     } else {
-      console.debug({ err });
-      console.log(err.map(o => o.property));
-      setDirty(err.map(o => o.property));
-      setErrors(err);
+      setDirty(err.issues.map(o => o.path.join('.') as string));
+      setErrors(err.issues);
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{translate('errors.errorDialogHeader')}</Typography>
-        <ul>{errorsList(err).map((o, i) => <li key={i}>{o}</li>)}</ul>
       </Stack>), { variant: 'error' });
     }
-  }, [errorsList, setDirty, enqueueSnackbar, translate]);
+  }, [setDirty, enqueueSnackbar, translate]);
+
+  const dirtify = (attribute: string) => {
+    console.debug('Manually dirtying', attribute);
+    setDirty(val => {
+      if (!val.includes(attribute)) {
+        return [...val, attribute];
+      } else {
+        return val;
+      }
+    });
+  };
 
   return {
-    propsError, reset, setErrors, errorsList, validate, showErrors, haveErrors,
+    dirtify,
+    propsError,
+    reset,
+    setErrors,
+    validate,
+    showErrors,
+    haveErrors,
   };
 };

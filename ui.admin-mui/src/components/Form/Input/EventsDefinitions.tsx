@@ -7,7 +7,7 @@ import { FormOBSWebsocketSelect } from './OBSWebsocketSelect';
 import { FormRewardInput } from './Reward';
 import { FormInputTime } from './Time';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { useValidator } from '../../../hooks/useValidatorZod';
+import { useValidator } from '../../../hooks/useValidator';
 
 type Props = {
   attribute:            string,
@@ -28,7 +28,6 @@ const EventsDefinitions: React.FC<Props> = (props) => {
     }}>
       <FormControlLabel control={<Checkbox checked={Boolean(props.value)} onChange={(_, checked) => props.onChange(checked)}/>} label={translate(`events.definitions.${lastAttribute}.label`)} />
     </FormGroup>}
-    
     {lastAttribute === 'rewardId' && <FormRewardInput
       error={props.error(props.attribute)}
       value={String(props.value)}

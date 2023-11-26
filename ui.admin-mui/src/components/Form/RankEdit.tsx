@@ -25,7 +25,7 @@ export const RankEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Rank().schema });
 
   const handleValueChange = useCallback(<T extends keyof Rank>(key: T, value: Rank[T]) => {
     if (!item) {
@@ -50,9 +50,9 @@ export const RankEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Rank, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/manage/ranks');

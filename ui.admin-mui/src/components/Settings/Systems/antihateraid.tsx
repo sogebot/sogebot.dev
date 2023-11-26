@@ -1,21 +1,18 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IsInt, IsNotEmpty, Min, validateOrReject } from 'class-validator';
 import React, { useEffect } from 'react';
 import { useRefElement } from 'rooks';
+import { z } from 'zod';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
-class Settings {
-  @IsNotEmpty()
-  @Min(0, { message: '$constraint1' })
-  @IsInt()
-    minFollowTime: number;
-}
+const schema = z.object({
+  minFollowTime: z.number().int().min(0),
+});
 
 const PageSettingsModulesSystemsAntihateRaid: React.FC<{
   onVisible: () => void,
@@ -26,15 +23,14 @@ const PageSettingsModulesSystemsAntihateRaid: React.FC<{
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/systems/antihateraid');
   const { translate } = useTranslation();
 
-  const { propsError, setErrors, haveErrors } = useValidator({ translations: { minFollowTime: translate('systems.antihateraid.settings.minFollowTime') } });
+  const { propsError, setErrors, haveErrors, validate } = useValidator({
+    schema,
+    translations: { minFollowTime: translate('systems.antihateraid.settings.minFollowTime') }
+  });
 
   useEffect(() => {
     if (!loading && settings) {
-      const toCheck = new Settings();
-      toCheck.minFollowTime = Number(settings.minFollowTime[0]);
-      validateOrReject(toCheck, { always: true })
-        .then(() => setErrors(null))
-        .catch(setErrors);
+      validate({ minFollowTime: settings.minFollowTime[0] }, true);
     }
   }, [loading, settings, setErrors]);
 

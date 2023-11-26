@@ -1,7 +1,7 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Grid, IconButton, InputAdornment, LinearProgress, Paper, Switch, TextField, Typography } from '@mui/material';
-import { Event, EventSchema, SupportedEvent, SupportedOperation } from '@sogebot/backend/dest/database/entity/event';
+import { Event, SupportedEvent, SupportedOperation } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { capitalize, cloneDeep } from 'lodash';
@@ -20,12 +20,14 @@ import { useValidator } from '../../hooks/useValidatorZod';
 import theme from '../../theme';
 
 const newEvent = {
-  definitions: {},
-  filter:      '',
-  isEnabled:   true,
-  name:        'clearchat',
-  operations:  [],
-  triggered:   false,
+  filter:    '',
+  isEnabled: true,
+  event:     {
+    name:        'clearchat',
+    triggered:   {},
+    definitions: {},
+  },
+  operations: [],
 };
 
 export const EventsEdit: React.FC = () => {
@@ -41,7 +43,7 @@ export const EventsEdit: React.FC = () => {
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { reset, haveErrors, validate, showErrors, propsError, dirtify } = useValidator({
-    schema: EventSchema,
+    schema: new Event().schema,
   });
 
   React.useEffect(() => {

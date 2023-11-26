@@ -104,7 +104,7 @@ const PageManageEvents = () => {
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Event>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Event & { 'event.name': string }>([
     {
       columnName:  'event.name',
       table:       { width: '30%' },

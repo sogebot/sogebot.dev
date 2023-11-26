@@ -34,7 +34,7 @@ export const QuotesEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator();
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Quotes().schema });
 
   const handleValueChange = <T extends keyof Quotes>(key: T, value: Quotes[T]) => {
     if (!item) {
@@ -64,9 +64,9 @@ export const QuotesEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Quotes, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/manage/quotes');
@@ -99,7 +99,7 @@ export const QuotesEdit: React.FC<{
         >
           <TextField
             fullWidth
-            {...propsError('name')}
+            {...propsError('quote')}
             variant="filled"
             value={item?.quote || ''}
             required

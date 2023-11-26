@@ -31,7 +31,7 @@ export const PluginsEdit: React.FC = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, validate, haveErrors, showErrors } = useValidator();
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Plugin().schema });
 
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -256,9 +256,9 @@ export const PluginsEdit: React.FC = () => {
 
   React.useEffect(() => {
     if (!loading && plugin) {
-      validate(Plugin, plugin);
+      validate(plugin);
     }
-  }, [plugin, loading, validate]);
+  }, [plugin, loading]);
 
   const handleSave = () => {
     setSaving(true);

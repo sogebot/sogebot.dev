@@ -1,23 +1,17 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { IconButton, ListItem, Stack, TextField } from '@mui/material';
-import { IsInt, IsNotEmpty, Max, Min, MinLength, validateOrReject } from 'class-validator';
 import { isEqual } from 'lodash';
 import React from 'react';
+import { z } from 'zod';
 
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
-export class Item {
-  @IsNotEmpty()
-  @MinLength(1)
-    message: string;
-
-  @IsNotEmpty()
-  @Min(0, { message: '$constraint1' })
-  @Max(100, { message: '$constraint1' })
-  @IsInt()
-    percentage: number;
-}
+const schema = z.object({
+  message:    z.string().min(1),
+  percentage: z.number().int().min(0).max(100),
+});
+export type Item = z.infer<typeof schema>;
 
 export const SettingsSystemsDialogResultsInput: React.FC<{
   item:     Item,
@@ -31,29 +25,16 @@ export const SettingsSystemsDialogResultsInput: React.FC<{
   onDelete,
 }) => {
   const [ model, setModel ] = React.useState(item);
-  const { propsError, setErrors, haveErrors } = useValidator({ mustBeDirty: false });
+  const { propsError, validate, haveErrors } = useValidator({ mustBeDirty: false, schema });
   const { translate } = useTranslation();
 
   React.useEffect(() => {
     onError(haveErrors);
   }, [haveErrors, onError]);
 
-  const validate = React.useCallback(() => {
-    const toCheck = new Item();
-    toCheck.message = model.message;
-    toCheck.percentage = model.percentage;
-
-    validateOrReject(toCheck, { always: true })
-      .then(() => setErrors(null))
-      .catch((e) => {
-        console.log({ e });
-        setErrors(e);
-      });
-  }, [ model, setErrors ]);
-
   React.useEffect(() => {
-    validate();
-  }, [model, validate]);
+    validate({ message: model.message, percentage: model.percentage }, true);
+  }, [model]);
 
   React.useEffect(() => {
     if (!isEqual(item, model)) {

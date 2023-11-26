@@ -6,13 +6,13 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Commands } from '../../classes/Commands';
 import { getSocket } from '../../helpers/socket';
 import { useBotCommandsExample } from '../../hooks/useBotCommandsExample';
 import { useBotCommandsSpecificSettings } from '../../hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
+import { Commands, schema } from '../../classes/Commands';
 
 export const BotCommandEdit: React.FC<{
   items: Commands[]
@@ -29,7 +29,7 @@ export const BotCommandEdit: React.FC<{
 
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, validate, haveErrors } = useValidator();
+  const { propsError, reset, validate, haveErrors } = useValidator({ schema });
 
   const handleValueChange = <T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
@@ -71,9 +71,9 @@ export const BotCommandEdit: React.FC<{
 
   useEffect(() => {
     if (!loading && item) {
-      validate(Commands, item);
+      validate(item);
     }
-  }, [item, loading, validate]);
+  }, [item, loading]);
 
   const handleClose = () => {
     navigate('/commands/botcommands');

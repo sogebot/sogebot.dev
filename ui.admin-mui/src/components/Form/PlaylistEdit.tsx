@@ -25,7 +25,7 @@ export const PlaylistEdit: React.FC<{
   const [ item, setItem ] = useState<SongPlaylist>(Object.assign(new SongPlaylist(), { tags: [] }));
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, setErrors, haveErrors, validate } = useValidator();
+  const { reset, haveErrors, validate } = useValidator({ schema: new SongPlaylist().schema });
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
@@ -69,9 +69,9 @@ export const PlaylistEdit: React.FC<{
 
   useEffect(() => {
     if (item) {
-      validate(SongPlaylist, item);
+      validate(SongPlaylist);
     }
-  }, [item, setErrors]);
+  }, [item]);
 
   useEffect(() => {
     reset();

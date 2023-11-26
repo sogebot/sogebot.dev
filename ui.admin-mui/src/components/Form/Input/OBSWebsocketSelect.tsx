@@ -7,7 +7,7 @@ import React from 'react';
 
 import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { useValidator } from '../../../hooks/useValidatorZod';
+import { useValidator } from '../../../hooks/useValidator';
 
 export const FormOBSWebsocketSelect: React.FC<{
   value?:    string | null
