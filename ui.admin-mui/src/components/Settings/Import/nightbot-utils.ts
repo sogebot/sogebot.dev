@@ -1,3 +1,4 @@
+import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios, { AxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
@@ -83,29 +84,39 @@ export const fetchCustomCommands = async (
 
 export const importCustomCommands = async (accessToken: string | null) => {
   const commands = await fetchCustomCommands(accessToken);
+  const permissionsMap = new Map([
+    ['admin', defaultPermissions.CASTERS],
+    ['owner', defaultPermissions.CASTERS],
+    ['moderator', defaultPermissions.MODERATORS],
+    ['twitch_vip', defaultPermissions.VIP],
+    ['regular', defaultPermissions.SUBSCRIBERS],
+    ['subscriber', defaultPermissions.SUBSCRIBERS],
+    ['everyone', defaultPermissions.VIEWERS],
+  ]);
   let failCount = 0;
   for (const command of commands) {
     try {
+      const convertedCommand = {
+        id:                     command._id,
+        command:                command.name,
+        enabled:                true,
+        visible:                true,
+        group:                  'nightbot-import',
+        areResponsesRandomized: false,
+        responses:              [
+          {
+            id:             command._id,
+            order:          0,
+            response:       command.message,
+            stopIfExecuted: false,
+            permission:     permissionsMap.get(command.userLevel),
+            filter:         '',
+          },
+        ],
+      };
       await axios.post(
         `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
-        {
-          id:                     command._id,
-          command:                command.name,
-          enabled:                true,
-          visible:                true,
-          group:                  'nightbot-import',
-          areResponsesRandomized: false,
-          responses:              [
-            {
-              id:             command._id,
-              order:          0,
-              response:       command.message,
-              stopIfExecuted: true,
-              permission:     '',
-              filter:         ''
-            }
-          ],
-        },
+        convertedCommand,
         { headers: { authorization: `Bearer ${getAccessToken()}` } }
       );
     } catch (error: any) {
