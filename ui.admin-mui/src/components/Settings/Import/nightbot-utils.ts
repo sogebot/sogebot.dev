@@ -43,7 +43,7 @@ const fetchWithRetries = async (
   const delay = delaySeconds * 10e3; // 60_000ms
   while (retries-- > 0) {
     try {
-      const response = await axios.get(url,  options );
+      const response = await axios.get(url, options);
       return response.data;
     } catch (error: any) {
       console.info(`Retrying after ${delaySeconds} seconds.`);
@@ -58,7 +58,7 @@ const fetchCustomCommandsPage = async (
   const url = 'https://api.nightbot.tv/1/commands';
   try {
     const page = fetchWithRetries(url, {
-      headers: { Authorization: 'Bearer ' + accessToken, }
+      headers: { Authorization: 'Bearer ' + accessToken },
     });
     return page;
   } catch {
@@ -86,24 +86,37 @@ export const importCustomCommands = async (accessToken: string | null) => {
   let failCount = 0;
   for (const command of commands) {
     try {
-      console.info(command);
-      // const response = await axios.post(
-      //   `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
-      //   { foo: command.name },
-      //   { headers: { authorization: `Bearer ${getAccessToken()}` } }
-      // );
-      // if (response.status !== 200) {
-      //   failCount += 1;
-      // }
-    } catch (error: any) {
-      console.error(
-        'ERROR DURING COMMANDS IMPORT: ',
-        error.response.data.errors
+      await axios.post(
+        `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+        {
+          id: command._id,
+          command:
+            '!nb_' + command.name.startsWith('!')
+              ? command.name.substring(1)
+              : command.name,
+          enabled:                true,
+          visible:                true,
+          group:                  'nightbot-import',
+          areResponsesRandomized: false,
+          responses:              [
+            {
+              id:             'nb+' + command._id,
+              order:          0,
+              response:       command.message,
+              stopIfExecuted: true,
+              permission:     command.userLevel,
+              filter:         '',
+            },
+          ],
+        },
+        { headers: { authorization: `Bearer ${getAccessToken()}` } }
       );
+    } catch (error: any) {
+      failCount += 1;
+      console.error('ERROR DURING COMMANDS IMPORT: ', error.response.data.errors);
       enqueueSnackbar('ERROR DURING COMMANDS IMPORT: ', { variant: 'error' });
     }
   }
-
   if (failCount > 0) {
     enqueueSnackbar(`${failCount} commands failed to import.`, {
       variant: 'info',
@@ -112,7 +125,7 @@ export const importCustomCommands = async (accessToken: string | null) => {
   enqueueSnackbar('Commands import completed.', { variant: 'success' });
 };
 
-type Command = {
+type Track = {
   providerId: string;
   provider:   string;
   duration:   number;
@@ -122,7 +135,7 @@ type Command = {
 };
 
 type PlaylistItem = {
-  track:     Command;
+  track:     Track;
   _id:       string;
   createdAt: string; // timestamp date
   updatedAt: string; // timestamp date
@@ -160,9 +173,9 @@ const fetchPlaylistPage = async (
 
 const fetchTracks = async (
   accessToken: string | null,
-  tracks: Command[] = [],
+  tracks: Track[] = [],
   offset = 0
-): Promise<Command[]> => {
+): Promise<Track[]> => {
   try {
     const page = await fetchPlaylistPage(offset, accessToken);
     const mergedTracks = tracks.concat(page.playlist.map((t) => t.track));
