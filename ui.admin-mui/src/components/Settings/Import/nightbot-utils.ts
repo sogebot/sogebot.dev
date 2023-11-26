@@ -89,32 +89,31 @@ export const importCustomCommands = async (accessToken: string | null) => {
       await axios.post(
         `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
         {
-          id: command._id,
-          command:
-            '!nb_' + command.name.startsWith('!')
-              ? command.name.substring(1)
-              : command.name,
+          id:                     command._id,
+          command:                command.name,
           enabled:                true,
           visible:                true,
           group:                  'nightbot-import',
           areResponsesRandomized: false,
           responses:              [
             {
-              id:             'nb+' + command._id,
+              id:             command._id,
               order:          0,
               response:       command.message,
               stopIfExecuted: true,
-              permission:     command.userLevel,
-              filter:         '',
-            },
+              permission:     '',
+              filter:         ''
+            }
           ],
         },
         { headers: { authorization: `Bearer ${getAccessToken()}` } }
       );
     } catch (error: any) {
       failCount += 1;
-      console.error('ERROR DURING COMMANDS IMPORT: ', error.response.data.errors);
-      enqueueSnackbar('ERROR DURING COMMANDS IMPORT: ', { variant: 'error' });
+      console.error(
+        'ERROR DURING COMMANDS IMPORT: ',
+        error.response.data.errors
+      );
     }
   }
   if (failCount > 0) {
