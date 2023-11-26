@@ -97,7 +97,7 @@ export const importCustomCommands = async (accessToken: string | null) => {
   for (const command of commands) {
     try {
       const convertedCommand = {
-        id:                     command._id,
+        id:                     crypto.randomUUID(),
         command:                command.name,
         enabled:                true,
         visible:                true,
@@ -105,7 +105,7 @@ export const importCustomCommands = async (accessToken: string | null) => {
         areResponsesRandomized: false,
         responses:              [
           {
-            id:             command._id,
+            id:             crypto.randomUUID(),
             order:          0,
             response:       command.message,
             stopIfExecuted: false,
