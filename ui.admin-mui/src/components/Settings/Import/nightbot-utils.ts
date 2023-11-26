@@ -82,54 +82,95 @@ export const fetchCustomCommands = async (
   }
 };
 
-export const importCustomCommands = async (accessToken: string | null) => {
-  const commands = await fetchCustomCommands(accessToken);
-  const permissionsMap = new Map([
-    ['admin', defaultPermissions.CASTERS],
-    ['owner', defaultPermissions.CASTERS],
-    ['moderator', defaultPermissions.MODERATORS],
-    ['twitch_vip', defaultPermissions.VIP],
-    ['regular', defaultPermissions.SUBSCRIBERS],
-    ['subscriber', defaultPermissions.SUBSCRIBERS],
-    ['everyone', defaultPermissions.VIEWERS],
-  ]);
+const permissionsMap = new Map([
+  ['admin', defaultPermissions.CASTERS],
+  ['owner', defaultPermissions.CASTERS],
+  ['moderator', defaultPermissions.MODERATORS],
+  ['twitch_vip', defaultPermissions.VIP],
+  ['regular', defaultPermissions.SUBSCRIBERS],
+  ['subscriber', defaultPermissions.SUBSCRIBERS],
+  ['everyone', defaultPermissions.VIEWERS],
+]);
+
+const postKeyword = async (command: CustomCommand) => {
+  const convertedKeyword = {
+    keyword:   command.name,
+    enabled:   true,
+    group:     'nightbot-import',
+    responses: [
+      {
+        order:          0,
+        response:       command.message,
+        stopIfExecuted: false,
+        filter:         '',
+        permission:     permissionsMap.get(command.userLevel),
+      },
+    ],
+  };
   let failCount = 0;
-  for (const command of commands) {
-    try {
-      const convertedCommand = {
-        command:                command.name,
-        enabled:                true,
-        visible:                true,
-        group:                  'nightbot-import',
-        areResponsesRandomized: false,
-        responses:              [
-          {
-            order:          0,
-            response:       command.message,
-            stopIfExecuted: false,
-            permission:     permissionsMap.get(command.userLevel),
-            filter:         '',
-          },
-        ],
-      };
-      await axios.post(
-        `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
-        convertedCommand,
-        { headers: { authorization: `Bearer ${getAccessToken()}` } }
-      );
-    } catch (error: any) {
-      failCount += 1;
-      console.error(
-        'ERROR DURING COMMANDS IMPORT: ',
-        error.response.data.errors
-      );
-    }
+  try {
+    await axios.post(
+      `${JSON.parse(localStorage.server)}/api/systems/keywords`,
+      convertedKeyword,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } }
+    );
+  } catch (error: any) {
+    failCount += 1;
+    console.error(
+      'ERROR DURING KEYWORDS IMPORT: ',
+      error.response.data.errors
+    );
   }
   if (failCount > 0) {
     enqueueSnackbar(`${failCount} commands failed to import.`, {
       variant: 'info',
     });
   }
+};
+
+const postCommand = async (command: CustomCommand) => {
+  const convertedCommand = {
+    command:                command.name,
+    enabled:                true,
+    visible:                true,
+    group:                  'nightbot-import',
+    areResponsesRandomized: false,
+    responses:              [
+      {
+        order:          0,
+        response:       command.message,
+        stopIfExecuted: false,
+        permission:     permissionsMap.get(command.userLevel),
+        filter:         '',
+      },
+    ],
+  };
+  let failCount = 0;
+  try {
+    await axios.post(
+      `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+      convertedCommand,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } }
+    );
+  } catch (error: any) {
+    failCount += 1;
+    console.error(
+      'ERROR DURING COMMANDS IMPORT: ',
+      error.response.data.errors
+    );
+  }
+  if (failCount > 0) {
+    enqueueSnackbar(`${failCount} commands failed to import.`, {
+      variant: 'info',
+    });
+  }
+};
+
+export const importCustomCommands = async (accessToken: string | null) => {
+  const commands = await fetchCustomCommands(accessToken);
+  commands.forEach((command) =>
+    command.name.startsWith('!') ? postCommand(command) : postKeyword(command)
+  );
   enqueueSnackbar('Commands import completed.', { variant: 'success' });
 };
 
