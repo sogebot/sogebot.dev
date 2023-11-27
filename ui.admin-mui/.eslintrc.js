@@ -28,11 +28,8 @@ module.exports = {
     ],
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@stylistic/func-call-spacing':             'off',
-    '@stylistic/key-spacing':                   ['error', {
-      beforeColon: false, afterColon: true, align: 'value',
-    }],
-    'no-useless-escape':                  'off',
-    '@stylistic/object-property-newline': ['error', {
+    'no-useless-escape':                        'off',
+    '@stylistic/object-property-newline':       ['error', {
       'allowAllPropertiesOnSameLine': true,
     }],
     '@stylistic/object-curly-spacing':   ['error', 'always'],

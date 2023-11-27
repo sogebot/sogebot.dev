@@ -6,13 +6,13 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Commands, schema } from '../../classes/Commands';
 import { getSocket } from '../../helpers/socket';
 import { useBotCommandsExample } from '../../hooks/useBotCommandsExample';
 import { useBotCommandsSpecificSettings } from '../../hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
-import { Commands, schema } from '../../classes/Commands';
 
 export const BotCommandEdit: React.FC<{
   items: Commands[]

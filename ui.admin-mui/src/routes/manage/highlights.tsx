@@ -62,7 +62,7 @@ const PageManageViewers = () => {
       translation: 'Created At',
     },
     {
-      columnName:  'timestamp.hours',
+      columnName:  'timestamp',
       translation: 'Timestamp',
       column:      {
         getCellValue: (row: Highlight) => {
