@@ -11,7 +11,6 @@ import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
 import { FilterMaker } from '../../components/Permissions/FilterMaker';
@@ -142,7 +141,7 @@ const PageSettingsPermissions = () => {
 
   const addNewPermissionGroup = useCallback(() => {
     const data = Object.assign(new Permissions(), {
-      id:                 v4(),
+      id:                 crypto.randomUUID(),
       name:               nanoid(),
       isCorePermission:   false,
       isWaterfallAllowed: true,

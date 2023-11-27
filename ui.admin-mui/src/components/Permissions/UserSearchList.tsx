@@ -1,10 +1,9 @@
 import { Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
-import { v4 } from 'uuid';
 
 import { getSocket } from '../../helpers/socket';
 
-let state = v4();
+let state = crypto.randomUUID();
 
 export const UserSearchlist: React.FC<{
   onChange: (users: string[]) => void,
@@ -44,7 +43,7 @@ export const UserSearchlist: React.FC<{
       return;
     }
 
-    state = v4();
+    state = crypto.randomUUID();
     setIsSearching(true);
     getSocket('/core/users').emit('find.viewers', {
       filter: [{

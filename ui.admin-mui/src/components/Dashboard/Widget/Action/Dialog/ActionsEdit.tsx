@@ -11,7 +11,6 @@ import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { SliderPicker } from 'react-color';
-import { v4 } from 'uuid';
 
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
@@ -381,7 +380,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     } as const;
 
     const item: any = {
-      id:      v4(),
+      id:      crypto.randomUUID(),
       userId:  user?.id,
       order:   actions.length,
       type:    itemType,

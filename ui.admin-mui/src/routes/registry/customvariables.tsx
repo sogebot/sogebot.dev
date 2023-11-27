@@ -14,7 +14,6 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
-import { v4 } from 'uuid';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
@@ -212,7 +211,7 @@ const PageRegistryCustomVariables = () => {
   const clone = useCallback((item: Variable) => {
     const clonedItem = Object.assign(new Variable(), {
       ...item,
-      id:           v4(),
+      id:           crypto.randomUUID(),
       description:  '(clone) of ' + item.variableName,
       variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
     });

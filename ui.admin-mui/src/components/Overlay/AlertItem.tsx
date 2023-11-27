@@ -14,7 +14,6 @@ import { Typewriter } from 'react-simple-typewriter';
 import reactStringReplace from 'react-string-replace';
 import { useIntervalWhen } from 'rooks';
 import urlRegex from 'url-regex';
-import { v4 } from 'uuid';
 import './assets/letter-animations.css';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
@@ -941,7 +940,7 @@ export const AlertItem: React.FC<Props<AlertsRegistry>> = ({ item }) => {
               .replace(/\{currency\}/g, '{currency:highlight}');
             blocked = true;
             setRunningAlert({
-              id:            v4(),
+              id:            crypto.randomUUID(),
               soundPlayed:   false,
               isShowing:     false,
               isShowingText: false,

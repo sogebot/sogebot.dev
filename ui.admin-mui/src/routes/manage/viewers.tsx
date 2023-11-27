@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
-import { v4 } from 'uuid';
 
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
@@ -197,7 +196,7 @@ const PageManageViewers = () => {
         }
 
         getSocket('/core/users').emit('find.viewers', {
-          state:   v4(),
+          state:   crypto.randomUUID(),
           order:   sortTable,
           page:    currentPage,
           perPage: pageSize,

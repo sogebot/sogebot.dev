@@ -3,7 +3,6 @@ import { CreditsScreenClips } from '@sogebot/backend/dest/database/entity/overla
 import type { getTopClips } from '@sogebot/backend/dest/services/twitch/calls/getTopClips';
 import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import React from 'react';
-import { v4 } from 'uuid';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
@@ -16,7 +15,7 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> &
   onLoaded?:   (shouldWait: boolean) => void,
   onFinished?: () => void }>
 = ({ item, active, width, height, onLoaded, play, onFinished }) => {
-  const [ id ] = React.useState(v4());
+  const [ id ] = React.useState(crypto.randomUUID());
   const [ isLoading, setIsLoading ] = React.useState(true);
   const [ clips, setClips ] = React.useState<Awaited<ReturnType<typeof getTopClips>>>([]);
   const [ visibleClipIdx, setVisibleClipIdx ] = React.useState(0);

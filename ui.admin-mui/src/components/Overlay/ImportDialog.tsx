@@ -10,7 +10,6 @@ import { chunk, cloneDeep, orderBy } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
-import { v4 } from 'uuid';
 
 import { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -179,7 +178,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
-          id:     v4(),
+          id:     crypto.randomUUID(),
           userId: localStorage.userId,
           vote:   1,
         });
@@ -213,7 +212,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
-          id:     v4(),
+          id:     crypto.randomUUID(),
           userId: localStorage.userId,
           vote:   -1,
         });

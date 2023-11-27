@@ -1,10 +1,9 @@
 import { Credits } from '@sogebot/backend/dest/database/entity/overlay';
-import { v4 } from 'uuid';
 
 import { css, html } from './Templates';
 
 export const separator200 = {
-  id:                 v4(),
+  id:                 crypto.randomUUID(),
   height:             200,
   items:              [],
   name:               'Separator (200px)',
@@ -13,7 +12,7 @@ export const separator200 = {
   speed:              null,
 };
 export const separator500 = {
-  id:                 v4(),
+  id:                 crypto.randomUUID(),
   height:             500,
   items:              [],
   name:               'Separator (500px)',
@@ -22,7 +21,7 @@ export const separator500 = {
   speed:              null,
 };
 export const separator1000 = {
-  id:                 v4(),
+  id:                 crypto.randomUUID(),
   height:             1000,
   items:              [],
   name:               'Separator (1000px)',
@@ -32,11 +31,11 @@ export const separator1000 = {
 };
 
 export const title = {
-  id:     v4(),
+  id:     crypto.randomUUID(),
   height: 550,
   items:  [
     {
-      id:       v4(),
+      id:       crypto.randomUUID(),
       alignX:   (1920 - 1600) / 2,
       alignY:   25,
       css,
@@ -63,7 +62,7 @@ export const title = {
 };
 
 export const events = {
-  id:            v4(),
+  id:            crypto.randomUUID(),
   type:          'events',
   name:          'Events',
   columns:       3,
@@ -114,7 +113,7 @@ export const events = {
 };
 
 export const clips = {
-  id:                 v4(),
+  id:                 crypto.randomUUID(),
   type:               'clips',
   name:               'Clips',
   play:               true,
@@ -170,18 +169,18 @@ export const clips = {
 
 export const creditsDefaultScreens = [
   {
-    ...separator1000, id: v4(),
+    ...separator1000, id: crypto.randomUUID(),
   },
   title,
   separator500,
   events,
   clips,
   {
-    id:     v4(),
+    id:     crypto.randomUUID(),
     height: 1080,
     items:  [
       {
-        id:       v4(),
+        id:       crypto.randomUUID(),
         alignX:   (1920 - 1600) / 2,
         alignY:   (1080 - 250) / 2,
         css,

@@ -9,7 +9,6 @@ import { MuiColorInput } from 'mui-color-input';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { getContrastColor, getRandomColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
@@ -212,7 +211,7 @@ export const RandomizerEdit: React.FC = () => {
   const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Randomizer().schema });
 
   const [ emptyItemToAdd, setEmptyItemToAdd ] = React.useState<Randomizer['items'][number]>({
-    id:              v4(),
+    id:              crypto.randomUUID(),
     color:           getRandomColor(),
     groupId:         null,
     name:            '',
@@ -251,7 +250,7 @@ export const RandomizerEdit: React.FC = () => {
     }, 1);
 
     setEmptyItemToAdd({
-      id:              v4(),
+      id:              crypto.randomUUID(),
       color:           getRandomColor(),
       groupId:         null,
       name:            '',

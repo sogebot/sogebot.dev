@@ -8,7 +8,6 @@ import { capitalize, cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { FormResponse } from './Input/Response';
 import getAccessToken from '../../getAccessToken';
@@ -81,7 +80,7 @@ export const TimerEdit: React.FC<{
       return;
     }
     const response = new TimerResponse();
-    response.id = v4();
+    response.id = crypto.randomUUID();
     response.timestamp = new Date().toISOString();
     response.response = '';
     response.isEnabled = true;

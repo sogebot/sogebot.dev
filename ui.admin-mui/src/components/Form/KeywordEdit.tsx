@@ -9,7 +9,6 @@ import { cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { FormResponse } from './Input/Response';
 import getAccessToken from '../../getAccessToken';
@@ -55,7 +54,7 @@ export const KeywordEdit: React.FC<{
     }
 
     const response = new KeywordResponses();
-    response.id = v4();
+    response.id = crypto.randomUUID();
     response.order = item.responses.length;
     response.filter = '';
     response.response = '';

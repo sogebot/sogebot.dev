@@ -8,7 +8,6 @@ import orange from '@mui/material/colors/orange';
 import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
-import { v4 } from 'uuid';
 
 import { CreditsSettingsClips } from './CreditsSettings/Clips';
 import { CreditsSettingsCustom } from './CreditsSettings/Custom';
@@ -147,7 +146,7 @@ export const CreditsSettings: React.FC<Props> = ({ model, onUpdate, canvas }) =>
     console.log(screensList[key].settings);
     update.screens.push({
       ...screensList[key].settings as any,
-      id: v4(),
+      id: crypto.randomUUID(),
     });
     onUpdate(update);
   };

@@ -6,7 +6,6 @@ import { Box, Button, Divider, Grid, Paper, Stack, Typography } from '@mui/mater
 import { blueGrey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
-import { v4 } from 'uuid';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -95,7 +94,7 @@ const PageSettingsModulesCoreDashboard: React.FC<{
     setSettings((s) => {
       if (s) {
         const newClickedId = availableµWidgetsFiltered.includes(clickedId)
-          ? clickedId + `|${v4()}`
+          ? clickedId + `|${crypto.randomUUID()}`
           : clickedId.split('|').filter((_, idx) => idx < 2).join('|');
         setClickedId(newClickedId);
         return {

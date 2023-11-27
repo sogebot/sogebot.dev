@@ -6,7 +6,6 @@ import HTMLReactParser from 'html-react-parser';
 import { chunk, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { v4 } from 'uuid';
 
 import { Plugin as RemotePlugin } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
@@ -110,7 +109,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
-          id:     v4(),
+          id:     crypto.randomUUID(),
           userId: localStorage.userId,
           vote:   1,
         });
@@ -144,7 +143,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
       plugin.votes = plugin.votes.filter(o => o.userId !== localStorage.userId);
       if (shouldAddVote) {
         plugin.votes.push({
-          id:     v4(),
+          id:     crypto.randomUUID(),
           userId: localStorage.userId,
           vote:   -1,
         });

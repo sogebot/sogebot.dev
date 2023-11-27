@@ -9,7 +9,6 @@ import { capitalize, cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { FormResponse } from './Input/Response';
 import { FormTriggerAlert } from './Input/TriggerAlert';
@@ -65,7 +64,7 @@ export const CommandsEdit: React.FC<{
     }
 
     const newResponse = {
-      id:             v4(),
+      id:             crypto.randomUUID(),
       order:          item.responses.length,
       filter:         '',
       response:       response,
@@ -83,7 +82,7 @@ export const CommandsEdit: React.FC<{
       axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           data.data.responses = data.data.responses.map((o: any) => ({
-            ...o, id: v4(), // force random id to ensure that we can always drag
+            ...o, id: crypto.randomUUID(), // force random id to ensure that we can always drag
           }));
           setItem(data.data);
           setCount(data.count);

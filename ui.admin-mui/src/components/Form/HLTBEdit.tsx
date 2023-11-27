@@ -7,7 +7,6 @@ import debounce from 'lodash/debounce';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 import { HOUR, MINUTE } from '../../constants';
 import getAccessToken from '../../getAccessToken';
@@ -44,7 +43,7 @@ export const HLTBEdit: React.FC<{
     setLoading(true);
     if (id) {
       const it = props.items?.find(o => o.id === id) ?? Object.assign(new HowLongToBeatGame(), {
-        id:     v4(),
+        id:     crypto.randomUUID(),
         game:   '',
         offset: 0,
       });
@@ -55,7 +54,7 @@ export const HLTBEdit: React.FC<{
       setLastValidGame('');
       setInputValue('');
       setItem(Object.assign(new HowLongToBeatGame(), {
-        id:     v4(),
+        id:     crypto.randomUUID(),
         game:   '',
         offset: 0,
       }));

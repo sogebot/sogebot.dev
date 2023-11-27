@@ -3,7 +3,6 @@ import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordi
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, Stack } from '@mui/material';
 import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
-import { v4 } from 'uuid';
 
 import { ImageItem } from './imageItem';
 import { FormSelectorGallery } from '../../Selector/Gallery';
@@ -90,7 +89,7 @@ export const ImageDialog: React.FC<Props> = ({ onChange, model }) => {
       </DialogContent>
       <DialogActions>
         <FormSelectorGallery type='image' announce='Item was added to carousel' button label='Add image' onChange={(value) => value && onChange([...model, {
-          id:                   v4(),
+          id:                   crypto.randomUUID(),
           url:                  value,
           animationIn:          'fade',
           animationInDuration:  1000,

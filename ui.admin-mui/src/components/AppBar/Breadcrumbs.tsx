@@ -1,9 +1,10 @@
 import { Breadcrumbs, Fade, Typography } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'uuid';
 
 import { useTranslation } from '../../hooks/useTranslation';
+
+const v4 = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
 
 export const AppBarBreadcrumbs: React.FC = () => {
   const location = useLocation();
@@ -13,7 +14,7 @@ export const AppBarBreadcrumbs: React.FC = () => {
     const path = location.pathname
       .split('/')
       .filter(Boolean)
-      .map(o => validate(o) ? o : translate(`menu.${o}`))
+      .map(o => o.match(v4) ? o : translate(`menu.${o}`))
       .filter(o => !o.startsWith('{menu.'));
     return path;
   }, [location.pathname, translate]);
