@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
-import { importCustomCommands, importPlaylist } from './nightbot-utils';
+import { importCustomCommands, importPlaylist, importTimers } from './nightbot-utils';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -125,6 +125,14 @@ const PageSettingsModulesImportNightbot: React.FC<{
             onClick={() => importCustomCommands(accessToken)}
           >
             Import commands
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            disabled={user === 'Not Authorized'}
+            onClick={() => importTimers(accessToken)}
+          >
+            Import timers
           </Button>
         </Stack>
       </Paper>
