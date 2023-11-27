@@ -56,6 +56,24 @@ type CustomCommandsResponse = {
   commands: CustomCommand[];
 };
 
+type Timer = {
+  _id:       string;
+  createdAt: string; // timestamp date
+  enabled:   boolean;
+  interval:  string;
+  lines:     number;
+  message:   string;
+  name:      string;
+  nextRunAt: string; // timestamp date
+  updatedAt: string; // timestamp date
+};
+
+type TimersResponse = {
+  _total: number;
+  status: string;
+  timers: Timer[];
+};
+
 const permissions = new Map([
   ['admin', defaultPermissions.CASTERS],
   ['owner', defaultPermissions.CASTERS],
@@ -272,4 +290,78 @@ export const importCustomCommands = async (accessToken: string | null) => {
   }
   enqueueSnackbar('Review imported commands.', { variant: 'info' });
   enqueueSnackbar('Commands import completed.', { variant: 'success' });
+};
+
+const fetchTimersPage = async (
+  accessToken: string | null
+): Promise<TimersResponse> => {
+  const url = 'https://api.nightbot.tv/1/timers';
+  try {
+    const page = fetchWithRetries(url, {
+      headers: { Authorization: 'Bearer ' + accessToken },
+    });
+    return page;
+  } catch {
+    console.error('Error fetching timers after multiple retries.');
+    enqueueSnackbar('Remote server error.', { variant: 'error' });
+    throw new Error('Failed to fetch timers after multiple retries.');
+  }
+};
+
+export const fetchTimers = async (
+  accessToken: string | null
+): Promise<Timer[]> => {
+  try {
+    const page = await fetchTimersPage(accessToken);
+    return page.timers;
+  } catch (error: any) {
+    console.error('Error fetching timers.');
+    enqueueSnackbar('Remote server error.', { variant: 'error' });
+    throw new Error('Failed to fetch timers.');
+  }
+};
+
+const postTimer = async (timer: Timer) => {
+  const convertedTimer = {
+    name:                timer.name,
+    isEnabled:           false,
+    triggerEveryMessage: timer.lines,
+    messages:            [
+      {
+        isEnabled: true,
+        response:  timer.message,
+      },
+    ],
+  };
+  try {
+    await axios.post(
+      `${JSON.parse(localStorage.server)}/api/systems/timer`,
+      convertedTimer,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } }
+    );
+  } catch (error: any) {
+    console.error(
+      'ERROR DURING Timers IMPORT: ',
+      error.response.data.errors
+    );
+  }
+};
+
+export const importTimers = async (accessToken: string | null) => {
+  const timers = await fetchTimers(accessToken);
+  let failCount = 0;
+  for (const timer of timers) {
+    try {
+      postTimer(timer);
+    } catch (error: any) {
+      failCount++;
+    }
+  }
+  if (failCount > 0) {
+    enqueueSnackbar(`${failCount} commands failed to import.`, {
+      variant: 'info',
+    });
+  }
+  enqueueSnackbar('Review imported timers.', { variant: 'info' });
+  enqueueSnackbar('Timers import completed.', { variant: 'success' });
 };
