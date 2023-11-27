@@ -122,9 +122,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
             color="primary"
             variant="contained"
             disabled={user === 'Not Authorized'}
-            onClick={async () => {
-              console.log(await importCustomCommands(accessToken));
-            }}
+            onClick={() => importCustomCommands(accessToken)}
           >
             Import commands
           </Button>
