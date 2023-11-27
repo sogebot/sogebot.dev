@@ -260,9 +260,7 @@ export const importCustomCommands = async (accessToken: string | null) => {
   let failCount = 0;
   for (const command of commands) {
     try {
-      command.name.startsWith('!')
-        ? postCommand(command)
-        : postKeyword(command);
+      command.name.startsWith('!') ? postCommand(command) : postKeyword(command);
     } catch (error: any) {
       failCount++;
     }
