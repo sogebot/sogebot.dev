@@ -28,6 +28,7 @@ func Nightbot(w http.ResponseWriter, r *http.Request) {
 		scopes := []string{
 			"song_requests_playlist",
 			"commands",
+			"timers",
 		}
 		q := url.Values{}
 		q.Add("client_id", NIGHTBOT_CLIENTID)
