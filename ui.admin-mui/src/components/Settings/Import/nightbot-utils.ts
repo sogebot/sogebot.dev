@@ -200,7 +200,7 @@ const fetchCustomCommandsPage = async (
   }
 };
 
-export const fetchCustomCommands = async (
+const fetchCustomCommands = async (
   accessToken: string | null
 ): Promise<CustomCommand[]> => {
   try {
@@ -308,7 +308,7 @@ const fetchTimersPage = async (
   }
 };
 
-export const fetchTimers = async (
+const fetchTimers = async (
   accessToken: string | null
 ): Promise<Timer[]> => {
   try {
