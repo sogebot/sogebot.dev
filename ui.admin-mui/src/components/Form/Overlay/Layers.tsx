@@ -20,10 +20,6 @@ const layers = {
     title:       'Alerts',
     description: 'Add alerts for your stream follows, raids, donations and more.',
   },
-  alertsRegistry: {
-    title:       'Alert from registry (deprecated)',
-    description: 'Add alert defined in registry',
-  },
   chat: {
     title:       'Chat',
     description: 'Chat overlay, available in horizontal, vertical and niconico formats.',
