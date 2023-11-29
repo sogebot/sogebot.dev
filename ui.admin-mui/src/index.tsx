@@ -34,7 +34,7 @@ const router = createBrowserRouter([
     path:    '/*',
     element: <Root />,
   },
-], { basename: process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : undefined });
+], { basename: process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : undefined });
 
 root.render(
   <SnackbarProvider maxSnack={3} autoHideDuration={1500}>

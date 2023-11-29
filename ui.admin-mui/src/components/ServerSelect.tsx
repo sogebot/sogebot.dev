@@ -114,7 +114,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
           }
 
           // we don't have base path, do checks
-          if ((process.env.PUBLIC_URL || '').length === 0) {
+          if ((process.env.REACT_APP_COMMIT || '').length === 0) {
             // 'OK' response was last in 16.8.0
             const version = res.data === 'OK' ? '16.8.0' : res.data;
             for (const versionKey of Object.keys(versions).reverse()) {

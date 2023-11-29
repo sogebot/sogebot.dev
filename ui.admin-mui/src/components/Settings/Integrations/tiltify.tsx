@@ -48,7 +48,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback(() => {
-    const popup = window.open((process.env.PUBLIC_URL !== '/' ? window.location.origin + '/' : process.env.PUBLIC_URL) + 'credentials/tiltify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open(window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') +  'credentials/tiltify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });

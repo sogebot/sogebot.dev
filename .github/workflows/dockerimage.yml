@@ -42,7 +42,7 @@ jobs:
           path: ./ui.admin-mui/build
 
       - name: Build a UI (with old_commit basePath)
-        run: cd ./ui.admin-mui/ && npm install && REACT_APP_VERSION=$(git rev-parse HEAD) PUBLIC_URL="https://dash.sogebot.xyz/${{ steps.slug.outputs.SHA }}/" npm run build
+        run: cd ./ui.admin-mui/ && npm install && REACT_APP_VERSION=$(git rev-parse HEAD) REACT_APP_COMMIT="${{ steps.slug.outputs.SHA }}" npm run build
 
       - uses: actions/upload-artifact@v3
         with:
