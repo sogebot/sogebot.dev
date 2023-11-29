@@ -40,7 +40,7 @@ export const Responses: React.FC<{
                 </Typography>
               </Grid>
             </Grid>
-            <Typography>{response.response}</Typography>
+            {response.response.split('\n').map((line, idxL) => (<Typography key={idxL}>{line}</Typography>))}
           </Stack>
         </ListItem>))}
       </List>
