@@ -8,3 +8,5 @@ export const versions: {
   '~19.2.0':                       '5b6ec5c5',
   '~19.1.0':                       'c52dfbce',
 } as const;
+
+console.debug('Current compatibility list:', versions);
