@@ -17,6 +17,7 @@ import './styles/styles.css';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
+console.debug('Initializing router with basename', process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}` : undefined);
 const router = createBrowserRouter([
   {
     path:    '/credentials/*',
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
     path:    '/*',
     element: <Root />,
   },
-], { basename: process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : undefined });
+], { basename: process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}` : undefined });
 
 root.render(
   <SnackbarProvider maxSnack={3} autoHideDuration={1500}>
