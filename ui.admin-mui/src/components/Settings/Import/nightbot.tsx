@@ -109,8 +109,9 @@ const PageSettingsModulesImportNightbot: React.FC<{
             ),
           }}
         />
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ pt: 1 }}>
           <Button
+            fullWidth
             color="primary"
             variant="contained"
             disabled={user === 'Not Authorized'}
@@ -119,6 +120,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
             Import playlist
           </Button>
           <Button
+            fullWidth
             color="primary"
             variant="contained"
             disabled={user === 'Not Authorized'}
@@ -127,6 +129,7 @@ const PageSettingsModulesImportNightbot: React.FC<{
             Import commands
           </Button>
           <Button
+            fullWidth
             color="primary"
             variant="contained"
             disabled={user === 'Not Authorized'}
