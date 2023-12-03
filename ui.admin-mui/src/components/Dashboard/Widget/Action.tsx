@@ -11,6 +11,7 @@ import { DashboardWidgetActionCommandButton } from './Action/CommandButton';
 import { DashboardWidgetActionCountdownButton } from './Action/CountdownButton';
 import { DashboardWidgetActionCustomVariableButton } from './Action/CustomVariableButton';
 import { DashboardWidgetBotDialogActionsEdit } from './Action/Dialog/ActionsEdit';
+import { DashboardWidgetActionDividerButton } from './Action/DividerButton';
 import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
 import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
@@ -112,6 +113,9 @@ export const DashboardWidgetAction: React.FC = () => {
             }
             if (action.type === 'overlayStopwatch') {
               return <DashboardWidgetActionStopwatchButton key={action.id} item={action}/>;
+            }
+            if (action.type === 'divider') {
+              return <DashboardWidgetActionDividerButton key={action.id} item={action}/>;
             }
             return <DashboardWidgetActionUnknownButton item={action} key='unknown button' variableName='Unknown button type'/>;
           })}

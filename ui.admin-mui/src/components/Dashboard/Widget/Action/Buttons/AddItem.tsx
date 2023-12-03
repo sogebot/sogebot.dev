@@ -45,6 +45,7 @@ export const DashboardWidgetActionButtonsAddItem: React.FC<{
         <MenuItem onClick={() => addItem('customvariable')}>Custom Variable</MenuItem>
         <MenuItem onClick={() => addItem('command')}>Command</MenuItem>
         <MenuItem onClick={() => addItem('overlayCountdown')}>Countdown</MenuItem>
+        <MenuItem onClick={() => addItem('divider')}>Divider</MenuItem>
         <MenuItem onClick={() => addItem('overlayMarathon')}>Marathon</MenuItem>
         <MenuItem onClick={() => addItem('overlayStopwatch')}>Stopwatch</MenuItem>
         <MenuItem onClick={() => addItem('randomizer')}>Randomizer</MenuItem>

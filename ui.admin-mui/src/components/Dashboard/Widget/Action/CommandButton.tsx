@@ -31,7 +31,10 @@ export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }>
       htmlcolor={item.options.color}
       disabled={item.options.command.length === 0}
       fullWidth
-      sx={{ borderRadius: 0 }}>
+      sx={{
+        borderRadius: 0 ,
+        padding: item.options.label.length === 0 ? 0 : undefined,
+      }}>
       {item.options.label.length === 0 && item.options.command.length === 0 && 'Command not set' }
       {item.options.label.length > 0 ? item.options.label : item.options.command}
     </ColorButton>

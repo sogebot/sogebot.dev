@@ -10,7 +10,7 @@ import HTMLReactParser from 'html-react-parser';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
-import { SliderPicker } from 'react-color';
+import { CompactPicker } from 'react-color';
 
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispa
 import { setCountdowns, setMarathons, setRandomizers, setStopwatchs } from '../../../../../store/quickActionsSlice';
 import { isHexColor } from '../../../../../validators';
 import { DeleteButton } from '../../../../Buttons/DeleteButton';
+import { FormNumericInput } from '../../../../Form/Input/Numeric';
 import { DroppableComponent } from '../../../../Table/DroppableComponent';
 import { TableCellKeepWidth } from '../../../../Table/TableCellKeepWidth';
 import { DashboardWidgetActionButtonsAddItem } from '../Buttons/AddItem';
@@ -75,25 +76,28 @@ const DraggableComponent: React.FC<{
     setUpdateItem(update);
   }, [ updateItem ]);
 
-  const onInputChange = React.useCallback((value: string) => {
+  const onInputChange = React.useCallback((value: string | number) => {
     const update = cloneDeep(updateItem);
+    if (update.type === 'divider') {
+      update.options.height = Number(value);
+    }
     if (update.type === 'command') {
-      update.options.command = value;
+      update.options.command = String(value);
     }
     if (update.type === 'customvariable') {
-      update.options.customvariable = value;
+      update.options.customvariable = String(value);
     }
     if (update.type === 'randomizer') {
-      update.options.randomizerId = value;
+      update.options.randomizerId = String(value);
     }
     if (update.type === 'overlayCountdown') {
-      update.options.countdownId = value;
+      update.options.countdownId = String(value);
     }
     if (update.type === 'overlayMarathon') {
-      update.options.marathonId = value;
+      update.options.marathonId = String(value);
     }
     if (update.type === 'overlayStopwatch') {
-      update.options.stopwatchId = value;
+      update.options.stopwatchId = String(value);
     }
     setUpdateItem(update);
   }, [ updateItem ]);
@@ -167,6 +171,19 @@ const DraggableComponent: React.FC<{
                         onChange={(event) => onLabelChange(event.target.value)}
                         value={updateItem.options.label}
                       />
+                      {updateItem.type === 'divider'
+                        && <FormNumericInput
+                          fullWidth
+                          variant='filled'
+                          min={0}
+                          label="Height"
+                          onChange={(value) => onInputChange(Number(value))}
+                          InputProps={{
+                            endAdornment: 'px',
+                          }}
+                          value={updateItem.options.height}
+                        />
+                      }
                       {updateItem.type === 'command'
                         && <TextField
                           fullWidth
@@ -264,7 +281,25 @@ const DraggableComponent: React.FC<{
                             lineHeight:    '1.4375em',
                             letterSpacing: '0.00938em',
                           }}>Button Color</InputLabel>
-                          <SliderPicker onChangeComplete={onChange} color={isHexColor(updateItem.options.color) ? updateItem.options.color : '#111111'}/>
+                          <Box sx={{
+                            textAlign: 'center',
+                            '.compact-picker': {
+                              border: '2px solid rgba(100, 100, 100, 1)',
+                              backgroundColor: 'inherit',
+                            }
+                          }}>
+                            <CompactPicker
+                              styles={{
+                                default: {
+                                  Compact: {
+                                    backgroundColor: '#333333',
+                                  }
+                                }
+                              }}
+                              onChangeComplete={onChange}
+                              color={isHexColor(updateItem.options.color) ? updateItem.options.color : '#111111'}
+                            />
+                          </Box>
 
                           <Stack spacing={2} direction="row">
                             <Button onClick={handleReset} fullWidth>Cancel</Button>
@@ -377,6 +412,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       'overlayStopwatch': { stopwatchId: '' },
       'overlayCountdown': { countdownId: '' },
       'randomizer':       { randomizerId: '' },
+      'divider':          { height: 36 },
     } as const;
 
     const item: any = {
@@ -445,6 +481,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
                       }}>
                         {item.type === 'command' && item.options.command}
                         {item.type === 'customvariable' && item.options.customvariable}
+                        {item.type === 'divider' && `${item.options.height}px`}
                         {item.type === 'randomizer' && <RenderList label={randomizers.find(o => o.id === item.options.randomizerId)?.label} id={item.options.randomizerId}/>}
                         {item.type === 'overlayCountdown' && <RenderList label={countdowns.find(o => o.id === item.options.countdownId)?.label} id={item.options.countdownId}/>}
                         {item.type === 'overlayMarathon' && <RenderList label={marathons.find(o => o.id === item.options.marathonId)?.label} id={item.options.marathonId}/>}
