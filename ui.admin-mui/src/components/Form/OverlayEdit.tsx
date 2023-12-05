@@ -98,7 +98,7 @@ export const OverlayEdit: React.FC = () => {
   const containerRef = React.useRef<HTMLDivElement>();
 
   const [ zoom, setZoom ] = React.useState(1);
-  const [frame, setFrame] = React.useState({
+  const [ frame, setFrame ] = React.useState({
     translate: [0,0], rotate: 0,
   });
 

@@ -74,7 +74,7 @@ const PageRegistryRandomizer = () => {
       { headers: { authorization: `Bearer ${getAccessToken()}` } },
     )
       .then(() => {
-        enqueueSnackbar(parse(`Randomizer&nbsp;<strong>${item.name}</strong>&nbsp;was triggered.`));
+        enqueueSnackbar(<>Randomizer&nbsp;<strong>{item.name}</strong>&nbsp;was triggered.</>);
       });
   }, [ enqueueSnackbar ]);
 

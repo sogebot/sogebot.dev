@@ -38,7 +38,6 @@ export const DashboardWidgetBot: React.FC = () => {
     setValue(newValue);
   };
 
-  console.log('commit', process.env.REACT_APP_COMMIT);
   const popoutURL = window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'popout/widget/bot?server=' + server;
   const isPopout = window.location.href.includes('/popout/widget/bot');
 

@@ -40,52 +40,33 @@ const PageSettingsModulesCoreTTS: React.FC<{
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
+        <TextField
+          sx={{ minWidth: 300 }}
+          label={translate('integrations.responsivevoice.settings.key.title')}
+          helperText={translate('integrations.responsivevoice.settings.key.help')}
+          variant="filled"
+          type="password"
+          value={settings.responsiveVoiceKey[0]}
+          onChange={(event) => handleChange('responsiveVoiceKey', event.target.value)}
+        />
+
         <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-          <InputLabel id="demo-simple-select-label">{translate('core.tts.settings.service')}</InputLabel>
+          <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={settings.service[0]}
-            label={translate('core.tts.settings.service')}
-            onChange={(event) => handleChange('service', event.target.value)}
+            labelId="private-key-label"
+            id="private-key-select"
+            value={settings.googlePrivateKey[0]}
+            label='Google Private Key'
+            displayEmpty
+            onChange={(event) => handleChange('googlePrivateKey', event.target.value)}
           >
-            <MenuItem value={-1}>None</MenuItem>
-            <MenuItem value={0}>ResponsiveVoice</MenuItem>
-            <MenuItem value={1}>Google TTS</MenuItem>
+            <MenuItem value={''}><em>None</em></MenuItem>
+            {privateKeys.map(key => <MenuItem key={key.id} value={key.id}>
+              <Typography component={'span'} fontWeight={'bold'}>{ key.clientEmail }</Typography>
+              <Typography component={'span'} fontSize={12} pl={1}>{ key.id }</Typography>
+            </MenuItem>)}
           </Select>
         </FormControl>
-
-        {settings.service[0] === 0
-          && <TextField
-            sx={{ minWidth: 300 }}
-            label={translate('integrations.responsivevoice.settings.key.title')}
-            helperText={translate('integrations.responsivevoice.settings.key.help')}
-            variant="filled"
-            type="password"
-            value={settings.responsiveVoiceKey[0]}
-            onChange={(event) => handleChange('responsiveVoiceKey', event.target.value)}
-          />
-        }
-
-        {settings.service[0] === 1
-          && <FormControl  variant="filled" sx={{ minWidth: 300 }}>
-            <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
-            <Select
-              labelId="private-key-label"
-              id="private-key-select"
-              value={settings.googlePrivateKey[0]}
-              label='Google Private Key'
-              displayEmpty
-              onChange={(event) => handleChange('googlePrivateKey', event.target.value)}
-            >
-              <MenuItem value={''}><em>None</em></MenuItem>
-              {privateKeys.map(key => <MenuItem key={key.id} value={key.id}>
-                <Typography component={'span'} fontWeight={'bold'}>{ key.clientEmail }</Typography>
-                <Typography component={'span'} fontSize={12} pl={1}>{ key.id }</Typography>
-              </MenuItem>)}
-            </Select>
-          </FormControl>
-        }
       </Stack>
     </Paper>
     }

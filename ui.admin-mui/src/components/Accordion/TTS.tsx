@@ -1,18 +1,14 @@
 import { ExpandMoreTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Fade, FormLabel, IconButton, Link, Slider, Stack, Switch, Typography } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import { Alert } from '@sogebot/backend/dest/database/entity/alert';
-import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Fade, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Alerts, TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import React from 'react';
-import { Helmet } from 'react-helmet';
 
-import { getSocket } from '../../helpers/socket';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useTTS } from '../../hooks/useTTS';
 import theme from '../../theme';
 
 declare global {
@@ -21,10 +17,8 @@ declare global {
   }
 }
 
-type model = Randomizer['tts'] | TTS | Alerts['tts'];
-
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
-  model:                   model,
+  model:                   Alerts['tts'] | TTS | Randomizer['tts']
   open:                    string,
   onOpenChange:            (value: string) => void;
   onChange:                (value: any) => void;
@@ -33,13 +27,56 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   customLabelDetails?:     React.ReactNode;
 };
 
-function isGlobal (value: Partial<Alert['items'][number]['tts']> | Required<Alert['tts']>): value is Required<Alert['tts']> {
-  if (value) {
-    return Object.keys(value).includes('voice');
-  } else {
-    return false;
+const values = {
+  [TTSService.NONE]: {
+    minRate: 0,
+    maxRate: 1.5,
+    stepRate: 0.01,
+    maxPitch: 2.0,
+    minPitch: 0.0,
+    stepPitch: 0.1,
+    maxVolume: 1,
+    minVolume: 0,
+    stepVolume: 0.01,
+    volumeAdornment: '%',
+  },
+  [TTSService.SPEECHSYNTHESIS]: {
+    minRate: 0,
+    maxRate: 1.5,
+    stepRate: 0.01,
+    maxPitch: 2.0,
+    minPitch: 0.0,
+    stepPitch: 0.1,
+    maxVolume: 1,
+    minVolume: 0,
+    stepVolume: 0.01,
+    volumeAdornment: '%',
+  },
+  [TTSService.RESPONSIVEVOICE]: {
+    minRate: 0,
+    maxRate: 1.5,
+    stepRate: 0.01,
+    maxPitch: 2.0,
+    minPitch: 0.0,
+    stepPitch: 0.1,
+    maxVolume: 1,
+    minVolume: 0,
+    stepVolume: 0.01,
+    volumeAdornment: '%',
+  },
+  [TTSService.GOOGLE]:          {
+    minRate: 0.25,
+    maxRate: 4.0,
+    stepRate: 0.01,
+    maxPitch: 20.0,
+    minPitch: -20.0,
+    stepPitch: 1.0,
+    maxVolume: 1,
+    minVolume: 0,
+    stepVolume: 0.01,
+    volumeAdornment: '%',
   }
-}
+};
 
 export const AccordionTTS: React.FC<Props> = (props) => {
   const accordionId = 'tts';
@@ -51,27 +88,24 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   const { translate } = useTranslation();
   const { configuration } = useAppSelector(state => state.loader);
 
-  const service = React.useMemo(() => configuration.core.tts.service as -1 | 0 | 1, [ configuration ]);
   const [ voices, setVoices ] = React.useState<string[]>([]);
   const [ text, setText ] = React.useState('This message should be said by TTS to test your settings.');
-  const isConfigured = React.useMemo(() => {
-    if (configuration.core.tts.service === -1
-      || (configuration.core.tts.service === 0 && configuration.core.tts.responsiveVoiceKey.length === 0)
-      || (configuration.core.tts.service === 1 && (configuration.core.tts.googlePrivateKey.length === 0))) {
-      return false;
-    }
-    return true;
-  }, [ configuration]);
 
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);
   };
 
-  const getVoicesFromResponsiveVoice = () => {
-    if (typeof window.responsiveVoice === 'undefined') {
-      setTimeout(() => getVoicesFromResponsiveVoice(), 200);
-      return;
-    }
+  const getVoicesFromResponsiveVoice = async () => {
+    await new Promise<void>(resolve => {
+      const checkAvailability = () => {
+        if (typeof window.responsiveVoice === 'undefined') {
+          setTimeout(() => checkAvailability(), 200);
+        }
+        resolve();
+      };
+      checkAvailability();
+    });
+
     try {
       window.responsiveVoice.init();
     } catch (e) {
@@ -80,194 +114,243 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     setVoices(window.responsiveVoice.getVoices().map((o: { name: string }) => o.name));
   };
 
+  const [ loading, setLoading ] = React.useState(true);
   React.useEffect(() => {
-    if (voices.length === 0) {
-      // voices not loaded yet
-      return;
+    setLoading(model.selectedService !== TTSService.NONE);
+    if (model.selectedService === TTSService.RESPONSIVEVOICE) {
+      console.log('Loading ResponsiveVoice voices');
+      getVoicesFromResponsiveVoice().then(() => setLoading(false));
     }
-    // check if voice is in list
-    if (!voices.includes(model.voice)) {
-      console.log('Voice', model.voice, 'not in list, setting to default');
-      onChange({
-        ...model, voice: voices.find(o => o.toLowerCase().startsWith('en-us-standard') || o.toLowerCase().startsWith('english')),
-      });
-    }
-  }, [voices, model.voice ]);
 
-  React.useEffect(() => {
-    if (service === 0) {
-      getVoicesFromResponsiveVoice();
-      if (model.voice === '') {
-        onChange({
-          ...model, voice: 'English Female',
-        });
-      }
-    }
-    if (service === 1) {
+    if(model.selectedService === TTSService.GOOGLE) {
       setVoices(configuration.core.tts.googleVoices);
-      if (model.voice === '') {
-        onChange({
-          ...model, voice: 'en-US-Standard-A',
-        });
+      setLoading(false);
+    }
+
+    if(model.selectedService === TTSService.SPEECHSYNTHESIS) {
+      setVoices(speechSynthesis.getVoices().map(o => o.name));
+      setLoading(false);
+    }
+  }, [model.selectedService]);
+
+  React.useEffect(() => {
+    const defaultValues = {
+      [TTSService.NONE]: null,
+      [TTSService.SPEECHSYNTHESIS]: {
+        voice: 'Microsoft David - English (United States)',
+        rate: 1,
+        pitch: 1,
+        volume: 1,
+      },
+      [TTSService.RESPONSIVEVOICE]: {
+        voice: 'UK English Female',
+        rate: 1,
+        pitch: 1,
+        volume: 1,
+      },
+      [TTSService.GOOGLE]: {
+        voice: 'en-US-Standard-A',
+        rate: 1,
+        pitch: 1,
+        volume: 1,
+      }
+    };
+    if (loading === false) {
+      if (!(model.selectedService in model.services)) {
+        console.log('Setting default values for', model.selectedService);
+        model.services[model.selectedService as '1'] = defaultValues[model.selectedService as '1'];
       }
     }
-  }, [open, service, configuration]);
+    // on load finish, we need to check values of selectedService and set default values
+  }, [loading, model]);
 
-  const speak = React.useCallback(async () => {
-    for (const toSpeak of text.split('/ ')) {
-      await new Promise<void>((resolve) => {
-        if (toSpeak.trim().length === 0) {
-          setTimeout(() => resolve(), 500);
-        } else {
-          if (isGlobal(model) && model) {
-            if (service === 0) {
-              window.responsiveVoice.speak(toSpeak.trim(), model.voice, {
-                rate: model.rate, pitch: model.pitch, volume: Math.min(model.volume, 1), onend: () => setTimeout(() => resolve(), 500),
-              });
-            } else {
-              // Google TTS
-              getSocket('/core/tts').emit('google::speak', {
-                rate: model.rate, pitch: model.pitch, volume: Math.min(model.volume, 1), voice: model.voice, text: text,
-              }, (err, b64mp3) => {
-                console.log({ b64mp3 });
-                if (err) {
-                  console.error(err);
-                }
-                const snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
-                snd.play();
-              });
-            }
-          } else {
-            console.error('You should not see this message, speak should be disabled in this extension panel - please log a bug');
-          }
-        }
-      });
-    }
-  }, [ text, service, model ]);
+  const { speak } = useTTS();
 
   return <>
-    <Helmet>
-      {window.responsiveVoice === undefined && configuration.core.tts.responsiveVoiceKey.length > 0 && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`}></script>}
-    </Helmet>
-    <Accordion {...accordionProps} disabled={props.disabled} expanded={open === accordionId && !props.disabled && isConfigured}>
+    <Accordion {...accordionProps} disabled={props.disabled} expanded={open === accordionId && !props.disabled}>
       <AccordionSummary
-        expandIcon={isConfigured && <ExpandMoreTwoTone />}
+        expandIcon={<ExpandMoreTwoTone />}
         onClick={() => handleClick()}
         aria-controls="panel1a-content"
         id="panel1a-header"
-        sx={{ backgroundColor: !isConfigured ? theme.palette.error.dark : undefined }}
       >
-        {isConfigured ? <>
-          {'enabled' in model && <Switch
-            size='small'
-            sx={{ mr: 1 }}
-            checked={model.enabled}
-            onClick={ev => ev.stopPropagation()}
-            onChange={(_, val) => onChange({
-              ...model, enabled: val,
-            }) }/>}
+        {'enabled' in model && <Switch
+          size='small'
+          sx={{ mr: 1 }}
+          checked={model.enabled}
+          onClick={ev => ev.stopPropagation()}
+          onChange={(_, val) => onChange({
+            ...model, enabled: val,
+          }) }/>}
 
-          <Typography sx={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
-          }}>
-            { translate('registry.alerts.tts.setting') }
-            <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
-              <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
-                {props.customLabelDetails
-                  ? props.customLabelDetails
-                  : model.voice
-                }
-              </Typography>
-            </Fade>
-          </Typography>
-        </> : <Typography>
-        TTS is not properly set, go to{' '}<Link href="/settings/modules/core/tts">{' '}TTS settings</Link> and configure.
-        </Typography>}
+        <Typography sx={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
+        }}>
+          { translate('registry.alerts.tts.setting') }
+          <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
+            <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
+              {props.customLabelDetails
+                ? props.customLabelDetails
+                : <>
+                  {model.selectedService === TTSService.NONE ? 'None'
+                    : model.selectedService === TTSService.RESPONSIVEVOICE ? 'ResponsiveVoice'
+                      : model.selectedService === TTSService.GOOGLE ? 'GoogleTTS'
+                        : model.selectedService === TTSService.SPEECHSYNTHESIS ? 'Web Speech API'
+                          : 'unknown service'
+                  }
+                  {' '}
+                  {model.selectedService !== TTSService.NONE && (model.services[model.selectedService]?.voice ?? 'unknown voice')}
+                </>
+              }
+            </Typography>
+          </Fade>
+        </Typography>
+
       </AccordionSummary>
       <AccordionDetails>
         {props.prepend && props.prepend}
 
-        {model.voice !== undefined && <Autocomplete
-          value={model.voice}
-          disableClearable
-          onChange={(ev, value) => onChange({
-            ...model, voice: value as typeof model.voice,
-          })}
-          id="registry.alerts.voice"
-          options={voices}
-          renderInput={(params) => <TextField {...params} label={translate('registry.alerts.voice')} />}
-          renderOption={(p, option, { inputValue }) => {
-            const matches = match(option, inputValue, { insideWords: true });
-            const parts = parse(option, matches);
+        <FormControl fullWidth variant="filled" >
+          <InputLabel id="service-label">Service</InputLabel>
+          <Select
+            MenuProps={{ PaperProps: { sx: { maxHeight: 200 } } }}
+            label="Service"
+            labelId="service-label"
+            value={model.selectedService}
+            onChange={(ev) => onChange({
+              ...model, selectedService: ev.target.value as typeof model.selectedService,
+            })}
+          >
+            <MenuItem value={TTSService.NONE}>None</MenuItem>
+            <MenuItem value={TTSService.RESPONSIVEVOICE}>ResponsiveVoice</MenuItem>
+            <MenuItem value={TTSService.GOOGLE}>GoogleTTS</MenuItem>
+            <MenuItem value={TTSService.SPEECHSYNTHESIS}>Web Speech API</MenuItem>
+          </Select>
+        </FormControl>
 
-            return (
-              <li {...p}>
-                <div>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
-                        color:           part.highlight ? 'black' : 'inherit',
-                      }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </div>
-              </li>
-            );
-          }}
-        />}
+        {!loading && model.selectedService !== TTSService.NONE && <>
+          {model.services[model.selectedService] !== undefined && <Autocomplete
+            value={model.services[model.selectedService]?.voice ?? ''}
+            disableClearable
+            onChange={(ev, value) => onChange({
+              ...model,
+              services: {
+                ...(model.services ?? {}),
+                [model.selectedService]: {
+                  ...model.services[model.selectedService],
+                  voice: value,
+                }
+              }
+            })}
+            id="registry.alerts.voice"
+            options={voices}
+            renderInput={(params) => <TextField {...params} label={translate('registry.alerts.voice')} />}
+            renderOption={(p, option, { inputValue }) => {
+              const matches = match(option, inputValue, { insideWords: true });
+              const parts = parse(option, matches);
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
-          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
-          <Slider
-            step={0.01}
-            min={0}
-            max={1}
-            valueLabelFormat={(val) => `${Number(val * 100).toFixed(0)}%`}
-            valueLabelDisplay="on"
-            value={model.volume}
-            onChange={(_, newValue) => onChange({
-              ...model, volume: newValue as number,
-            })}/>
-        </Stack>
+              return (
+                <li {...p}>
+                  <div>
+                    {parts.map((part, index) => (
+                      <span
+                        key={index}
+                        style={{
+                          backgroundColor: part.highlight ? theme.palette.primary.main : 'inherit',
+                          color:           part.highlight ? 'black' : 'inherit',
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </div>
+                </li>
+              );
+            }}
+          />}
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
-          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
-          <Slider
-            step={0.01}
-            min={0}
-            max={service === 0 ? 1.5 : 4.0}
-            valueLabelDisplay="on"
-            value={model.rate}
-            onChange={(_, newValue) => onChange({
-              ...model, rate: newValue as number,
-            })}/>
-        </Stack>
+          {model.selectedService === TTSService.SPEECHSYNTHESIS && <Alert severity='info'>
+            If you are running overlay on different computer, please check if voices are available on that machine as well.
+          </Alert>}
 
-        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
-          <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
-          <Slider
-            step={service === 0 ? 0.1 : 1}
-            min={service === 0 ? 0.0 : -20.0}
-            max={service === 0 ? 2.0 : 20.0}
-            valueLabelDisplay="on"
-            value={model.pitch}
-            onChange={(_, newValue) => onChange({
-              ...model, pitch: newValue as number,
-            })}/>
-        </Stack>
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
+            <Slider
+              step={values[model.selectedService].stepVolume}
+              min={values[model.selectedService].minVolume}
+              max={values[model.selectedService].maxVolume}
+              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${values[model.selectedService].volumeAdornment}`}
+              valueLabelDisplay="on"
+              value={model.services[model.selectedService]?.volume ?? 1}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    volume: newValue,
+                  }
+                },
+              })}/>
+          </Stack>
 
-        {model.voice !== undefined && <TextField
-          value={text}
-          variant='filled'
-          fullWidth
-          label={translate('registry.alerts.test')}
-          onChange={(ev) => setText(ev.currentTarget.value)}
-          InputProps={{ endAdornment: <IconButton onClick={speak}><PlayArrowTwoTone/></IconButton> }}
-        />}
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
+            <Slider
+              step={values[model.selectedService].stepRate}
+              min={values[model.selectedService].minRate}
+              max={values[model.selectedService].maxRate}
+              valueLabelDisplay="on"
+              value={model.services[model.selectedService]?.rate ?? (values[model.selectedService].maxRate - values[model.selectedService].minRate) / 2}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    rate: newValue,
+                  }
+                },
+              })}/>
+          </Stack>
+
+          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
+            <Slider
+              step={values[model.selectedService].stepPitch}
+              min={values[model.selectedService].minPitch}
+              max={values[model.selectedService].maxPitch}
+              valueLabelDisplay="on"
+              value={model.services[model.selectedService]?.pitch ?? (values[model.selectedService].maxPitch - values[model.selectedService].minPitch) / 2}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    pitch: newValue,
+                  }
+                },
+              })}/>
+          </Stack>
+
+          {model.services[model.selectedService]?.voice !== undefined && <TextField
+            value={text}
+            variant='filled'
+            fullWidth
+            label={translate('registry.alerts.test')}
+            onChange={(ev) => setText(ev.currentTarget.value)}
+            InputProps={{ endAdornment: <IconButton onClick={() => speak({
+              text,
+              service: model.selectedService,
+              rate: model.services[model.selectedService]!.rate,
+              pitch: model.services[model.selectedService]!.pitch,
+              volume: model.services[model.selectedService]!.volume,
+              voice: model.services[model.selectedService]!.voice,
+            })}><PlayArrowTwoTone/></IconButton> }}
+          />}
+
+        </>}
       </AccordionDetails>
     </Accordion>
   </>;

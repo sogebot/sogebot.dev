@@ -7,7 +7,6 @@ import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { itemsToEvalPart } from '@sogebot/ui-helpers/queryFilter';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
@@ -22,21 +21,6 @@ import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
 const loadedFonts: string[] = [];
-
-const isResponsiveVoiceEnabled = () => {
-  return new Promise<void>((resolve) => {
-    const check = () => {
-      if (typeof (window as any).responsiveVoice === 'undefined') {
-        setTimeout(() => check(), 200);
-      } else {
-        console.debug('= ResponsiveVoice init OK');
-        (window as any).responsiveVoice.init();
-        resolve();
-      }
-    };
-    check();
-  });
-};
 
 const processFilter = (emitData: EmitData, filter: Filter): boolean => {
   if (filter && filter.items.length > 0) {
@@ -77,8 +61,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
   const [ activeUntil, setActiveUntil ] = React.useState(0);
 
   getSocket('/core/emotes', true); // init socket
-
-  const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
 
   const [ defaultProfanityList, setDefaultProfanityList ] = React.useState<string[]>([]);
   const [ listHappyWords, setListHappyWords ] = React.useState<string[]>([]);
@@ -186,7 +168,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     id:            string;
     isTTSMuted:    boolean;
     isSoundMuted:  boolean;
-    TTSService:    number;
     TTSKey:        string;
     caster:        UserInterface | null;
     user:          UserInterface | null;
@@ -196,11 +177,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
       return;
     }
     console.debug('Incoming alert', data);
-
-    if (data.TTSService === 0) {
-      setResponsiveVoiceKey(data.TTSKey);
-      await isResponsiveVoiceEnabled();
-    }
 
     // checking for vulgarities
     if (data.message && data.message.length > 0) {
@@ -223,11 +199,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
           }
         }
       }
-    }
-
-    if (data.event === 'promo' && data.user && data.user.profileImageUrl) {
-      console.log('TODO: add profile image');
-      // getMeta(data.user.profileImageUrl, 'Thumbnail');
     }
 
     setTimeout(() => {
@@ -430,9 +401,6 @@ export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) =>
     lineHeight:    'normal !important',
     color:         'black',
   }}>
-    <Helmet>
-      {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
-    </Helmet>
     {activeUntil > 0 && <Box key={emitData?.id ?? 'no-id'}>
       {selectedGroup?.items.map((o) => <Box id={`${o.id}`} key={`${o.id}-${emitData?.id ?? 'no-id'}`} sx={{
         position:        'absolute' ,
