@@ -2,8 +2,7 @@
   "private": true,
   "workspaces": [
     "ui.admin-mui",
-    "backend",
-    "ui.public"
+    "backend"
   ],
   "scripts": {
     "postinstall": "custompatch || (exit 0)",

@@ -16,7 +16,6 @@ import SimpleBar from 'simplebar-react';
 
 import { anItems, anMoveableId, anSelectedItem, anSelectedItemCanvas, anSelectedItemOpts, emptyItem } from './atoms';
 import { AlertsRegistryTesterAccordion } from './Overlay/AlertSettings/tester';
-import { AlertsRegistrySettings } from './Overlay/AlertsRegistrySettings';
 import { AlertsSettings } from './Overlay/AlertsSettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
@@ -53,7 +52,7 @@ import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
 import { AlertItem } from '../Overlay/AlertItem';
-import { AlertItemNG } from '../Overlay/AlertItemNG';
+import { AlertItem } from '../Overlay/AlertItem';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
 import { ClipsItem } from '../Overlay/ClipsItem';
@@ -460,7 +459,7 @@ export const OverlayEdit: React.FC = () => {
                     width: '100%', height: '100%',
                   }}>
                     {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
-                    {o.opts.typeId === 'alerts' && <AlertItemNG width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
+                    {o.opts.typeId === 'alerts' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'marathon' && <MarathonItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
@@ -693,9 +692,6 @@ export const OverlayEdit: React.FC = () => {
                     handleItemChange({ 'opts': val });
                   }}/>}
                   {selectedItemOpts.typeId === 'chat' && <ChatSettings model={selectedItemOpts} onUpdate={(val) => {
-                    handleItemChange({ 'opts': val });
-                  }}/>}
-                  {selectedItemOpts.typeId === 'alertsRegistry' && <AlertsRegistrySettings model={selectedItemOpts} onUpdate={(val) => {
                     handleItemChange({ 'opts': val });
                   }}/>}
                   {selectedItemOpts.typeId === 'url' && <UrlSettings model={selectedItemOpts} onUpdate={(val) => {
