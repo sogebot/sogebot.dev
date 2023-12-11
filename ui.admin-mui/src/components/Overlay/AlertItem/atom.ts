@@ -6,7 +6,6 @@ export const anEmitData = atom<null | EmitData & {
   id:            string;
   isTTSMuted:    boolean;
   isSoundMuted:  boolean;
-  TTSService:    number;
   TTSKey:        string;
   caster:        UserInterface | null;
   user:          UserInterface | null;

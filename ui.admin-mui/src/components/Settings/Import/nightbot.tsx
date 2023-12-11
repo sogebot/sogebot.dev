@@ -55,9 +55,9 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const authorize = React.useCallback(() => {
     const popup = window.open(
-      window.location.origin +
-        (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') +
-        'credentials/nightbot',
+      window.location.origin
+        + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/')
+        + 'credentials/nightbot',
       'popup',
       'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no'
     );

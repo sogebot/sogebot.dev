@@ -8,7 +8,6 @@ import gsap from 'gsap';
 import { random } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
@@ -16,61 +15,13 @@ import { getContrastColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
+import { useTTS } from '../../hooks/useTTS';
 import { getRandomizerId, setRandomizerId } from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';
 import { generateItems } from '../Form/RandomizerEdit';
 
 const mutex = new Mutex();
 const delay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
-
-const isResponsiveVoiceEnabled = () => {
-  return new Promise<void>((resolve) => {
-    const check = () => {
-      if (typeof (window as any).responsiveVoice === 'undefined') {
-        setTimeout(() => check(), 200);
-      } else {
-        console.debug('= ResponsiveVoice init OK');
-        (window as any).responsiveVoice.init();
-        resolve();
-      }
-    };
-    check();
-  });
-};
-
-let isSpeaking = false;
-const isTTSPlaying = {
-  0: () => typeof window.responsiveVoice !== 'undefined' && window.responsiveVoice.isPlaying(),
-  1: () => isSpeaking,
-};
-const speak = (service: 0 | 1, key: string, text: string, voice: string, rate: number, pitch: number, volume: number) => {
-  if (isTTSPlaying[service]()) {
-    // wait and try later
-    setTimeout(() => speak(service, key, text, voice, rate, pitch, volume), 1000);
-    return;
-  }
-
-  if (service === 0) {
-    // RESPONSIVE VOICE
-    window.responsiveVoice.speak(text, voice, {
-      rate, pitch, volume,
-    });
-  } else {
-    // GOOGLE
-    isSpeaking = true;
-    getSocket('/core/tts', true).emit('speak', {
-      voice, rate, pitch, volume, key, text,
-    }, (err, b64mp3) => {
-      if (err) {
-        isSpeaking = false;
-        return console.error(err);
-      }
-      const snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
-      snd.play();
-      snd.onended = () => (isSpeaking = false);
-    });
-  }
-};
 
 function getMiddleElement () {
   const clientWidth = window.innerWidth;
@@ -116,8 +67,8 @@ function blinkElementWoFBackground (element: HTMLElement) {
 export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active }) => {
   const dispatch = useAppDispatch();
   const randomizerId = useAppSelector(getRandomizerId);
+  const { speak } = useTTS();
 
-  const [responsiveVoiceKey, setResponsiveVoiceKey] = React.useState<string | null>(null);
   const [ randomizers, setRandomizers ] = React.useState<Randomizer[]>([]);
   const [ threadId ] = React.useState(nanoid());
 
@@ -146,12 +97,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
   React.useEffect(() => {
     console.log(`====== Randomizer (${threadId}) ======`);
 
-    getSocket('/registries/randomizer', true).on('spin', async ({ service, key }) => {
-      if (service === 0) {
-        setResponsiveVoiceKey(key);
-        await isResponsiveVoiceEnabled();
-      }
-
+    getSocket('/registries/randomizer', true).on('spin', async ({ key }) => {
       if (!currentRandomizerRef.current) {
         console.error('No randomizer is visible!');
         return;
@@ -196,8 +142,15 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
         console.log('Blinking', document.getElementById('simple'));
         console.log('Speaking', currentRandomizerRef.current?.items[selectedIdx].name);
         blinkElementColor(document.getElementById('simple')!);
-        speak(service, key, currentRandomizerRef.current?.items[selectedIdx].name, currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
-
+        speak({
+          text: currentRandomizerRef.current?.items[selectedIdx].name,
+          service: currentRandomizerRef.current.tts.selectedService,
+          rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
+          pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
+          volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
+          voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
+          key,
+        });
       }
 
       if (currentRandomizerRef.current.type === 'tape') {
@@ -222,7 +175,15 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
             const winnerEl = getMiddleElement();
             if (winnerEl) {
               if (currentRandomizerRef.current && currentRandomizerRef.current.tts.enabled) {
-                speak(service, key, winnerEl.innerHTML.trim(), currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
+                speak({
+                  text: winnerEl.innerHTML.trim(),
+                  service: currentRandomizerRef.current.tts.selectedService,
+                  rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
+                  pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
+                  volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
+                  voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
+                  key,
+                });
               }
               blinkElementBackground(winnerEl);
             }
@@ -251,7 +212,15 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
               const index = Math.floor(winDeg / degPerItem);
 
               if (currentRandomizerRef.current.tts.enabled) {
-                speak(service, key, generateItems(currentRandomizerRef.current!.items).reverse()[index].name, currentRandomizerRef.current.tts.voice, currentRandomizerRef.current.tts.rate, currentRandomizerRef.current.tts.pitch, currentRandomizerRef.current.tts.volume);
+                speak({
+                  text: generateItems(currentRandomizerRef.current!.items).reverse()[index].name,
+                  service: currentRandomizerRef.current.tts.selectedService,
+                  rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
+                  pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
+                  volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
+                  voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
+                  key,
+                });
               }
 
               const segments = Array.from(document.getElementsByClassName('segment')).reverse();
@@ -322,9 +291,6 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
   }, 1000, true, true);
 
   return <>
-    <Helmet>
-      {responsiveVoiceKey && <script src={`https://code.responsivevoice.org/responsivevoice.js?key=${responsiveVoiceKey}`}></script>}
-    </Helmet>
     <Box sx={{
       color:         'black',
       width:         '100%',
