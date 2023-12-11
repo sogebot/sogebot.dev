@@ -1,5 +1,5 @@
 import { KeyboardReturnTwoTone } from '@mui/icons-material';
-import { Box, FormLabel, InputAdornment, Stack, TextField } from '@mui/material';
+import { Box, FormLabel, InputAdornment, Link, Stack, TextField } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -15,6 +15,13 @@ export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
 
   const [ IPToAdd, setIPToAdd ] = React.useState('');
+
+  const [tracedIP, setTracedIP ] = React.useState('');
+  React.useEffect(() => {
+    fetch('https://api64.ipify.org?format=json')
+      .then((res) => res.json())
+      .then((json) => setTracedIP(json.ip));
+  }, []);
 
   const modelRef = React.useRef(model);
   React.useEffect(() => {
@@ -87,6 +94,7 @@ export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
           hiddenLabel
           value={IPToAdd}
           placeholder='192.168.0.1'
+          helperText={tracedIP.length > 0 && <Link onClick={() => addNewIP(tracedIP)}>Click to add current IP {tracedIP}</Link>}
           variant="filled"
           onKeyDown={(ev) => {
             if (ev.key === 'Enter') {

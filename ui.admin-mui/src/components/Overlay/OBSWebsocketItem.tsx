@@ -1,6 +1,5 @@
 import { Attributes } from '@sogebot/backend/dest/database/entity/event';
 import { OBSWebsocket as Entity } from '@sogebot/backend/dest/database/entity/overlay';
-import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
 import axios from 'axios';
 import OBSWebSocket from 'obs-websocket-js';
 import type ObsWebSocket from 'obs-websocket-js';
@@ -105,7 +104,11 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
   const init = React.useCallback(async () => {
     console.log('====== OBS WEBSOCKET ======');
     if (item.allowedIPs.length > 0) {
-      const currentIP = await getCurrentIP();
+      const currentIP = await new Promise<string>((resolve) => {
+        fetch('https://api64.ipify.org?format=json')
+          .then((res) => res.json())
+          .then((json) => resolve(json.ip));
+      });
       if (item.allowedIPs.includes(currentIP)) {
         console.log(`IP ${currentIP} have access to this OBSWebsocket overlay.`);
       } else {
