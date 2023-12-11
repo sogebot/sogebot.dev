@@ -38,7 +38,11 @@ const PageSettingsModulesCoreTTS: React.FC<{
 
   return (loading ? null : <Box ref={ref} id="tts">
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
-    {settings && <Paper elevation={1} sx={{ p: 1 }}>
+
+    <Typography variant='h5' sx={{ pb: 2 }}>ResponsiveVoice TTS</Typography>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
       <Stack spacing={1}>
         <TextField
           sx={{ minWidth: 300 }}
@@ -49,7 +53,14 @@ const PageSettingsModulesCoreTTS: React.FC<{
           value={settings.responsiveVoiceKey[0]}
           onChange={(event) => handleChange('responsiveVoiceKey', event.target.value)}
         />
+      </Stack>
+    </Paper>}
 
+    <Typography variant='h5' sx={{ pb: 2 }}>Google TTS</Typography>
+    {settings && <Paper elevation={1} sx={{
+      p: 1, mb: 2,
+    }}>
+      <Stack spacing={1}>
         <FormControl  variant="filled" sx={{ minWidth: 300 }}>
           <InputLabel id="private-key-label" shrink>Google Private Key</InputLabel>
           <Select
