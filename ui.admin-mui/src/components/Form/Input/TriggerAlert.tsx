@@ -1,21 +1,22 @@
-import { ClearTwoTone, ExpandMoreTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
-import { Alert as AlertElement, Collapse, Divider, Fade, FormControl, FormLabel, IconButton, InputAdornment, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Alert, EmitData } from '@sogebot/backend/dest/database/entity/alert';
-import { Alerts } from '@sogebot/backend/dest/database/entity/overlay';
-import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
-import axios from 'axios';
-import React, { useRef } from 'react';
+import { ExpandMoreTwoTone } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Alerts, EmitData, Overlay } from '@sogebot/backend/src/database/entity/overlay';
+import { useSetAtom } from 'jotai';
+import React from 'react';
 
 import { AdditionalGridFormResponse } from './Response';
-import getAccessToken from '../../../getAccessToken';
 import { getSocket } from '../../../helpers/socket';
-import theme from '../../../theme';
-import layout1 from '../assets/layout1.png';
-import layout2 from '../assets/layout2.png';
-import layout3 from '../assets/layout3.png';
-import layout4 from '../assets/layout4.png';
-import layout5 from '../assets/layout5.png';
-import { FormSelectorGallery } from '../Selector/Gallery';
+import { anItems, anMoveableId } from '../atoms';
+import { AccordionAnimationIn } from '../Overlay/AlertSettings/Accordion/AnimationIn';
+import { AccordionAnimationOut } from '../Overlay/AlertSettings/Accordion/AnimationOut';
+import { AccordionAnimationText } from '../Overlay/AlertSettings/Accordion/AnimationText';
+import { AccordionDuration } from '../Overlay/AlertSettings/Accordion/Duration';
+import AlertSettingsAudio from '../Overlay/AlertSettings/Audio';
+import AlertSettingsCustom from '../Overlay/AlertSettings/Custom';
+import AlertSettingsGallery from '../Overlay/AlertSettings/Gallery';
+import { anSelectedAlert, anSelectedVariantId } from '../Overlay/AlertSettings/src/atoms';
+import AlertSettingsText from '../Overlay/AlertSettings/Text';
+import AlertSettingsTTS from '../Overlay/AlertSettings/TTS';
 
 type Props = {
   value:              any,
@@ -26,36 +27,78 @@ type Props = {
   disableExecution?:  boolean,
 };
 
-const selectedItemRegex = /\$triggerAlert\((?<uuid>[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}),? ?(?<options>.*)?\)/mi;
+const selectedItemRegex = /\$triggerAlert\((?<uuid>.{21}),? ?(?<options>.*)?\)/mi;
+
+const jsonParseBase64String = (str: string) => {
+  try {
+    return JSON.parse(Buffer.from(str, 'base64').toString());
+  } catch {
+    return null;
+  }
+};
 
 export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   disablePermission,
   disableFilter,
   disableExecution }) => {
-  const [ alerts, setAlerts ] = React.useState<Alert[] | null>(null);
+  const [ accordionId, setAccordionId ] = React.useState('');
   const [ overlays, setOverlays ] = React.useState<Overlay[]>([]);
+
+  const setSelectedOverlay = useSetAtom(anItems);
+  const setSelectedOverlayId = useSetAtom(anMoveableId);
+  const setSelectedAlert = useSetAtom(anSelectedAlert);
+  const setSelectedVariantId = useSetAtom(anSelectedVariantId);
 
   const [ loading, setLoading ] = React.useState(true);
   const [ propsValue, setPropsValue ] = React.useState(value);
 
   const parsedResponse = (value.response as string).match(selectedItemRegex);
   const parsedOptions = parsedResponse?.groups && parsedResponse?.groups.options
-    ? JSON.parse(Buffer.from(parsedResponse?.groups.options, 'base64').toString())
+    ? jsonParseBase64String(parsedResponse?.groups.options)
     : null;
 
   const [ selectedItemId, setSelectedItemId ] = React.useState<null | string>(parsedResponse?.groups ? parsedResponse.groups.uuid : null);
   const [ options, setOptions ] = React.useState<null | EmitData['customOptions']>(parsedOptions);
 
-  const [ expand, setExpand ] = React.useState(false);
-  const alertDurationRef = useRef<HTMLInputElement>();
-  const textDelayRef = useRef<HTMLInputElement>();
-  const messageTemplateRef = useRef<HTMLInputElement>();
+  const currentVariant = React.useMemo(() => {
+    if (!selectedItemId) {
+      return null;
+    }
+    for (const overlay of overlays) {
+      for (const overlayIt of overlay.items) {
+        if (overlayIt.opts.typeId === 'alerts') {
+          for (const alertIt of (overlayIt.opts as Alerts).items) {
+            if (alertIt.id === selectedItemId || alertIt.variants.find(b => b.id === selectedItemId)) {
+              // set overlayItem
+              setSelectedOverlay(overlay);
+              setSelectedOverlayId(overlayIt.id);
+
+              if (alertIt.id === selectedItemId) {
+                setSelectedAlert(alertIt);
+                setSelectedVariantId(null);
+                return alertIt;
+              } else {
+                for (const variant of alertIt.variants) {
+                  if (variant.id === selectedItemId) {
+                    setSelectedAlert(alertIt);
+                    setSelectedVariantId(variant.id);
+                    return variant;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }, [selectedItemId, overlays ]);
+
+  // TODO: set as false
+  const [ expand, setExpand ] = React.useState(true);
 
   React.useEffect(() => {
-    axios.get<Alert[]>(`${JSON.parse(localStorage.server)}/api/registries/alerts/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-      .then(res => setAlerts(res.data))
-      .finally(() => setLoading(false));
-
     getSocket('/registries/overlays').emit('generic::getAll', (err, data) => {
       if (err) {
         console.error(err);
@@ -72,8 +115,13 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
           return containsCustomHook.length > 0;
         }));
       }
+      setLoading(false);
     });
   }, []);
+
+  const resetOptions = () => {
+    setOptions(null);
+  };
 
   React.useEffect(() => {
     if (onChange) {
@@ -105,6 +153,13 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
     return variants;
   };
 
+  const getComponentOptions = React.useCallback(<T extends Alerts['items'][0]['items'][0]>(component: T) => {
+    if (options && options.components && options.components[component.id]) {
+      return options.components[component.id] as T;
+    }
+    return component;
+  }, [ options]);
+
   return <>
     <FormControl fullWidth variant="filled" >
       <InputLabel id="type-select-label" shrink>Custom alert overlay</InputLabel>
@@ -113,24 +168,12 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
         labelId="type-select-label"
         value={selectedItemId}
         displayEmpty
-        onChange={(ev) => setSelectedItemId(ev.target.value)}
+        onChange={(ev) => {
+          setOptions(null);
+          setSelectedItemId(ev.target.value);
+        }}
       >
         <MenuItem value=''>Please select item</MenuItem>
-
-        {alerts?.filter(o => o.items.filter(b => b.type === 'custom').length > 0).map(alert => ([
-          <ListSubheader>{alert.name} <Typography variant='caption' component='small'>{alert.id}</Typography></ListSubheader>,
-          ...alert.items.filter(o => o.type === 'custom').map(item => <MenuItem key={item.id} value={item.id}>
-            <Typography sx={{ fontWeight: 'bold' }} component='span'>
-              {item.title}
-
-              <Typography sx={{
-                fontWeight: 'normal', fontSize: '12px', fontStyle: 'italic', pl: 1,
-              }} component='span'>
-                {item.id}
-              </Typography>
-            </Typography>
-          </MenuItem>),
-        ]))}
         {overlays.map(overlay => ([
           <ListSubheader>{overlay.name} <Typography variant='caption' component='small'>{overlay.id}</Typography></ListSubheader>,
           ...overlay.items.filter(o => o.opts.typeId === 'alerts')
@@ -152,334 +195,134 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       <Fade in={loading}><LinearProgress /></Fade>
     </FormControl>
 
-    <AlertElement severity='error'>
-      You are using soon to be deprecated alerts registry, please update to alerts overlays
-    </AlertElement>
+    {currentVariant && <Collapse in={expand}>
+      <Stack>
+        <Divider sx={{ pt: 1 }}>
+          <Typography variant='overline' component='span' sx={{
+            display: 'inline-block', width: '200px',
+          }}>
+            Custom variant options
+          </Typography>
+        </Divider>
 
-    <Collapse in={expand}>
-      <Stack direction='row' spacing={1}>
-        <TextField
-          inputRef={alertDurationRef}
-          fullWidth
-          variant='filled'
-          label="Alert Duration"
-          onKeyDown={(ev) => {
-            const i = ev.shiftKey ? 10000 : 1000;
-            if (ev.key === 'ArrowDown') {
-              ev.preventDefault(); // disable accidental shiftkey selection
-              setOptions(o => {
-                const alertDuration = Math.max((o?.alertDuration ?? Number(alertDurationRef.current ? alertDurationRef.current!.value : 1000)) - i, 0);
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, alertDuration,
-                };
+        <Stack direction='row' spacing={1}>
+          <Box sx={{ width: '100%' }}>
+            <AccordionDuration model={options?.alertDuration ?? currentVariant.alertDuration} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+              setOptions({
+                ...(options ?? {}), alertDuration: val,
               });
-            }
-            if (ev.key === 'ArrowUp') {
-              ev.preventDefault();  // disable accidental shiftkey selection
-              setOptions(o => {
-                const alertDuration = (o?.alertDuration ?? Number(alertDurationRef.current ? alertDurationRef.current!.value : 1000)) + i;
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, alertDuration,
-                };
+            }}/>
+            <AccordionAnimationText model={{
+              animationText:        options?.animationText ?? currentVariant.animationText,
+              animationTextOptions: options?.animationTextOptions ?? currentVariant.animationTextOptions,
+            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+              setOptions({
+                ...(options ?? {}),
+                'animationText':        val.animationText,
+                'animationTextOptions': val.animationTextOptions,
               });
-            }
-          }}
-          value={options?.alertDuration ?? (alertDurationRef.current ? alertDurationRef.current!.value : 1000)}
-          onChange={(ev) => {
-            let val = Number(ev.target.value);
-            if (!isNaN(val)) {
-              if (val < 0) {
-                val = 0;
-              }
-              setOptions(o => ({
-                ...o, alertDuration: val,
-              }));
-            }
-          }}
-          InputProps={{
-            startAdornment: <>
-              <InputAdornment position="start">
-                <Switch  size='small' checked={'alertDuration' in (options ?? {})} onChange={(_, checked) => {
-                  if (checked) {
-                    setOptions(o => ({
-                      ...(o ?? {}), alertDuration: Number(alertDurationRef.current!.value),
-                    }));
-                  } else {
-                    setOptions(o => {
-                      const opts = o ?? {};
-                      delete opts.alertDuration;
-                      if (Object.keys(opts).length === 0) {
-                        return null;
-                      }
-                      return { ...opts };
-                    });
-                  }
-                }}/>
-              </InputAdornment>
-            </>,
-            endAdornment: <>
-              <InputAdornment position="end">
-            ms
-              </InputAdornment>
-            </>,
-          }}
-        />
-        <TextField
-          inputRef={textDelayRef}
-          fullWidth
-          variant='filled'
-          label="Text delay"
-          onKeyDown={(ev) => {
-            const i = ev.shiftKey ? 10000 : 1000;
-            if (ev.key === 'ArrowDown') {
-              ev.preventDefault(); // disable accidental shiftkey selection
-              setOptions(o => {
-                const textDelay = Math.max((o?.textDelay ?? Number(textDelayRef.current ? textDelayRef.current!.value : 1000)) - i, 0);
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, textDelay,
-                };
+            }}/>
+          </Box>
+          <Box sx={{ width: '100%' }}>
+            <AccordionAnimationIn model={{
+              animationIn:                 options?.animationIn ?? currentVariant.animationIn,
+              animationInDuration:         options?.animationInDuration ?? currentVariant.animationInDuration,
+              animationInWindowBoundaries: options?.animationInWindowBoundaries ?? currentVariant.animationInWindowBoundaries,
+            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+              setOptions({
+                ...(options ?? {}),
+                'animationIn':                 val.animationIn,
+                'animationInDuration':         val.animationInDuration,
+                'animationInWindowBoundaries': val.animationInWindowBoundaries,
               });
-            }
-            if (ev.key === 'ArrowUp') {
-              ev.preventDefault();  // disable accidental shiftkey selection
-              setOptions(o => {
-                const textDelay = (o?.textDelay ?? Number(textDelayRef.current ? textDelayRef.current!.value : 1000)) + i;
-                const opts: NonNullable<typeof options> = o ?? {};
-                return {
-                  ...opts, textDelay,
-                };
+            }}/>
+            <AccordionAnimationOut model={{
+              animationOut:                 options?.animationOut ?? currentVariant.animationOut,
+              animationOutDuration:         options?.animationOutDuration ?? currentVariant.animationOutDuration,
+              animationOutWindowBoundaries: options?.animationOutWindowBoundaries ?? currentVariant.animationOutWindowBoundaries,
+            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+              setOptions({
+                ...(options ?? {}),
+                'animationOut':                 val.animationOut,
+                'animationOutDuration':         val.animationOutDuration,
+                'animationOutWindowBoundaries': val.animationOutWindowBoundaries,
               });
-            }
-          }}
-          value={options?.textDelay ?? (textDelayRef.current ? textDelayRef.current!.value : 1000)}
-          onChange={(ev) => {
-            let val = Number(ev.target.value);
-            if (!isNaN(val)) {
-              if (val < 0) {
-                val = 0;
-              }
-              setOptions(o => ({
-                ...o, textDelay: val,
-              }));
-            }
-          }}
-          InputProps={{
-            startAdornment: <>
-              <InputAdornment position="start">
-                <Switch  size='small' checked={'textDelay' in (options ?? {})} onChange={(_, checked) => {
-                  if (checked) {
-                    setOptions(o => ({
-                      ...(o ?? {}), textDelay: Number(textDelayRef.current!.value),
-                    }));
-                  } else {
-                    setOptions(o => {
-                      const opts = o ?? {};
-                      delete opts.textDelay;
-                      if (Object.keys(opts).length === 0) {
-                        return null;
-                      }
-                      return { ...opts };
-                    });
-                  }
-                }}/>
-              </InputAdornment>
-            </>,
-            endAdornment: <>
-              <InputAdornment position="end">
-            ms
-              </InputAdornment>
-            </>,
-          }}
-        />
+            }}/>
+          </Box>
+        </Stack>
+
+        {currentVariant.items.length > 0 && <>
+          <Divider sx={{ pt: 2 }}>
+            <Typography variant='overline' component='span' sx={{
+              display: 'inline-block', width: '200px',
+            }}>
+            Components options
+            </Typography>
+          </Divider>
+
+          {currentVariant.items.map(component => <Accordion
+            key={component.id}
+            expanded={accordionId === component.id}>
+            <AccordionSummary
+              onClick={() => setAccordionId(accordionId === component.id ? '' : component.id)}>
+              {component.type.toUpperCase()}
+            </AccordionSummary>
+            <AccordionDetails>
+              {component.type === 'audio' && <AlertSettingsAudio model={getComponentOptions(component)} onChange={(changed) => {
+                setOptions({
+                  ...(options ?? {}),
+                  components: {
+                    ...(options?.components ?? {}),
+                    [component.id]: changed,
+                  },
+                });
+              }}/>}
+              {component.type === 'tts' && <AlertSettingsTTS model={getComponentOptions(component)}  onChange={(changed) => {
+                setOptions({
+                  ...(options ?? {}),
+                  components: {
+                    ...(options?.components ?? {}),
+                    [component.id]: changed,
+                  },
+                });
+              }}/>}
+              {component.type === 'text' && <AlertSettingsText model={getComponentOptions(component)}  onChange={(changed) => {
+                setOptions({
+                  ...(options ?? {}),
+                  components: {
+                    ...(options?.components ?? {}),
+                    [component.id]: changed,
+                  },
+                });
+              }}/>}
+              {component.type === 'custom' && <AlertSettingsCustom model={getComponentOptions(component)}  onChange={(changed) => {
+                setOptions({
+                  ...(options ?? {}),
+                  components: {
+                    ...(options?.components ?? {}),
+                    [component.id]: changed,
+                  },
+                });
+              }}/>}
+              {component.type === 'gallery' && <AlertSettingsGallery model={getComponentOptions(component)}  onChange={(changed) => {
+                setOptions({
+                  ...(options ?? {}),
+                  components: {
+                    ...(options?.components ?? {}),
+                    [component.id]: changed,
+                  },
+                });
+              }}/>}
+            </AccordionDetails>
+          </Accordion>)}
+
+          <Box sx={{ pt: 2 }}>
+            <Button disabled={options === null} variant='text' color='error' onClick={resetOptions}>Reset all options</Button>
+          </Box>
+
+        </>}
       </Stack>
-
-      <TextField
-        inputRef={messageTemplateRef}
-        fullWidth
-        placeholder='Enter your customized message template'
-        variant='filled'
-        label="Message Template"
-        value={options?.messageTemplate ?? (messageTemplateRef.current ? messageTemplateRef.current!.value : '')}
-        onChange={(ev) => {
-          const val = ev.target.value;
-          setOptions(o => ({
-            ...o, messageTemplate: val,
-          }));
-        }}
-        InputProps={{
-          startAdornment: <>
-            <InputAdornment position="start">
-              <Switch  size='small' checked={'messageTemplate' in (options ?? {})} onChange={(_, checked) => {
-                if (checked) {
-                  setOptions(o => ({
-                    ...(o ?? {}), messageTemplate: messageTemplateRef.current!.value,
-                  }));
-                } else {
-                  setOptions(o => {
-                    const opts = o ?? {};
-                    delete opts.messageTemplate;
-                    if (Object.keys(opts).length === 0) {
-                      return null;
-                    }
-                    return { ...opts };
-                  });
-                }
-              }}/>
-            </InputAdornment>
-          </>,
-        }}
-      />
-
-      <FormSelectorGallery
-        label="Media"
-        type='image'
-        volume={options?.volume}
-        value={options?.mediaId}
-        onVolumeChange={(val) => {
-          if (val !== null) {
-            setOptions(o => ({
-              ...(o ?? {}), volume: val,
-            }));
-          } else {
-            setOptions(o => {
-              const opts = o ?? {};
-              delete opts.volume;
-              if (Object.keys(opts).length === 0) {
-                return null;
-              }
-              return { ...opts };
-            });
-          }
-        }}
-        onChange={(val) => {
-          if (val) {
-            setOptions(o => ({
-              ...(o ?? {}), mediaId: val,
-            }));
-          } else {
-            setOptions(o => {
-              const opts = o ?? {};
-              delete opts.mediaId;
-              if (Object.keys(opts).length === 0) {
-                return null;
-              }
-              return { ...opts };
-            });
-          }
-        }}
-      />
-
-      <FormSelectorGallery
-        label="Audio"
-        type='audio'
-        volume={options?.volume}
-        value={options?.audioId}
-        onVolumeChange={(val) => {
-          if (val !== null) {
-            setOptions(o => ({
-              ...(o ?? {}), volume: val,
-            }));
-          } else {
-            setOptions(o => {
-              const opts = o ?? {};
-              delete opts.volume;
-              if (Object.keys(opts).length === 0) {
-                return null;
-              }
-              return { ...opts };
-            });
-          }
-        }}
-        onChange={(val) => {
-          if (val) {
-            setOptions(o => ({
-              ...(o ?? {}), audioId: val,
-            }));
-          } else {
-            setOptions(o => {
-              const opts = o ?? {};
-              delete opts.audioId;
-              if (Object.keys(opts).length === 0) {
-                return null;
-              }
-              return { ...opts };
-            });
-          }
-        }}
-      />
-
-      <Stack direction='row' alignItems='center' spacing={0.5}>
-        <FormLabel sx={{ width: '170px' }}>Layout</FormLabel>
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: !options || !('layout' in options) ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => {
-            const opts = o ?? {};
-            delete opts.layout;
-            if (Object.keys(opts).length === 0) {
-              return null;
-            }
-            return { ...opts };
-          });
-        }}>
-          <ClearTwoTone sx={{
-            fontSize: '50px', color: 'grey',
-          }}/>
-        </IconButton>
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 0 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 0,
-          }));
-        }}>
-          <VolumeUpTwoTone sx={{ fontSize: '50px' }}/>
-        </IconButton>
-
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 1 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 1,
-          }));
-        }}><img width={50} src={layout1} title="Text below image"/></IconButton>
-
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 2 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 2,
-          }));
-        }}><img width={50} src={layout2} title="Text above image"/></IconButton>
-
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 3 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 3,
-          }));
-        }}><img width={50} src={layout3} title="Text inside image"/></IconButton>
-
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 4 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 4,
-          }));
-        }}><img width={50} src={layout4} title="Text on left side of image"/></IconButton>
-
-        <IconButton sx={{
-          borderRadius: 0, backgroundColor: options && options.layout === 5 ? `${theme.palette.primary.main}55` : undefined,
-        }} onClick={() => {
-          setOptions(o => ({
-            ...o, layout: 5,
-          }));
-        }}><img width={50} src={layout5} title="Text on right side of image"/></IconButton>
-      </Stack>
-    </Collapse>
+    </Collapse>}
     <Divider onClick={() => setExpand(!expand)} sx={{
       position: 'relative', zIndex: 9999, cursor: 'pointer',
     }}>

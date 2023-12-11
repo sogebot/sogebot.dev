@@ -15,7 +15,6 @@ import { useKey, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { anItems, anMoveableId, anSelectedItem, anSelectedItemCanvas, anSelectedItemOpts, emptyItem } from './atoms';
-import { AlertsRegistryTesterAccordion } from './Overlay/AlertSettings/tester';
 import { AlertsSettings } from './Overlay/AlertsSettings';
 import { Canvas } from './Overlay/Canvas';
 import { ChatSettings } from './Overlay/ChatSettings';
@@ -51,7 +50,6 @@ import theme from '../../theme';
 import { loadFont } from '../Accordion/Font';
 import { DimensionViewable, setZoomDimensionViewable } from '../Moveable/DimensionViewable';
 import { RemoveButton, setZoomRemoveButton } from '../Moveable/RemoveButton';
-import { AlertItem } from '../Overlay/AlertItem';
 import { AlertItem } from '../Overlay/AlertItem';
 import { ChatItem } from '../Overlay/ChatItem';
 import { ClipsCarouselItem } from '../Overlay/ClipsCarouselItem';
@@ -458,7 +456,6 @@ export const OverlayEdit: React.FC = () => {
                   <Box key={`${o.id}-${JSON.stringify(o.opts)}` /* force refresh on opts change */} sx={{
                     width: '100%', height: '100%',
                   }}>
-                    {o.opts.typeId === 'alertsRegistry' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'alerts' && <AlertItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'countdown' && <CountdownItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
                     {o.opts.typeId === 'stopwatch' && <StopwatchItem width={o.width} height={o.height} item={o.opts} groupId={id!} id={o.id} selected={selectedItem?.id === o.id}/>}
@@ -702,8 +699,6 @@ export const OverlayEdit: React.FC = () => {
                   }}/>}
                 </>}
               </Settings>
-
-              {selectedItem?.opts.typeId === 'alertsRegistry' && <AlertsRegistryTesterAccordion/>}
 
               {
                 selectedItem

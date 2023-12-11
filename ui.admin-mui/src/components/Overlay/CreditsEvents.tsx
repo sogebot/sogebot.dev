@@ -1,7 +1,6 @@
 import { DiamondTwoTone, KeyboardDoubleArrowRightTwoTone, TheaterComedyTwoTone } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { Alert } from '@sogebot/backend/dest/database/entity/alert';
-import { CreditsScreenEvents } from '@sogebot/backend/dest/database/entity/overlay';
+import { CreditsScreenEvents , EmitData } from '@sogebot/backend/dest/database/entity/overlay';
 import type { Event } from '@sogebot/backend/dest/overlays/credits';
 import { capitalize, get, groupBy } from 'lodash';
 import React from 'react';
@@ -13,7 +12,7 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import { loadFont } from '../Accordion/Font';
 
 export const defaultHeaderValues: {
-  [Type in Alert['items'][number]['type']]: string
+  [Type in EmitData['event']]: string
 } = {
   follow:           'Follows',
   cheer:            'Cheers',

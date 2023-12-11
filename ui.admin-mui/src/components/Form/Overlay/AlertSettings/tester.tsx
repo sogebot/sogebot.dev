@@ -1,6 +1,6 @@
 import { ExpandMoreTwoTone, ShuffleOnTwoTone, ShuffleTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
-import { EmitData } from '@sogebot/backend/dest/database/entity/alert';
+import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
 import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';

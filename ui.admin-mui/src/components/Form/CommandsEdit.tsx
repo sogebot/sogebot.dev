@@ -12,7 +12,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { FormResponse } from './Input/Response';
 import { FormTriggerAlert } from './Input/TriggerAlert';
-import { FormTriggerAlertNG } from './Input/TriggerAlertNG';
 import { CommandsMenu } from './Menu/CommandsMenu';
 import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -26,9 +25,6 @@ defaultItem.responses = [];
 defaultItem.enabled = true;
 defaultItem.visible = true;
 defaultItem.group = null;
-
-// TODO: remove
-const selectedItemRegex = /\$triggerAlert\((?<uuid>[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}),? ?(?<options>.*)?\)/mi;
 
 export const CommandsEdit: React.FC<{
   groups: CommandsGroup[]
@@ -286,9 +282,7 @@ export const CommandsEdit: React.FC<{
                           </Grid>
                           <Grid item sm>
                             {o.response.includes('$triggerAlert')
-                              ? selectedItemRegex.test(o.response)
-                                ? <FormTriggerAlert value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
-                                : <FormTriggerAlertNG value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
+                              ? <FormTriggerAlert value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
                               : <FormResponse value={o} idx={idx} onChange={(value) => updateResponse(value)}/>
                             }
                           </Grid>

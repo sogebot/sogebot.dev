@@ -1,6 +1,6 @@
 import { DeleteTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, Fade, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
-import { Filter } from '@sogebot/backend/src/database/entity/alert';
+import { Filter } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';

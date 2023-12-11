@@ -1,4 +1,4 @@
-import { EmitData } from '@sogebot/backend/dest/database/entity/alert';
+import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { atom } from 'jotai';
 

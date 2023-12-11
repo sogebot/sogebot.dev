@@ -1,9 +1,7 @@
 import { Box } from '@mui/material';
-import { EmitData } from '@sogebot/backend/dest/database/entity/alert';
-import { Alerts } from '@sogebot/backend/dest/database/entity/overlay';
+import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { Filter } from '@sogebot/backend/src/database/entity/alert';
 import { itemsToEvalPart } from '@sogebot/ui-helpers/queryFilter';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import React from 'react';
@@ -57,7 +55,7 @@ const setOpacity = (id: string) => {
   }, 10);
 };
 
-export const AlertItemNG: React.FC<Props<Alerts>> = ({ item, width, height }) => {
+export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
 
   getSocket('/core/emotes', true); // init socket
