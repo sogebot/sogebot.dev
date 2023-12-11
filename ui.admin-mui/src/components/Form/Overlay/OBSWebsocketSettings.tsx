@@ -3,7 +3,6 @@ import { Box, FormLabel, InputAdornment, Stack, TextField } from '@mui/material'
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { IMaskInput } from 'react-imask';
 
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -11,25 +10,6 @@ type Props = {
   model:    OBSWebsocket;
   onUpdate: (value: OBSWebsocket) => void;
 };
-
-interface CustomProps {
-  onChange: (event: { currentTarget: { value: string } }) => void;
-  name:     string;
-}
-const IPFormatCustom = React.forwardRef<HTMLElement, CustomProps>(
-  function IPFormatCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="0[00].0[00].0[00].0[00]"
-        inputRef={ref as any}
-        onAccept={(value: any) => onChange({ currentTarget: { value } })}
-        overwrite
-      />
-    );
-  },
-);
 
 export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
@@ -92,7 +72,6 @@ export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
           fullWidth
           hiddenLabel
           value={val}
-          InputProps={{ inputComponent: IPFormatCustom as any }}
           variant="filled"
           onChange={(ev) => {
             const allowedIPs = [...model.allowedIPs];
@@ -116,7 +95,6 @@ export const OBSWebsocketSettings: React.FC<Props> = ({ model, onUpdate }) => {
           }}
           InputProps={{
             endAdornment:   <InputAdornment position='end'>Press <KeyboardReturnTwoTone sx={{ mx: 0.5 }}/> to add</InputAdornment>,
-            inputComponent: IPFormatCustom as any,
           }}
           onChange={(ev) => setIPToAdd(ev.currentTarget.value)}
         />
