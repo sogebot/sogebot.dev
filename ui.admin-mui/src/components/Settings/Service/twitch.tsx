@@ -73,6 +73,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       'user:manage:whispers',
       'bits:read',
       'moderator:manage:chat_settings',
+      'moderator:manage:shoutouts',
     ];
 
     const clientId = settings.general.tokenServiceCustomClientId[0];
