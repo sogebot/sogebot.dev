@@ -1,6 +1,6 @@
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, Fade, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, Fade, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, Menu, MenuItem, Popover, Stack, Tab, Tabs, TextField, Tooltip } from '@mui/material';
 import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { nanoid } from 'nanoid';
@@ -19,7 +19,7 @@ import { ImportDialog } from '../Plugin/ImportDialog';
 import libSource from '!raw-loader!./assets/plugin.global.d.ts';
 /* eslint-enable */
 
-const leftPanelWidth = 352;
+const leftPanelWidth = 400;
 
 type File = {
   id:     string;
@@ -175,6 +175,9 @@ export const PluginsEdit: React.FC = () => {
     if (!plugin) {
       return [];
     }
+    if (fileType === 'api') {
+      return [];
+    }
     return JSON.parse(plugin.workflow)[fileType];
   }, [plugin?.workflow, fileType]);
 
@@ -283,6 +286,8 @@ export const PluginsEdit: React.FC = () => {
     enqueueSnackbar('Link copied to clipboard.');
   };
 
+  const tabValue = fileType === 'definition' ? 0 : fileType === 'code' ? 1 : fileType === 'overlay' ? 2 : 3;
+
   return (<Dialog open={open} fullScreen sx={{ p: 5 }} scroll='paper' >
     {(loading || !plugin) ? <>
       <LinearProgress />
@@ -331,7 +336,7 @@ export const PluginsEdit: React.FC = () => {
                   width:    '100%',
                   bgcolor:  'background.paper',
                   overflow: 'auto',
-                  height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                  height:   `calc(100vh - 258px - ${ fileType === 'definition' || fileType === 'api' ? 0 : 36.5 }px)`,
                   p:        0,
                   '& ul':   { padding: 0 },
                 }}
@@ -339,15 +344,29 @@ export const PluginsEdit: React.FC = () => {
               >
                 <li key={`section-source-files`}>
                   <ul>
-                    <ListSubheader sx={{
-                      display: 'flex', justifyContent: 'space-between', py: 0.5, alignItems: 'center',
-                    }}>
-                      <Button fullWidth color={fileType === 'definition' ? 'primary' : 'light'} onClick={() => setFileType('definition')}>Definition</Button>
-                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                      <Button fullWidth color={fileType === 'code' ? 'primary' : 'light'} onClick={() => setFileType('code')}>Source</Button>
-                      <Typography sx={{ px: 2 }} variant='button'>/</Typography>
-                      <Button fullWidth color={fileType === 'overlay' ? 'primary' : 'light'} onClick={() => setFileType('overlay')}>Overlay</Button>
-                    </ListSubheader>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      <Tabs centered value={tabValue} onChange={(_, val) => {
+                        switch(val) {
+                          case 0:
+                            setFileType('definition');
+                            break;
+                          case 1:
+                            setFileType('code');
+                            break;
+                          case 2:
+                            setFileType('overlay');
+                            break;
+                          case 3:
+                            setFileType('api');
+                            break;
+                        }
+                      }}>
+                        <Tab label="Definition" />
+                        <Tab label="Code" />
+                        <Tab label="Overlay" />
+                        <Tab label="API" />
+                      </Tabs>
+                    </Box>
 
                     {fileType === 'definition' && <>
                       <ListItem
@@ -361,7 +380,7 @@ export const PluginsEdit: React.FC = () => {
                       </ListItem>
                     </>}
 
-                    {fileType !== 'definition' && codeFiles.map(file => <ListItem
+                    {fileType !== 'definition' && fileType !== 'api' && codeFiles.map(file => <ListItem
                       dense
                       key={file.id}
                       sx={{
@@ -459,7 +478,7 @@ export const PluginsEdit: React.FC = () => {
                 }}>Delete file</MenuItem>
               </Menu>
 
-              {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
+              {fileType !== 'definition' && fileType !== 'api' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
                 bgcolor:              'background.paper',
                 borderTopLeftRadius:  0,
                 borderTopRightRadius: 0,
