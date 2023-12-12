@@ -161,6 +161,20 @@ declare const ListenTo: {
      *    })
      *
      */
+    onChannelAdBreakBegin(callback: (userState: UserState, params: { count: number }) => void): void,
+    /**
+     *  Listen to Twitch channel break
+     *  @param callback.userState contains userId and userName
+     *  @param callback.params contains additional data
+     *  @example
+     *
+     *    ListenTo.Twitch.onRewardRedeem((userState, params) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
     onSubCommunityGift(callback: (userState: UserState, params: { count: number }) => void): void,
     /**
      *  Listen to Twitch reward redemption event
@@ -363,7 +377,17 @@ declare const ListenTo: {
       userId:                 string;
       userName:               string;
     }) => void): void,
-
+    onChannelRewardAdd(callback: (args: {
+      duration: number;
+      startedAt:              string,
+      isAutomatic:            boolean,
+      broadcasterDisplayName: string,
+      broadcasterId:          string,
+      broadcasterName:        string,
+      requesterDisplayName:   string,
+      requesterId:            string,
+      requesterName:          string,
+    }) => void): void,
     onChannelRewardAdd(callback: (args: {
       broadcasterDisplayName:         string;
       broadcasterId:                  string;
