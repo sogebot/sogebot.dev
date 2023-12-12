@@ -236,6 +236,11 @@ func handleUsers(updatedOnly bool) {
 				version:   "1",
 				condition: basic,
 			}},
+			"channel.ad_break.begin": {{
+				scope:     "channel:read:ads",
+				version:   "1",
+				condition: basic,
+			}},
 			"moderator:read:shoutouts": {{
 				scope:   "channel.shoutout.create",
 				version: "1",

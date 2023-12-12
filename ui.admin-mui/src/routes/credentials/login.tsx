@@ -16,6 +16,7 @@ export const scopes = [
   'channel:read:goals',
   'moderator:read:shield_mode',
   'moderator:read:shoutouts',
+  'channel:read:ads',
 ];
 
 const Login = () => {
