@@ -28,6 +28,7 @@
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.6.2",
     "baffle": "^0.3.6",
+    "color": "^4.2.3",
     "cross-env": "^7.0.3",
     "gsap": "^3.12.2",
     "html-react-parser": "^5.0.6",
