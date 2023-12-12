@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -9,6 +8,7 @@ import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { toBoolean } from '../../helpers/toBoolean';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { selectOverlayCountdown, setCountdownShow } from '../../store/overlaySlice';

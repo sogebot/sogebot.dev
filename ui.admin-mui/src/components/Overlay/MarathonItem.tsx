@@ -1,7 +1,6 @@
 import { Sparklines, SparklinesCurve } from '@jrwats/react-sparklines';
 import { Box, Stack } from '@mui/material';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -10,6 +9,7 @@ import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 import { GenerateTime } from '../Dashboard/Widget/Action/GenerateTime';
 

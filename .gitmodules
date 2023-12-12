@@ -1,9 +1,6 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/sogebot/sogeBot
-[submodule "ui.helpers"]
-	path = ui.helpers
-	url = https://github.com/sogehige/sogebot-ui-helpers
 [submodule "twitch-token-generator"]
 	path = twitch-token-generator
 	url = https://github.com/sogebot/twitch-token-generator.git

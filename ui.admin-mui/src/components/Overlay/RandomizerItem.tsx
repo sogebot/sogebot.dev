@@ -1,7 +1,6 @@
 import { Box, Fade } from '@mui/material';
 import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
 import gsap from 'gsap';
@@ -14,6 +13,7 @@ import type { Props } from './ChatItem';
 import { getContrastColor } from '../../colors';
 import getAccessToken from '../../getAccessToken';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useTTS } from '../../hooks/useTTS';
 import { getRandomizerId, setRandomizerId } from '../../store/overlaySlice';

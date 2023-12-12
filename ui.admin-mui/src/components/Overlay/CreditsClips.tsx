@@ -1,11 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import { CreditsScreenClips } from '@sogebot/backend/dest/database/entity/overlay';
 import type { getTopClips } from '@sogebot/backend/dest/services/twitch/calls/getTopClips';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import React from 'react';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 
 const currentClipIdx = new Map<string, number>();

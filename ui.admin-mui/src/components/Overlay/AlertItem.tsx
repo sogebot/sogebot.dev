@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { itemsToEvalPart } from '@sogebot/ui-helpers/queryFilter';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import React from 'react';
 import { useIntervalWhen, useSessionstorageState } from 'rooks';
@@ -17,6 +16,7 @@ import { AlertItemText } from './AlertItemText';
 import { AlertItemTTS } from './AlertItemTTS';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
+import { itemsToEvalPart } from '../../queryFilter';
 
 const loadedFonts: string[] = [];
 

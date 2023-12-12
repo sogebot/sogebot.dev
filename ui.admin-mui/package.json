@@ -23,7 +23,6 @@
     "@mui/x-date-pickers": "^6.17.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@sogebot/backend": "*",
-    "@sogebot/ui-helpers": "^3.1.0",
     "@textea/json-viewer": "^3.2.3",
     "animate.css": "^4.1.1",
     "autosuggest-highlight": "^3.3.4",

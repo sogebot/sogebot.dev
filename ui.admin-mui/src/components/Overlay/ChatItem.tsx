@@ -1,6 +1,5 @@
 import { Box, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { orderBy } from 'lodash';
@@ -10,6 +9,7 @@ import { useIntervalWhen } from 'rooks';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { chatAddMessage, chatRemoveMessageById, chatTimeout, cleanMessages } from '../../store/overlaySlice';
 import { loadFont } from '../Accordion/Font';

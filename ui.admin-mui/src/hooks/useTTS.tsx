@@ -10,6 +10,7 @@ export const useTTS = () => {
   const { configuration } = useAppSelector(state => state.loader);
 
   React.useEffect(() => {
+    console.log({ configuration });
     // initialize responsive voice
     if (configuration.core.tts.responsiveVoiceKey === '' || window.responsiveVoice !== undefined) {
       return;

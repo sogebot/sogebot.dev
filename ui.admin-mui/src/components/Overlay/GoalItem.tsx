@@ -1,7 +1,6 @@
 import { Box, LinearProgress, linearProgressClasses, Stack } from '@mui/material';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
-import { shadowGenerator, textStrokeGenerator } from '@sogebot/ui-helpers/text';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { isEqual } from 'lodash';
@@ -12,6 +11,7 @@ import { useIntervalWhen } from 'rooks';
 import type { Props } from './ChatItem';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
+import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { loadFont } from '../Accordion/Font';
 
