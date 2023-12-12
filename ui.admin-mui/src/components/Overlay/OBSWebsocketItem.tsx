@@ -121,10 +121,11 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
 
     try {
       if (item.password === '') {
-        await obs.connect(`wss://localhost:${item.port ?? 4455}`);
+        await obs.connect(`ws://localhost:${item.port ?? 4455}`);
       } else {
-        await obs.connect(`wss://localhost:${item.port ?? 4455}`, item.password);
+        await obs.connect(`ws://localhost:${item.port ?? 4455}`, item.password);
       }
+      console.log('OBSWebsocket connected.');
     } catch (e) {
       console.error(e);
     }
