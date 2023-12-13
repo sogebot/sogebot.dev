@@ -111,14 +111,14 @@ export const OBSWebsocketEdit: React.FC<{
       return;
     }
     setSaving(true);
-    getSocket('/').emit('integration::obswebsocket::generic::save', item, (err, cid) => {
+    getSocket('/').emit('integration::obswebsocket::generic::save', item, (err, it) => {
       enqueueSnackbar('OBS Websocket script saved.', { variant: 'success' });
       // replace url and add cid to item
       setItem(() => {
-        item.id = cid;
+        item.id = it.id;
         return item;
       });
-      const asPath = `/registry/obswebsocket/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
+      const asPath = `/registry/obswebsocket/edit/${it.id}?server=${JSON.parse(localStorage.server)}`;
       window.history.replaceState(null, '', asPath);
       if (onSave) {
         onSave();
