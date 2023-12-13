@@ -28,7 +28,7 @@ export const Version: React.FC = () => {
           if (process.env.REACT_APP_VERSION) {
             if (!process.env.REACT_APP_VERSION.includes(res.data)) {
               console.warn(`UI version (${process.env.REACT_APP_VERSION}) does not match docker version (${res.data})`);
-              enqueueSnackbar(<>There is new version of UI available. Please force refresh page by <Typography component='strong' variant='button' sx={{ fontWeight: 'bold', pl: 0.5, }}>Ctrl+Shift+R</Typography></>, {
+              enqueueSnackbar(<>There is new version of UI available. Please force refresh page by <Typography component='strong' variant='button' sx={{ fontWeight: 'bold', pl: 0.5, }}>Ctrl+Shift+R</Typography>. If refresh doesn't help, wait few minutes and try again.</>, {
                 variant: 'info',
                 persist: true,
               });
