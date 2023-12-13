@@ -53,7 +53,7 @@ const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
       }}
       customLabelDetails={(item.tts === null)
         ? <strong>Global</strong>
-        : <><strong>Modified</strong> {item.tts.voice}</>}
+        : <><strong>Modified</strong> {item.tts.services[item.tts.selectedService]?.voice}</>}
       prepend={item.tts !== null && <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
