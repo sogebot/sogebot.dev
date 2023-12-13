@@ -3,7 +3,8 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
 import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { Event } from '@sogebot/backend/dest/database/entity/event';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
+import { orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -29,7 +30,17 @@ import theme from '../../theme';
 const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => {
   const { translate } = useTranslation();
 
-  const rewards = useAtomValue(rewardsAtom);
+  const [ rewards, setRewards ] = useAtom(rewardsAtom);
+  const [ rewardLoading, setRewardLoading ] = useState(true);
+  React.useEffect(() => {
+    getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: { id: string, name: string }[]) => {
+      if (err) {
+        return console.error(err);
+      }
+      setRewards(orderBy(redeems, 'name', 'asc'));
+      setRewardLoading(false);
+    });
+  }, []);
   const getReward = React.useCallback((rewardId: string) => {
     const reward = rewards.find(o => o.id === rewardId);
     return reward?.name ?? <Typography sx={{ fontWeight: 'bold', color: theme.palette.error.main }}>!!! unknown reward !!!</Typography>;
@@ -80,7 +91,7 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
           }} variant="caption">
             {
               key === 'rewardId'
-                ? getReward(String((row!.event.definitions as any)[key]))
+                ? rewardLoading ? <CircularProgress size={12}/> : getReward((row!.event.definitions as any)[key])
                 : String((row!.event.definitions as any)[key])
             }
           </Typography>
