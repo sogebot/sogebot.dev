@@ -133,6 +133,70 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       console.error(e);
     }
 
+    const events = [
+      'CurrentSceneCollectionChanging',
+      'CurrentSceneCollectionChanged',
+      'SceneCollectionListChanged',
+      'CurrentProfileChanging',
+      'CurrentProfileChanged',
+      'ProfileListChanged',
+      'SourceFilterListReindexed',
+      'SourceFilterCreated',
+      'SourceFilterRemoved',
+      'SourceFilterNameChanged',
+      'SourceFilterEnableStateChanged',
+      'InputCreated',
+      'InputRemoved',
+      'InputNameChanged',
+      'InputActiveStateChanged',
+      'InputShowStateChanged',
+      'InputMuteStateChanged',
+      'InputVolumeChanged',
+      'InputAudioBalanceChanged',
+      'InputAudioSyncOffsetChanged',
+      'InputAudioTracksChanged',
+      'InputAudioMonitorTypeChanged',
+      'InputVolumeMeters',
+      'MediaInputPlaybackStarted',
+      'MediaInputPlaybackEnded',
+      'MediaInputActionTriggered',
+      'StreamStateChanged',
+      'RecordStateChanged',
+      'ReplayBufferStateChanged',
+      'VirtualcamStateChanged',
+      'ReplayBufferSaved',
+      'SceneItemCreated',
+      'SceneItemRemoved',
+      'SceneItemListReindexed',
+      'SceneItemEnableStateChanged',
+      'SceneItemLockStateChanged',
+      'SceneItemSelected',
+      'SceneItemTransformChanged',
+      'SceneCreated',
+      'SceneRemoved',
+      'SceneNameChanged',
+      'CurrentProgramSceneChanged',
+      'CurrentPreviewSceneChanged',
+      'SceneListChanged',
+      'CurrentSceneTransitionChanged',
+      'CurrentSceneTransitionDurationChanged',
+      'SceneTransitionStarted',
+      'SceneTransitionEnded',
+      'SceneTransitionVideoEnded',
+      'StudioModeStateChanged',
+      'ScreenshotSaved',
+      'VendorEvent',
+      'CustomEvent'
+    ] as const;
+
+    for (const event of events) {
+      obs.off(event);
+      obs.on(event, (args) => {
+        getSocket('/', true).emit('integration::obswebsocket::listener', { event, args });
+        console.log('integration::obswebsocket::listener', event, args);
+      });
+    }
+
     getSocket('/', true).on('integration::obswebsocket::trigger', async (opts, cb) => {
       console.log('integration::obswebsocket::trigger', opts);
       cb(); // resolve first so connection is OK
