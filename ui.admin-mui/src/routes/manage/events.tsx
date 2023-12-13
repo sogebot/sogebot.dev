@@ -10,13 +10,14 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'rea
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
-import { rewardsAtom } from '../../atoms';
+import { rewardsAtom, rewardsLoadedAtAtom } from '../../atoms';
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { EventsEdit } from '../../components/Form/EventsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
+import { MINUTE } from '../../constants';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -31,8 +32,16 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
   const { translate } = useTranslation();
 
   const [ rewards, setRewards ] = useAtom(rewardsAtom);
+  const [ rewardsLoadedAt, setRewardsLoadedAt ] = useAtom(rewardsLoadedAtAtom);
   const [ rewardLoading, setRewardLoading ] = useState(true);
   React.useEffect(() => {
+    if (rewardsLoadedAt !== null && Date.now() - rewardsLoadedAt < 5 * MINUTE) {
+      console.log('Skipping reward reload.');
+      setRewardLoading(false);
+      return;
+    }
+
+    setRewardsLoadedAt(Date.now());
     getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: { id: string, name: string }[]) => {
       if (err) {
         return console.error(err);
@@ -40,7 +49,8 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
       setRewards(orderBy(redeems, 'name', 'asc'));
       setRewardLoading(false);
     });
-  }, []);
+  }, [rewardsLoadedAt]);
+
   const getReward = React.useCallback((rewardId: string) => {
     const reward = rewards.find(o => o.id === rewardId);
     return reward?.name ?? <Typography sx={{ fontWeight: 'bold', color: theme.palette.error.main }}>!!! unknown reward !!!</Typography>;
