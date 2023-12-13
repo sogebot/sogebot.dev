@@ -87,10 +87,12 @@ const taskRunner = async (obs: ObsWebSocket, opts: { code: string, hash?: string
       },
       // we are using error on code so it will be seen in OBS Log Viewer
       log: (logMessage: string) => {
-        axios.post(`${JSON.stringify(localStorage.server)}/integrations/obswebsocket/log`, { message: logMessage });
+        console.error(logMessage);
+        axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: logMessage });
       },
     });
   } catch (e: any) {
+    axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
     console.error(e);
     throw e;
   } finally {
@@ -136,6 +138,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       try {
         await taskRunner(obs, opts);
       } catch (e) {
+        axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
         console.error(e);
       }
     });
