@@ -149,11 +149,15 @@ export const PluginsEdit: React.FC = () => {
       allowNonTsExtensions: true,
       allowJs:              true,
       lib:                  ['es2021'],
+      target: monaco.languages.typescript.ScriptTarget.ES2015,
+      module: monaco.languages.typescript.ModuleKind.CommonJS,
     });
     monaco?.languages.typescript.javascriptDefaults.setCompilerOptions({
       allowNonTsExtensions: true,
       allowJs:              true,
       lib:                  ['es2021'],
+      target: monaco.languages.typescript.ScriptTarget.ES2015,
+      module: monaco.languages.typescript.ModuleKind.CommonJS,
     });
 
     // do conditional chaining

@@ -607,6 +607,13 @@ declare const Log: {
   info(text: string): void,
   warning(text: string): void
 };
+/**
+ * OBS contains all functions to control OBS with obs-websocket-js
+ */
+declare const OBS: {
+  call(requestType: string, requestData?: Record<string, any>);
+  callBatch(requests: { requestType: string, requestData?: Record<string, any> }[], options?: Record<string, any>);
+};
 
 declare const Alerts: {
   trigger(uuid: string, name?: string, message?: string, customOptions?: AlertsCustomOptions): Promise<void>,

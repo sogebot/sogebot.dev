@@ -6,6 +6,7 @@ import type ObsWebSocket from 'obs-websocket-js';
 import React from 'react';
 import { Socket } from 'socket.io-client';
 
+import { isAlreadyProcessed } from './_processedSocketCalls';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 
@@ -137,6 +138,32 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       cb(); // resolve first so connection is OK
       try {
         await taskRunner(obs, opts);
+      } catch (e) {
+        axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
+        console.error(e);
+      }
+    });
+
+    getSocket('/', true).on('integration::obswebsocket::call', async (opts) => {
+      if (isAlreadyProcessed(opts.id)) {
+        return;
+      }
+      console.log('integration::obswebsocket::call', opts);
+      try {
+        obs.call(opts.event as any, opts.args).then(res => console.log('OBSWebsocket call result for', JSON.stringify(opts, null, 2), 'is', JSON.stringify(res, null, 2)));
+      } catch (e) {
+        axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
+        console.error(e);
+      }
+    });
+
+    getSocket('/', true).on('integration::obswebsocket::callBatch', async (opts) => {
+      if (isAlreadyProcessed(opts.id)) {
+        return;
+      }
+      console.log('integration::obswebsocket::callBatch', opts);
+      try {
+        obs.callBatch(opts.requests as any, opts.options);
       } catch (e) {
         axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
         console.error(e);
