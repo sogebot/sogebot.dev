@@ -47,7 +47,11 @@ type Subscription struct {
 }
 
 type Condition struct {
-	BroadcasterUserID string `json:"broadcaster_user_id"`
+	BroadcasterUserID     string `json:"broadcaster_user_id"`
+	ToBroadcasterUserID   string `json:"to_broadcaster_user_id"`
+	FromBroadcasterUserID string `json:"from_broadcaster_user_id"`
+	ModeratorUserID       string `json:"moderator_user_id"`
+	UserId                string `json:"user_id"`
 }
 
 type Transport struct {
@@ -316,7 +320,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				fmt.Fprintf(w, notification.Challenge)
 
-				commons.Log("User " + notification.Subscription.Condition.BroadcasterUserID + " subscribed to " + notification.Subscription.Type + ".v" + notification.Subscription.Version)
+				broadcasterId := notification.Subscription.Condition.BroadcasterUserID
+				if notification.Subscription.Condition.ToBroadcasterUserID != "" {
+					broadcasterId = notification.Subscription.Condition.ToBroadcasterUserID
+				}
+				if notification.Subscription.Condition.FromBroadcasterUserID != "" {
+					broadcasterId = notification.Subscription.Condition.FromBroadcasterUserID
+				}
+				if notification.Subscription.Condition.UserId != "" {
+					broadcasterId = notification.Subscription.Condition.UserId
+				}
+				commons.Log("User " + broadcasterId + " subscribed to " + notification.Subscription.Type + ".v" + notification.Subscription.Version)
 				return
 			}
 		}
@@ -328,8 +342,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Subscription struct {
 						Type      string `json:"type"`
 						Condition struct {
-							BroadcasterUserID   *string `json:"broadcaster_user_id,omitempty"`
-							ToBroadcasterUserID *string `json:"to_broadcaster_user_id,omitempty"`
+							BroadcasterUserID     *string `json:"broadcaster_user_id,omitempty"`
+							ToBroadcasterUserID   *string `json:"to_broadcaster_user_id,omitempty"`
+							FromBroadcasterUserID *string `json:"from_broadcaster_user_id,omitempty"`
+							ModeratorUserID       string `json:"moderator_user_id,omitempty"`
+							UserId                *string `json:"user_id,omitempty"`
 						} `json:"condition"`
 					} `json:"subscription"`
 				}
@@ -342,6 +359,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				userId := payload.Subscription.Condition.BroadcasterUserID
 				if payload.Subscription.Condition.ToBroadcasterUserID != nil {
 					userId = payload.Subscription.Condition.ToBroadcasterUserID
+				}
+				if payload.Subscription.Condition.FromBroadcasterUserID != nil {
+					userId = payload.Subscription.Condition.FromBroadcasterUserID
+				}
+				if payload.Subscription.Condition.UserId != nil {
+					userId = payload.Subscription.Condition.UserId
 				}
 				database.DB.Exec("DELETE FROM eventsub_users WHERE \"userId\"=$1", userId)
 				w.WriteHeader(204)
@@ -356,8 +379,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Subscription struct {
 						Type      string `json:"type"`
 						Condition struct {
-							BroadcasterUserID   *string `json:"broadcaster_user_id,omitempty"`
-							ToBroadcasterUserID *string `json:"to_broadcaster_user_id,omitempty"`
+							BroadcasterUserID     *string `json:"broadcaster_user_id,omitempty"`
+							ToBroadcasterUserID   *string `json:"to_broadcaster_user_id,omitempty"`
+							FromBroadcasterUserID *string `json:"from_broadcaster_user_id,omitempty"`
+							ModeratorUserID       string `json:"moderator_user_id,omitempty"`
+							UserId                *string `json:"user_id,omitempty"`
 						} `json:"condition"`
 					} `json:"subscription"`
 				}
@@ -371,6 +397,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				userId := payload.Subscription.Condition.BroadcasterUserID
 				if payload.Subscription.Condition.ToBroadcasterUserID != nil {
 					userId = payload.Subscription.Condition.ToBroadcasterUserID
+				}
+				if payload.Subscription.Condition.FromBroadcasterUserID != nil {
+					userId = payload.Subscription.Condition.FromBroadcasterUserID
+				}
+				if payload.Subscription.Condition.UserId != nil {
+					userId = payload.Subscription.Condition.UserId
 				}
 				event := payload.Subscription.Type
 				jsonData := string(body)

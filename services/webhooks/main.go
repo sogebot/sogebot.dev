@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"services/webhooks/debug"
 	"services/webhooks/handler"
 	"services/webhooks/subscriptions"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -17,6 +19,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
+	"golang.org/x/sync/semaphore"
 )
 
 var PG_USER_DB string = "eventsub_users"
@@ -31,11 +34,19 @@ func main() {
 	handleUsers(false)
 }
 
+var sem = semaphore.NewWeighted(int64(10))
+var ctx = context.Background()
+
 func handleUsers(updatedOnly bool) {
 	var rows *sql.Rows
 	var err error
 
 	subscriptions.List()
+
+	commons.Log("Currently subscribed to " + strconv.Itoa(len(subscriptions.SubscriptionList)) + " event(s)")
+
+	// remove all subscriptions for users
+	newSubscription = []NewSubscription{}
 
 	if updatedOnly {
 		rows, err = database.DB.Query(
@@ -68,7 +79,6 @@ func handleUsers(updatedOnly bool) {
 				continue
 			}
 		}
-
 		basic := map[string]interface{}{
 			"broadcaster_user_id": userId,
 		}
@@ -263,40 +273,94 @@ func handleUsers(updatedOnly bool) {
 				},
 			}},
 		}
-
 		for scope, data := range subscriptionsMap {
-			var wg sync.WaitGroup
 			if strings.Contains(scopes, scope) {
 			OuterLoop:
 				for _, val := range data {
-					wg.Add(1)
 					for _, item := range subscriptions.SubscriptionList {
-						// condition to strings so we can check
 						condition1, err := json.Marshal(val.condition)
 						if err != nil {
 							fmt.Println("Error marshaling map to JSON:", err)
 							return
 						}
+						// we need to remarshal the condition to objects to compare
+						var conditionMarshalledDefined subscriptions.Condition
+						err = json.Unmarshal(condition1, &conditionMarshalledDefined)
+						if err != nil {
+							fmt.Println("Error unmarshaling:", err)
+							return
+						}
+
 						condition2, err := json.Marshal(item.Condition)
 						if err != nil {
 							fmt.Println("Error marshaling map to JSON:", err)
 							return
 						}
+						// we need to remarshal the condition to objects to compare
+						var conditionMarshalledReceived subscriptions.Condition
+						err = json.Unmarshal(condition2, &conditionMarshalledReceived)
+						if err != nil {
+							fmt.Println("Error unmarshaling:", err)
+							return
+						}
+
 						// check if already subscribed
-						if item.Type == val.scope && item.Version == val.version && string(condition2) == string(condition1) {
+						if item.Type == val.scope && item.Version == val.version && conditionMarshalledDefined.Equal(&conditionMarshalledReceived) {
 							// skip
-							commons.Log("User " + userId + " already subscribed for " + val.scope + ".v" + val.version)
+							// commons.Log("User " + userId + " already subscribed for " + val.scope + ".v" + val.version)
+							// continue on outer loop to next subscription
 							continue OuterLoop
 						}
 					}
-					go subscriptions.Create(&wg, userId, val.scope, val.version, val.condition)
+
+					// not found in loop, add to newSubscription
+					commons.Log("User " + userId + " added to new subscription list " + val.scope + ".v" + val.version)
+					newSubscription = append(newSubscription, NewSubscription{
+						userId:    userId,
+						scope:     val.scope,
+						version:   val.version,
+						condition: val.condition,
+					})
 				}
 			}
 		}
 	}
 
+	// subscribe all users in newSubscription
+	subscribe()
+
 	time.Sleep(10 * time.Second)
 
 	// run again after while
 	handleUsers(true)
+}
+
+type NewSubscription struct {
+	userId    string
+	scope     string
+	version   string
+	condition interface{}
+}
+
+var newSubscription []NewSubscription
+
+func subscribe() {
+	var wg sync.WaitGroup
+
+	commons.Log("Subscribing " + strconv.Itoa(len(newSubscription)) + " user(s) to new events")
+
+	for len(newSubscription) > 0 {
+		// commons.Log("Subscribing user " + val.userId + " for " + val.scope + ".v" + val.version)
+		val := newSubscription[len(newSubscription)-1]
+		// Update the slice to remove the last element
+		newSubscription = newSubscription[:len(newSubscription)-1]
+		sem.Acquire(ctx, 1)
+		go func() {
+			// commons.Log("Releasing semaphore for " + val.userId + " " + val.scope + ".v" + val.version)
+			time.Sleep(time.Second / 2)
+			sem.Release(1)
+		}()
+		wg.Add(1)
+		go subscriptions.Create(&wg, val.userId, val.scope, val.version, val.condition)
+	}
 }

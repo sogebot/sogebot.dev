@@ -127,5 +127,4 @@ func Create(wg *sync.WaitGroup, userId string, subscriptionType string, subscrip
 		commons.Log("User " + userId + " error for " + subscriptionType + ".v" + subscriptionVersion + ": " + string(body))
 		return
 	}
-	commons.Log("User " + userId + " subscribed for " + subscriptionType + ".v" + subscriptionVersion)
 }

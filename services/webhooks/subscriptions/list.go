@@ -40,6 +40,24 @@ type Condition struct {
 	FromBroadcasterUserID *string `json:"from_broadcaster_user_id,omitempty"`
 	ToBroadcasterUserID   *string `json:"to_broadcaster_user_id,omitempty"`
 	ModeratorUserID       *string `json:"moderator_user_id,omitempty"`
+	UserId                *string `json:"user_id,omitempty"`
+}
+
+func (c *Condition) Equal(other *Condition) bool {
+	return normalize(c.BroadcasterUserID) == normalize(other.BroadcasterUserID) &&
+		normalize(c.RewardID) == normalize(other.RewardID) &&
+		normalize(c.FromBroadcasterUserID) == normalize(other.FromBroadcasterUserID) &&
+		normalize(c.ToBroadcasterUserID) == normalize(other.ToBroadcasterUserID) &&
+		normalize(c.ModeratorUserID) == normalize(other.ModeratorUserID) &&
+		normalize(c.UserId) == normalize(other.UserId)
+}
+
+// normalize handles nil values by converting them to an empty string
+func normalize(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
 
 type Transport struct {
@@ -143,7 +161,6 @@ func List() {
 						fmt.Println("Error marshaling map to JSON:", err)
 						return
 					}
-					// check if already subscribed
 					if item.Type == value.Type && item.Version == value.Version && string(condition2) == string(condition1) {
 						// skip
 						continue OuterLoop
