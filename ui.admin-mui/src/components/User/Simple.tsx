@@ -55,12 +55,12 @@ export const UserSimple: React.FC = () => {
 
   React.useEffect(() => {
     if (user) {
-      if (!isEqual(
-        (user.scopes ?? []).sort(),
-        scopes.sort(),
-      )) {
-        console.error('Scopes are missing or incorrect, logging out');
-        logout();
+      for (const scope of scopes) {
+        if (!user.scopes.includes(scope)) {
+          console.error('Needed scope is missing. Logging out');
+          logout();
+          return;
+        }
       }
     }
   }, [user]);
