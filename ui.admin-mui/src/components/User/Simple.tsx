@@ -28,7 +28,8 @@ export const UserSimple: React.FC = () => {
     localStorage[`${localStorage.server}::accessToken`] = '';
     localStorage[`${localStorage.server}::refreshToken`] = '';
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
-    window.location.assign(window.location.origin);
+    window.location.assign(
+      process.env.REACT_APP_COMMIT ? `${window.location.origin}/${process.env.REACT_APP_COMMIT}` : window.location.origin);
   };
 
   React.useEffect(() => {
