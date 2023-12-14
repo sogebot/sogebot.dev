@@ -42,6 +42,10 @@ func handleUsers(updatedOnly bool) {
 	var err error
 
 	subscriptions.List()
+	if !updatedOnly {
+		subscriptions.CleanDuplicatedSubscriptions()
+		subscriptions.List()
+	}
 
 	commons.Log("Currently subscribed to " + strconv.Itoa(len(subscriptions.SubscriptionList)) + " event(s)")
 
@@ -330,7 +334,6 @@ func handleUsers(updatedOnly bool) {
 	subscribe()
 
 	time.Sleep(time.Minute)
-
 	// run again after while
 	handleUsers(true)
 }

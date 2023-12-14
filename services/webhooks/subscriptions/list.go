@@ -9,6 +9,7 @@ import (
 	"services/webhooks/commons"
 	"services/webhooks/handler"
 	"services/webhooks/token"
+	"slices"
 	"strings"
 	"time"
 )
@@ -214,4 +215,33 @@ func DeleteSubscription(subscriptionId string, token string) {
 		return
 	}
 	defer resp.Body.Close()
+}
+
+func CleanDuplicatedSubscriptions() {
+	commons.Log("Cleaning up duplicated subscriptions")
+	// Set request headers
+	token, err := token.Access()
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+	idsAlreadyChecked := []string{}
+	for _, value := range SubscriptionList {
+		if slices.Contains(idsAlreadyChecked, value.ID) {
+			continue
+		}
+
+		idsAlreadyChecked = append(idsAlreadyChecked, value.ID)
+		for _, value2 := range SubscriptionList {
+			if slices.Contains(idsAlreadyChecked, value2.ID) {
+				continue
+			}
+			if value.Type == value2.Type && value.Condition.Equal(&value2.Condition) && value.ID != value2.ID {
+				idsAlreadyChecked = append(idsAlreadyChecked, value2.ID)
+				commons.Log(fmt.Sprintf("Cleaning up duplicated subscription %s, type: %s with callback: %s\n", value2.ID, value2.Type, value2.Transport.Callback))
+				DeleteSubscription(value.ID, token)
+			}
+		}
+		SubscriptionList = nil
+	}
 }
