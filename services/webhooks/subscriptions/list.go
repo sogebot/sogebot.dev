@@ -145,7 +145,7 @@ func List() {
 	OuterLoop:
 		for _, value := range response.Data {
 			if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status != "enabled" {
-				commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
+				commons.Log(fmt.Sprintf("Cleaning up invalid subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
 				DeleteSubscription(value.ID, token)
 			} else {
 				// check if subscription is new
@@ -177,7 +177,6 @@ func List() {
 						return
 					}
 					if item.Type == value.Type && item.Version == value.Version && conditionMarshalledDefined.Equal(&conditionMarshalledReceived) {
-						// skip
 						continue OuterLoop
 					}
 				}
