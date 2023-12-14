@@ -144,7 +144,7 @@ func List() {
 
 	OuterLoop:
 		for _, value := range response.Data {
-			if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status == "authorization_revoked" {
+			if !strings.Contains(value.Transport.Callback, handler.EVENTSUB_URL_PROD) || value.Status != "enabled" {
 				commons.Debug(fmt.Sprintf("Cleaning up subscription %s, type: %s with callback: %s\n", value.ID, value.Type, value.Transport.Callback))
 				DeleteSubscription(value.ID, token)
 			} else {
