@@ -629,8 +629,8 @@ declare const Log: {
  * OBS contains all functions to control OBS with obs-websocket-js
  */
 declare const OBS: {
-  call(requestType: string, requestData?: Record<string, any>);
-  callBatch(requests: { requestType: string, requestData?: Record<string, any> }[], options?: Record<string, any>);
+  call(requestType: string, requestData?: Record<string, any>): Promise<any>;
+  callBatch(requests: { requestType: string, requestData?: Record<string, any> }[], options?: Record<string, any>): Promise<any>;
 };
 
 declare const Alerts: {

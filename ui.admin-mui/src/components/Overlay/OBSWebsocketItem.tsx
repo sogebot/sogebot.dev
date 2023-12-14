@@ -208,26 +208,26 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::call', async (opts) => {
+    getSocket('/', true).on('integration::obswebsocket::call', async (opts, cb) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
-      console.log('integration::obswebsocket::call', opts);
+      console.log('integration::obswebsocket::call', opts, cb);
       try {
-        obs.call(opts.event as any, opts.args).then(res => console.log('OBSWebsocket call result for', JSON.stringify(opts, null, 2), 'is', JSON.stringify(res, null, 2)));
+        obs.call(opts.event as any, opts.args).then(cb);
       } catch (e) {
         axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
         console.error(e);
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::callBatch', async (opts) => {
+    getSocket('/', true).on('integration::obswebsocket::callBatch', async (opts, cb) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
       console.log('integration::obswebsocket::callBatch', opts);
       try {
-        obs.callBatch(opts.requests as any, opts.options);
+        obs.callBatch(opts.requests as any, opts.options).then(cb);
       } catch (e) {
         axios.post(`${JSON.parse(localStorage.server)}/integrations/obswebsocket/log`, { message: (e as Error).stack ?? '' });
         console.error(e);
