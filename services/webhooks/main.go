@@ -329,7 +329,7 @@ func handleUsers(updatedOnly bool) {
 	// subscribe all users in newSubscription
 	subscribe()
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(time.Minute)
 
 	// run again after while
 	handleUsers(true)
