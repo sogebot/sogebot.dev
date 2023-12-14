@@ -84,36 +84,36 @@ func handleUsers(updatedOnly bool) {
 		}
 
 		subscriptionsMap := map[string][]struct {
-			scope     string
+			event     string
 			version   string
 			condition map[string]interface{}
 		}{
 			"": {{
-				scope:   "channel.raid",
+				event:   "channel.raid",
 				version: "1",
 				condition: map[string]interface{}{
 					"to_broadcaster_user_id": userId,
 				},
 			}, {
-				scope:   "channel.raid",
+				event:   "channel.raid",
 				version: "1",
 				condition: map[string]interface{}{
 					"from_broadcaster_user_id": userId,
 				},
 			}, {
-				scope:     "channel.update",
+				event:     "channel.update",
 				version:   "2",
 				condition: basic,
 			}},
 			"user:read:email": {{
-				scope:   "user.update",
+				event:   "user.update",
 				version: "1",
 				condition: map[string]interface{}{
 					"user_id": userId,
 				},
 			}},
 			"moderator:read:followers": {{
-				scope:   "channel.follow",
+				event:   "channel.follow",
 				version: "2",
 				condition: map[string]interface{}{
 					"broadcaster_user_id": userId,
@@ -121,151 +121,151 @@ func handleUsers(updatedOnly bool) {
 				},
 			}},
 			"channel:read:redemptions": {{
-				scope:     "channel.channel_points_custom_reward_redemption.add",
+				event:     "channel.channel_points_custom_reward_redemption.add",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.channel_points_custom_reward_redemption.update",
+				event:     "channel.channel_points_custom_reward_redemption.update",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.channel_points_custom_reward.add",
+				event:     "channel.channel_points_custom_reward.add",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.channel_points_custom_reward.update",
+				event:     "channel.channel_points_custom_reward.update",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.channel_points_custom_reward.remove",
+				event:     "channel.channel_points_custom_reward.remove",
 				version:   "1",
 				condition: basic,
 			}},
 			"bits:read": {{
-				scope:     "channel.cheer",
+				event:     "channel.cheer",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:moderate": {{
-				scope:     "channel.ban",
+				event:     "channel.ban",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.unban",
+				event:     "channel.unban",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:read:predictions": {{
-				scope:     "channel.prediction.begin",
+				event:     "channel.prediction.begin",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.prediction.progress",
+				event:     "channel.prediction.progress",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.prediction.lock",
+				event:     "channel.prediction.lock",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.prediction.end",
+				event:     "channel.prediction.end",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:read:polls": {{
-				scope:     "channel.poll.begin",
+				event:     "channel.poll.begin",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.poll.progress",
+				event:     "channel.poll.progress",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.poll.end",
+				event:     "channel.poll.end",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:read:hype_train": {{
-				scope:     "channel.hype_train.begin",
+				event:     "channel.hype_train.begin",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.hype_train.progress",
+				event:     "channel.hype_train.progress",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.hype_train.end",
+				event:     "channel.hype_train.end",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:read:charity": {{
-				scope:     "channel.charity_campaign.donate",
+				event:     "channel.charity_campaign.donate",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.charity_campaign.start",
+				event:     "channel.charity_campaign.start",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.charity_campaign.progress",
+				event:     "channel.charity_campaign.progress",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.charity_campaign.stop",
+				event:     "channel.charity_campaign.stop",
 				version:   "1",
 				condition: basic,
 			}},
 			"channel:read:goals": {{
-				scope:     "channel.goal.begin",
+				event:     "channel.goal.begin",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.goal.progress",
+				event:     "channel.goal.progress",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.goal.end",
+				event:     "channel.goal.end",
 				version:   "1",
 				condition: basic,
 			}},
 			"moderation:read": {{
-				scope:     "channel.moderator.add",
+				event:     "channel.moderator.add",
 				version:   "1",
 				condition: basic,
 			}, {
-				scope:     "channel.moderator.remove",
+				event:     "channel.moderator.remove",
 				version:   "1",
 				condition: basic,
 			}},
 			"moderator:read:shield_mode": {{
-				scope:   "channel.shield_mode.begin",
+				event:   "channel.shield_mode.begin",
 				version: "1",
 				condition: map[string]interface{}{
 					"broadcaster_user_id": userId,
 					"moderator_user_id":   userId,
 				},
 			}, {
-				scope:   "channel.shield_mode.end",
+				event:   "channel.shield_mode.end",
 				version: "1",
 				condition: map[string]interface{}{
 					"broadcaster_user_id": userId,
 					"moderator_user_id":   userId,
 				},
 			}},
-			"channel.ad_break.begin": {{
-				scope:     "channel:read:ads",
+			"channel:read:ads": {{
+				event:     "channel.ad_break.begin",
 				version:   "1",
 				condition: basic,
 			}},
 			"moderator:read:shoutouts": {{
-				scope:   "channel.shoutout.create",
+				event:   "channel.shoutout.create",
 				version: "1",
 				condition: map[string]interface{}{
 					"broadcaster_user_id": userId,
 					"moderator_user_id":   userId,
 				},
 			}, {
-				scope:   "channel.shoutout.receive",
+				event:   "channel.shoutout.receive",
 				version: "1",
 				condition: map[string]interface{}{
 					"broadcaster_user_id": userId,
@@ -305,7 +305,7 @@ func handleUsers(updatedOnly bool) {
 						}
 
 						// check if already subscribed
-						if item.Type == val.scope && item.Version == val.version && conditionMarshalledDefined.Equal(&conditionMarshalledReceived) {
+						if item.Type == val.event && item.Version == val.version && conditionMarshalledDefined.Equal(&conditionMarshalledReceived) {
 							// skip
 							// commons.Log("User " + userId + " already subscribed for " + val.scope + ".v" + val.version)
 							// continue on outer loop to next subscription
@@ -314,10 +314,10 @@ func handleUsers(updatedOnly bool) {
 					}
 
 					// not found in loop, add to newSubscription
-					commons.Log("User " + userId + " added to new subscription list " + val.scope + ".v" + val.version)
+					commons.Log("User " + userId + " added to new subscription list " + val.event + ".v" + val.version)
 					newSubscription = append(newSubscription, NewSubscription{
 						userId:    userId,
-						scope:     val.scope,
+						event:     val.event,
 						version:   val.version,
 						condition: val.condition,
 					})
@@ -337,7 +337,7 @@ func handleUsers(updatedOnly bool) {
 
 type NewSubscription struct {
 	userId    string
-	scope     string
+	event     string
 	version   string
 	condition interface{}
 }
@@ -361,6 +361,6 @@ func subscribe() {
 			sem.Release(1)
 		}()
 		wg.Add(1)
-		go subscriptions.Create(&wg, val.userId, val.scope, val.version, val.condition)
+		go subscriptions.Create(&wg, val.userId, val.event, val.version, val.condition)
 	}
 }
