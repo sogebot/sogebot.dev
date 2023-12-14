@@ -3,6 +3,7 @@ import { Alert, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/m
 import React, { useEffect, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
+import { baseURL } from '../helpers/getBaseURL';
 import { useAppSelector } from '../hooks/useAppDispatch';
 
 export const LoginWarning: React.FC = () => {
@@ -20,7 +21,7 @@ export const LoginWarning: React.FC = () => {
   }, [seconds]);
 
   const handleLogin = () => {
-    window.location.assign(window.location.origin + '/credentials/login');
+    window.location.assign(`${baseURL}/credentials/login`);
   };
 
   return (<Dialog open={showLoginWarning}>

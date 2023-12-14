@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntervalWhen, useRefElement } from 'rooks';
 
+import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -49,7 +50,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback(() => {
-    const popup = window.open(window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') +  'credentials/spotify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open(baseURL + '/credentials/spotify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });

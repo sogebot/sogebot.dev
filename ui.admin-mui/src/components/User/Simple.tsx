@@ -2,13 +2,12 @@ import { CloseTwoTone } from '@mui/icons-material';
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import { Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography } from '@mui/material';
-import { isEqual } from 'lodash';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
-// import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { scopes } from '../../routes/credentials/login';
 
@@ -28,8 +27,7 @@ export const UserSimple: React.FC = () => {
     localStorage[`${localStorage.server}::accessToken`] = '';
     localStorage[`${localStorage.server}::refreshToken`] = '';
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
-    window.location.assign(
-      process.env.REACT_APP_COMMIT ? `${window.location.origin}/${process.env.REACT_APP_COMMIT}` : window.location.origin);
+    window.location.assign(baseURL);
   };
 
   React.useEffect(() => {
@@ -67,7 +65,7 @@ export const UserSimple: React.FC = () => {
   }, [user]);
 
   const login = () => {
-    window.location.assign(window.location.origin + '/credentials/login');
+    window.location.assign(baseURL + '/credentials/login');
   };
 
   const getUser = () => {

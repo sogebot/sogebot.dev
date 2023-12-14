@@ -3,6 +3,8 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { debounce } from 'lodash';
 
+import { baseURL } from './getBaseURL';
+
 const refreshToken = debounce(async () => {
   try {
     const token = localStorage[`${localStorage.server}::refreshToken`];
@@ -31,9 +33,9 @@ const refreshToken = debounce(async () => {
 
 const redirectLogin = () => {
   if (window.location.href.includes('popout')) {
-    window.location.assign(window.location.origin + '/credentials/login/#error=popout+must+be+logged');
+    window.location.assign(`${baseURL}/credentials/login#error=popout+must+be+logged`);
   } else {
-    window.location.assign(window.location.origin + '/credentials/login/');
+    window.location.assign(`${baseURL}/credentials/login`);
   }
 };
 

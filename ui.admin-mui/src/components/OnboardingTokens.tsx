@@ -4,6 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
+import { baseURL } from '../helpers/getBaseURL';
 import { getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { useSettings } from '../hooks/useSettings';
@@ -59,7 +60,7 @@ export const OnboardingTokens: React.FC = () => {
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
-    const popup = window.open(window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open(baseURL + '/credentials/twitch/?type=' + accountType, 'popup', 'popup=true,width=400,height=300,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });

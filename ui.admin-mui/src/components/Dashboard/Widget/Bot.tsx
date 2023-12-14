@@ -10,6 +10,7 @@ import { DashboardWidgetBotEvents } from './Bot/Events';
 import { DashboardWidgetBotQueue } from './Bot/Queue';
 import { DashboardWidgetBotRaffles } from './Bot/Raffles';
 import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
+import { baseURL } from '../../../helpers/getBaseURL';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 import theme from '../../../theme';
@@ -38,7 +39,7 @@ export const DashboardWidgetBot: React.FC = () => {
     setValue(newValue);
   };
 
-  const popoutURL = window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'popout/widget/bot?server=' + server;
+  const popoutURL = baseURL + '/popout/widget/bot?server=' + server;
   const isPopout = window.location.href.includes('/popout/widget/bot');
 
   return (

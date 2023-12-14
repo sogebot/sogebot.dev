@@ -1,3 +1,5 @@
+import { baseURL } from './getBaseURL';
+
 export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin = true): Promise<any | boolean | null> {
   if (sessionStorage.connectedToServer === 'false') {
     return false;
@@ -11,10 +13,10 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
       console.log('Redirecting, user is not authenticated');
       sessionStorage.setItem('goto-after-login', location.href);
       if (window.location.href.includes('popout')) {
-        window.location.assign(window.location.origin + '/credentials/login#error=popout+must+be+logged');
+        window.location.assign(baseURL + '/credentials/login#error=popout+must+be+logged');
         return false;
       } else {
-        window.location.assign(window.location.origin + '/credentials/login');
+        window.location.assign(baseURL + '/credentials/login');
         return false;
       }
     } else {
@@ -52,13 +54,13 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
           }
         }
         if (e === 'User doesn\'t have access to this endpoint') {
-          window.location.assign(window.location.origin + '/credentials/login#error=must+be+caster');
+          window.location.assign(baseURL + '/credentials/login#error=must+be+caster');
         } else {
           console.log('Redirecting, user code expired');
           if (window.location.href.includes('popout')) {
-            window.location.assign(window.location.origin + '/credentials/login#error=popout+must+be+logged');
+            window.location.assign(baseURL + '/credentials/login#error=popout+must+be+logged');
           } else {
-            window.location.assign(window.location.origin + '/credentials/login');
+            window.location.assign(baseURL + '/credentials/login');
           }
         }
       }

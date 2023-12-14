@@ -2,6 +2,8 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import React from 'react';
 import { useDidMount } from 'rooks';
 
+import { baseURL } from '../../helpers/getBaseURL';
+
 export const scopes = [
   'user:edit',
   'user:read:email',
@@ -24,7 +26,7 @@ const Login = () => {
     const clientId = '25ptx7puxva3gg1lt557qjp1ii0uur';
     const state = encodeURIComponent(window.btoa(
       JSON.stringify({
-        url:      window.location.origin,
+        url:      baseURL,
         version:  2,
         referrer: document.referrer,
       }),

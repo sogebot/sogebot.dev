@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
+import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
@@ -49,7 +50,7 @@ export const UserMenu: React.FC = () => {
     localStorage[`${localStorage.server}::accessToken`] = '';
     localStorage[`${localStorage.server}::refreshToken`] = '';
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
-    window.location.assign(window.location.origin + '/credentials/login#error=logged+out');
+    window.location.assign(`${baseURL}/credentials/login#error=logged+out`);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

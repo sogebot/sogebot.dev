@@ -3,13 +3,14 @@ import axios from 'axios';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 
+import { baseURL } from './getBaseURL';
 import getAccessToken from '../getAccessToken';
 
 export const redirectLogin = () => {
   if (window.location.href.includes('popout')) {
-    window.location.assign(window.location.origin + '/credentials/login#error=popout+must+be+logged');
+    window.location.assign(baseURL + '/credentials/login#error=popout+must+be+logged');
   } else {
-    window.location.assign(window.location.origin + '/credentials/login');
+    window.location.assign(baseURL + '/credentials/login');
   }
 };
 
@@ -84,7 +85,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
           redirectLogin();
         }
       } else {
-        axios.get(`${process.env.isNuxtDev ? 'http://localhost:20000' : window.location.origin}/socket/refresh`, { headers: { 'x-twitch-token': refreshToken } }).then(validation => {
+        axios.get(`${JSON.parse(localStorage.server)}/socket/refresh`, { headers: { 'x-twitch-token': refreshToken } }).then(validation => {
           console.group('socket::validation');
           console.debug({
             validation, refreshToken,

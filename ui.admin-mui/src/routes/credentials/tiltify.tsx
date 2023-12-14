@@ -2,6 +2,7 @@ import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/mater
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 
 const Tiltify = () => {
@@ -32,7 +33,7 @@ const Tiltify = () => {
     } else {
       location.href = `https://tiltify.soge.workers.dev/authorize?state=${Buffer.from(JSON.stringify({
         server:   JSON.parse(localStorage.server),
-        referrer: window.location.origin,
+        referrer: baseURL,
         version:  2,
       })).toString('base64')}`;
     }

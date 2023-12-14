@@ -4,6 +4,8 @@ import get from 'lodash/get';
 import React from 'react';
 import { useDidMount } from 'rooks';
 
+import { baseURL } from '../../helpers/getBaseURL';
+
 const OAuth = () => {
   useDidMount(async () => {
     try {
@@ -68,7 +70,7 @@ const OAuth = () => {
     } catch (error) {
       console.error({ error });
       localStorage.removeItem('twitchLoggedUser');
-      window.location.assign(window.location.origin + '/credentials/login');
+      window.location.assign(baseURL + '/credentials/login');
     }
   });
   return (<Backdrop open={true}><CircularProgress/></Backdrop>);

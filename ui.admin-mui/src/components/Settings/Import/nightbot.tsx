@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
 import { importCustomCommands, importPlaylist, importTimers } from './nightbot-utils';
+import { baseURL } from '../../../helpers/getBaseURL';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -55,9 +56,8 @@ const PageSettingsModulesImportNightbot: React.FC<{
 
   const authorize = React.useCallback(() => {
     const popup = window.open(
-      window.location.origin
-        + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/')
-        + 'credentials/nightbot',
+      baseURL
+        + '/credentials/nightbot',
       'popup',
       'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no'
     );

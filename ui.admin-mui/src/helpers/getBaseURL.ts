@@ -1,0 +1,1 @@
+export const baseURL = process.env.REACT_APP_COMMIT ? `${window.location.origin}/${process.env.REACT_APP_COMMIT}` : `${window.location.origin}`;

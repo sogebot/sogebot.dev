@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
+import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -48,7 +49,7 @@ const PageSettingsModulesIntegrationsDonationAlerts: React.FC<{
   }, [ enqueueSnackbar, refresh ]);
 
   const authorize = useCallback(() => {
-    const popup = window.open(window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'credentials/donationalerts', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const popup = window.open(baseURL + '/credentials/donationalerts', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {
         enqueueSnackbar('User logged in.', { variant: 'success' });

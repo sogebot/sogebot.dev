@@ -9,6 +9,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
+import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -48,7 +49,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const redirectUri = useMemo(() => {
-    return window.location.origin + (process.env.REACT_APP_COMMIT ? `/${process.env.REACT_APP_COMMIT}/` : '/') + 'credentials/oauth/tokens';
+    return baseURL + '/credentials/oauth/tokens';
   }, []);
 
   const botUrl = useMemo(() => {
