@@ -228,13 +228,19 @@ func handleUsers(updatedOnly bool) {
 				condition: basic,
 			}},
 			"moderator:read:shield_mode": {{
-				scope:     "channel.shield_mode.begin",
-				version:   "1",
-				condition: basic,
+				scope:   "channel.shield_mode.begin",
+				version: "1",
+				condition: map[string]interface{}{
+					"broadcaster_user_id": userId,
+					"moderator_user_id":   userId,
+				},
 			}, {
-				scope:     "channel.shield_mode.end",
-				version:   "1",
-				condition: basic,
+				scope:   "channel.shield_mode.end",
+				version: "1",
+				condition: map[string]interface{}{
+					"broadcaster_user_id": userId,
+					"moderator_user_id":   userId,
+				},
 			}},
 			"channel.ad_break.begin": {{
 				scope:     "channel:read:ads",
