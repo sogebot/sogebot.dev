@@ -156,12 +156,27 @@ func List() {
 						fmt.Println("Error marshaling map to JSON:", err)
 						return
 					}
+					// we need to remarshal the condition to objects to compare
+					var conditionMarshalledDefined Condition
+					err = json.Unmarshal(condition1, &conditionMarshalledDefined)
+					if err != nil {
+						fmt.Println("Error unmarshaling:", err)
+						return
+					}
+
 					condition2, err := json.Marshal(item.Condition)
 					if err != nil {
 						fmt.Println("Error marshaling map to JSON:", err)
 						return
 					}
-					if item.Type == value.Type && item.Version == value.Version && string(condition2) == string(condition1) {
+					// we need to remarshal the condition to objects to compare
+					var conditionMarshalledReceived Condition
+					err = json.Unmarshal(condition2, &conditionMarshalledReceived)
+					if err != nil {
+						fmt.Println("Error unmarshaling:", err)
+						return
+					}
+					if item.Type == value.Type && item.Version == value.Version && conditionMarshalledDefined.Equal(&conditionMarshalledReceived) {
 						// skip
 						continue OuterLoop
 					}

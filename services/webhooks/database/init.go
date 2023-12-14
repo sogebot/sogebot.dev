@@ -83,12 +83,12 @@ func reconnect(connStr string) {
 func clean() {
 	for {
 		// clean events
-		commons.Log("Cleaning 2 weeks old events.")
-		_, err := DB.Exec("DELETE FROM eventsub_events WHERE timestamp < NOW() - INTERVAL '2 weeks'")
+		commons.Log("Cleaning 1 hour old events.")
+		_, err := DB.Exec("DELETE FROM eventsub_events WHERE timestamp < NOW() - INTERVAL '1 hour'")
 		if err != nil {
 			commons.Log("Error cleaning events:" + err.Error())
 		}
 
-		time.Sleep(7 * 24 * time.Hour) // Sleep for 1 week
+		time.Sleep(time.Hour)
 	}
 }
