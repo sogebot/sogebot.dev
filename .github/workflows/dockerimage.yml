@@ -36,7 +36,7 @@ jobs:
       - name: Build a UI
         run: cd ./ui.admin-mui/ && npm install && REACT_APP_VERSION=$(git rev-parse HEAD) npm run build
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v3
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
           path: ./ui.admin-mui/build/
@@ -44,7 +44,7 @@ jobs:
       - name: Build a UI (with old_commit basePath)
         run: cd ./ui.admin-mui/ && node ./tools/changeHomepage.js ${{ steps.slug.outputs.SHA }} && npm install && REACT_APP_VERSION=$(git rev-parse HEAD) REACT_APP_COMMIT="${{ steps.slug.outputs.SHA }}" npm run build
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v3
         with:
           name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
           path: ./ui.admin-mui/build
@@ -73,12 +73,12 @@ jobs:
           username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v3
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
           path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
 
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v3
         with:
           name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
           path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
