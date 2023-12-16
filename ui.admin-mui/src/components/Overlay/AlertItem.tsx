@@ -178,7 +178,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     if (isAlreadyProcessed(uid)) {
       return;
     }
-    console.debug('Incoming alert', data);
+    console.debug(`alert-${id}`, 'Processing', data);
 
     // checking for vulgarities
     if (data.message && data.message.length > 0) {

@@ -22,7 +22,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
       setTTSWaiting(false);
       return;
     }
-    console.log('= Replacing values');
+    console.log(`alert-${groupId}-AlertItemTTS`, '= Replacing values');
     const data = emitData[groupId];
     const text = item.ttsTemplate
       .replace(/\{name\}/g, data?.name || '')

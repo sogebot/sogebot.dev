@@ -23,7 +23,7 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, pr
     let text = item.html;
 
     if (emitData) {
-      console.log('= Replacing values');
+      console.log(`alert-${groupId}-AlertItemCustom`, '= Replacing values');
       const data = emitData[groupId];
       text = text
         .replace(/\{name\}/g, data?.name || '')

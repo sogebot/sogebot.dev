@@ -45,7 +45,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
     let template = item.messageTemplate.split('|')[curIdx];
 
     if (emitData) {
-      console.log('= Replacing values');
+      console.log(`alert-${groupId}-AlertItemText`, '= Replacing values');
       const data = emitData[groupId];
       template = template
         .replace(/\{name\}/g, data?.name || '')
