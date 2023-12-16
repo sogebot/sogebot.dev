@@ -85,7 +85,6 @@ const EventsTester: React.FC<Props> = (props) => {
             && <FormNumericInput
               fullWidth
               min={0}
-              value={values[idx]}
               size='small'
               label={translate('responses.variable.' + variable)}
               onChange={(value) => setValues(val => {
@@ -102,7 +101,7 @@ const EventsTester: React.FC<Props> = (props) => {
             value={values[idx]}
             label={translate('responses.variable.' + variable)}
             onChange={(ev) => setValues(val => {
-              val[idx] = ev.currentTarget.value;
+              val[idx] = ev.target.value;
               return [ ...val ];
             })}
             disabled={randomized.includes(variable)}>
@@ -112,11 +111,11 @@ const EventsTester: React.FC<Props> = (props) => {
           && <TextField
             multiline
             fullWidth
-            size='small'
             value={values[idx]}
+            size='small'
             label={translate('responses.variable.' + variable)}
             onChange={(ev) => setValues(val => {
-              val[idx] = ev.currentTarget.value;
+              val[idx] = ev.target.value;
               return [ ...val ];
             })}
             disabled={randomized.includes(variable)}>
