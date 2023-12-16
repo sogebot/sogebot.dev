@@ -8,7 +8,7 @@ import type { Props } from './ChatItem';
 import { useTTS } from '../../hooks/useTTS';
 
 export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
-= ({ item, parent }) => {
+= ({ item, parent, groupId }) => {
   const emitData = useAtomValue(anEmitData);
   const expectedSoundCount = useAtomValue(anExpectedSoundCount);
   const finishedSoundCount = useAtomValue(anFinishedSoundCount);
@@ -23,14 +23,15 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
       return;
     }
     console.log('= Replacing values');
+    const data = emitData[groupId];
     const text = item.ttsTemplate
-      .replace(/\{name\}/g, emitData.name)
-      .replace(/\{game\}/g, emitData.game || '')
-      .replace(/\{recipient\}/g, emitData.recipient || '')
-      .replace(/\{amount\}/g, String(emitData.amount))
-      .replace(/\{monthsName\}/g, emitData.monthsName)
-      .replace(/\{currency\}/g, emitData.currency)
-      .replace(/\{message\}/g, emitData.message);
+      .replace(/\{name\}/g, data?.name || '')
+      .replace(/\{game\}/g, data?.game || '')
+      .replace(/\{recipient\}/g, data?.recipient || '')
+      .replace(/\{amount\}/g, String(data?.amount))
+      .replace(/\{monthsName\}/g, String(data?.monthsName))
+      .replace(/\{currency\}/g, String(data?.currency))
+      .replace(/\{message\}/g, String(data?.message));
 
     if (item.speakDelay) {
       console.log('= Delaying TTS for', item.speakDelay, 'ms');
@@ -52,7 +53,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
       rate: service.rate,
       pitch: service.pitch,
       volume,
-      key: emitData.TTSKey,
+      key: emitData[groupId]?.TTSKey,
       service: item.tts?.selectedService ?? parent.tts.selectedService,
     });
 

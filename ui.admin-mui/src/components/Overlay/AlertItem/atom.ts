@@ -2,7 +2,8 @@ import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { atom } from 'jotai';
 
-export const anEmitData = atom<null | EmitData & {
+// save emit data per alert
+export const anEmitData = atom<Record<string, null | (EmitData & {
   id:            string;
   isTTSMuted:    boolean;
   isSoundMuted:  boolean;
@@ -10,7 +11,7 @@ export const anEmitData = atom<null | EmitData & {
   caster:        UserInterface | null;
   user:          UserInterface | null;
   recipientUser: UserInterface | null;
-}>(null);
+})>>({});
 
 export const anExpectedSoundCount = atom(0);
 export const anFinishedSoundCount = atom(0);

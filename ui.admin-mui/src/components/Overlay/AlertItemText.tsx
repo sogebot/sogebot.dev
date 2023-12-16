@@ -29,7 +29,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
   test?: boolean; parent: Alerts, variant: Omit<Alerts['items'][number], 'variants'>,
   canvas: { width: number, height: number }
 }>
-= ({ item, width, height, parent, variant, active, test }) => {
+= ({ item, width, height, parent, variant, active, test, groupId }) => {
   const [ curIdx, setCurIdx ] = React.useState(0);
 
   const emitData = useAtomValue(anEmitData);
@@ -46,14 +46,15 @@ export const AlertItemText: React.FC<Props<AlertText> & {
 
     if (emitData) {
       console.log('= Replacing values');
+      const data = emitData[groupId];
       template = template
-        .replace(/\{name\}/g, emitData.name)
-        .replace(/\{game\}/g, emitData.game || '')
-        .replace(/\{recipient\}/g, emitData.recipient || '')
-        .replace(/\{amount\}/g, String(emitData.amount))
-        .replace(/\{monthsName\}/g, emitData.monthsName)
-        .replace(/\{currency\}/g, emitData.currency)
-        .replace(/\{message\}/g, emitData.message);
+        .replace(/\{name\}/g, data?.name || '')
+        .replace(/\{game\}/g, data?.game || '')
+        .replace(/\{recipient\}/g, data?.recipient || '')
+        .replace(/\{amount\}/g, String(data?.amount))
+        .replace(/\{monthsName\}/g, String(data?.monthsName))
+        .replace(/\{currency\}/g, String(data?.currency))
+        .replace(/\{message\}/g, String(data?.message));
     }
 
     let replacedText: React.ReactNode[] = [];
@@ -98,7 +99,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
       for (const emote of emotesCache) {
         if (get(item, `allowEmotes.${emote.type}`, false)) {
           if (outputString.includes(emote.code)) {
-            output[i] = reactStringReplace(output[i] as React.ReactNode[], emote.code, () => <img src={emote.urls[3]} style={{
+            output[i] = reactStringReplace(output[i] as React.ReactNode[], emote.code, () => <img title='emote' src={emote.urls[3]} style={{
               position: 'relative', top: '0.1rem', height: item.font ? item.font.size : parent[item.globalFont].size, width: 'auto',
             }}/>);
           }
@@ -115,7 +116,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
     }
     console.log({ output });
     return output;
-  }, [item.messageTemplate, variant, curIdx, emitData]);
+  }, [item.messageTemplate, variant, curIdx, emitData[groupId]]);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
 

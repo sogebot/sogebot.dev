@@ -15,7 +15,7 @@ const encodeFont = (font: string) => {
 const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
 export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, profileImageUrl?: string, }>
-= ({ item, width, height, parent, active }) => {
+= ({ item, width, height, parent, active, groupId }) => {
   const emitData = useAtomValue(anEmitData);
 
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
@@ -24,15 +24,16 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, pr
 
     if (emitData) {
       console.log('= Replacing values');
+      const data = emitData[groupId];
       text = text
-        .replace(/\{name\}/g, emitData.name)
-        .replace(/\{game\}/g, emitData.game || '')
-        .replace(/\{recipient\}/g, emitData.recipient || '')
-        .replace(/\{amount\}/g, String(emitData.amount))
-        .replace(/\{monthsName\}/g, emitData.monthsName)
-        .replace(/\{currency\}/g, emitData.currency)
-        .replace(/\{message\}/g, emitData.message)
-        .replace(/\{image\}/g, emitData?.user?.profileImageUrl ?? '');
+        .replace(/\{name\}/g, data?.name || '')
+        .replace(/\{game\}/g, data?.game || '')
+        .replace(/\{recipient\}/g, data?.recipient || '')
+        .replace(/\{amount\}/g, String(data?.amount))
+        .replace(/\{monthsName\}/g, String(data?.monthsName))
+        .replace(/\{currency\}/g, String(data?.currency))
+        .replace(/\{message\}/g, String(data?.message))
+        .replace(/\{image\}/g, data?.user?.profileImageUrl ?? '');
     }
 
     for (const emote of orderBy(emotesCache, 'code', 'asc')) {

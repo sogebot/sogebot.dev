@@ -10,7 +10,7 @@ import type { Props } from './ChatItem';
 export const AlertItemProfileImage: React.FC<Props<AlertProfileImage> & {
   test?: boolean, variant: Omit<Alerts['items'][number], 'variants'>,
 }>
-= ({ item, width, height, active, variant, test }) => {
+= ({ item, width, height, active, variant, test, groupId }) => {
   const videoPlayer = useRef<HTMLVideoElement>(null);
   const emitData = useAtomValue(anEmitData);
 
@@ -103,7 +103,7 @@ export const AlertItemProfileImage: React.FC<Props<AlertProfileImage> & {
       alignItems:     'center',
       overflow:       'hidden',
     }}>
-      <img src={test ? `https://i.pravatar.cc/${width}` : emitData?.user?.profileImageUrl} alt='default'
+      <img src={test ? `https://i.pravatar.cc/${width}` : emitData[groupId]?.user?.profileImageUrl} alt='default'
         style={{
           maxWidth:  '100%',
           maxHeight: '100%',

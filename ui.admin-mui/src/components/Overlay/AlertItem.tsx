@@ -3,6 +3,7 @@ import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen, useSessionstorageState } from 'rooks';
 
@@ -57,6 +58,7 @@ const setOpacity = (id: string) => {
 
 export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
+  const [ id ] = React.useState(nanoid());
 
   getSocket('/core/emotes', true); // init socket
 
@@ -117,7 +119,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
     for (const fontFamily of fontsToLoad) {
       if (fontFamily && !loadedFonts.includes(fontFamily)) {
-        console.debug('Loading font', fontFamily);
+        console.debug(`alert-${id}`, 'Loading font', fontFamily);
         loadedFonts.push(fontFamily);
         const font = fontFamily.replace(/ /g, '+');
         const css = '@import url(\'https://fonts.googleapis.com/css?family=' + font + '\');';
@@ -133,10 +135,10 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData.event as any));
 
       if (possibleAlerts.length === 0) {
-        console.log('alert', 'No valid alerts found for hook:', emitData.event);
-        console.log('alert', 'Throwing away emit data');
+        console.log(`alert-${id}`, 'No valid alerts found for hook:', emitData.event);
+        console.log(`alert-${id}`, 'Throwing away emit data');
         setActiveUntil(0);
-        setEmitData(null);
+        setEmitData(e => ({ ...e, [id]: null }));
         return;
       }
 
@@ -153,7 +155,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         .filter(o => o.enabled !== false)
         .filter(o => processFilter(emitData, o.filter));
       if (possibleAlerts.length === 0) {
-        console.log('alert', 'No valid alerts found after filter');
+        console.log(`alert-${id}`, 'No valid alerts found after filter');
         setActiveUntil(0);
         return false;
       }
@@ -171,7 +173,9 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     user:          UserInterface | null;
     recipientUser: UserInterface | null;
   }) => {
-    if (isAlreadyProcessed(data.id)) {
+    const uid = `${data.id}-${id}`;
+    console.log(`alert-${id}`, 'Checking if alert is already processed', uid);
+    if (isAlreadyProcessed(uid)) {
       return;
     }
     console.debug('Incoming alert', data);
@@ -202,7 +206,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     setTimeout(() => {
       if (['tip', 'cheer', 'resub', 'sub'].includes(data.event) && emitDataRef.current && item.parry.enabled && haveAvailableAlert(data)) {
         setEmitDataList(list => [...list, data]);
-        console.log('Skipping playing alert - parrying enabled');
+        console.log(`alert-${id}`, 'Skipping playing alert - parrying enabled');
         setTimeout(() => {
           setActiveUntil(0);
           if (typeof (window as any).responsiveVoice !== 'undefined') {
@@ -215,31 +219,32 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     }, item.alertDelayInMs);
   };
 
-  const [ emitDataList, setEmitDataList ] = React.useState<NonNullable<typeof emitData>[]>([]);
+  const [ emitDataList, setEmitDataList ] = React.useState<NonNullable<typeof emitData[string]>[]>([]);
 
   const [ emitData, setEmitData] = useAtom(anEmitData);
-  const emitDataRef = React.useRef(emitData);
+  const emitDataRef = React.useRef(emitData[id] ?? null);
   React.useEffect(() => {
-    emitDataRef.current = emitData;
-  }, [ emitData ]);
+    console.log(`alert-${id}`, 'Emit data changed', emitData[id]);
+    emitDataRef.current = emitData[id] ?? null;
+  }, [ emitData[id] ]);
 
   useIntervalWhen(() => {
-    if (emitDataList.length === 0 || emitData !== null) {
+    if (emitDataList.length === 0 || emitData[id] !== null) {
       return;
     }
 
     setEmitDataList(list => {
       const data = list.shift();
-      console.log('Triggering data');
+      console.log(`alert-${id}`, 'Triggering data');
       if (data) {
-        setEmitData(data);
+        setEmitData(e => ({ ...e, [id]: data }));
       }
       return [...list];
     });
   }, 100);
 
   React.useEffect(() => {
-    console.log('= Listening to alert events');
+    console.log(`alert-${id}`, '= Listening to alert events');
     getSocket('/registries/alerts', true).on('alert', (data) => processIncomingAlert(data));
     getSocket('/registries/alerts', true).on('skip', () => {
       setActiveUntil(0);
@@ -250,20 +255,22 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   }, []);
 
   const selectedGroup = React.useMemo(() => {
-    if(!emitData) {
+    const data = emitData[id];
+    if(!data) {
       return;
     }
-    let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData.event as any));
-    if (emitData.event === 'rewardredeem') {
-      possibleAlerts = (possibleAlerts as any).filter((o: any) => o.rewardId === emitData.rewardId);
+    let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData[id]!.event as any));
+    console.log({ possibleAlerts });
+    if (data.event === 'rewardredeem') {
+      possibleAlerts = (possibleAlerts as any).filter((o: any) => o.rewardId === data!.rewardId);
     }
 
-    if (emitData.event === 'custom') {
+    if (data.event === 'custom') {
       possibleAlerts = (possibleAlerts as any).filter((o: any) => o.hooks[0] === 'custom');
       // find correct variant or main
       for (const alert of possibleAlerts) {
-        if (alert.id === emitData.alertId || emitData.name.includes(alert.id)) {
-          console.log('alerts', 'Selected variant', alert);
+        if (alert.id === data.alertId || data.name.includes(alert.id)) {
+          console.log(`alert-${id}`, 'Selected variant', alert);
           for (const it of alert.items) {
             setOpacity(it.id);
           }
@@ -271,8 +278,8 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         }
         if ('variants' in alert) {
           for (const variant of alert.variants) {
-            if (variant.id === emitData.alertId) {
-              console.log('alerts', 'Selected variant', variant);
+            if (variant.id === data.alertId) {
+              console.log(`alert-${id}`, 'Selected variant', variant);
               for (const it of variant.items) {
                 setOpacity(it.id);
               }
@@ -281,17 +288,17 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
           }
         }
       }
-      console.log('alert', 'No valid alerts found for this custom command.');
-      setEmitData(null);
+      console.log(`alert-${id}`, 'No valid alerts found for this custom command.');
+      setEmitData(e => ({ ...e, [id]: null }));
       setActiveUntil(0);
       return;
     }
 
     if (possibleAlerts.length === 0) {
-      console.log('alert', 'No valid alerts found for hook:', emitData.event);
-      console.log('alert', 'Throwing away emit data');
+      console.log(`alert-${id}`, 'No valid alerts found for hook:', data.event);
+      console.log(`alert-${id}`, 'Throwing away emit data');
       setActiveUntil(0);
-      setEmitData(null);
+      setEmitData(e => ({ ...e, [id]: null }));
       return;
     }
 
@@ -306,11 +313,11 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
     possibleAlerts = possibleAlerts
       .filter(o => o.enabled !== false)
-      .filter(o => processFilter(emitData, o.filter));
+      .filter(o => processFilter(emitData[id]!, o.filter));
     if (possibleAlerts.length === 0) {
-      console.log('alert', 'No valid alerts found after filter');
+      console.log(`alert-${id}`, 'No valid alerts found after filter');
       setActiveUntil(0);
-      setEmitData(null);
+      setEmitData(e => ({ ...e, [id]: null }));
       return;
     }
 
@@ -327,9 +334,9 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       setOpacity(it.id);
     }
 
-    console.log('Selected alert', selected);
+    console.log(`alert-${id}`, 'Selected alert', selected);
     return selected;
-  }, [item, emitData]);
+  }, [item, emitData[id], id]);
 
   const selectedGroupMain = React.useMemo<Alerts['items'][number] | null | undefined>(() => {
     if (!selectedGroup) {
@@ -349,7 +356,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     }
   }, [selectedGroup, item]);
 
-  const alertDuration = emitData?.customOptions?.alertDuration ?? selectedGroup?.alertDuration ?? 0;
+  const alertDuration = emitData[id]?.customOptions?.alertDuration ?? selectedGroup?.alertDuration ?? 0;
 
   React.useEffect(() => {
     if (selectedGroup) {
@@ -367,11 +374,11 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     setTimestamp(Date.now());
 
     if (waitingForTTS) {
-      console.log(`= waiting for TTS to finish`);
+      console.log(`alert-${id}`, `= waiting for TTS to finish`);
       return;
     }
-    if (activeUntil - timestamp < (selectedGroup?.animationOutDuration ? -selectedGroup.animationOutDuration : -2000) && emitData) {
-      console.log(`= Freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
+    if (activeUntil - timestamp < (selectedGroup?.animationOutDuration ? -selectedGroup.animationOutDuration : -2000) && emitDataRef.current) {
+      console.log(`alert-${id}`, `= Freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
       setActiveUntil(0);
     }
   }, 100);
@@ -380,16 +387,22 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const setFinishedSoundCount = useSetAtom(anFinishedSoundCount);
   React.useEffect(() => {
     if (activeUntil === 0) {
-      console.log('= Resetting emit data');
-      setEmitData(null);
+      console.log(`alert-${id}`, '= Resetting emit data');
+      setEmitData(e => ({ ...e, [id]: null }));
       setExpectedSoundCount(-1); // setting to -1
       setFinishedSoundCount(0);
     }
   }, [ activeUntil ]);
 
   const returnItemData = React.useCallback(<T extends Alerts['items'][number] | Alerts['items'][number]['variants'][number]['items'][number]>(o: T) => {
-    return emitData?.customOptions?.components?.[o.id] ?? o;
-  }, [ emitData ]);
+    return emitData[id]?.customOptions?.components?.[o.id] ?? o;
+  }, [ emitData[id], id ]);
+
+  const variant = React.useMemo(() => {
+    return {
+      ...(selectedGroupMain ?? {}), ...(emitData[id]?.customOptions as any ?? {}),
+    };
+  }, [emitData[id], selectedGroupMain]);
 
   return <Box sx={{
     width:         '100%',
@@ -399,8 +412,8 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     lineHeight:    'normal !important',
     color:         'black',
   }}>
-    {activeUntil > 0 && <Box key={emitData?.id ?? 'no-id'}>
-      {selectedGroup?.items.map((o) => <Box id={`${o.id}`} key={`${o.id}-${emitData?.id ?? 'no-id'}`} sx={{
+    {activeUntil > 0 && <Box key={emitData[id]?.id ?? 'no-id'}>
+      {selectedGroup?.items.map((o) => <Box id={`${o.id}`} key={`${o.id}-${emitData[id]?.id ?? 'no-id'}`} sx={{
         position:        'absolute' ,
         width:           `${o.width}px`,
         height:          `${o.height}px`,
@@ -411,22 +424,14 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         transition:      `opacity 200ms`,
         transitionDelay: `${'animationDelay' in o ? o.animationDelay : 0}ms`,
       }}>
-        {(selectedGroupMain && o.type === 'audio' && !emitData!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} active={activeUntil - timestamp >= 0} variant={{
-          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
-        }}/>}
-        {(selectedGroupMain && o.type === 'profileImage') && <AlertItemProfileImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={{
-          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
-        }} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={{
-          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
-        }} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'text' && processFilter(emitData!, o.enabledWhen)) && <AlertItemText canvas={{
+        {(selectedGroupMain && o.type === 'audio' && !emitData[id]!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} active={activeUntil - timestamp >= 0} variant={variant}/>}
+        {(selectedGroupMain && o.type === 'profileImage') && <AlertItemProfileImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={variant} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'text' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemText canvas={{
           width, height,
-        }} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={{
-          ...(selectedGroupMain ?? {}), ...(emitData?.customOptions as any ?? {}),
-        }} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
-        {(selectedGroupMain && o.type === 'tts' && processFilter(emitData!, o.enabledWhen) && !emitData!.isSoundMuted && !emitData!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
+        }} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData[id]?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
+        {(selectedGroupMain && o.type === 'tts' && processFilter(emitData[id]!, o.enabledWhen) && !emitData[id]!.isSoundMuted && !emitData[id]!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id}/>}
       </Box>)}
     </Box>}
   </Box>;
