@@ -60,7 +60,6 @@ export const AlertItemText: React.FC<Props<AlertText> & {
 
     [...template.matchAll(regexp)].forEach((match, idx) => {
       let animatedText: React.JSX.Element[] = [];
-
       if (variant.animationText === 'baffle') {
         const baffleId = nanoid();
         animatedText = [<span className={`obfuscate-${baffleId}`}>{match[1]}</span>];
@@ -106,6 +105,15 @@ export const AlertItemText: React.FC<Props<AlertText> & {
         }
       }
     }
+
+    console.log('============ Replacing \n with <br/>');
+    for (let i = 0; i < output.length; i++) {
+      if (typeof output[i] !== 'string') {
+        continue;
+      }
+      output[i] = reactStringReplace(output[i] as React.ReactNode[], '\n', () => <br/>);
+    }
+    console.log({ output });
     return output;
   }, [item.messageTemplate, variant, curIdx, emitData]);
 
