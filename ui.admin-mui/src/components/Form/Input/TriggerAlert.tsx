@@ -1,5 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { Alerts, EmitData, Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import { useSetAtom } from 'jotai';
 import React from 'react';
@@ -207,15 +207,49 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
 
         <Stack direction='row' spacing={1}>
           <Box sx={{ width: '100%' }}>
-            <AccordionDuration model={options?.alertDuration ?? currentVariant.alertDuration} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
-              setOptions({
-                ...(options ?? {}), alertDuration: val,
-              });
-            }}/>
+            <AccordionDuration model={options?.alertDuration ?? currentVariant.alertDuration} open={accordionId}
+              prependLabel={
+                <Checkbox sx={{ margin: '-9px', marginRight: 'auto', alignSelf: 'flex-start' }} onClick={(ev) => {
+                  ev.stopPropagation();
+                }} checked={options?.alertDuration !== undefined} onChange={(_, checked) => {
+                  if (checked) {
+                    setOptions({
+                      ...(options ?? {}), alertDuration: currentVariant.alertDuration,
+                    });
+                  } else {
+                    setOptions({
+                      ...(options ?? {}), alertDuration: undefined,
+                    });
+                  }
+                }}/>
+              }
+              onOpenChange={setAccordionId} onChange={(val) => {
+                setOptions({
+                  ...(options ?? {}), alertDuration: val,
+                });
+              }}/>
             <AccordionAnimationText model={{
               animationText:        options?.animationText ?? currentVariant.animationText,
               animationTextOptions: options?.animationTextOptions ?? currentVariant.animationTextOptions,
-            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+            }} open={accordionId} onOpenChange={setAccordionId}
+            prependLabel={
+              <Checkbox sx={{ margin: '-9px', marginRight: 'auto', alignSelf: 'flex-start' }} onClick={(ev) => {
+                ev.stopPropagation();
+              }} checked={options?.animationText !== undefined || options?.animationTextOptions !== undefined} onChange={(_, checked) => {
+                if (checked) {
+                  setOptions({
+                    ...(options ?? {}),
+                    'animationText':        currentVariant.animationText,
+                    'animationTextOptions': currentVariant.animationTextOptions,
+                  });
+                } else {
+                  setOptions({
+                    ...(options ?? {}), animationText: undefined, animationTextOptions: undefined,
+                  });
+                }
+              }}/>
+            }
+            onChange={(val) => {
               setOptions({
                 ...(options ?? {}),
                 'animationText':        val.animationText,
@@ -228,7 +262,26 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
               animationIn:                 options?.animationIn ?? currentVariant.animationIn,
               animationInDuration:         options?.animationInDuration ?? currentVariant.animationInDuration,
               animationInWindowBoundaries: options?.animationInWindowBoundaries ?? currentVariant.animationInWindowBoundaries,
-            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+            }} open={accordionId} onOpenChange={setAccordionId}
+            prependLabel={
+              <Checkbox sx={{ margin: '-9px', marginRight: 'auto', alignSelf: 'flex-start' }} onClick={(ev) => {
+                ev.stopPropagation();
+              }} checked={options?.animationIn !== undefined || options?.animationInDuration !== undefined || options?.animationInWindowBoundaries !== undefined} onChange={(_, checked) => {
+                if (checked) {
+                  setOptions({
+                    ...(options ?? {}),
+                    'animationIn':        currentVariant.animationIn,
+                    'animationInDuration': currentVariant.animationInDuration,
+                    'animationInWindowBoundaries': currentVariant.animationInWindowBoundaries,
+                  });
+                } else {
+                  setOptions({
+                    ...(options ?? {}), animationIn: undefined, animationInDuration: undefined, animationInWindowBoundaries: undefined,
+                  });
+                }
+              }}/>
+            }
+            onChange={(val) => {
               setOptions({
                 ...(options ?? {}),
                 'animationIn':                 val.animationIn,
@@ -240,7 +293,26 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
               animationOut:                 options?.animationOut ?? currentVariant.animationOut,
               animationOutDuration:         options?.animationOutDuration ?? currentVariant.animationOutDuration,
               animationOutWindowBoundaries: options?.animationOutWindowBoundaries ?? currentVariant.animationOutWindowBoundaries,
-            }} open={accordionId} onOpenChange={setAccordionId} onChange={(val) => {
+            }} open={accordionId} onOpenChange={setAccordionId}
+            prependLabel={
+              <Checkbox sx={{ margin: '-9px', marginRight: 'auto', alignSelf: 'flex-start' }} onClick={(ev) => {
+                ev.stopPropagation();
+              }} checked={options?.animationOut !== undefined || options?.animationOutDuration !== undefined || options?.animationOutWindowBoundaries !== undefined} onChange={(_, checked) => {
+                if (checked) {
+                  setOptions({
+                    ...(options ?? {}),
+                    'animationOut':        currentVariant.animationOut,
+                    'animationOutDuration': currentVariant.animationOutDuration,
+                    'animationOutWindowBoundaries': currentVariant.animationOutWindowBoundaries,
+                  });
+                } else {
+                  setOptions({
+                    ...(options ?? {}), animationOut: undefined, animationOutDuration: undefined, animationOutWindowBoundaries: undefined,
+                  });
+                }
+              }}/>
+            }
+            onChange={(val) => {
               setOptions({
                 ...(options ?? {}),
                 'animationOut':                 val.animationOut,
@@ -323,7 +395,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
         </>}
       </Stack>
     </Collapse>}
-    <Divider onClick={() => setExpand(!expand)} sx={{
+    {currentVariant && <Divider onClick={() => setExpand(!expand)} sx={{
       position: 'relative', zIndex: 9999, cursor: 'pointer',
     }}>
       <ExpandMoreTwoTone sx={{
@@ -337,7 +409,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
       <ExpandMoreTwoTone sx={{
         transform: expand ? 'rotate(180deg)' : '', position: 'relative', top: '5px', transition: 'all 250ms',
       }}/>
-    </Divider>
+    </Divider>}
 
     <AdditionalGridFormResponse disableExecution={disableExecution} disableFilter={disableFilter} disablePermission={disablePermission} value={propsValue} onChange={setPropsValue}/>
   </>;

@@ -1,5 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Fade, InputAdornment, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade, InputAdornment, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
@@ -13,6 +13,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:        (value: string) => void;
   onChange:            (value: number) => void;
   customLabelDetails?: React.ReactNode;
+  prependLabel?: React.ReactNode;
   hideEndAdornment?:   boolean;
   helperText?:         string;
 };
@@ -41,7 +42,10 @@ export const AccordionDuration: React.FC<Props> = (props) => {
       <Typography sx={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
       }}>
-        {label ? label : 'Duration'}
+        <Box>
+          {props.prependLabel}
+          {label ? label : 'Duration'}
+        </Box>
         <Fade in={open !== accordionId}>
           <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
             {props.customLabelDetails
@@ -60,7 +64,9 @@ export const AccordionDuration: React.FC<Props> = (props) => {
         helperText={props.helperText}
         InputProps={!props.hideEndAdornment ? { endAdornment: <InputAdornment position='end'>ms</InputAdornment> } : undefined}
         onChange={val => {
-          onChange(Number(val));
+          if (model !== Number(val)) {
+            onChange(Number(val));
+          }
         }}
       />
     </AccordionDetails>

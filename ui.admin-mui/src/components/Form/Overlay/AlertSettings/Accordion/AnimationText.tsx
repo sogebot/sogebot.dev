@@ -17,6 +17,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:            (value: string) => void;
   onChange:                (value: Props['model']) => void;
   alwaysShowLabelDetails?: boolean;
+  prependLabel?: React.ReactNode;
   prepend?:                React.ReactNode;
   customLabelDetails?:     React.ReactNode;
 };
@@ -68,7 +69,10 @@ export const AccordionAnimationText: React.FC<Props> = (props) => {
       <Typography sx={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
       }}>
-        {translate('registry.alerts.animationText.name')}
+        <Box>
+          {props.prependLabel}
+          {translate('registry.alerts.animationText.name')}
+        </Box>
         <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
           <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
             {props.customLabelDetails

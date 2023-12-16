@@ -1,5 +1,5 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Checkbox, Fade, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
@@ -12,6 +12,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:            (value: string) => void;
   onChange:                (value: { animationOut: string, animationOutDuration: number, animationOutWindowBoundaries?: boolean }) => void;
   alwaysShowLabelDetails?: boolean;
+  prependLabel?: React.ReactNode;
   prepend?:                React.ReactNode;
   customLabelDetails?:     React.ReactNode;
 };
@@ -50,7 +51,10 @@ export const AccordionAnimationOut: React.FC<Props> = (props) => {
       <Typography sx={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
       }}>
-        {translate('page.settings.overlays.carousel.titles.animationOut')}
+        <Box>
+          {props.prependLabel}
+          {translate('page.settings.overlays.carousel.titles.animationOut')}
+        </Box>
         <Fade in={open !== accordionId || props.alwaysShowLabelDetails}>
           <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
             {props.customLabelDetails
