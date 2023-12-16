@@ -71,6 +71,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
     setTTSWaiting(true);
     return () => {
       console.log('= Forcing TTS to stop');
+      setTTSWaiting(false);
       stop();
     };
   }, []);
