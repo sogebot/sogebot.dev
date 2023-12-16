@@ -424,13 +424,13 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         transition:      `opacity 200ms`,
         transitionDelay: `${'animationDelay' in o ? o.animationDelay : 0}ms`,
       }}>
-        {(selectedGroupMain && o.type === 'audio' && !emitData[id]!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} active={activeUntil - timestamp >= 0} variant={variant}/>}
+        {(selectedGroupMain && o.type === 'audio' && !emitData[id]!.isSoundMuted) && <AlertItemAudio height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} active={activeUntil - timestamp >= 0} variant={variant}/>}
         {(selectedGroupMain && o.type === 'profileImage') && <AlertItemProfileImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''} variant={variant} active={activeUntil - timestamp >= 0}/>}
+        {(selectedGroupMain && o.type === 'gallery') && <AlertItemImage height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'text' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemText canvas={{
           width, height,
         }} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData[id]?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={''}/>}
+        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData[id]?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id}/>}
         {(selectedGroupMain && o.type === 'tts' && processFilter(emitData[id]!, o.enabledWhen) && !emitData[id]!.isSoundMuted && !emitData[id]!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id}/>}
       </Box>)}
     </Box>}

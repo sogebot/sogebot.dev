@@ -24,6 +24,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
     }
     console.log(`alert-${groupId}-AlertItemTTS`, '= Replacing values');
     const data = emitData[groupId];
+    console.log({ data, template: item.ttsTemplate });
     const text = item.ttsTemplate
       .replace(/\{name\}/g, data?.name || '')
       .replace(/\{game\}/g, data?.game || '')
@@ -34,13 +35,13 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
       .replace(/\{message\}/g, String(data?.message));
 
     if (item.speakDelay) {
-      console.log('= Delaying TTS for', item.speakDelay, 'ms');
+      console.log(`alert-${groupId}-AlertItemTTS`, '= Delaying TTS for', item.speakDelay, 'ms');
       await new Promise((resolve) => setTimeout(resolve, item.speakDelay ?? 0));
     }
 
     const service = item.tts?.services[item.tts?.selectedService] ?? parent.tts.services[parent.tts.selectedService];
     if (!service) {
-      console.log('= Unblocking TTS');
+      console.log(`alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
       setTTSWaiting(false);
       return;
     }
@@ -57,7 +58,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { parent: Alerts }>
       service: item.tts?.selectedService ?? parent.tts.selectedService,
     });
 
-    console.log('= Unblocking TTS');
+    console.log(`alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
     setTTSWaiting(false);
   };
 
