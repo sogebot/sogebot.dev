@@ -4,12 +4,43 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useDebounce, useLocalstorageState, useRefElement } from 'rooks';
 
 import Error404 from './404';
+import PageCommandsAlias from './commands/alias';
+import PageCommandsAliasGroup from './commands/aliasGroup';
+import PageCommandsBot from './commands/botcommands';
+import PageCommandsCooldowns from './commands/cooldowns';
+import PageCommandsCustomCommands from './commands/customcommands';
+import PageCommandsCustomCommandsGroup from './commands/customcommandsGroup';
+import PageCommandsKeywords from './commands/keywords';
+import PageCommandsKeywordsGroup from './commands/keywordsGroup';
+import PageCommandsPrice from './commands/price';
 import PageManageEvents from './manage/events';
+import PageManageHighlights from './manage/highlights';
+import PageManageHLTB from './manage/howlongtobeat';
+import PageManageQuotes from './manage/quotes';
+import PageManageRanks from './manage/ranks';
+import PageManageBannedSongsSpotify from './manage/spotify/bannedsongs';
+import PageManageTimers from './manage/timers';
+import PageManageViewers from './manage/viewers';
+import PageManageBannedSongs from './manage/youtube/bannedsongs';
+import PageManagePlaylist from './manage/youtube/playlist';
+import PageRegistryCustomVariables from './registry/customvariables';
+import PageRegistryGallery from './registry/gallery';
+import PageRegistryOBSWebsocket from './registry/obswebsocket';
+import PageRegistryOverlays from './registry/overlays';
+import PageRegistryPlugins from './registry/plugins';
+import PageRegistryRandomizer from './registry/randomizer';
+import PageSettingsModules from './settings/modules';
+import PageSettingsPermissions from './settings/permissions';
+import PageSettingsTranslations from './settings/translations';
+import PageStatsBits from './stats/bits';
+import PageStatsCommandCount from './stats/commandcount';
+import PageStatsProfiler from './stats/profiler';
+import PageStatsTips from './stats/tips';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';
@@ -35,42 +66,6 @@ import useMobile from '../hooks/useMobile';
 import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import { setScrollY } from '../store/pageSlice';
 import { setUser } from '../store/userSlice';
-
-const PageCommandsAlias = lazy(() => import('./commands/alias'));
-const PageCommandsAliasGroup = lazy(() => import('./commands/aliasGroup'));
-const PageCommandsBot = lazy(() => import('./commands/botcommands'));
-const PageCommandsPrice = lazy(() => import('./commands/price'));
-const PageCommandsCooldowns = lazy(() => import('./commands/cooldowns'));
-const PageCommandsKeywords = lazy(() => import('./commands/keywords'));
-const PageCommandsKeywordsGroup = lazy(() => import('./commands/keywordsGroup'));
-const PageCommandsCustomCommands = lazy(() => import('./commands/customcommands'));
-const PageCommandsCustomCommandsGroup = lazy(() => import('./commands/customcommandsGroup'));
-
-const PageManageQuotes = lazy(() => import('./manage/quotes'));
-const PageManageTimers = lazy(() => import('./manage/timers'));
-const PageManageViewers = lazy(() => import('./manage/viewers'));
-const PageManageHighlights = lazy(() => import('./manage/highlights'));
-const PageManageRanks = lazy(() => import('./manage/ranks'));
-const PageManageHLTB = lazy(() => import('./manage/howlongtobeat'));
-const PageManagePlaylist = lazy(() => import('./manage/youtube/playlist'));
-const PageManageBannedSongs = lazy(() => import('./manage/youtube/bannedsongs'));
-const PageManageBannedSongsSpotify = lazy(() => import('./manage/spotify/bannedsongs'));
-
-const PageSettingsModules = lazy(() => import('./settings/modules'));
-const PageSettingsPermissions = lazy(() => import('./settings/permissions'));
-const PageSettingsTranslations = lazy(() => import('./settings/translations'));
-
-const PageRegistryOBSWebsocket = lazy(() => import('./registry/obswebsocket'));
-const PageRegistryOverlays = lazy(() => import('./registry/overlays'));
-const PageRegistryRandomizer = lazy(() => import('./registry/randomizer'));
-const PageRegistryPlugins = lazy(() => import('./registry/plugins'));
-const PageRegistryCustomVariables = lazy(() => import('./registry/customvariables'));
-const PageRegistryGallery = lazy(() => import('./registry/gallery'));
-
-const PageStatsBits = lazy(() => import('./stats/bits'));
-const PageStatsTips = lazy(() => import('./stats/tips'));
-const PageStatsCommandCount = lazy(() => import('./stats/commandcount'));
-const PageStatsProfiler = lazy(() => import('./stats/profiler'));
 
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
