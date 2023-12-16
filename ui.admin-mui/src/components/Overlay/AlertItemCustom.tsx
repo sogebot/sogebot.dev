@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
 import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { get, orderBy } from 'lodash';
@@ -14,8 +15,8 @@ const encodeFont = (font: string) => {
 };
 const emotesCache = sessionStorage.getItem('emotes::cache') ? JSON.parse(sessionStorage.getItem('emotes::cache')!) : [];
 
-export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, profileImageUrl?: string, }>
-= ({ item, width, height, parent, active, groupId }) => {
+export const AlertItemCustom: React.FC<Props<AlertCustom> & { test?: boolean; parent: Alerts, profileImageUrl?: string, }>
+= ({ item, width, height, parent, active, groupId, test }) => {
   const emitData = useAtomValue(anEmitData);
 
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
@@ -23,17 +24,30 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, pr
     let text = item.html;
 
     if (emitData) {
-      console.log(`alert-${groupId}-AlertItemCustom`, '= Replacing values');
-      const data = emitData[groupId];
-      text = text
-        .replace(/\{name\}/g, data?.name || '')
-        .replace(/\{game\}/g, data?.game || '')
-        .replace(/\{recipient\}/g, data?.recipient || '')
-        .replace(/\{amount\}/g, String(data?.amount))
-        .replace(/\{monthsName\}/g, String(data?.monthsName))
-        .replace(/\{currency\}/g, String(data?.currency))
-        .replace(/\{message\}/g, String(data?.message))
-        .replace(/\{image\}/g, data?.user?.profileImageUrl ?? '');
+      if (active) {
+        console.log(`alert-${groupId}-AlertItemCustom`, '= Replacing values');
+        if (test) {
+          text = text
+            .replace(/\{name\}/g, generateUsername())
+            .replace(/\{game\}/g, generateUsername())
+            .replace(/\{recipient\}/g, generateUsername())
+            .replace(/\{amount\}/g, '100')
+            .replace(/\{monthsName\}/g, 'months')
+            .replace(/\{currency\}/g, 'USD')
+            .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
+        } else {
+          const data = emitData[groupId];
+          text = text
+            .replace(/\{name\}/g, data?.name || '')
+            .replace(/\{game\}/g, data?.game || '')
+            .replace(/\{recipient\}/g, data?.recipient || '')
+            .replace(/\{amount\}/g, String(data?.amount))
+            .replace(/\{monthsName\}/g, String(data?.monthsName))
+            .replace(/\{currency\}/g, String(data?.currency))
+            .replace(/\{message\}/g, String(data?.message))
+            .replace(/\{image\}/g, data?.user?.profileImageUrl ?? '');
+        }
+      }
     }
 
     for (const emote of orderBy(emotesCache, 'code', 'asc')) {
@@ -67,7 +81,7 @@ export const AlertItemCustom: React.FC<Props<AlertCustom> & { parent: Alerts, pr
     `;
     const blob = new Blob([html], { type: 'text/html;charset=UTF-8' });
     return window.URL.createObjectURL(blob);
-  }, [item.html, item.css, item.font, parent, emotesCache]);
+  }, [item.html, item.css, item.font, parent, emotesCache, active, test]);
 
   React.useEffect(() => {
     loadFont(item.font ? item.font.family : parent[item.globalFont].family);

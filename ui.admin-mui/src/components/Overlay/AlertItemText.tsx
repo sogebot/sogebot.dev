@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
 import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
 import { useAtomValue } from 'jotai';
@@ -45,16 +46,29 @@ export const AlertItemText: React.FC<Props<AlertText> & {
     let template = item.messageTemplate.split('|')[curIdx];
 
     if (emitData) {
-      console.log(`alert-${groupId}-AlertItemText`, '= Replacing values');
-      const data = emitData[groupId];
-      template = template
-        .replace(/\{name\}/g, data?.name || '')
-        .replace(/\{game\}/g, data?.game || '')
-        .replace(/\{recipient\}/g, data?.recipient || '')
-        .replace(/\{amount\}/g, String(data?.amount))
-        .replace(/\{monthsName\}/g, String(data?.monthsName))
-        .replace(/\{currency\}/g, String(data?.currency))
-        .replace(/\{message\}/g, String(data?.message));
+      if (active) {
+        console.log(`alert-${groupId}-AlertItemText`, '= Replacing values');
+        if (test) {
+          template = template
+            .replace(/\{name\}/g, generateUsername())
+            .replace(/\{game\}/g, generateUsername())
+            .replace(/\{recipient\}/g, generateUsername())
+            .replace(/\{amount\}/g, '100')
+            .replace(/\{monthsName\}/g, 'months')
+            .replace(/\{currency\}/g, 'USD')
+            .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
+        } else {
+          const data = emitData[groupId];
+          template = template
+            .replace(/\{name\}/g, data?.name || '')
+            .replace(/\{game\}/g, data?.game || '')
+            .replace(/\{recipient\}/g, data?.recipient || '')
+            .replace(/\{amount\}/g, String(data?.amount))
+            .replace(/\{monthsName\}/g, String(data?.monthsName))
+            .replace(/\{currency\}/g, String(data?.currency))
+            .replace(/\{message\}/g, String(data?.message));
+        }
+      }
     }
 
     let replacedText: React.ReactNode[] = [];
@@ -114,9 +128,8 @@ export const AlertItemText: React.FC<Props<AlertText> & {
       }
       output[i] = reactStringReplace(output[i] as React.ReactNode[], '\n', () => <br/>);
     }
-    console.log({ output });
     return output;
-  }, [item.messageTemplate, variant, curIdx, emitData[groupId]]);
+  }, [item.messageTemplate, variant, curIdx, emitData[groupId], active, test]);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);
 

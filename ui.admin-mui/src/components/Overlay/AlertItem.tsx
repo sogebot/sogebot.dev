@@ -430,7 +430,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         {(selectedGroupMain && o.type === 'text' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemText canvas={{
           width, height,
         }} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} variant={variant} active={activeUntil - timestamp >= 0}/>}
-        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData[id]?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id}/>}
+        {(selectedGroupMain && o.type === 'custom' && processFilter(emitData[id]!, o.enabledWhen)) && <AlertItemCustom profileImageUrl={emitData[id]?.user?.profileImageUrl} parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id} active={activeUntil - timestamp >= 0}/>}
         {(selectedGroupMain && o.type === 'tts' && processFilter(emitData[id]!, o.enabledWhen) && !emitData[id]!.isSoundMuted && !emitData[id]!.isTTSMuted) && <AlertItemTTS parent={item} height={o.height} width={o.width} id={o.id} item={returnItemData(o)} groupId={id}/>}
       </Box>)}
     </Box>}

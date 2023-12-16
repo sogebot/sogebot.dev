@@ -480,7 +480,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const setEnable = React.useCallback((variantId: string | null, checked: boolean) => {
     setItems((val) => {
       const updatedItems = cloneDeep(val);
-      console.log({ selectedAlertId });
       if (selectedAlertId) {
         let itemToUpdate;
         for (const updatedItem of updatedItems) {
@@ -705,7 +704,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                   {o.type === 'gallery' && <AlertItemImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'profileImage' && <AlertItemProfileImage test height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
                   {o.type === 'text' && <AlertItemText canvas={canvas} test parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''} variant={selectedAlert} active={animationTest}/>}
-                  {o.type === 'custom' && <AlertItemCustom parent={parent} height={o.height} width={o.width} id={o.id} item={o} groupId={''}/>}
+                  {o.type === 'custom' && <AlertItemCustom parent={parent} test height={o.height} width={o.width} id={o.id} item={o} groupId={''} active={animationTest}/>}
                 </Box>
               </Paper>)}
               {moveableId && <Moveable
