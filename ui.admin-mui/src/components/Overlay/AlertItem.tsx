@@ -226,7 +226,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ emitData, setEmitData] = useAtom(anEmitData);
   const emitDataRef = React.useRef(emitData[id] ?? null);
   React.useEffect(() => {
-    log(`alert-${id}`, 'Emit data changed', emitData[id]);
+    log(`alert-${id}`, 'Emit data changed', JSON.stringify(emitData[id]));
     emitDataRef.current = emitData[id] ?? null;
   }, [ emitData[id] ]);
 
