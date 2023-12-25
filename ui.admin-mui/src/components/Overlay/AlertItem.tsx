@@ -78,7 +78,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         return console.error(err);
       }
       setEmotesCache(data);
-      console.debug('= Emotes loaded');
+      log(new Date().toISOString(), `alert-${id}`, '= emotes loaded');
     });
 
     for (const [lang, isEnabled] of Object.entries(item.profanityFilter.list)) {
@@ -121,7 +121,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
     for (const fontFamily of fontsToLoad) {
       if (fontFamily && !loadedFonts.includes(fontFamily)) {
-        console.debug(`alert-${id}`, 'Loading font', fontFamily);
+        log(new Date().toISOString(), `alert-${id}`, '= loading font', fontFamily);
         loadedFonts.push(fontFamily);
         const font = fontFamily.replace(/ /g, '+');
         const css = '@import url(\'https://fonts.googleapis.com/css?family=' + font + '\');';
@@ -137,8 +137,8 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       let possibleAlerts: (Alerts['items'][number] | Omit<Alerts['items'][number], 'variants' | 'hooks'>)[] = item.items.filter(o => o.hooks.includes(emitData.event as any));
 
       if (possibleAlerts.length === 0) {
-        log(`alert-${id}`, 'No valid alerts found for hook:', emitData.event);
-        log(`alert-${id}`, 'Throwing away emit data');
+        log(new Date().toISOString(), `alert-${id}`, 'No valid alerts found for hook:', emitData.event);
+        log(new Date().toISOString(), `alert-${id}`, 'Throwing away emit data');
         setActiveUntil(0);
         setEmitData(e => ({ ...e, [id]: null }));
         return;
@@ -157,7 +157,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         .filter(o => o.enabled !== false)
         .filter(o => processFilter(emitData, o.filter));
       if (possibleAlerts.length === 0) {
-        log(`alert-${id}`, 'No valid alerts found after filter');
+        log(new Date().toISOString(), `alert-${id}`, 'No valid alerts found after filter');
         setActiveUntil(0);
         return false;
       }
@@ -176,11 +176,11 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     recipientUser: UserInterface | null;
   }) => {
     const uid = `${data.id}-${id}`;
-    log(`alert-${id}`, 'Checking if alert is already processed', uid);
+    log(new Date().toISOString(), `alert-${id}`, '= checking if alert is already processed', uid);
     if (isAlreadyProcessed(uid)) {
       return;
     }
-    console.debug(`alert-${id}`, 'Processing', data);
+    log(new Date().toISOString(), `alert-${id}`, '=== processing', data);
 
     // checking for vulgarities
     if (data.message && data.message.length > 0) {
@@ -192,12 +192,12 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
             data.message = data.message.replace(new RegExp(vulgar, 'gmi'), listHappyWords[Math.floor(Math.random() * listHappyWords.length)]);
           } else if (item.profanityFilter.type === 'hide-messages') {
             if (data.message.search(new RegExp(vulgar, 'gmi')) >= 0) {
-              console.debug('Message contain vulgarity "' + vulgar + '" and is hidden.');
+              log(new Date().toISOString(), `alert-${id}`, '= message contain vulgarity "' + vulgar + '" and is hidden.');
               data.message = '';
             }
           } else if (item.profanityFilter.type === 'disable-alerts') {
             if (data.message.search(new RegExp(vulgar, 'gmi')) >= 0) {
-              console.debug('Message contain vulgarity "' + vulgar + '" and is alert disabled.');
+              log(new Date().toISOString(), `alert-${id}`, '= message contain vulgarity "' + vulgar + '" and is alert disabled.');
               return;
             }
           }
@@ -208,7 +208,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     setTimeout(() => {
       if (['tip', 'cheer', 'resub', 'sub'].includes(data.event) && emitDataRef.current && item.parry.enabled && haveAvailableAlert(data)) {
         setEmitDataList(list => [...list, data]);
-        log(`alert-${id}`, 'Skipping playing alert - parrying enabled');
+        log(new Date().toISOString(), `alert-${id}`, 'Skipping playing alert - parrying enabled');
         setTimeout(() => {
           setActiveUntil(0);
           if (typeof (window as any).responsiveVoice !== 'undefined') {
@@ -226,7 +226,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ emitData, setEmitData] = useAtom(anEmitData);
   const emitDataRef = React.useRef(emitData[id] ?? null);
   React.useEffect(() => {
-    log(`alert-${id}`, 'Emit data changed', JSON.stringify(emitData[id]));
+    log(new Date().toISOString(), `alert-${id}`, '= emit data changed', JSON.stringify(emitData[id]));
     emitDataRef.current = emitData[id] ?? null;
   }, [ emitData[id] ]);
 
@@ -237,7 +237,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
     setEmitDataList(list => {
       const data = list.shift();
-      log(`alert-${id}`, 'Triggering data');
+      log(new Date().toISOString(), `alert-${id}`, '= triggering data');
       if (data) {
         setEmitData(e => ({ ...e, [id]: data }));
       }
@@ -246,7 +246,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   }, 100);
 
   React.useEffect(() => {
-    log(`alert-${id}`, '= Listening to alert events');
+    log(new Date().toISOString(), `alert-${id}`, '= listening to alert events');
     getSocket('/registries/alerts', true).on('alert', (data) => processIncomingAlert(data));
     getSocket('/registries/alerts', true).on('skip', () => {
       setActiveUntil(0);
@@ -272,7 +272,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       // find correct variant or main
       for (const alert of possibleAlerts) {
         if (alert.id === data.alertId || data.name.includes(alert.id)) {
-          log(`alert-${id}`, 'Selected variant', alert);
+          log(new Date().toISOString(), `alert-${id}`, '= selected variant', alert);
           for (const it of alert.items) {
             setOpacity(it.id);
           }
@@ -281,7 +281,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         if ('variants' in alert) {
           for (const variant of alert.variants) {
             if (variant.id === data.alertId) {
-              log(`alert-${id}`, 'Selected variant', variant);
+              log(new Date().toISOString(), `alert-${id}`, '= selected variant', variant);
               for (const it of variant.items) {
                 setOpacity(it.id);
               }
@@ -290,15 +290,15 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
           }
         }
       }
-      log(`alert-${id}`, 'No valid alerts found for this custom command.');
+      log(new Date().toISOString(), `alert-${id}`, '= no valid alerts found for this custom command.');
       setEmitData(e => ({ ...e, [id]: null }));
       setActiveUntil(0);
       return;
     }
 
     if (possibleAlerts.length === 0) {
-      log(`alert-${id}`, 'No valid alerts found for hook:', data.event);
-      log(`alert-${id}`, 'Throwing away emit data');
+      log(new Date().toISOString(), `alert-${id}`, '= no valid alerts found for hook:', data.event);
+      log(new Date().toISOString(), `alert-${id}`, '= throwing away emit data');
       setActiveUntil(0);
       setEmitData(e => ({ ...e, [id]: null }));
       return;
@@ -317,7 +317,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       .filter(o => o.enabled !== false)
       .filter(o => processFilter(emitData[id]!, o.filter));
     if (possibleAlerts.length === 0) {
-      log(`alert-${id}`, 'No valid alerts found after filter');
+      log(new Date().toISOString(), `alert-${id}`, '= no valid alerts found after filter');
       setActiveUntil(0);
       setEmitData(e => ({ ...e, [id]: null }));
       return;
@@ -336,7 +336,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       setOpacity(it.id);
     }
 
-    log(`alert-${id}`, 'Selected alert', selected);
+    log(new Date().toISOString(), `alert-${id}`, '= selected alert', JSON.stringify(selected));
     return selected;
   }, [item, emitData[id], id]);
 
@@ -362,6 +362,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
   React.useEffect(() => {
     if (selectedGroup) {
+      log(new Date().toISOString(), `alert-${id}`, `= alert duration is ${alertDuration}ms, so we are setting active until to ${new Date(Date.now() + alertDuration).toISOString()}`);
       setActiveUntil(Date.now() + alertDuration);
       // check if any audio component is present
       if (!selectedGroup.items.find(o => o.type === 'audio')) {
@@ -376,11 +377,17 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     setTimestamp(Date.now());
 
     if (waitingForTTS) {
-      log(`alert-${id}`, `= waiting for TTS to finish`);
+      log(new Date().toISOString(), `alert-${id}`, `= waiting for TTS to finish`);
       return;
     }
+
+    // do nothing because active until is not calculated yet
+    if (activeUntil === 0) {
+      return;
+    }
+
     if (activeUntil - timestamp < (selectedGroup?.animationOutDuration ? -selectedGroup.animationOutDuration : -2000) && emitDataRef.current) {
-      log(`alert-${id}`, `= Freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
+      log(new Date().toISOString(), `alert-${id}`, `= freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
       setActiveUntil(0);
     }
   }, 100);
@@ -389,7 +396,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const setFinishedSoundCount = useSetAtom(anFinishedSoundCount);
   React.useEffect(() => {
     if (activeUntil === 0) {
-      log(`alert-${id}`, '= Resetting emit data');
+      log(new Date().toISOString(), `alert-${id}`, '= resetting emit data');
       setEmitData(e => ({ ...e, [id]: null }));
       setExpectedSoundCount(-1); // setting to -1
       setFinishedSoundCount(0);
