@@ -6,30 +6,38 @@ import { getSocket } from '../helpers/socket';
 
 let snd: HTMLAudioElement | undefined;
 
+enum ResponsiveVoiceLoadingState {
+  NOT_LOADED = 'not_loaded',
+  LOADING = 'loading',
+  LOADED = 'loaded',
+}
+
+let isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.NOT_LOADED;
+
 export const useTTS = () => {
+  const [ id ] = React.useState(() => Math.random().toString(36).substr(2, 9));
   const { configuration } = useAppSelector(state => state.loader);
 
   React.useEffect(() => {
-    console.log({ configuration });
     // initialize responsive voice
-    if (configuration.core.tts.responsiveVoiceKey === '' || window.responsiveVoice !== undefined) {
+    if (configuration.core.tts.responsiveVoiceKey === '' || window.responsiveVoice !== undefined || isResponsiveVoiceLoadingState !== ResponsiveVoiceLoadingState.NOT_LOADED) {
       return;
     }
 
+    isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.LOADING;
     const script = document.createElement('script');
     script.src = `https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`;
     script.async = true;
-    script.onerror = () => {
-      console.log('Responsive voice is already loaded');
-    };
     script.onload = () => {
+      isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.LOADED;
       console.log('Responsive voice loaded!');
     };
     document.head.appendChild(script);
     return () => {
+      isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.NOT_LOADED;
       document.head.removeChild(script);
     };
-  }, [ configuration ]);
+  }, [ configuration, id ]);
 
   const speak = async (props: { text: string, service: TTSService, rate: number, pitch: number, volume: number, voice: string, key?: string }) => {
     const { text, service, rate, pitch, volume, voice, key } = props;
