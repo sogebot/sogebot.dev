@@ -100,6 +100,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
       const checkAvailability = () => {
         if (typeof window.responsiveVoice === 'undefined') {
           setTimeout(() => checkAvailability(), 200);
+          return;
         }
         resolve();
       };
