@@ -4,6 +4,7 @@ import { useAppSelector } from './useAppDispatch';
 import { getSocket } from '../helpers/socket';
 
 let snd: HTMLAudioElement | undefined;
+speechSynthesis.getVoices(); // force loading of voices
 
 enum ResponsiveVoiceLoadingState {
   NOT_LOADED = 'not_loaded',
@@ -104,7 +105,9 @@ export const useTTS = () => {
                 resolve();
               }
             };
-            checkSpeaking();
+            setTimeout(() => {
+              checkSpeaking();
+            }, 500);
           } else {
             log(new Date().toISOString(), `TTS service ${service} not implemented yet`);
             resolve();
@@ -121,5 +124,5 @@ export const useTTS = () => {
     snd?.pause();
   };
 
-  return { speak, stop };
+  return { speak, stop, loadResponsiveVoice };
 };

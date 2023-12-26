@@ -1,10 +1,11 @@
-import { ExpandMoreTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Fade, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
+import { ExpandMoreTwoTone, LaunchTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Fade, FormControl, FormLabel, IconButton, InputLabel, LinearProgress, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Alerts, TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -99,6 +100,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     await new Promise<void>(resolve => {
       const checkAvailability = () => {
         if (typeof window.responsiveVoice === 'undefined') {
+          loadResponsiveVoice();
           setTimeout(() => checkAvailability(), 200);
           return;
         }
@@ -117,6 +119,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
 
   const [ loading, setLoading ] = React.useState(true);
   React.useEffect(() => {
+    console.log(model.selectedService);
     setLoading(model.selectedService !== TTSService.NONE);
     if (model.selectedService === TTSService.RESPONSIVEVOICE) {
       console.log('Loading ResponsiveVoice voices');
@@ -129,10 +132,23 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     }
 
     if(model.selectedService === TTSService.SPEECHSYNTHESIS) {
-      setVoices(speechSynthesis.getVoices().map(o => o.name));
-      setLoading(false);
+      // workaround for speechSynthesis.getVoices() not returning voices on first call
+      const speechSynthesisVoices = speechSynthesis.getVoices();
+      if (speechSynthesisVoices.length > 0) {
+        setVoices(speechSynthesisVoices.map(o => o.name));
+        setLoading(false);
+      } else {
+        setTimeout(() => {
+          setVoices(speechSynthesis.getVoices().map(o => o.name));
+          setLoading(false);
+        }, 1000);
+      }
     }
   }, [model.selectedService]);
+
+  React.useEffect(() => {
+    console.log('Setting voices to', voices);
+  }, [ voices ]);
 
   React.useEffect(() => {
     const defaultValues = {
@@ -165,7 +181,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
     // on load finish, we need to check values of selectedService and set default values
   }, [loading, model]);
 
-  const { speak } = useTTS();
+  const { speak, loadResponsiveVoice } = useTTS();
 
   return <>
     <Accordion {...accordionProps} disabled={props.disabled} expanded={open === accordionId && !props.disabled}>
@@ -227,9 +243,10 @@ export const AccordionTTS: React.FC<Props> = (props) => {
             <MenuItem value={TTSService.GOOGLE}>GoogleTTS</MenuItem>
             <MenuItem value={TTSService.SPEECHSYNTHESIS}>Web Speech API</MenuItem>
           </Select>
+          {loading && <LinearProgress/>}
         </FormControl>
 
-        {!loading && model.selectedService !== TTSService.NONE && <>
+        {(!loading && model.selectedService !== TTSService.NONE) && <>
           {model.services[model.selectedService] !== undefined && <Autocomplete
             value={model.services[model.selectedService]?.voice ?? ''}
             disableClearable
@@ -272,6 +289,10 @@ export const AccordionTTS: React.FC<Props> = (props) => {
 
           {model.selectedService === TTSService.SPEECHSYNTHESIS && <Alert severity='info'>
             If you are running overlay on different computer, please check if voices are available on that machine as well.
+          </Alert>}
+
+          {model.selectedService === TTSService.SPEECHSYNTHESIS && <Alert severity='warning'>
+            There is currently bug at <Link to="https://github.com/obsproject/obs-browser/issues/404" target='_blank'>https://github.com/obsproject/obs-browser/issues/404 <LaunchTwoTone/></Link>, you need to <strong>disable OBS audio control</strong> to get this TTS service working.
           </Alert>}
 
           <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
