@@ -180,7 +180,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     if (isAlreadyProcessed(uid)) {
       return;
     }
-    log(new Date().toISOString(), `alert-${id}`, '=== processing', data);
+    log(new Date().toISOString(), `alert-${id}`, '=== processing', JSON.stringify(data));
 
     // checking for vulgarities
     if (data.message && data.message.length > 0) {
@@ -226,8 +226,10 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ emitData, setEmitData] = useAtom(anEmitData);
   const emitDataRef = React.useRef(emitData[id] ?? null);
   React.useEffect(() => {
-    log(new Date().toISOString(), `alert-${id}`, '= emit data changed', JSON.stringify(emitData[id]));
-    emitDataRef.current = emitData[id] ?? null;
+    if (typeof emitData[id] !== 'undefined') {
+      log(new Date().toISOString(), `alert-${id}`, '= emit data changed', JSON.stringify(emitData[id]));
+      emitDataRef.current = emitData[id] ?? null;
+    }
   }, [ emitData[id] ]);
 
   useIntervalWhen(() => {
@@ -390,7 +392,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       log(new Date().toISOString(), `alert-${id}`, `= freeing up alert ${(selectedGroup?.animationOutDuration ?? 2000) / 1000} second after finished`);
       setActiveUntil(0);
     }
-  }, 100);
+  }, 500);
 
   const setExpectedSoundCount = useSetAtom(anExpectedSoundCount);
   const setFinishedSoundCount = useSetAtom(anFinishedSoundCount);
@@ -422,7 +424,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     color:         'black',
   }}>
     {activeUntil > 0 && <Box key={emitData[id]?.id ?? 'no-id'}>
-      {selectedGroup?.items.map((o) => <Box id={`${o.id}`} key={`${o.id}-${emitData[id]?.id ?? 'no-id'}`} sx={{
+      {selectedGroup?.items.map((o, idx) => <Box id={`${o.id}`} key={`${o.id}-${emitData[id]?.id ?? 'no-id'}-${idx}`} sx={{
         position:        'absolute' ,
         width:           `${o.width}px`,
         height:          `${o.height}px`,

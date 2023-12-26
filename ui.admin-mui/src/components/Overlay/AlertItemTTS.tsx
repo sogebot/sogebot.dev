@@ -8,8 +8,10 @@ import { anEmitData, anExpectedSoundCount, anFinishedSoundCount, anWaitingForTTS
 import type { Props } from './ChatItem';
 import { useTTS } from '../../hooks/useTTS';
 
+const log = console[(new URLSearchParams(window.location.search)).get('debug') ? 'error' : 'log'];
+
 export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: Alerts }>
-= ({ item, parent, groupId, active, test }) => {
+= ({ item, parent, groupId, test }) => {
   const emitData = useAtomValue(anEmitData);
   const expectedSoundCount = useAtomValue(anExpectedSoundCount);
   const finishedSoundCount = useAtomValue(anFinishedSoundCount);
@@ -17,7 +19,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: 
   const { speak: ttsSpeak, stop } = useTTS();
 
   const speak = async () => {
-    console.log('Speaking TTS');
+    log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= speaking TTS');
     if (!emitData) {
       // no data
       setTTSWaiting(false);
@@ -25,44 +27,42 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: 
     }
 
     let text = item.ttsTemplate;
-    if (active) {
-      console.log(`alert-${groupId}-AlertItemTTS`, '= Replacing values');
-      if (test) {
-        text = item.ttsTemplate
-          .replace(/\{name\}/g, generateUsername())
-          .replace(/\{game\}/g, generateUsername())
-          .replace(/\{recipient\}/g, generateUsername())
-          .replace(/\{amount\}/g, '100')
-          .replace(/\{monthsName\}/g, 'months')
-          .replace(/\{currency\}/g, 'USD')
-          .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
-      } else {
-        const data = emitData[groupId];
-        text = item.ttsTemplate
-          .replace(/\{name\}/g, data?.name || '')
-          .replace(/\{game\}/g, data?.game || '')
-          .replace(/\{recipient\}/g, data?.recipient || '')
-          .replace(/\{amount\}/g, String(data?.amount))
-          .replace(/\{monthsName\}/g, String(data?.monthsName))
-          .replace(/\{currency\}/g, String(data?.currency))
-          .replace(/\{message\}/g, String(data?.message));
-      }
+    log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Replacing values');
+    if (test) {
+      text = item.ttsTemplate
+        .replace(/\{name\}/g, generateUsername())
+        .replace(/\{game\}/g, generateUsername())
+        .replace(/\{recipient\}/g, generateUsername())
+        .replace(/\{amount\}/g, '100')
+        .replace(/\{monthsName\}/g, 'months')
+        .replace(/\{currency\}/g, 'USD')
+        .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
+    } else {
+      const data = emitData[groupId];
+      text = item.ttsTemplate
+        .replace(/\{name\}/g, data?.name || '')
+        .replace(/\{game\}/g, data?.game || '')
+        .replace(/\{recipient\}/g, data?.recipient || '')
+        .replace(/\{amount\}/g, String(data?.amount))
+        .replace(/\{monthsName\}/g, String(data?.monthsName))
+        .replace(/\{currency\}/g, String(data?.currency))
+        .replace(/\{message\}/g, String(data?.message));
     }
 
     if (item.speakDelay) {
-      console.log(`alert-${groupId}-AlertItemTTS`, '= Delaying TTS for', item.speakDelay, 'ms');
+      log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Delaying TTS for', item.speakDelay, 'ms');
       await new Promise((resolve) => setTimeout(resolve, item.speakDelay ?? 0));
     }
 
     const service = item.tts?.services[item.tts?.selectedService] ?? parent.tts.services[parent.tts.selectedService];
     if (!service) {
-      console.log(`alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
+      log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
       setTTSWaiting(false);
       return;
     }
 
     const volume = Math.min(service.volume, 1);
-    console.log('= Speaking', text);
+    log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Speaking', text);
     await ttsSpeak({
       text,
       voice: service.voice,
@@ -73,7 +73,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: 
       service: item.tts?.selectedService ?? parent.tts.selectedService,
     });
 
-    console.log(`alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
+    log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
     setTTSWaiting(false);
   };
 
@@ -86,7 +86,7 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: 
   React.useEffect(() => {
     setTTSWaiting(true);
     return () => {
-      console.log('= Forcing TTS to stop');
+      log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Forcing TTS to stop');
       setTTSWaiting(false);
       stop();
     };

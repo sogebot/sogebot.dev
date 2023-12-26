@@ -1,5 +1,4 @@
 import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
-import React from 'react';
 
 import { useAppSelector } from './useAppDispatch';
 import { getSocket } from '../helpers/socket';
@@ -12,35 +11,46 @@ enum ResponsiveVoiceLoadingState {
   LOADED = 'loaded',
 }
 
+const log = console[(new URLSearchParams(window.location.search)).get('debug') ? 'error' : 'log'];
+
 let isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.NOT_LOADED;
 
 export const useTTS = () => {
-  const [ id ] = React.useState(() => Math.random().toString(36).substr(2, 9));
   const { configuration } = useAppSelector(state => state.loader);
 
-  React.useEffect(() => {
+  const loadResponsiveVoice = async (): Promise<boolean> => {
+    log(new Date().toISOString(), '= initializing responsive voice with key', configuration.core.tts.responsiveVoiceKey);
     // initialize responsive voice
     if (configuration.core.tts.responsiveVoiceKey === '' || window.responsiveVoice !== undefined || isResponsiveVoiceLoadingState !== ResponsiveVoiceLoadingState.NOT_LOADED) {
-      return;
+      return false;
     }
 
     isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.LOADING;
-    const script = document.createElement('script');
-    script.src = `https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`;
-    script.async = true;
-    script.onload = () => {
-      isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.LOADED;
-      console.log('Responsive voice loaded!');
-    };
-    document.head.appendChild(script);
-    return () => {
-      isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.NOT_LOADED;
-      document.head.removeChild(script);
-    };
-  }, [ configuration, id ]);
+    return new Promise<boolean>(resolve => {
+      const script = document.createElement('script');
+      script.src = `https://code.responsivevoice.org/responsivevoice.js?key=${configuration.core.tts.responsiveVoiceKey}`;
+      script.async = true;
+      script.onload = () => {
+        isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.LOADED;
+        log(new Date().toISOString(), '= responsive voice loaded!');
+        try {
+          window.responsiveVoice.init();
+          setTimeout(() => resolve(true), 1000);
+        } catch (e) {
+          log(new Date().toISOString(), e);
+          resolve(false);
+        }
+      };
+      document.head.appendChild(script);
+    });
+  };
 
   const speak = async (props: { text: string, service: TTSService, rate: number, pitch: number, volume: number, voice: string, key?: string }) => {
     const { text, service, rate, pitch, volume, voice, key } = props;
+
+    if (window.responsiveVoice === undefined) {
+      await loadResponsiveVoice();
+    }
 
     for (const toSpeak of text.split('/ ')) {
       await new Promise<void>((resolve) => {
@@ -50,6 +60,7 @@ export const useTTS = () => {
           if (service === TTSService.NONE) {
             resolve();
           } else if (service === TTSService.RESPONSIVEVOICE) {
+            log(new Date().toISOString(), window.responsiveVoice);
             window.responsiveVoice.speak(toSpeak.trim(), voice, {
               rate: rate,
               pitch: pitch,
@@ -69,7 +80,7 @@ export const useTTS = () => {
               text: text,
             }, (err, b64mp3) => {
               if (err) {
-                console.error(err);
+                log(new Date().toISOString(), err);
                 return;
               }
               snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
@@ -95,7 +106,7 @@ export const useTTS = () => {
             };
             checkSpeaking();
           } else {
-            console.error(`TTS service ${service} not implemented yet`);
+            log(new Date().toISOString(), `TTS service ${service} not implemented yet`);
             resolve();
           }
         }
