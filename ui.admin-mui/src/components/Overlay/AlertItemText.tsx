@@ -89,6 +89,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
         animatedText = [<Typewriter words={['', match[1]]} loop={1} cursor cursorStyle='_' delaySpeed={idx * 1000}/>];
       } else {
         animatedText = match[1].split('').map((char, index) => <div
+          key={`${char}-${index}`}
           className={`animate__animated animate__infinite animate__${variant.animationText}  animate__${variant.animationTextOptions.speed}`}
           style={{
             animationDelay: (index * 50) + 'ms',
