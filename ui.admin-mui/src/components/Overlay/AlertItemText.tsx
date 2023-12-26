@@ -46,28 +46,26 @@ export const AlertItemText: React.FC<Props<AlertText> & {
     let template = item.messageTemplate.split('|')[curIdx];
 
     if (emitData) {
-      if (active) {
-        console.log(`alert-${groupId}-AlertItemText`, '= Replacing values');
-        if (test) {
-          template = template
-            .replace(/\{name\}/g, generateUsername())
-            .replace(/\{game\}/g, generateUsername())
-            .replace(/\{recipient\}/g, generateUsername())
-            .replace(/\{amount\}/g, '100')
-            .replace(/\{monthsName\}/g, 'months')
-            .replace(/\{currency\}/g, 'USD')
-            .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
-        } else {
-          const data = emitData[groupId];
-          template = template
-            .replace(/\{name\}/g, data?.name || '')
-            .replace(/\{game\}/g, data?.game || '')
-            .replace(/\{recipient\}/g, data?.recipient || '')
-            .replace(/\{amount\}/g, String(data?.amount))
-            .replace(/\{monthsName\}/g, String(data?.monthsName))
-            .replace(/\{currency\}/g, String(data?.currency))
-            .replace(/\{message\}/g, String(data?.message));
-        }
+      console.log(`alert-${groupId}-AlertItemText`, '= Replacing values');
+      if (test) {
+        template = template
+          .replace(/\{name\}/g, generateUsername())
+          .replace(/\{game\}/g, generateUsername())
+          .replace(/\{recipient\}/g, generateUsername())
+          .replace(/\{amount\}/g, '100')
+          .replace(/\{monthsName\}/g, 'months')
+          .replace(/\{currency\}/g, 'USD')
+          .replace(/\{message\}/g, 'Lorem Ipsum Dolor Sit Amet');
+      } else {
+        const data = emitData[groupId];
+        template = template
+          .replace(/\{name\}/g, data?.name || '')
+          .replace(/\{game\}/g, data?.game || '')
+          .replace(/\{recipient\}/g, data?.recipient || '')
+          .replace(/\{amount\}/g, String(data?.amount))
+          .replace(/\{monthsName\}/g, String(data?.monthsName))
+          .replace(/\{currency\}/g, String(data?.currency))
+          .replace(/\{message\}/g, String(data?.message));
       }
     }
 
