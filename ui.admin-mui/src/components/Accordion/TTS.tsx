@@ -292,7 +292,7 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           </Alert>}
 
           {model.selectedService === TTSService.SPEECHSYNTHESIS && <Alert severity='warning'>
-            There is currently bug at <Link to="https://github.com/obsproject/obs-browser/issues/404" target='_blank'>https://github.com/obsproject/obs-browser/issues/404 <LaunchTwoTone/></Link>, you need to <strong>disable audio via OBS</strong> on browser source to get this TTS service working.
+            There is currently bug at <Link to="https://github.com/obsproject/obs-browser/issues/404" target='_blank'>https://github.com/obsproject/obs-browser/issues/404<LaunchTwoTone sx={{ fontSize: '14px', position: 'relative', top: '2px' }}/></Link>, you need to <strong>disable audio via OBS</strong> on browser source to get this TTS service working.
           </Alert>}
 
           <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
