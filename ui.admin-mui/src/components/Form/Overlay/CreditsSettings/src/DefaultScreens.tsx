@@ -1,9 +1,10 @@
 import { Credits } from '@sogebot/backend/dest/database/entity/overlay';
+import { v4 } from 'uuid';
 
 import { css, html } from './Templates';
 
 export const separator200 = {
-  id:                 crypto.randomUUID(),
+  id:                 v4(),
   height:             200,
   items:              [],
   name:               'Separator (200px)',
@@ -12,7 +13,7 @@ export const separator200 = {
   speed:              null,
 };
 export const separator500 = {
-  id:                 crypto.randomUUID(),
+  id:                 v4(),
   height:             500,
   items:              [],
   name:               'Separator (500px)',
@@ -21,7 +22,7 @@ export const separator500 = {
   speed:              null,
 };
 export const separator1000 = {
-  id:                 crypto.randomUUID(),
+  id:                 v4(),
   height:             1000,
   items:              [],
   name:               'Separator (1000px)',
@@ -31,11 +32,11 @@ export const separator1000 = {
 };
 
 export const title = {
-  id:     crypto.randomUUID(),
+  id:     v4(),
   height: 550,
   items:  [
     {
-      id:       crypto.randomUUID(),
+      id:       v4(),
       alignX:   (1920 - 1600) / 2,
       alignY:   25,
       css,
@@ -62,7 +63,7 @@ export const title = {
 };
 
 export const events = {
-  id:            crypto.randomUUID(),
+  id:            v4(),
   type:          'events',
   name:          'Events',
   columns:       3,
@@ -113,7 +114,7 @@ export const events = {
 };
 
 export const clips = {
-  id:                 crypto.randomUUID(),
+  id:                 v4(),
   type:               'clips',
   name:               'Clips',
   play:               true,
@@ -169,18 +170,18 @@ export const clips = {
 
 export const creditsDefaultScreens = [
   {
-    ...separator1000, id: crypto.randomUUID(),
+    ...separator1000, id: v4(),
   },
   title,
   separator500,
   events,
   clips,
   {
-    id:     crypto.randomUUID(),
+    id:     v4(),
     height: 1080,
     items:  [
       {
-        id:       crypto.randomUUID(),
+        id:       v4(),
         alignX:   (1920 - 1600) / 2,
         alignY:   (1080 - 250) / 2,
         css,

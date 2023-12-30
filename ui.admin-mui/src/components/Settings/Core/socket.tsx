@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useRefElement } from 'rooks';
+import { v4 } from 'uuid';
 import { z } from 'zod';
 
 import { getSocket } from '../../../helpers/socket';
@@ -96,7 +97,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
           InputProps={{
             endAdornment: <InputAdornment position="end">
               <Button variant='text' color="light" onClick={() => copy(settings.connection.socketToken[0])}>{ translate('systems.polls.copy') }</Button>
-              <Button variant='text' color="error" onClick={() => handleChange('connection.socketToken', crypto.randomUUID())}>{ translate('commons.generate') }</Button>
+              <Button variant='text' color="error" onClick={() => handleChange('connection.socketToken', v4())}>{ translate('commons.generate') }</Button>
             </InputAdornment>,
           }}
         />

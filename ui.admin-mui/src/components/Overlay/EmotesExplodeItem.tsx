@@ -5,6 +5,7 @@ import { cloneDeep, random, sample } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
+import { v4 } from 'uuid';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
@@ -25,7 +26,7 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
   }, [ item ]);
 
   const explode = React.useCallback((opts: any) => {
-    opts.id ??= crypto.randomUUID();
+    opts.id ??= v4();
     if (ids.includes(opts.id)) {
       return;
     }

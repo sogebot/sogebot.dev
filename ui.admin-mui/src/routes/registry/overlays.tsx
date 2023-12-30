@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
@@ -143,7 +144,7 @@ const PageRegistryOverlays = () => {
     const clonedItem = {
       ...item,
       name: cloneIncrementName(item.name, items.map(o => o.name)),
-      id:   crypto.randomUUID(),
+      id:   v4(),
     };
 
     setCloningItems(it => [...it, item.id]);

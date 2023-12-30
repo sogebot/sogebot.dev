@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
@@ -82,7 +83,7 @@ const PageRegistryRandomizer = () => {
     const clonedItem = {
       ...item,
       isShown: false, // forcefully hide
-      id:      crypto.randomUUID(),
+      id:      v4(),
       name:    cloneIncrementName(item.name, items.map(o => o.name)),
       command: `!${Math.random().toString(36).substr(2, 5)}`,
     };

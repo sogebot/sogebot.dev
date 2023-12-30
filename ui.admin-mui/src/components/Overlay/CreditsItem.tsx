@@ -3,6 +3,7 @@ import { Credits, CreditsScreenCustom } from '@sogebot/backend/dest/database/ent
 import gsap from 'gsap';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
+import { v4 } from 'uuid';
 
 import { Props } from './ChatItem';
 import { CreditsClips } from './CreditsClips';
@@ -24,7 +25,7 @@ const waitingForClipsToFinish = new Map<string, boolean>();
 export const CreditsItem: React.FC<Props<Credits>> = ({ item, width, height }) => {
   const [ isRolling, setIsRolling ] = React.useState(false);
   const [ screensHeight, setScreensHeight ] = React.useState<number[]>([]);
-  const [ id ] = React.useState(crypto.randomUUID());
+  const [ id ] = React.useState(v4());
   const [ clipsScreenId, setClipScreenId ] = React.useState('');
 
   const [ screensLoaded, setScreensLoaded ] = React.useState(0);

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
+import { v4 } from 'uuid';
 
 import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
@@ -156,7 +157,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           throw new Error(`Invalid JSON file ${file.name}.`);
         }
         setPrivateKeys(keys => [...keys, {
-          id:          crypto.randomUUID(),
+          id:          v4(),
           clientEmail: text.client_email,
           privateKey:  text.private_key,
           createdAt:   new Date().toISOString(),

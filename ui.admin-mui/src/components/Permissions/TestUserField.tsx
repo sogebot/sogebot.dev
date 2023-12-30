@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack';
 import parse from 'html-react-parser';
 import { capitalize } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { v4 } from 'uuid';
 
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -41,7 +42,7 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
 
   const testUser = () => {
     setIsTesting(true);
-    const state = crypto.randomUUID();
+    const state = v4();
 
     setStatus({ access: undefined });
     setPartialStatus({ access: undefined });

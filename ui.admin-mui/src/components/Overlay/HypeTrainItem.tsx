@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { chunk } from 'lodash';
 import React, { useRef } from 'react';
 import { useIntervalWhen } from 'rooks';
+import { v4 } from 'uuid';
 
 import hypeTrain from './assets/hypeTrain.png';
 import hypeWagon from './assets/hypeWagon.png';
@@ -36,7 +37,7 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
   getSocket('/services/twitch', true);
 
   const boxRef = useRef<Element>();
-  const [id] = React.useState(crypto.randomUUID());
+  const [id] = React.useState(v4());
   const [ running, setRunning ] = React.useState(false);
   const [ cooldown, setCooldown ] = React.useState(Date.now());
   const [ events, setEvents ] = React.useState<{ id: string, level: number, goal: number, total: number }[]>([]);

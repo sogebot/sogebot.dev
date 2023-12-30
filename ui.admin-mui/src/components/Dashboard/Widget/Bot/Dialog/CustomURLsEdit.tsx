@@ -6,6 +6,7 @@ import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import clone from 'lodash/clone';
 import React from 'react';
+import { v4 } from 'uuid';
 
 import { getSocket } from '../../../../../helpers/socket';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
@@ -41,7 +42,7 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimest
     setCustom([
       ...custom,
       {
-        id:     crypto.randomUUID(),
+        id:     v4(),
         name:   '',
         url:    '',
         userId: user.id,

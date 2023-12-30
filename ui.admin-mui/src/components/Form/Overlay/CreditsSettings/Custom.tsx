@@ -13,6 +13,7 @@ import React from 'react';
 import Moveable from 'react-moveable';
 import { useKey, useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
+import { v4 } from 'uuid';
 
 import { cssWrapper } from './src/Templates';
 import theme from '../../../../theme';
@@ -235,7 +236,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
     setItem(o => {
       const update = cloneDeep(o.items);
       update.push({
-        id:       crypto.randomUUID(),
+        id:       v4(),
         alignX:   0,
         alignY:   0,
         css:      cssWrapper,

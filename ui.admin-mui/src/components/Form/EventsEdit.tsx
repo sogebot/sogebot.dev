@@ -8,6 +8,7 @@ import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { v4 } from 'uuid';
 
 import { CopyButton } from './Input/Adornment/Copy';
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
@@ -71,7 +72,7 @@ export const EventsEdit: React.FC = () => {
         } else {
           setItem(Event.create({
             ...cloneDeep(newEvent),
-            id: crypto.randomUUID(),
+            id: v4(),
           }));
           resolve();
         }
@@ -409,7 +410,7 @@ export const EventsEdit: React.FC = () => {
                 ...item,
                 operations: [
                   ...item.operations, {
-                    id:          crypto.randomUUID(),
+                    id:          v4(),
                     name:        availableOperations[0]!.id,
                     definitions: getEmptyDefinitionOf(availableOperations[0]!.id),
                   }
