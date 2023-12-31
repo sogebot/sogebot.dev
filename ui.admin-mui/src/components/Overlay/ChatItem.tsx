@@ -235,20 +235,17 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
           '.simpleChatImage': {
             position:    'relative',
             display:     'inline-block',
-            width:       `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
             marginRight: '1px',
             marginLeft:  '1px',
           },
           '.simpleChatImage .emote': {
-            width:     `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
-            height:    `${item.useCustomEmoteSize ? item.customEmoteSize : Math.max(16, item.font.size + (fontSize[message.id] || 0)) * 1.1}px`,
-            position:  'absolute',
+            height:    `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
             objectFit: 'contain',
             overflow:  'visible',
             top:       0,
             bottom:    0,
             margin:    'auto',
-            transform: 'translateY(-30%)',
+            verticalAlign: 'bottom',
           },
         }}
       >
@@ -290,20 +287,17 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
             '.simpleChatImage': {
               position:    'relative',
               display:     'inline-block',
-              width:       `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
               marginRight: '1px',
               marginLeft:  '1px',
             },
             '.simpleChatImage .emote': {
-              width:     `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
-              height:    `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size * 1.1}px`,
-              position:  'absolute',
+              height:    `${item.useCustomEmoteSize ? item.customEmoteSize : item.font.size}px`,
               objectFit: 'contain',
               overflow:  'visible',
               top:       0,
               bottom:    0,
               margin:    'auto',
-              transform: 'translateY(-30%)',
+              verticalAlign: 'bottom',
             },
           }}>
             {item.showTimestamp && <Typography component='span' sx={{

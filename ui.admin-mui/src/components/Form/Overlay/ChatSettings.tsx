@@ -65,7 +65,12 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
     // show test messages
     const userName = jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase();
     const longMessage = Math.random() <= 0.1;
-    const emotes = Math.random() <= 1 ? `<span class="simpleChatImage"><img src='https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0' class="emote" alt="Kappa" title="Kappa"/></span>`.repeat(Math.round(Math.random() * 5)) : '';
+    const emote = Math.random() <= 0.5
+      ? 'https://cdn.frankerfacez.com/emote/120593/4'
+      : 'https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0';
+    const emotes = Math.random() <= 0.5
+      ? `<span class="simpleChatImage"><img src='${emote}' class="emote" alt="Kappa" title="Kappa"/></span>`.repeat(Math.round(Math.random() * 5))
+      : '';
     const id = nanoid();
 
     let message = jabber.createParagraph(1 + Math.ceil(Math.random() * (longMessage ? 3 : 10))) + emotes;
