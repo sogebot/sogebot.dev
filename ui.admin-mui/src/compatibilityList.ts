@@ -2,6 +2,7 @@ type lastCompatibleCommit = string;
 export const versions: {
   [version: string]: lastCompatibleCommit,
 } = {
+  '~22.3.0':                       '35614a8f',
   '21.1.0 - 22.1.0':               '47fcd057',
   '21.0.0':                        '55b96061',
   '~19.3.0 || ~19.4.0 || ~20.0.0': '0509e1d6',

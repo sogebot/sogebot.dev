@@ -18,18 +18,18 @@ declare const ListenTo: {
      * Listen to OBS websocket events
      */
     on(event:
-      'CurrentSceneCollectionChanging' | 'CurrentSceneCollectionChanged' | 'SceneCollectionListChanged' | 'CurrentProfileChanging' |
-      'CurrentProfileChanged' | 'ProfileListChanged' | 'SourceFilterListReindexed' | 'SourceFilterCreated' | 'SourceFilterRemoved' |
-      'SourceFilterNameChanged' | 'SourceFilterEnableStateChanged' | 'InputCreated' | 'InputRemoved' | 'InputNameChanged' |
-      'InputActiveStateChanged' | 'InputShowStateChanged' | 'InputMuteStateChanged' | 'InputVolumeChanged' | 'InputAudioBalanceChanged' |
-      'InputAudioSyncOffsetChanged' | 'InputAudioTracksChanged' | 'InputAudioMonitorTypeChanged' | 'InputVolumeMeters' |
-      'MediaInputPlaybackStarted' | 'MediaInputPlaybackEnded' | 'MediaInputActionTriggered' | 'StreamStateChanged' |
-      'RecordStateChanged' | 'ReplayBufferStateChanged' | 'VirtualcamStateChanged' | 'ReplayBufferSaved' | 'SceneItemCreated' |
-      'SceneItemRemoved' | 'SceneItemListReindexed' | 'SceneItemEnableStateChanged' | 'SceneItemLockStateChanged' | 'SceneItemSelected' |
-      'SceneItemTransformChanged' | 'SceneCreated' | 'SceneRemoved' | 'SceneNameChanged' | 'CurrentProgramSceneChanged' |
-      'CurrentPreviewSceneChanged' | 'SceneListChanged' | 'CurrentSceneTransitionChanged' | 'CurrentSceneTransitionDurationChanged' |
-      'SceneTransitionStarted' | 'SceneTransitionEnded' | 'SceneTransitionVideoEnded' | 'StudioModeStateChanged' | 'ScreenshotSaved' |
-      'VendorEvent' | 'CustomEvent', callback: (args: any) => void): void,
+    'CurrentSceneCollectionChanging' | 'CurrentSceneCollectionChanged' | 'SceneCollectionListChanged' | 'CurrentProfileChanging' |
+    'CurrentProfileChanged' | 'ProfileListChanged' | 'SourceFilterListReindexed' | 'SourceFilterCreated' | 'SourceFilterRemoved' |
+    'SourceFilterNameChanged' | 'SourceFilterEnableStateChanged' | 'InputCreated' | 'InputRemoved' | 'InputNameChanged' |
+    'InputActiveStateChanged' | 'InputShowStateChanged' | 'InputMuteStateChanged' | 'InputVolumeChanged' | 'InputAudioBalanceChanged' |
+    'InputAudioSyncOffsetChanged' | 'InputAudioTracksChanged' | 'InputAudioMonitorTypeChanged' | 'InputVolumeMeters' |
+    'MediaInputPlaybackStarted' | 'MediaInputPlaybackEnded' | 'MediaInputActionTriggered' | 'StreamStateChanged' |
+    'RecordStateChanged' | 'ReplayBufferStateChanged' | 'VirtualcamStateChanged' | 'ReplayBufferSaved' | 'SceneItemCreated' |
+    'SceneItemRemoved' | 'SceneItemListReindexed' | 'SceneItemEnableStateChanged' | 'SceneItemLockStateChanged' | 'SceneItemSelected' |
+    'SceneItemTransformChanged' | 'SceneCreated' | 'SceneRemoved' | 'SceneNameChanged' | 'CurrentProgramSceneChanged' |
+    'CurrentPreviewSceneChanged' | 'SceneListChanged' | 'CurrentSceneTransitionChanged' | 'CurrentSceneTransitionDurationChanged' |
+    'SceneTransitionStarted' | 'SceneTransitionEnded' | 'SceneTransitionVideoEnded' | 'StudioModeStateChanged' | 'ScreenshotSaved' |
+    'VendorEvent' | 'CustomEvent', callback: (args: any) => void): void,
   }
   Bot: {
     /**

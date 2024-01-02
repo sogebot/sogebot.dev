@@ -1,9 +1,10 @@
 import { ExpandMoreTwoTone, LaunchTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Fade, FormControl, FormLabel, IconButton, InputLabel, LinearProgress, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Chip, Fade, FormControl, FormLabel, IconButton, InputLabel, LinearProgress, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Alerts, TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import axios from 'axios';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -11,6 +12,9 @@ import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useTTS } from '../../hooks/useTTS';
 import theme from '../../theme';
+import { TTSElevenLabs } from '../Settings/Core/tts/elevenlabs';
+import { TTSGoogle } from '../Settings/Core/tts/google';
+import { TTSResponsiveVoice } from '../Settings/Core/tts/responsivevoice';
 
 declare global {
   interface Window {
@@ -36,6 +40,12 @@ const values = {
     maxPitch: 2.0,
     minPitch: 0.0,
     stepPitch: 0.1,
+    maxVolume: 1,
+    minVolume: 0,
+    stepVolume: 0.01,
+    volumeAdornment: '%',
+  },
+  [TTSService.ELEVENLABS]: {
     maxVolume: 1,
     minVolume: 0,
     stepVolume: 0.01,
@@ -79,6 +89,31 @@ const values = {
   }
 };
 
+const serviceName = {
+  [TTSService.NONE]: 'None',
+  [TTSService.SPEECHSYNTHESIS]: 'Web Speech API',
+  [TTSService.RESPONSIVEVOICE]: 'ResponsiveVoice',
+  [TTSService.GOOGLE]: 'GoogleTTS',
+  [TTSService.ELEVENLABS]: 'ElevenLabs',
+};
+
+const elevenLabsVoices: {
+  [voice_id: string]: string,
+} = {};
+
+const getVoiceByValue = (service: TTSService, value: string) => {
+  if (service === TTSService.ELEVENLABS) {
+    for (const [ key, voice ] of Object.entries(elevenLabsVoices)) {
+      if (voice === value) {
+        return key;
+      }
+    }
+    return value;
+  } else {
+    return value;
+  }
+};
+
 export const AccordionTTS: React.FC<Props> = (props) => {
   const accordionId = 'tts';
   const { open,
@@ -95,6 +130,18 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);
   };
+
+  const selectedValues = values[model.selectedService] ?? values[TTSService.NONE];
+  const selectedService = model.services[model.selectedService];
+
+  const isElevenLabsConfigured = 'elevenlabsApiKey' in configuration.core.tts && configuration.core.tts.elevenlabsApiKey !== '';
+  const isResponsiveVoiceConfigured = configuration.core.tts.responsiveVoiceKey !== '';
+  const isGoogleConfigured = configuration.core.tts.googlePrivateKey !== '';
+
+  const isConfigurationValid = (model.selectedService === TTSService.ELEVENLABS && isElevenLabsConfigured)
+    || (model.selectedService === TTSService.RESPONSIVEVOICE && isResponsiveVoiceConfigured)
+    || (model.selectedService === TTSService.GOOGLE && isGoogleConfigured)
+    || model.selectedService === TTSService.SPEECHSYNTHESIS;
 
   const getVoicesFromResponsiveVoice = async () => {
     await new Promise<void>(resolve => {
@@ -119,7 +166,6 @@ export const AccordionTTS: React.FC<Props> = (props) => {
 
   const [ loading, setLoading ] = React.useState(true);
   React.useEffect(() => {
-    console.log(model.selectedService);
     setLoading(model.selectedService !== TTSService.NONE);
     if (model.selectedService === TTSService.RESPONSIVEVOICE) {
       console.log('Loading ResponsiveVoice voices');
@@ -144,6 +190,23 @@ export const AccordionTTS: React.FC<Props> = (props) => {
         }, 1000);
       }
     }
+
+    if (isElevenLabsConfigured) {
+      if(model.selectedService === TTSService.ELEVENLABS) {
+        (async function getVoicesFromElevenLabs() {
+          const availableVoices = await axios.get('https://api.elevenlabs.io/v1/voices', {
+            headers: {
+              'xi-api-key': configuration.core.tts.elevenlabsApiKey,
+            }
+          });
+          for (const voice of availableVoices.data.voices) {
+            elevenLabsVoices[voice.name] = voice.voice_id;
+          }
+          setVoices(availableVoices.data.voices.map((o: { name: string }) => o.name));
+          setLoading(false);
+        })();
+      }
+    }
   }, [model.selectedService]);
 
   React.useEffect(() => {
@@ -153,6 +216,13 @@ export const AccordionTTS: React.FC<Props> = (props) => {
   React.useEffect(() => {
     const defaultValues = {
       [TTSService.NONE]: null,
+      [TTSService.ELEVENLABS]: {
+        voice: '',
+        volume: 1,
+        stability: 0.5,
+        clarity: 0.75,
+        exaggeration: 0,
+      },
       [TTSService.SPEECHSYNTHESIS]: {
         voice: 'Microsoft David - English (United States)',
         rate: 1,
@@ -209,14 +279,12 @@ export const AccordionTTS: React.FC<Props> = (props) => {
               {props.customLabelDetails
                 ? props.customLabelDetails
                 : <>
-                  {model.selectedService === TTSService.NONE ? 'None'
-                    : model.selectedService === TTSService.RESPONSIVEVOICE ? 'ResponsiveVoice'
-                      : model.selectedService === TTSService.GOOGLE ? 'GoogleTTS'
-                        : model.selectedService === TTSService.SPEECHSYNTHESIS ? 'Web Speech API'
-                          : 'unknown service'
+                  {model.selectedService in serviceName
+                    ? serviceName[model.selectedService]
+                    : 'unknown service'
                   }
                   {' '}
-                  {model.selectedService !== TTSService.NONE && (model.services[model.selectedService]?.voice ?? 'unknown voice')}
+                  {model.selectedService !== TTSService.NONE && (getVoiceByValue(model.selectedService, selectedService?.voice ?? 'unknown voice'))}
                 </>
               }
             </Typography>
@@ -239,27 +307,49 @@ export const AccordionTTS: React.FC<Props> = (props) => {
             })}
           >
             <MenuItem value={TTSService.NONE}>None</MenuItem>
-            <MenuItem value={TTSService.RESPONSIVEVOICE}>ResponsiveVoice</MenuItem>
-            <MenuItem value={TTSService.GOOGLE}>GoogleTTS</MenuItem>
+            <MenuItem value={TTSService.RESPONSIVEVOICE}>
+              {!isResponsiveVoiceConfigured && <Chip sx={{ mr: 1 }}variant='filled' color='error' size='small' label='not configured'/>}
+              ResponsiveVoice
+            </MenuItem>
+            <MenuItem value={TTSService.GOOGLE}>
+              {!isGoogleConfigured && <Chip sx={{ mr: 1 }}variant='filled' color='error' size='small' label='not configured'/>}
+              GoogleTTS
+            </MenuItem>
             <MenuItem value={TTSService.SPEECHSYNTHESIS}>Web Speech API</MenuItem>
+            <MenuItem value={TTSService.ELEVENLABS}>
+              {!isElevenLabsConfigured && <Chip sx={{ mr: 1 }}variant='filled' color='error' size='small' label='not configured'/>}
+              ElevenLabs
+            </MenuItem>
           </Select>
-          {loading && <LinearProgress/>}
+          {model.selectedService === TTSService.ELEVENLABS && isElevenLabsConfigured === false
+            ? <TTSElevenLabs dialog/>
+            : model.selectedService === TTSService.RESPONSIVEVOICE && isResponsiveVoiceConfigured === false
+              ? <TTSResponsiveVoice dialog/>
+              : model.selectedService === TTSService.GOOGLE && isGoogleConfigured === false
+                ? <TTSGoogle dialog/>
+                : loading && <LinearProgress/>}
         </FormControl>
 
-        {(!loading && model.selectedService !== TTSService.NONE) && <>
+        {(!loading && model.selectedService !== TTSService.NONE) && isConfigurationValid && <>
           {model.services[model.selectedService] !== undefined && <Autocomplete
-            value={model.services[model.selectedService]?.voice ?? ''}
+            value={getVoiceByValue(model.selectedService, selectedService?.voice ?? '')}
             disableClearable
-            onChange={(ev, value) => onChange({
-              ...model,
-              services: {
-                ...(model.services ?? {}),
-                [model.selectedService]: {
-                  ...model.services[model.selectedService],
-                  voice: value,
-                }
+            onChange={(ev, value) => {
+              let voice = value;
+              if (model.selectedService === TTSService.ELEVENLABS) {
+                voice = elevenLabsVoices[value] ?? value;
               }
-            })}
+              onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    voice,
+                  }
+                }
+              });
+            }}
             id="registry.alerts.voice"
             options={voices}
             renderInput={(params) => <TextField {...params} label={translate('registry.alerts.voice')} />}
@@ -298,12 +388,12 @@ export const AccordionTTS: React.FC<Props> = (props) => {
           <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.volume') }</FormLabel>
             <Slider
-              step={values[model.selectedService].stepVolume}
-              min={values[model.selectedService].minVolume}
-              max={values[model.selectedService].maxVolume}
-              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${values[model.selectedService].volumeAdornment}`}
+              step={selectedValues.stepVolume}
+              min={selectedValues.minVolume}
+              max={selectedValues.maxVolume}
+              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${selectedValues.volumeAdornment}`}
               valueLabelDisplay="on"
-              value={model.services[model.selectedService]?.volume ?? 1}
+              value={selectedService?.volume ?? 1}
               onChange={(_, newValue) => onChange({
                 ...model,
                 services: {
@@ -316,14 +406,14 @@ export const AccordionTTS: React.FC<Props> = (props) => {
               })}/>
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
+          {('stepRate' in selectedValues && selectedService && 'rate' in selectedService) && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 0px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.rate') }</FormLabel>
             <Slider
-              step={values[model.selectedService].stepRate}
-              min={values[model.selectedService].minRate}
-              max={values[model.selectedService].maxRate}
+              step={selectedValues.stepRate}
+              min={selectedValues.minRate}
+              max={selectedValues.maxRate}
               valueLabelDisplay="on"
-              value={model.services[model.selectedService]?.rate ?? (values[model.selectedService].maxRate - values[model.selectedService].minRate) / 2}
+              value={selectedService?.rate ?? (selectedValues.maxRate - selectedValues.minRate) / 2}
               onChange={(_, newValue) => onChange({
                 ...model,
                 services: {
@@ -334,16 +424,16 @@ export const AccordionTTS: React.FC<Props> = (props) => {
                   }
                 },
               })}/>
-          </Stack>
+          </Stack>}
 
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
+          {('stepPitch' in selectedValues && selectedService && 'pitch' in selectedService) && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
             <FormLabel sx={{ width: '170px' }}>{ translate('registry.alerts.pitch') }</FormLabel>
             <Slider
-              step={values[model.selectedService].stepPitch}
-              min={values[model.selectedService].minPitch}
-              max={values[model.selectedService].maxPitch}
+              step={selectedValues.stepPitch}
+              min={selectedValues.minPitch}
+              max={selectedValues.maxPitch}
               valueLabelDisplay="on"
-              value={model.services[model.selectedService]?.pitch ?? (values[model.selectedService].maxPitch - values[model.selectedService].minPitch) / 2}
+              value={selectedService?.pitch ?? (selectedValues.maxPitch - selectedValues.minPitch) / 2}
               onChange={(_, newValue) => onChange({
                 ...model,
                 services: {
@@ -354,24 +444,106 @@ export const AccordionTTS: React.FC<Props> = (props) => {
                   }
                 },
               })}/>
-          </Stack>
+          </Stack>}
 
-          {model.services[model.selectedService]?.voice !== undefined && <TextField
+          {(selectedService && 'stability' in selectedService) && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>Stability</FormLabel>
+            <Slider
+              step={selectedValues.stepVolume}
+              min={selectedValues.minVolume}
+              max={selectedValues.maxVolume}
+              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${selectedValues.volumeAdornment}`}
+              valueLabelDisplay="on"
+              value={selectedService?.stability ?? 1}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    stability: newValue,
+                  }
+                },
+              })}/>
+          </Stack>}
+
+          {(selectedService && 'clarity' in selectedService) && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>Clarity + Similarity Enhancement</FormLabel>
+            <Slider
+              step={selectedValues.stepVolume}
+              min={selectedValues.minVolume}
+              max={selectedValues.maxVolume}
+              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${selectedValues.volumeAdornment}`}
+              valueLabelDisplay="on"
+              value={selectedService?.clarity ?? 1}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    clarity: newValue,
+                  }
+                },
+              })}/>
+          </Stack>}
+
+          {(selectedService && 'exaggeration' in selectedService) && <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '25px 20px 0px 0' }}>
+            <FormLabel sx={{ width: '170px' }}>Style Exaggeration</FormLabel>
+            <Slider
+              step={selectedValues.stepVolume}
+              min={selectedValues.minVolume}
+              max={selectedValues.maxVolume}
+              valueLabelFormat={(val) => `${(Number(val * 100).toFixed(0))}${selectedValues.volumeAdornment}`}
+              valueLabelDisplay="on"
+              value={selectedService?.exaggeration ?? 1}
+              onChange={(_, newValue) => onChange({
+                ...model,
+                services: {
+                  ...(model.services ?? {}),
+                  [model.selectedService]: {
+                    ...model.services[model.selectedService],
+                    exaggeration: newValue,
+                  }
+                },
+              })}/>
+          </Stack>}
+
+          {(selectedService && selectedService?.voice !== undefined) && <TextField
             value={text}
             variant='filled'
             fullWidth
+            sx={{
+              mt: 1,
+            }}
             label={translate('registry.alerts.test')}
             onChange={(ev) => setText(ev.currentTarget.value)}
-            InputProps={{ endAdornment: <IconButton onClick={() => speak({
-              text,
-              service: model.selectedService,
-              rate: model.services[model.selectedService]!.rate,
-              pitch: model.services[model.selectedService]!.pitch,
-              volume: model.services[model.selectedService]!.volume,
-              voice: model.services[model.selectedService]!.voice,
-            })}><PlayArrowTwoTone/></IconButton> }}
+            InputProps={{ endAdornment: <IconButton onClick={() => {
+              if (model.selectedService === TTSService.ELEVENLABS) {
+                const service = model.services[model.selectedService]!;
+                speak({
+                  text,
+                  service: model.selectedService,
+                  stability: service.stability,
+                  clarity: service.clarity,
+                  volume: service.volume,
+                  voice: service.voice,
+                  exaggeration: service.exaggeration,
+                });
+              } else {
+                const service = model.services[model.selectedService]!;
+                speak({
+                  text,
+                  service: model.selectedService,
+                  rate: service.rate,
+                  pitch: service.pitch,
+                  volume: service.volume,
+                  voice: service.voice,
+                });
+              }
+            }
+            }><PlayArrowTwoTone/></IconButton> }}
           />}
-
         </>}
       </AccordionDetails>
     </Accordion>

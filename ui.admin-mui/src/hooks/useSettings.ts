@@ -35,7 +35,9 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   }, [loading, dispatch, endpoint, settingsInitial]);
 
   useEffect(() => {
-    console.log({ errors });
+    if (errors.length > 0) {
+      console.error({ errors });
+    }
   }, [errors]);
 
   const refresh = useCallback(async () => {

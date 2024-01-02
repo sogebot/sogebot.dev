@@ -1,4 +1,4 @@
-import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
+import { TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
@@ -15,16 +15,31 @@ export const TTSItem: React.FC<Props<TTS>> = ({ item }) => {
       if (isAlreadyProcessed(data.key)) {
         return;
       }
-      const service = item.services[item.selectedService]!;
-      speak({
-        text: data.text,
-        service: item.selectedService,
-        rate: service.rate,
-        pitch: service.pitch,
-        volume: service.volume,
-        voice: service.voice,
-        key: data.key
-      });
+      if (item.selectedService === TTSService.ELEVENLABS) {
+        const service = item.services[item.selectedService]!;
+        speak({
+          text: data.text,
+          service: item.selectedService,
+          stability: service.stability,
+          clarity: service.clarity,
+          volume: service.volume,
+          voice: service.voice,
+          exaggeration: service.exaggeration,
+          key: data.key
+        });
+        return;
+      } else {
+        const service = item.services[item.selectedService]!;
+        speak({
+          text: data.text,
+          service: item.selectedService,
+          rate: service.rate,
+          pitch: service.pitch,
+          volume: service.volume,
+          voice: service.voice,
+          key: data.key
+        });
+      }
     });
   }, []);
 

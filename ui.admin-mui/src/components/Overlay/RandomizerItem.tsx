@@ -1,5 +1,5 @@
 import { Box, Fade } from '@mui/material';
-import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { Randomizer as Overlay, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
@@ -94,6 +94,32 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
     currentRandomizerRef.current = currentRandomizer;
   }, [currentRandomizer]);
 
+  const speakTTS = React.useCallback((text: string, key: string) => {
+    if (currentRandomizerRef.current && currentRandomizerRef.current.tts.enabled) {
+      if (currentRandomizerRef.current.tts.selectedService === TTSService.ELEVENLABS) {
+        const service = currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!;
+        speak({
+          text,
+          service: currentRandomizerRef.current.tts.selectedService,
+          stability: service.stability,
+          clarity: service.clarity,
+          volume: service.volume,
+          voice: service.voice,
+          exaggeration: service.exaggeration,
+          key,
+        });
+        return;
+      } else {
+        speak({
+          text,
+          service: currentRandomizerRef.current.tts.selectedService,
+          ...currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!,
+          key,
+        });
+      }
+    }
+  }, [speak]);
+
   React.useEffect(() => {
     console.log(`====== Randomizer (${threadId}) ======`);
 
@@ -142,15 +168,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
         console.log('Blinking', document.getElementById('simple'));
         console.log('Speaking', currentRandomizerRef.current?.items[selectedIdx].name);
         blinkElementColor(document.getElementById('simple')!);
-        speak({
-          text: currentRandomizerRef.current?.items[selectedIdx].name,
-          service: currentRandomizerRef.current.tts.selectedService,
-          rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
-          pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
-          volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
-          voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
-          key,
-        });
+        speakTTS(currentRandomizerRef.current?.items[selectedIdx].name, key);
       }
 
       if (currentRandomizerRef.current.type === 'tape') {
@@ -174,17 +192,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
             // we need to get element in the middle
             const winnerEl = getMiddleElement();
             if (winnerEl) {
-              if (currentRandomizerRef.current && currentRandomizerRef.current.tts.enabled) {
-                speak({
-                  text: winnerEl.innerHTML.trim(),
-                  service: currentRandomizerRef.current.tts.selectedService,
-                  rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
-                  pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
-                  volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
-                  voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
-                  key,
-                });
-              }
+              speakTTS(winnerEl.innerHTML.trim(), key);
               blinkElementBackground(winnerEl);
             }
           },
@@ -210,19 +218,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
               const numOfItems = generateItems(currentRandomizerRef.current!.items).length;
               const degPerItem = 360 / numOfItems;
               const index = Math.floor(winDeg / degPerItem);
-
-              if (currentRandomizerRef.current.tts.enabled) {
-                speak({
-                  text: generateItems(currentRandomizerRef.current!.items).reverse()[index].name,
-                  service: currentRandomizerRef.current.tts.selectedService,
-                  rate: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.rate,
-                  pitch: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.pitch,
-                  volume: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.volume,
-                  voice: currentRandomizerRef.current.tts.services[currentRandomizerRef.current.tts.selectedService]!.voice,
-                  key,
-                });
-              }
-
+              speakTTS(generateItems(currentRandomizerRef.current!.items).reverse()[index].name, key);
               const segments = Array.from(document.getElementsByClassName('segment')).reverse();
               blinkElementWoFBackground(segments[index] as HTMLElement);
             }

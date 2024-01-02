@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
-import { Alerts, AlertTTS } from '@sogebot/backend/src/database/entity/overlay';
+import { Alerts, AlertTTS, TTSService } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue, useSetAtom } from 'jotai';
 import React from 'react';
 
@@ -63,15 +63,28 @@ export const AlertItemTTS: React.FC<Props<AlertTTS> & { test?: boolean; parent: 
 
     const volume = Math.min(service.volume, 1);
     log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Speaking', text);
-    await ttsSpeak({
-      text,
-      voice: service.voice,
-      rate: service.rate,
-      pitch: service.pitch,
-      volume,
-      key: emitData[groupId]?.TTSKey,
-      service: item.tts?.selectedService ?? parent.tts.selectedService,
-    });
+    if ('stability' in service) {
+      await ttsSpeak({
+        text,
+        voice: service.voice,
+        exaggeration: service.exaggeration,
+        stability: service.stability,
+        clarity: service.clarity,
+        volume,
+        key: emitData[groupId]?.TTSKey,
+        service: (item.tts?.selectedService ?? parent.tts.selectedService) as TTSService.ELEVENLABS,
+      });
+    } else {
+      await ttsSpeak({
+        text,
+        voice: service.voice,
+        rate: service.rate,
+        pitch: service.pitch,
+        volume,
+        key: emitData[groupId]?.TTSKey,
+        service: item.tts?.selectedService ?? parent.tts.selectedService,
+      });
+    }
 
     log(new Date().toISOString(), `alert-${groupId}-AlertItemTTS`, '= Unblocking TTS');
     setTTSWaiting(false);

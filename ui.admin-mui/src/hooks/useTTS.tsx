@@ -13,8 +13,18 @@ enum ResponsiveVoiceLoadingState {
 }
 
 const log = console[(new URLSearchParams(window.location.search)).get('debug') ? 'error' : 'log'];
-
 let isResponsiveVoiceLoadingState = ResponsiveVoiceLoadingState.NOT_LOADED;
+
+type ElevenLabsSpeakProps = {
+  text: string,
+  service: TTSService.ELEVENLABS,
+  stability: number,
+  clarity: number,
+  volume: number,
+  voice: string,
+  exaggeration: number,
+  key?: string,
+};
 
 export const useTTS = () => {
   const { configuration } = useAppSelector(state => state.loader);
@@ -46,8 +56,10 @@ export const useTTS = () => {
     });
   };
 
-  const speak = async (props: { text: string, service: TTSService, rate: number, pitch: number, volume: number, voice: string, key?: string }) => {
-    const { text, service, rate, pitch, volume, voice, key } = props;
+  const speak = async (props:
+  { text: string, service: TTSService, rate: number, pitch: number, volume: number, voice: string, key?: string }
+  | ElevenLabsSpeakProps) => {
+    const { text, service, volume, voice } = props;
 
     if (window.responsiveVoice === undefined) {
       await loadResponsiveVoice();
@@ -60,11 +72,33 @@ export const useTTS = () => {
         } else {
           if (service === TTSService.NONE) {
             resolve();
+          } else if (service === TTSService.ELEVENLABS) {
+            const { clarity, stability, exaggeration } = props as ElevenLabsSpeakProps;
+            getSocket('/core/tts').emit('speak', {
+              key: props.key ?? '',
+              service: service,
+              clarity,
+              stability,
+              exaggeration,
+              volume: volume,
+              voice: voice,
+              text: text,
+            }, (err, b64mp3) => {
+              if (err) {
+                log(new Date().toISOString(), err);
+                return;
+              }
+              snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
+              snd.volume = volume;
+              snd.play();
+              snd.onended = () => setTimeout(() => resolve(), 500);
+              snd.onpause = () => setTimeout(() => resolve(), 500);
+            });
+            return;
           } else if (service === TTSService.RESPONSIVEVOICE) {
-            log(new Date().toISOString(), window.responsiveVoice);
             window.responsiveVoice.speak(toSpeak.trim(), voice, {
-              rate: rate,
-              pitch: pitch,
+              rate: props.rate,
+              pitch: props.pitch,
               volume: Math.min(volume, 1),
               onabort: () => resolve(),
               onend: () => setTimeout(() => resolve(), 500),
@@ -72,10 +106,10 @@ export const useTTS = () => {
             return;
           } else if (service === TTSService.GOOGLE) {
             getSocket('/core/tts').emit('speak', {
-              key: key ?? '',
+              key: props.key ?? '',
               service: service,
-              rate: rate,
-              pitch: pitch,
+              rate: props.rate,
+              pitch: props.pitch,
               volume: volume,
               voice: voice,
               text: text,
@@ -92,8 +126,8 @@ export const useTTS = () => {
             });
           } else if (service === TTSService.SPEECHSYNTHESIS) {
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = rate;
-            utterance.pitch = pitch;
+            utterance.rate = props.rate;
+            utterance.pitch = props.pitch;
             utterance.volume = volume;
             utterance.voice = speechSynthesis.getVoices().find(o => o.name === voice)!;
             speechSynthesis.speak(utterance);
