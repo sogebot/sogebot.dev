@@ -40,9 +40,14 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [errors]);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (retryCount = 0) => {
     setLoading(true);
     return new Promise<Record<string,any>>((resolve, reject) => {
+      if (retryCount > 5) {
+        setTimeout(() => reject('Timeout'), 1000);
+      } else {
+        setTimeout(() => refresh(retryCount++), 1000);
+      }
       getSocket(endpoint)
         .emit('settings', (err, _settings: {
           [x: string]: any
