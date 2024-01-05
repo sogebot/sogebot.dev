@@ -40,7 +40,7 @@ export const OnboardingTokens: React.FC = () => {
     if (connectedToServer) {
       refresh();
     }
-  }, [refresh, location.pathname, connectedToServer]);
+  }, [location.pathname, connectedToServer]);
 
   const [open, setOpen] = React.useState(false);
 

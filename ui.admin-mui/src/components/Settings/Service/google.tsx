@@ -111,7 +111,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     refresh();
     refreshKeys();
     refreshStreams();
-  }, [ refresh, refreshKeys, refreshStreams ]);
+  }, [ refreshKeys, refreshStreams ]);
 
   const [ saving2, setSaving2 ] = useState(false);
   const handleSave = useCallback(async () => {
@@ -193,7 +193,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const authorize = useCallback(() => {
     const popup = window.open(baseURL + '/credentials/google', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
@@ -205,7 +205,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const channel = useMemo(() => {
     if (settings && settings.channel[0].length > 0) {

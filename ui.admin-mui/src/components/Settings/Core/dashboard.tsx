@@ -21,7 +21,7 @@ const PageSettingsModulesCoreDashboard: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),

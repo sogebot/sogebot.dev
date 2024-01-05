@@ -76,7 +76,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
         setChannels(channels2);
       });
     });
-  }, [ refresh, handleChange, translate ]);
+  }, [ handleChange, translate ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useAppSelector(state => state.page.scrollY);

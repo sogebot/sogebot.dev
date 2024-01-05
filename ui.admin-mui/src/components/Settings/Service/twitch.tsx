@@ -31,7 +31,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const handleSave = useCallback(async () => {
     // save settings
@@ -134,7 +134,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const authorize = useCallback((accountType: 'bot' | 'broadcaster') => {
     const url = accountType === 'bot' ? botUrl : broadcasterUrl;

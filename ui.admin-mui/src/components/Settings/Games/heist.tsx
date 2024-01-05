@@ -64,7 +64,7 @@ const PageSettingsModulesGamesHeist: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh, handleChange, translate ]);
+  }, [ handleChange, translate ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useAppSelector(state => state.page.scrollY);

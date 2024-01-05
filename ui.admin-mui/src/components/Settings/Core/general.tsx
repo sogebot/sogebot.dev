@@ -20,7 +20,7 @@ const PageSettingsModulesCoreGeneral: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const formats = ['', ' ', ',', '.'];
   const pointsOptions = formats.map(o => ({

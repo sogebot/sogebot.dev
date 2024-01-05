@@ -22,7 +22,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const user = useMemo(() => {
     if (settings && settings.userName[0].length > 0 && String(settings.userId[0]).length > 0) {
@@ -46,7 +46,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const authorize = useCallback(() => {
     const popup = window.open(baseURL + '/credentials/tiltify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
@@ -58,7 +58,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   return (loading ? null : <Box ref={ref} id="tiltify">
     <Typography variant='h2' sx={{ pb: 2 }}>Tiltify</Typography>

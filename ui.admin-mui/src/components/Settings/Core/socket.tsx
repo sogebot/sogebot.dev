@@ -29,7 +29,7 @@ const PageSettingsModulesCoreSocket: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const { enqueueSnackbar } = useSnackbar();
   const { propsError, setErrors, haveErrors, validate } = useValidator({

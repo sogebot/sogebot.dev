@@ -41,12 +41,15 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   }, [errors]);
 
   const refresh = useCallback(async (retryCount = 0) => {
+    console.debug('Refreshing settings', endpoint, retryCount, new Error().stack);
     setLoading(true);
     return new Promise<Record<string,any>>((resolve, reject) => {
+      let refreshId: NodeJS.Timeout | null = null;
       if (retryCount > 5) {
         setTimeout(() => reject('Timeout'), 1000);
+        return;
       } else {
-        setTimeout(() => refresh(retryCount++), 1000);
+        refreshId = setTimeout(() => refresh(retryCount++), 1000);
       }
       getSocket(endpoint)
         .emit('settings', (err, _settings: {
@@ -65,6 +68,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
           setSettingsInitial(_settings);
           resolve(_settings);
           setLoading(false);
+          refreshId && clearTimeout(refreshId);
         });
     });
   }, [ endpoint ]);

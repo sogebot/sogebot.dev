@@ -23,7 +23,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const user = useMemo(() => {
     if (settings && settings.connection.username[0].length > 0) {
@@ -47,7 +47,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const authorize = useCallback(() => {
     const popup = window.open(baseURL + '/credentials/spotify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
@@ -59,7 +59,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar, refresh ]);
+  }, [ enqueueSnackbar ]);
 
   const [ lastActiveDevice, setLastActiveDevice ] = useState('');
   useIntervalWhen(() => {

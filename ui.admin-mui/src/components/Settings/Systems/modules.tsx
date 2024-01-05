@@ -87,7 +87,7 @@ const PageSettingsModulesSystemsModules: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useAppSelector((state: any) => state.page.scrollY);

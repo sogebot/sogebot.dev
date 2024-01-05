@@ -92,7 +92,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
       updateExample(values.customization.rankedGameModeStatsCustomization[0], 'rankedGameModeStats', values.stats.rankedGameModeStats[0]);
       updateExample(values.customization.gameModeStatsCustomization[0], 'gameModeStats', values.stats.gameModeStats[0]);
     });
-  }, [ refresh, updateExample ]);
+  }, [ updateExample ]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
   const scrollY = useAppSelector(state => state.page.scrollY);

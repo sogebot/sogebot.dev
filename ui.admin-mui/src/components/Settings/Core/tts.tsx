@@ -34,7 +34,7 @@ const PageSettingsModulesCoreTTS: React.FC<{
 
   useEffect(() => {
     refresh();
-  }, [ refresh ]);
+  }, [ ]);
 
   return (loading ? null : <Box ref={ref} id="tts">
     <Typography variant='h2' sx={{ pb: 2 }}>{translate('menu.tts')}</Typography>
