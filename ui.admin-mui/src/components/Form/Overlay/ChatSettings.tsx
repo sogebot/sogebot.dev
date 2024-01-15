@@ -1,3 +1,5 @@
+import { mdiTwitch, mdiYoutube } from '@mdi/js';
+import Icon from '@mdi/react';
 import { Box, Button, Divider, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
@@ -81,13 +83,21 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       message = Math.random() <= 0.3 ? 'Эх, чужак, общий съём цен шляп (юфть) – вдрызг!' : message;
     }
 
+    const service = Math.random() <= 0.5 ? 'twitch' : 'youtube';
     dispatch(chatAddMessage({
       id,
       timestamp:   Date.now(),
       userName,
+      service,
       displayName: Math.random() <= 0.5 ? userName : jabber.createWord(3 + Math.ceil(Math.random() * 20)).toLowerCase(),
       message,
-      badges:      Math.random() <= 0.3 ? [{ url: 'https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3' }, { url: 'https://static-cdn.jtvnw.net/badges/v1/fc46b10c-5b45-43fd-81ad-d5cb0de6d2f4/3' }] : [],
+      badges:     (service === 'twitch'
+        ? Math.random() <= 0.3 ? [{ url: 'https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3' }, { url: 'https://static-cdn.jtvnw.net/badges/v1/fc46b10c-5b45-43fd-81ad-d5cb0de6d2f4/3' }] : []
+        : {
+          moderator: Math.random() <= 0.3,
+          subscriber: Math.random() <= 0.3,
+          owner: Math.random() <= 0.3,
+        }) as any,
     }));
 
     if (model.type === 'niconico') {
@@ -273,6 +283,32 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       <TextField
         fullWidth
         variant="filled"
+        value={model.customServiceIconSize}
+        inputProps={{ min: 1 }}
+        type="number"
+        label={'Custom badge size'}
+        InputProps={{
+          endAdornment: <>
+            <InputAdornment position='end'>px</InputAdornment>
+            <InputAdornment position='end'>
+              <Switch checked={model.useCustomServiceIconSize} onChange={(_, checked) => onUpdate({
+                ...model, useCustomServiceIconSize: checked,
+              })}/>
+            </InputAdornment>
+          </>,
+        }}
+        onChange={(ev) => {
+          if (!isNaN(Number(ev.currentTarget.value))) {
+            onUpdate({
+              ...model, customServiceIconSize: Number(ev.currentTarget.value),
+            });
+          }
+        }}
+      />
+
+      <TextField
+        fullWidth
+        variant="filled"
         value={model.customBadgeSize}
         inputProps={{ min: 1 }}
         type="number"
@@ -299,6 +335,23 @@ export const ChatSettings: React.FC<Props> = ({ model, onUpdate }) => {
       <Box sx={{
         p: 1, px: 2,
       }}>
+        <FormControlLabel sx={{
+          width: '100%', alignItems: 'self-start', pt: 1,
+        }} control={<Switch checked={model.showServiceIcons} onChange={(_, checked) => onUpdate({
+          ...model, showServiceIcons: checked,
+        })} />} label={<>
+          <Typography>Show service icon
+            <Box sx={{ position: 'relative', top: '3px', display: 'inline', ml: 1 }}>
+              <Icon path={mdiTwitch} size={0.75} />
+              <Icon path={mdiYoutube} size={0.75} />
+            </Box>
+          </Typography>
+          <Typography variant='body2' sx={{ fontSize: '12px' }}>{model.showServiceIcons
+            ? 'Service icons will be shown.'
+            : 'Service icons won\'t be shown.'
+          }</Typography>
+        </>}/>
+
         <FormControlLabel sx={{
           width: '100%', alignItems: 'self-start', pt: 1,
         }} control={<Switch checked={model.showCommandMessages} onChange={(_, checked) => onUpdate({
