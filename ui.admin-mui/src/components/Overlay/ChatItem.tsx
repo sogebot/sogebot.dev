@@ -28,14 +28,14 @@ export type Props<T> = {
   height:    number,
 };
 
-const generateColorFromString = (stringInput: string) => {
+export const generateColorFromString = (stringInput: string) => {
   const stringUniqueHash = [...stringInput].reduce((acc, char) => {
     return char.charCodeAt(0) + ((acc << 5) - acc);
   }, 0);
   return `hsl(${stringUniqueHash % 360}, 80%, 60%)`;
 };
 
-function hexToHSL(hexColor: string) {
+export function hexToHSL(hexColor: string) {
   // Remove the '#' symbol if present
   hexColor = hexColor.replace(/^#/, '');
 
