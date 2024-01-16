@@ -17,7 +17,29 @@ interface OverlayState {
     uptime:      string,
   },
   chat: {
-    messages: { id: string, timestamp: number, userName: string, displayName: string, message: string, color?: string, badges: { url: string }[] }[],
+    messages: ({
+      id: string,
+      service?: 'twitch',
+      timestamp: number,
+      userName: string,
+      displayName: string,
+      message: string,
+      color?: string,
+      badges: { url: string }[]
+    } | {
+      id: string,
+      service: 'youtube',
+      timestamp: number,
+      userName: string,
+      displayName: string,
+      message: string,
+      color?: string,
+      badges: {
+        subscriber?: 0 | 1;
+        owner?: 0 | 1;
+        moderator?: 0 | 1;
+      }
+    })[],
     posY:     Record<string,number>,
     fontSize: Record<string,number>,
   }

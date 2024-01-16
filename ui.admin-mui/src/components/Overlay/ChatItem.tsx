@@ -1,3 +1,5 @@
+import { mdiCrown, mdiDiamond, mdiTwitch, mdiWrench, mdiYoutube } from '@mdi/js';
+import Icon from '@mdi/react';
 import { Box, Typography } from '@mui/material';
 import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
@@ -308,28 +310,78 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
                 hour: '2-digit', minute: '2-digit',
               })}</Typography>}
 
-            {item.showBadges && message.badges.length > 0 && <Box sx={{
+            {item.showServiceIcons && <Box sx={{
               pr: 0.5, display: 'inline',
             }}>
-              {message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
+              <Box key={message.timestamp + message.id} sx={{
                 position:    'relative',
                 display:     'inline-block',
                 marginRight: '1px',
-                width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                width:       `${item.useCustomServiceIconSize ? item.customServiceIconSize : item.font.size}px`,
               }}>
-                <img src={badge.url} style={{
-                  width:     `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
-                  height:    `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
-                  position:  'absolute',
-                  objectFit: 'contain',
-                  overflow:  'visible',
-                  top:       0,
-                  bottom:    0,
-                  margin:    'auto',
-                  transform: 'translateY(-30%)',
-                }}/>
-              </Box>)}
+                {message.service === 'youtube'
+                  ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: '#FF0000' }} />
+                  : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: '#6441A4' }}/>}
+              </Box>
             </Box>}
+
+            {item.showBadges
+              // twitch check if there are badges
+              && ((message.service === 'twitch' && Array.isArray(message.badges) && message.badges.length > 0)
+              // youtube check if there are badges
+              || (message.service === 'youtube' && (message.badges.moderator || message.badges.owner || message.badges.subscriber) ))
+              && <Box sx={{
+                pr: 0.5,
+                display: 'inline',
+              }}>
+                {message.service === 'youtube'
+                  ? <>
+                    {message.badges.moderator && <Box key={message.timestamp + message.id + 'moderator'} sx={{
+                      position:    'relative',
+                      display:     'inline-block',
+                      marginRight: '1px',
+                      width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                    }}>
+                      <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
+                    </Box>}
+
+                    {message.badges.owner && <Box key={message.timestamp + message.id + 'owner'} sx={{
+                      position:    'relative',
+                      display:     'inline-block',
+                      marginRight: '1px',
+                      width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                    }}>
+                      <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
+                    </Box>}
+
+                    {message.badges.subscriber && <Box key={message.timestamp + message.id + 'subscriber'} sx={{
+                      position:    'relative',
+                      display:     'inline-block',
+                      marginRight: '1px',
+                      width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                    }}>
+                      <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
+                    </Box>}
+                  </>
+                  : message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
+                    position:    'relative',
+                    display:     'inline-block',
+                    marginRight: '1px',
+                    width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                  }}>
+                    <img src={badge.url} style={{
+                      width:     `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                      height:    `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
+                      position:  'absolute',
+                      objectFit: 'contain',
+                      overflow:  'visible',
+                      top:       0,
+                      bottom:    0,
+                      margin:    'auto',
+                      transform: 'translateY(-30%)',
+                    }}/>
+                  </Box>)}
+              </Box>}
             <Typography component='span' sx={{
               fontSize:   `${item.font.size}px`,
               lineHeight: `${item.useCustomLineHeight ? `${item.customLineHeight}px` : `${item.font.size}px`}`,
