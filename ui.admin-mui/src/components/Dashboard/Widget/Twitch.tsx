@@ -18,6 +18,111 @@ import { isAlreadyProcessed } from '../../Overlay/_processedSocketCalls';
 import { generateColorFromString, hexToHSL } from '../../Overlay/ChatItem';
 import { classes } from '../../styles';
 
+const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][0] }) => {
+  return <Box id={message.id} key={message.id} sx={{
+    '.simpleChatImage': {
+      position:    'relative',
+      display:     'inline-block',
+      marginRight: '1px',
+      marginLeft:  '1px',
+    },
+    '.simpleChatImage .emote': {
+      height:    `24px`,
+      objectFit: 'contain',
+      overflow:  'visible',
+      top:       0,
+      bottom:    0,
+      margin:    'auto',
+      verticalAlign: 'bottom',
+    },
+  }}>
+    {/* show timestamp */}
+    <Typography component='span' sx={{
+      pr:         0.5,
+    }}>{new Date(message.timestamp).toLocaleTimeString('default', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      })}</Typography>
+
+    <Box sx={{
+      pr: 0.5, display: 'inline',
+    }}>
+      <Box key={message.timestamp + message.id} sx={{
+        position:    'relative',
+        display:     'inline-block',
+        marginRight: '1px',
+        width:       `24px`,
+      }}>
+        {message.service === 'youtube'
+          ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: '#FF0000' }} />
+          : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: '#6441A4' }}/>}
+      </Box>
+    </Box>
+
+    {((message.service === 'twitch' && Array.isArray(message.badges) && message.badges.length > 0)
+    // youtube check if there are badges
+      || (message.service === 'youtube' && (message.badges.moderator || message.badges.owner || message.badges.subscriber) ))
+      && <Box sx={{
+        pr: 0.5,
+        display: 'inline',
+      }}>
+        {message.service === 'youtube'
+          ? <>
+            {message.badges.moderator && <Box key={message.timestamp + message.id + 'moderator'} sx={{
+              position:    'relative',
+              display:     'inline-block',
+              marginRight: '1px',
+              width:       `16px`,
+            }}>
+              <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
+            </Box>}
+
+            {message.badges.owner && <Box key={message.timestamp + message.id + 'owner'} sx={{
+              position:    'relative',
+              display:     'inline-block',
+              marginRight: '1px',
+              width:       `16px`,
+            }}>
+              <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
+            </Box>}
+
+            {message.badges.subscriber && <Box key={message.timestamp + message.id + 'subscriber'} sx={{
+              position:    'relative',
+              display:     'inline-block',
+              marginRight: '1px',
+              width:       `16px`,
+            }}>
+              <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
+            </Box>}
+          </>
+          : message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
+            position:    'relative',
+            display:     'inline-block',
+            marginRight: '1px',
+            height:      `10px`,
+            width:       `16px`,
+          }}>
+            <img src={badge.url} style={{
+              top:       0,
+              bottom:    0,
+              position: 'absolute',
+              width:      `16px`,
+              margin:    'auto',
+            }}/>
+          </Box>)}
+      </Box>}
+
+    <Typography component='span' sx={{
+      color: message.color ? hexToHSL(message.color) : generateColorFromString(message.displayName),
+      pr: 0.5,
+    }}>{ message.displayName }:
+    </Typography>
+
+    <span>
+      { HTMLReactParser(message.message) }
+    </span>
+  </Box>;
+};
+
 export const DashboardWidgetTwitch: React.FC = () => {
   getSocket('/widgets/chat');
   getSocket('/overlays/chat');
@@ -107,6 +212,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
   React.useEffect(() => {
     // set tab to 1
     setValue('1');
+
+    if (scrollBarRef.current) {
+      const scrollElement = (scrollBarRef.current as any).contentWrapperEl;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
+    }
   }, [split]);
 
   return (
@@ -185,105 +295,8 @@ export const DashboardWidgetTwitch: React.FC = () => {
                 ? <SimpleBar ref={scrollBarRef} style={{ maxHeight: '70%', padding: '5px' }} autoHide={false}>
                   <Box>
                     <Divider>Welcome to the merged simple chat!</Divider>
-                    {/* {JSON.stringify({ messages })} */}
                     {messages
-                      .map(message => <Box id={message.id} key={message.id} sx={{
-                        '.simpleChatImage': {
-                          position:    'relative',
-                          display:     'inline-block',
-                          marginRight: '1px',
-                          marginLeft:  '1px',
-                        },
-                        '.simpleChatImage .emote': {
-                          height:    `24px`,
-                          objectFit: 'contain',
-                          overflow:  'visible',
-                          top:       0,
-                          bottom:    0,
-                          margin:    'auto',
-                          verticalAlign: 'bottom',
-                        },
-                      }}>
-                        {/* show timestamp */}
-                        <Typography component='span' sx={{
-                          pr:         0.5,
-                        }}>{new Date(message.timestamp).toLocaleTimeString('default', {
-                            hour: '2-digit', minute: '2-digit', second: '2-digit',
-                          })}</Typography>
-
-                        <Box sx={{
-                          pr: 0.5, display: 'inline',
-                        }}>
-                          <Box key={message.timestamp + message.id} sx={{
-                            position:    'relative',
-                            display:     'inline-block',
-                            marginRight: '1px',
-                            width:       `24px`,
-                          }}>
-                            {message.service === 'youtube'
-                              ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: '#FF0000' }} />
-                              : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: '#6441A4' }}/>}
-                          </Box>
-                        </Box>
-
-                        {((message.service === 'twitch' && Array.isArray(message.badges) && message.badges.length > 0)
-              // youtube check if there are badges
-              || (message.service === 'youtube' && (message.badges.moderator || message.badges.owner || message.badges.subscriber) ))
-              && <Box sx={{
-                pr: 0.5,
-                display: 'inline',
-              }}>
-                {message.service === 'youtube'
-                  ? <>
-                    {message.badges.moderator && <Box key={message.timestamp + message.id + 'moderator'} sx={{
-                      position:    'relative',
-                      display:     'inline-block',
-                      marginRight: '1px',
-                    }}>
-                      <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
-                    </Box>}
-
-                    {message.badges.owner && <Box key={message.timestamp + message.id + 'owner'} sx={{
-                      position:    'relative',
-                      display:     'inline-block',
-                      marginRight: '1px',
-                    }}>
-                      <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
-                    </Box>}
-
-                    {message.badges.subscriber && <Box key={message.timestamp + message.id + 'subscriber'} sx={{
-                      position:    'relative',
-                      display:     'inline-block',
-                      marginRight: '1px',
-                    }}>
-                      <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
-                    </Box>}
-                  </>
-                  : message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
-                    position:    'relative',
-                    display:     'inline-block',
-                    marginRight: '1px',
-                  }}>
-                    <img src={badge.url} style={{
-                      position:  'absolute',
-                      objectFit: 'contain',
-                      overflow:  'visible',
-                      top:       0,
-                      bottom:    0,
-                      margin:    'auto',
-                      transform: 'translateY(-30%)',
-                    }}/>
-                  </Box>)}
-              </Box>}
-                        <Typography component='span' sx={{
-                          color: message.color ? hexToHSL(message.color) : generateColorFromString(message.displayName),
-                          pr: 0.5,
-                        }}>{ message.displayName }:
-                        </Typography>
-                        <span>
-                          { HTMLReactParser(message.message) }
-                        </span>
-                      </Box>)}
+                      .map(message => <SimpleMessage key={message.id} message={message} />)}
                   </Box>
                 </SimpleBar>
                 : <iframe
@@ -299,7 +312,13 @@ export const DashboardWidgetTwitch: React.FC = () => {
               ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', display: unfold ? undefined : 'none',
             }}>
               {mergedChat
-                ? <></>
+                ? <SimpleBar ref={scrollBarRef} style={{ maxHeight: '100%', padding: '5px' }} autoHide={false}>
+                  <Box>
+                    <Divider>Welcome to the merged simple chat!</Divider>
+                    {messages
+                      .map(message => <SimpleMessage key={message.id} message={message} />)}
+                  </Box>
+                </SimpleBar>
                 : <iframe
                   frameBorder="0"
                   scrolling="no"
