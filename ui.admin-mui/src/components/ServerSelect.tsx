@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Alert, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, InputAdornment, Link, Stack, TextField } from '@mui/material';
+import { Alert, Autocomplete, Box, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
@@ -28,6 +28,7 @@ const checkURLValidity = (serverURL: string) => {
 };
 
 let connecting = false;
+let dashboardInvalid = false;
 
 type ServerSelectProps = {
   /*
@@ -51,6 +52,10 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
   const [invalidURL, setInvalidURL] = React.useState(false);
 
   const { state, message, connectedToServer } = useAppSelector((s: any) => s.loader);
+
+  React.useEffect(() => {
+    checkIfDashboardIsValid();
+  }, []);
 
   React.useEffect(() => {
     if ((connecting || message)) {
@@ -90,7 +95,43 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
     );
   }, []);
 
+  const checkIfDashboardIsValid = () => {
+    const currentURL = new URL(window.location.href);
+    if ((process.env.REACT_APP_COMMIT || '').length === 0) {
+      // check if path actually doesn't contain compatibility version
+      let showError = false;
+      for (const commit of Object.values(versions)) {
+        if (showError) {
+          enqueueSnackbar({
+            message: <Box>
+              <Typography>
+                This shouldn't happen! This dashboard version is <u>not VALID</u>.{' '}
+                <strong>Please report</strong> on discord with your <strong>current URL link</strong>.
+              </Typography>
+              <Typography>
+                If you need to access this dashboard, you can try even older version <Link sx={{
+                  display: 'inline-block', color: 'white !important', textDecorationColor: 'white !important', fontWeight: 'bold',
+                }} href={`https://dash.sogebot.xyz/${commit}`}>https://dash.sogebot.xyz/{commit}</Link>.
+              </Typography>
+            </Box>,
+            variant: 'error',
+            autoHideDuration: null,
+          });
+          return;
+        }
+        console.log('check', currentURL.pathname, `/${commit}/`);
+        if (currentURL.pathname.includes(commit)) {
+          showError = true;
+          dashboardInvalid = true;
+        }
+      }
+    }
+  };
+
   const handleConnect = (server: string) => {
+    if (connecting || dashboardInvalid) {
+      return;
+    }
     if (server) {
       if (server.startsWith('-- demo')) {
         server = 'https://demobot.sogebot.xyz';
@@ -115,6 +156,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
 
           // we don't have base path, do checks
           if ((process.env.REACT_APP_COMMIT || '').length === 0) {
+
             // 'OK' response was last in 16.8.0
             const version = res.data === 'OK' ? '16.8.0' : res.data;
             for (const versionKey of Object.keys(versions).reverse()) {
@@ -167,7 +209,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
       }
       setIsInitial(false);
     }
-  }, [query, message, isInitial, handleConnect]);
+  }, [query, message, isInitial]);
 
   const getUser = () => {
     try {
@@ -181,8 +223,9 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
 
   useEffect(() => {
     if (!message) {
-      connecting = false;
-    } else if (message.includes('Cannot connect') || message.includes('access to this server')) {
+      return;
+    }
+    if (message.includes('Cannot connect') || message.includes('access to this server')) {
       connecting = false;
     } else {
       connecting = true;
