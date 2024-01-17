@@ -50,11 +50,13 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
         position:    'relative',
         display:     'inline-block',
         marginRight: '1px',
-        width:       `24px`,
+        width:       `16px`,
+        verticalAlign: 'text-bottom',
+
       }}>
         {message.service === 'youtube'
-          ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: '#FF0000' }} />
-          : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: '#6441A4' }}/>}
+          ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: hexToHSL('#FF0000') }} />
+          : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: hexToHSL('#6441A4') }}/>}
       </Box>
     </Box>
 
@@ -72,6 +74,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
+
             }}>
               <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
             </Box>}
@@ -81,6 +84,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
+
             }}>
               <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
             </Box>}
@@ -90,6 +94,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
+
             }}>
               <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
             </Box>}

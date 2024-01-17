@@ -317,11 +317,12 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
                 position:    'relative',
                 display:     'inline-block',
                 marginRight: '1px',
+                verticalAlign: item.type === 'vertical' ? 'text-bottom' : undefined,
                 width:       `${item.useCustomServiceIconSize ? item.customServiceIconSize : item.font.size}px`,
               }}>
                 {message.service === 'youtube'
-                  ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: '#FF0000' }} />
-                  : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: '#6441A4' }}/>}
+                  ? <Icon path={mdiYoutube} style={{ verticalAlign: 'middle', color: hexToHSL('#FF0000') }} />
+                  : <Icon path={mdiTwitch} style={{ verticalAlign: 'middle', color: hexToHSL('#6441A4') }}/>}
               </Box>
             </Box>}
 
@@ -340,6 +341,7 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
                       position:    'relative',
                       display:     'inline-block',
                       marginRight: '1px',
+                      verticalAlign: item.type === 'vertical' ? 'text-bottom' : undefined,
                       width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
                     }}>
                       <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
@@ -349,6 +351,7 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
                       position:    'relative',
                       display:     'inline-block',
                       marginRight: '1px',
+                      verticalAlign: item.type === 'vertical' ? 'text-bottom' : undefined,
                       width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
                     }}>
                       <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
@@ -358,6 +361,7 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
                       position:    'relative',
                       display:     'inline-block',
                       marginRight: '1px',
+                      verticalAlign: item.type === 'vertical' ? 'text-bottom' : undefined,
                       width:       `${item.useCustomBadgeSize ? item.customBadgeSize : item.font.size}px`,
                     }}>
                       <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
