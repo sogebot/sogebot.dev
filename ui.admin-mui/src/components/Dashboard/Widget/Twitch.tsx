@@ -172,7 +172,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
   const [ isScrollBlocked, setIsScrollBlocked ] = useAtom(anIsScrollBlocked);
   const banMenuPosition = useAtomValue(anBanMenuPositionY);
   const banMenuPositionX = useAtomValue(anBanMenuPositionX);
-  const [ mergedChat ] = useLocalstorageState('chat_merged', false);
+  const [ mergedChat ] = useLocalstorageState(`${localStorage.server}::chat_merged`, false);
 
   return <>
     {banMenuForId && <Portal><Paper id="ban-paper" sx={{
@@ -324,9 +324,9 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const [timestamp, setTimestamp] = React.useState(Date.now());
   const [room, setRoom] = React.useState('');
   const { isStreamOnline } = useAppSelector(state => state.page);
-  const [ unfold, setUnfold ] = useLocalstorageState('chat_unfold', true);
-  const [ split, setSplit ] = useLocalstorageState('chat_split', false);
-  const [ alert, setAlert ] = useLocalstorageState('chat_alert', {
+  const [ unfold, setUnfold ] = useLocalstorageState(`${localStorage.server}::chat_unfold`, true);
+  const [ split, setSplit ] = useLocalstorageState(`${localStorage.server}::chat_split`, false);
+  const [ alert, setAlert ] = useLocalstorageState(`${localStorage.server}::chat_alert`, {
     enabled: false,
     volume: 0.5,
     timeBetweenMessages: 60000, /* minute */
@@ -336,15 +336,15 @@ export const DashboardWidgetTwitch: React.FC = () => {
     alertRef.current = alert;
   }, [ alert ]);
 
-  const [ mergedChat, setMergedChat ] = useLocalstorageState('chat_merged', false);
+  const [ mergedChat, setMergedChat ] = useLocalstorageState(`${localStorage.server}::chat_merged`, false);
   const [ isScrollBlocked ] = useAtom(anIsScrollBlocked);
 
-  const [ messages, setMessages ] = useLocalstorageState<OverlayState['chat']['messages']>('chat_messages', []);
+  const [ messages, setMessages ] = useLocalstorageState<OverlayState['chat']['messages']>(`${localStorage.server}::chat_messages`, []);
   const messagesRef = React.useRef(messages);
   React.useEffect(() => {
     messagesRef.current = messages;
   }, [ messages ]);
-  const [ bannedMessages, setBannedMessages ] = useLocalstorageState('chat_bannedmessages', [] as string[]);
+  const [ bannedMessages, setBannedMessages ] = useLocalstorageState(`${localStorage.server}::chat_bannedmessages`, [] as string[]);
 
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
