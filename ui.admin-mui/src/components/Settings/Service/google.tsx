@@ -261,6 +261,23 @@ const PageSettingsModulesServiceGoogle: React.FC<{
         </FormControl>
 
         <Stack direction='row' spacing={1} alignItems='center'>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id="rmtp-stream-label" shrink>On Stream End Privacy Status</InputLabel>
+            <Select
+              variant='filled'
+              fullWidth
+              value={settings.onStreamStartPrivacyStatus[0]}
+              label="On Stream Start Privacy Status"
+              onChange={(event) => handleChange('onStreamStartPrivacyStatus', event.target.value)}
+            >
+              <MenuItem value='private'>Private</MenuItem>
+              <MenuItem value='public'>Public</MenuItem>
+              <MenuItem value='unlisted'>Unlisted</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
+
+        <Stack direction='row' spacing={1} alignItems='center'>
           <Checkbox onChange={(_, checked) => handleChange('onStreamEndTitleEnabled', checked)} checked={settings.onStreamEndTitleEnabled[0]} />
           <TextField
             variant='filled'
