@@ -262,7 +262,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
 
         <Stack direction='row' spacing={1} alignItems='center'>
           <FormControl fullWidth variant='filled'>
-            <InputLabel id="rmtp-stream-label" shrink>On Stream End Privacy Status</InputLabel>
+            <InputLabel id="rmtp-stream-label" shrink>On Stream Start Privacy Status</InputLabel>
             <Select
               variant='filled'
               fullWidth
