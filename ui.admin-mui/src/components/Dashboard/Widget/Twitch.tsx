@@ -4,13 +4,15 @@ import { ChatTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, Split
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Button, Card, Divider, IconButton, Menu, MenuItem, Paper, Popover, Slider, Stack, Tab, Typography } from '@mui/material';
 import HTMLReactParser from 'html-react-parser';
-import { atom, useAtom, useSetAtom } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import PopupState, { bindMenu, bindPopover, bindTrigger } from 'material-ui-popup-state';
 import React from 'react';
+import usePortal from 'react-useportal';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import notifAudio from './assets/message-notification.mp3';
+import { DAY, HOUR, MINUTE } from '../../../constants';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -22,18 +24,36 @@ import { generateColorFromString, hexToHSL } from '../../Overlay/ChatItem';
 import { classes } from '../../styles';
 
 const anBanMenuForId = atom<null | string>(null);
+const anBanMenuPositionY = atom(0);
+const anBanMenuPositionX = atom(0);
 const anIsScrollBlocked = atom(false);
 
 let mouseOverBanMenu = false;
 
-const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][0] }) => {
+const firstHalfBanTimes = [
+  ...Array.from({ length: 13 }).map((_, index) => ({ title: `${13 - index} day(s)`, value: (13 - index) * DAY })),
+  ...Array.from({ length: 23 }).map((_, index) => ({ title: `${23 - index} hour(s)`, value: (23 - index) * HOUR })),
+].reverse();
+const secondHalfBanTimes = [
+  ...Array.from({ length: 59 }).map((_, index) => ({ title: `${59 - index} minutes(s)`, value: (59 - index) * MINUTE })),
+].reverse();
+
+const SimpleMessage = ({ message, isBanned }: { message: OverlayState['chat']['messages'][0], isBanned: boolean }) => {
   const setBanMenuForId = useSetAtom(anBanMenuForId);
-  return <Box id={message.id} key={message.id} onContextMenu={(ev) => {
-    setBanMenuForId(message.id);
+  const setBanMenuPosition = useSetAtom(anBanMenuPositionY);
+  const setBanMenuPositionX = useSetAtom(anBanMenuPositionX);
+
+  return <Box id={message.id} data-username={message.userName} key={message.id} onContextMenu={(ev) => {
+    if (!isBanned) {
+      setBanMenuForId(message.id);
+      setBanMenuPosition(ev.clientY - 85);
+      setBanMenuPositionX(ev.clientX + 10);
+    }
     ev.preventDefault();
   }}
   sx={{
-    cursor: 'help',
+    opacity: isBanned ? 0.35 : undefined,
+    cursor: isBanned ? 'not-allowed' : 'help',
     '.simpleChatImage': {
       position:    'relative',
       display:     'inline-block',
@@ -79,13 +99,9 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
     {((message.service === 'twitch' && Array.isArray(message.badges) && message.badges.length > 0)
     // youtube check if there are badges
       || (message.service === 'youtube' && (message.badges.moderator || message.badges.owner || message.badges.subscriber) ))
-      && <Box onContextMenu={(ev) => {
-        setBanMenuForId(message.id);
-        ev.preventDefault();
-      }} sx={{
+      && <Box sx={{
         pr: 0.5,
         display: 'inline',
-        cursor: 'help',
       }}>
         {message.service === 'youtube'
           ? <>
@@ -150,18 +166,21 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
   </Box>;
 };
 
-const Chat = ({ scrollBarRef, chatUrl, messages, split }: { scrollBarRef: React.MutableRefObject<null>, chatUrl: string, messages: OverlayState['chat']['messages'], split: boolean }) => {
+const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scrollBarRef: React.MutableRefObject<null>, chatUrl: string, messages: OverlayState['chat']['messages'], split: boolean, bannedMessages: string[] }) => {
+  const { Portal } = usePortal();
   const [ banMenuForId, setBanMenuForId ] = useAtom(anBanMenuForId);
   const [ isScrollBlocked, setIsScrollBlocked ] = useAtom(anIsScrollBlocked);
+  const banMenuPosition = useAtomValue(anBanMenuPositionY);
+  const banMenuPositionX = useAtomValue(anBanMenuPositionX);
   const [ mergedChat ] = useLocalstorageState('chat_merged', false);
 
   return <>
-    {banMenuForId && <Paper id="ban-paper" sx={{
+    {banMenuForId && <Portal><Paper id="ban-paper" sx={{
       backgroundColor: theme.palette.grey[900] + 'dd',
       border: `1px solid ${theme.palette.grey[900]}`,
       position: 'absolute',
-      top: `calc(${split ? '30%' : '0px'} + ${((scrollBarRef.current as any).contentWrapperEl.getBoundingClientRect().height ?? 0) / 2}px - ${170 / 2}px)`,
-      right: '15px',
+      top: `${banMenuPosition}px`,
+      left: `${banMenuPositionX}px`,
       marginLeft: 'auto',
       width: '100px',
       zIndex: 9999,
@@ -188,44 +207,51 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split }: { scrollBarRef: React.
         const max = banPaper.getBoundingClientRect().height;
         const position = (max - (ev.clientY - offsetTop)) / max;
         const result = Math.min(ev.clientY - offsetTop, max - 4);
-
-        const firstHalfBanTimes = [
-          ...Array.from({ length: 13 }).map((_, index) => `${13 - index} day(s)`),
-          ...Array.from({ length: 23 }).map((_, index) => `${23 - index} hour(s)`),
-        ];
-        const secondHalfBanTimes = [
-          ...Array.from({ length: 59 }).map((_, index) => `${59 - index} minutes(s)`),
-        ];
         banLine.style.top = result + 'px';
 
         const banText = document.getElementById('ban-text');
         if (position < 0.23) {
           banText!.innerText = 'delete';
-        } else if (position > 0.77) {
+        } else if (position > 0.83) {
+          banText!.innerText = '!autoban';
+        } else if (position > 0.7) {
           banText!.innerText = 'ban';
         } else {
           if (position < 0.5) {
             const perIndex = (0.5 - 0.23) / secondHalfBanTimes.length;
             const selectedIndex = Math.floor((position - 0.23) / perIndex);
-            banText!.innerText = secondHalfBanTimes.reverse()[selectedIndex];
+            banText!.innerText = secondHalfBanTimes[selectedIndex].title;
           } else {
-            const perIndex = (0.77 - 0.5) / firstHalfBanTimes.length;
+            const perIndex = (0.7 - 0.5) / firstHalfBanTimes.length;
             const selectedIndex = Math.floor((position - 0.5) / perIndex);
-            banText!.innerText = firstHalfBanTimes.reverse()[selectedIndex];
+            banText!.innerText = firstHalfBanTimes[selectedIndex].title;
           }
         }
       }
     }}
     onMouseUp={() => {
+      let banText = document.getElementById('ban-text')?.innerText;
+
+      if ((banText ?? '').length > 0) {
+        const messageEl = document.getElementById(banMenuForId);
+        const username = messageEl?.dataset.username ?? '';
+        banText = banText?.toLowerCase();
+        if (banText === 'delete' || banText === 'ban' || banText === '!autoban') {
+          getSocket('/widgets/chat').emit('moderation', { username, type: banText.replace('!', '') as any, messageId: banMenuForId });
+        } else {
+          const timeout = [...firstHalfBanTimes, ...secondHalfBanTimes].find(val => val.title.toLowerCase() === banText?.toLowerCase())?.value;
+          getSocket('/widgets/chat').emit('moderation', { username, type: 'timeout', messageId: banMenuForId, timeout });
+        }
+      }
+
       setBanMenuForId(null);
       console.log('Mouse up, should proceed');
     }}
     >
       <Divider sx={{ position: 'absolute', width: '100%', top: '50%' }} id="ban-line"/>
       <Box sx={{ width: '100%', textAlign: 'center', p: 1 }}>
-        <Typography variant='button'>
-                          Ban
-        </Typography>
+        <Typography variant='button' component='div'>!autoban</Typography>
+        <Typography variant='button' component='div'>Ban</Typography>
         <Box sx={{ height: '100px', position: 'relative' }}>
           <Typography variant='button' id="ban-text" sx={{
             position: 'absolute',
@@ -236,11 +262,9 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split }: { scrollBarRef: React.
             transform: 'translateY(-50%)' }}>
           </Typography>
         </Box>
-        <Typography variant='button'>
-                          Delete
-        </Typography>
+        <Typography variant='button' component='div'>Delete</Typography>
       </Box>
-    </Paper>}
+    </Paper></Portal>}
 
     {isScrollBlocked && <Alert severity='info'
       onClick={() => setIsScrollBlocked(false)}
@@ -275,7 +299,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split }: { scrollBarRef: React.
         <Box>
           <Divider>Welcome to the merged simple chat!</Divider>
           {messages
-            .map(message => <SimpleMessage key={message.id} message={message} />)}
+            .map(message => <SimpleMessage isBanned={bannedMessages.includes(message.id)} key={message.id} message={message} />)}
         </Box>
       </SimpleBar>
       : <iframe
@@ -316,6 +340,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const [ isScrollBlocked ] = useAtom(anIsScrollBlocked);
 
   const [ messages, setMessages ] = useLocalstorageState<OverlayState['chat']['messages']>('chat_messages', []);
+  const messagesRef = React.useRef(messages);
+  React.useEffect(() => {
+    messagesRef.current = messages;
+  }, [ messages ]);
+  const [ bannedMessages, setBannedMessages ] = useLocalstorageState('chat_bannedmessages', [] as string[]);
 
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
@@ -340,6 +369,26 @@ export const DashboardWidgetTwitch: React.FC = () => {
         return console.error(err);
       }
       setRoom(val);
+    });
+
+    getSocket('/widgets/chat').on('message-removed' as any, (data: any) => {
+      if (isAlreadyProcessed(data.id)) {
+        return;
+      }
+
+      setBannedMessages(val => [...val, data.msgId]);
+    });
+
+    getSocket('/widgets/chat').on('ban' as any, (data: any) => {
+      if (isAlreadyProcessed(data.id)) {
+        return;
+      }
+
+      const userName = data.userName;
+      console.log('Removing messages from user', userName);
+      // get All messges from messagesRef
+      const messagesToBan = messagesRef.current.filter(val => val.userName === userName).map(o => o.id);
+      setBannedMessages(val => [...val, ...messagesToBan]);
     });
 
     getSocket('/widgets/chat').on('bot-message' as any, (data: any) => {
@@ -549,14 +598,14 @@ export const DashboardWidgetTwitch: React.FC = () => {
                 height="30%"
               />
 
-              <Chat scrollBarRef={scrollBarRef} chatUrl={chatUrl} messages={messages} split={split}/>
+              <Chat scrollBarRef={scrollBarRef} chatUrl={chatUrl} messages={messages} bannedMessages={bannedMessages} split={split}/>
             </Stack>
           </Box>)
             : <><Box sx={{
               ...(value === '1' ? classes.showTab : classes.hideTab), height: '100%', width: '100%', display: unfold ? undefined : 'none',
             }}>
               {mergedChat
-                ? <Chat scrollBarRef={scrollBarRef} chatUrl={chatUrl} messages={messages} split={split}/>
+                ? <Chat scrollBarRef={scrollBarRef} chatUrl={chatUrl} messages={messages} bannedMessages={bannedMessages} split={split}/>
                 : <iframe
                   frameBorder="0"
                   scrolling="no"

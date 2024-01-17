@@ -58,6 +58,7 @@
     "react-scripts": "latest",
     "react-simple-typewriter": "^5.0.1",
     "react-string-replace": "^1.1.1",
+    "react-useportal": "^1.0.19",
     "react-window": "^1.8.10",
     "react-youtube": "^10.1.0",
     "recharts": "^2.10.3",
