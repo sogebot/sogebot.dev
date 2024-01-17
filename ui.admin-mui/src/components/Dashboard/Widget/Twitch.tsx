@@ -2,8 +2,9 @@ import { mdiCrown, mdiDiamond, mdiTwitch, mdiWrench, mdiYoutube } from '@mdi/js'
 import Icon from '@mdi/react';
 import { ChatTwoTone, SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import { Box, Card, Divider, IconButton, Menu, MenuItem, Stack, Tab, Typography } from '@mui/material';
+import { Box, Card, Divider, IconButton, Menu, MenuItem, Paper, Stack, Tab, Typography } from '@mui/material';
 import HTMLReactParser from 'html-react-parser';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import React from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
@@ -18,7 +19,12 @@ import { isAlreadyProcessed } from '../../Overlay/_processedSocketCalls';
 import { generateColorFromString, hexToHSL } from '../../Overlay/ChatItem';
 import { classes } from '../../styles';
 
+const anBanMenuForId = atom<null | string>(null);
+
+let mouseOverBanMenu = false;
+
 const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][0] }) => {
+  const setBanMenuForId = useSetAtom(anBanMenuForId);
   return <Box id={message.id} key={message.id} sx={{
     '.simpleChatImage': {
       position:    'relative',
@@ -43,7 +49,10 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
         hour: '2-digit', minute: '2-digit', second: '2-digit',
       })}</Typography>
 
-    <Box sx={{
+    <Box onContextMenu={(ev) => {
+      setBanMenuForId(message.id);
+      ev.preventDefault();
+    }} sx={{
       pr: 0.5, display: 'inline',
     }}>
       <Box key={message.timestamp + message.id} sx={{
@@ -52,6 +61,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
         marginRight: '1px',
         width:       `16px`,
         verticalAlign: 'text-bottom',
+        transform: 'translateY(2px)',
 
       }}>
         {message.service === 'youtube'
@@ -63,20 +73,24 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
     {((message.service === 'twitch' && Array.isArray(message.badges) && message.badges.length > 0)
     // youtube check if there are badges
       || (message.service === 'youtube' && (message.badges.moderator || message.badges.owner || message.badges.subscriber) ))
-      && <Box sx={{
+      && <Box onContextMenu={(ev) => {
+        setBanMenuForId(message.id);
+        ev.preventDefault();
+      }} sx={{
         pr: 0.5,
         display: 'inline',
       }}>
         {message.service === 'youtube'
           ? <>
-            {message.badges.moderator && <Box key={message.timestamp + message.id + 'moderator'} sx={{
+            {!message.badges.moderator && <Box key={message.timestamp + message.id + 'moderator'} sx={{
               position:    'relative',
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
+              transform:   'translateY(-2px)',
 
             }}>
-              <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4' }} />
+              <Icon path={mdiWrench} style={{ verticalAlign: 'middle', color: '#4285f4', height: '14px', marginLeft: '1px' }} />
             </Box>}
 
             {message.badges.owner && <Box key={message.timestamp + message.id + 'owner'} sx={{
@@ -84,6 +98,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
+              transform:   'translateY(-2px)',
 
             }}>
               <Icon path={mdiCrown} style={{ verticalAlign: 'middle', color: '#ffd600' }} />
@@ -94,9 +109,9 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
               display:     'inline-block',
               marginRight: '1px',
               width:       `16px`,
-
+              transform:   'translateY(-2px)',
             }}>
-              <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold' }} />
+              <Icon path={mdiDiamond} style={{ verticalAlign: 'middle', color: 'gold', height: '14px', marginLeft: '1px' }} />
             </Box>}
           </>
           : message.badges.map(badge => <Box key={message.timestamp + message.id + badge.url} sx={{
@@ -106,7 +121,7 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
             height:      `10px`,
             width:       `16px`,
           }}>
-            <img src={badge.url} style={{
+            <img src={badge.url} title="badge" style={{
               top:       0,
               bottom:    0,
               position: 'absolute',
@@ -116,7 +131,10 @@ const SimpleMessage = ({ message }: { message: OverlayState['chat']['messages'][
           </Box>)}
       </Box>}
 
-    <Typography component='span' sx={{
+    <Typography onContextMenu={(ev) => {
+      setBanMenuForId(message.id);
+      ev.preventDefault();
+    }} component='span' sx={{
       color: message.color ? hexToHSL(message.color) : generateColorFromString(message.displayName),
       pr: 0.5,
     }}>{ message.displayName }:
@@ -133,6 +151,8 @@ export const DashboardWidgetTwitch: React.FC = () => {
   getSocket('/overlays/chat');
 
   const { translate } = useTranslation();
+
+  const [ banMenuForId, setBanMenuForId ] = useAtom(anBanMenuForId);
 
   const [value, setValue] = React.useState('1');
   const [timestamp, setTimestamp] = React.useState(Date.now());
@@ -225,7 +245,9 @@ export const DashboardWidgetTwitch: React.FC = () => {
   }, [split]);
 
   return (
-    <Card variant="outlined" sx={{ height: height + 'px' }} ref={ref}>
+    <Card variant="outlined" sx={{ height: height + 'px' }} ref={ref} onClick={() => {
+      setBanMenuForId(null);
+    }}>
       <TabContext value={value}>
         <Box sx={{
           borderBottom:    1,
@@ -296,6 +318,90 @@ export const DashboardWidgetTwitch: React.FC = () => {
                 width="100%"
                 height="30%"
               />
+              {banMenuForId && <Paper id="ban-paper" sx={{
+                backgroundColor: theme.palette.grey[900] + 'dd',
+                border: `1px solid ${theme.palette.grey[900]}`,
+                position: 'absolute',
+                top: mergedChat ? 'calc(30% + 10px)' : '10px',
+                right: '15px',
+                marginLeft: 'auto',
+                width: '100px',
+                zIndex: 9999,
+                userSelect: 'none',
+              }}
+              onClick={(ev) => ev.stopPropagation()}
+              onMouseOver={() => {
+                mouseOverBanMenu = true;
+              }}
+              onMouseLeave={() => {
+                mouseOverBanMenu = false;
+              }}
+              onMouseMove={(ev) => {
+                if (mouseOverBanMenu) {
+                  // calculate mouse position
+                  const banPaper = document.getElementById('ban-paper');
+                  const banLine = document.getElementById('ban-line');
+
+                  if (!banPaper || !banLine) {
+                    return;
+                  }
+
+                  const offsetTop = banPaper.getBoundingClientRect().top;
+                  const max = banPaper.getBoundingClientRect().height;
+                  const position = (max - (ev.clientY - offsetTop)) / max;
+                  const result = Math.min(ev.clientY - offsetTop, max - 4);
+
+                  const firstHalfBanTimes = [
+                    ...Array.from({ length: 13 }).map((_, index) => `${13 - index} day(s)`),
+                    ...Array.from({ length: 23 }).map((_, index) => `${23 - index} hour(s)`),
+                  ];
+                  const secondHalfBanTimes = [
+                    ...Array.from({ length: 59 }).map((_, index) => `${59 - index} minutes(s)`),
+                  ];
+                  banLine.style.top = result + 'px';
+
+                  const banText = document.getElementById('ban-text');
+                  if (position < 0.23) {
+                    banText!.innerText = 'delete';
+                  } else if (position > 0.77) {
+                    banText!.innerText = 'ban';
+                  } else {
+                    if (position < 0.5) {
+                      console.log('Second half ban times');
+                      console.log({ secondHalfBanTimes });
+
+                    } else {
+                      console.log('First half ban times');
+                      console.log({ firstHalfBanTimes });
+                    }
+                  }
+                }
+              }}
+              onMouseUp={() => {
+                setBanMenuForId(null);
+                console.log('Mouse up, should proceed');
+              }}
+              >
+                <Divider sx={{ position: 'absolute', width: '100%', top: '50%' }} id="ban-line"/>
+                <Box sx={{ width: '100%', textAlign: 'center', p: 1 }}>
+                  <Typography variant='button'>
+                          Ban
+                  </Typography>
+                  <Box sx={{ height: '100px', position: 'relative' }}>
+                    <Typography variant='button' id="ban-text" sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      width: '100px',
+                      left: '-9px',
+                      backgroundColor: '#101010aa',
+                      transform: 'translateY(-50%)' }}>
+                    </Typography>
+                  </Box>
+                  <Typography variant='button'>
+                          Delete
+                  </Typography>
+                </Box>
+              </Paper>}
               {mergedChat
                 ? <SimpleBar ref={scrollBarRef} style={{ maxHeight: '70%', padding: '5px' }} autoHide={false}>
                   <Box>
