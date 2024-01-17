@@ -152,8 +152,8 @@ export default function Root() {
   const [ isIndexPage, setIndexPage ] = useState(false);
   const isMobile = useMobile();
 
-  const [ unfold ] = useLocalstorageState('action_unfold', true);
-  const [ chatUnfold ] = useLocalstorageState('chat_unfold', true);
+  const [ unfold ] = useLocalstorageState(`${localStorage.server}::action_unfold`, true);
+  const [ chatUnfold ] = useLocalstorageState(`${localStorage.server}::chat_unfold`, true);
 
   useEffect(() => {
     setIndexPage(location.pathname === '/');

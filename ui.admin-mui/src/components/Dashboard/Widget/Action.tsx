@@ -27,7 +27,7 @@ export const DashboardWidgetAction: React.FC = () => {
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
 
-  const [ unfold, setUnfold ] = useLocalstorageState('action_unfold', true);
+  const [ unfold, setUnfold ] = useLocalstorageState(`${localStorage.server}::action_unfold`, true);
 
   useIntervalWhen(() => {
     if (ref.current) {

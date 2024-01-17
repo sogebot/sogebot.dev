@@ -87,8 +87,8 @@ const initialState: PageState = {
 
   widgets: {
     unfold: {
-      chat:    JSON.parse(localStorage.getItem('chat_unfold') ?? 'true'),
-      actions: JSON.parse(localStorage.getItem('action_unfold') ?? 'true'),
+      chat:    JSON.parse(localStorage.getItem(`${localStorage.server}::chat_unfold`) ?? 'true'),
+      actions: JSON.parse(localStorage.getItem(`${localStorage.server}::action_unfold`) ?? 'true'),
     },
     events: {
       showFollows:             true,
@@ -127,7 +127,7 @@ export const pageSlice = createSlice({
     toggleUnfold: (state: any, action: { payload: any }) => {
       state.widgets[action.payload] = !state.widgets[action.payload];
       if (action.payload === 'chat') {
-        localStorage.setItem('chat_unfold', JSON.stringify(state.widgets[action.payload]));
+        localStorage.setItem(`${localStorage.server}::chat_unfold`, JSON.stringify(state.widgets[action.payload]));
       }
       if (action.payload === 'actions') {
         localStorage.setItem('actions_unfold', JSON.stringify(state.widgets[action.payload]));

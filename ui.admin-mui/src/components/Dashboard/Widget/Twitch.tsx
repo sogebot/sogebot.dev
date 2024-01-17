@@ -297,7 +297,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
         }, 50);
       }}>
         <Box>
-          <Divider>Welcome to the merged simple chat!</Divider>
+          <Typography sx={{ color: theme.palette.grey[600] }}>Welcome to the merged simple chat!</Typography>
           {messages
             .map(message => <SimpleMessage isBanned={bannedMessages.includes(message.id)} key={message.id} message={message} />)}
         </Box>
@@ -313,9 +313,6 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
 };
 
 export const DashboardWidgetTwitch: React.FC = () => {
-  getSocket('/widgets/chat');
-  getSocket('/overlays/chat');
-
   const { translate } = useTranslation();
 
   const [ , setBanMenuForId ] = useAtom(anBanMenuForId);
