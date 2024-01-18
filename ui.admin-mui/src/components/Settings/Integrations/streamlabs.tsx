@@ -32,7 +32,7 @@ const PageSettingsModulesIntegrationsStreamlabs: React.FC<{
   }, [settings]);
 
   const [ref, element]  = useRefElement<HTMLElement>();
-const scrollY = useAppSelector(state => state.page.scrollY);
+  const scrollY = useAppSelector(state => state.page.scrollY);
   useEffect(() => {
     if (element) {
       if (element.offsetTop < scrollY + 100 && element.offsetTop + element.clientHeight > scrollY - 100) {
