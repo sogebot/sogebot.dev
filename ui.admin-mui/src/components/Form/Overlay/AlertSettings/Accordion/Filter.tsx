@@ -293,7 +293,7 @@ export const AccordionFilter: React.FC<Props> = (props) => {
                       ...item, value: event.target.value as any,
                     })}
                   >
-                    {['donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'].map(val => <MenuItem value={val} key={val}>
+                    {['YouTube SuperChat', 'donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'].map(val => <MenuItem value={val} key={val}>
                       {val}
                     </MenuItem>)}
                   </Select>

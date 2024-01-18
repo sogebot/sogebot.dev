@@ -48,7 +48,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
     return ['subs', 'resub'].includes(selectedEvent);
   }, [ selectedEvent ]);
 
-  const services = ['donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
+  const services = ['YouTube SuperChat', 'donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
   const serviceRef = React.useRef<HTMLInputElement>();
   const [ serviceRandom, setServiceRandom ] = React.useState(true);
   const haveService = React.useMemo(() => {
