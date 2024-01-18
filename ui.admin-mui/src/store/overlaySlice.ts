@@ -19,7 +19,7 @@ export interface OverlayState {
   chat: {
     messages: ({
       id: string,
-      service?: 'twitch',
+      service?: 'twitch' | '@stream-started',
       timestamp: number,
       userName: string,
       displayName: string,

@@ -111,6 +111,9 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
       if (isAlreadyProcessed(data.id)) {
         return;
       }
+      if (data.service === '@stream-started') {
+        return;
+      }
       if (data.message.startsWith('!') && !item.showCommandMessages) {
         return;
       }

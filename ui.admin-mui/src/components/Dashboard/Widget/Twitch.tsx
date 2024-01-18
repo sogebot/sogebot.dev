@@ -13,6 +13,7 @@ import SimpleBar from 'simplebar-react';
 
 import notifAudio from './assets/message-notification.mp3';
 import { DAY, HOUR, MINUTE } from '../../../constants';
+import { dayjs } from '../../../helpers/dayjsHelper';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -37,6 +38,18 @@ const firstHalfBanTimes = [
 const secondHalfBanTimes = [
   ...Array.from({ length: 59 }).map((_, index) => ({ title: `${59 - index} minutes(s)`, value: (59 - index) * MINUTE })),
 ].reverse();
+
+const isSystemMessage = (service?: string) => {
+  return service === '@stream-started';
+};
+
+const SystemMessage = ({ message } : { message: OverlayState['chat']['messages'][0] }) => {
+  if (message.service === '@stream-started') {
+    return <Divider key={message.id} sx={{ color: theme.palette.grey[600] }}>Stream started at {dayjs(message.timestamp).format('LLL')}</Divider>;
+  } else {
+    return <Divider key={message.id} sx={{ color: theme.palette.grey[600] }}>Unknown system message</Divider>;
+  }
+};
 
 const SimpleMessage = ({ message, isBanned }: { message: OverlayState['chat']['messages'][0], isBanned: boolean }) => {
   const setBanMenuForId = useSetAtom(anBanMenuForId);
@@ -299,7 +312,10 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
         <Box>
           <Typography sx={{ color: theme.palette.grey[600] }}>Welcome to the merged simple chat!</Typography>
           {messages
-            .map(message => <SimpleMessage isBanned={bannedMessages.includes(message.id)} key={message.id} message={message} />)}
+            .map(message => isSystemMessage(message.service)
+              ? <SystemMessage message={message}/>
+              : <SimpleMessage isBanned={bannedMessages.includes(message.id)} key={message.id} message={message} />
+            )}
         </Box>
       </SimpleBar>
       : <iframe
@@ -415,6 +431,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
               audio.play();
             }
           }
+        }
+
+        // keep only 1000 messages
+        if (val.length > 1000) {
+          val.shift();
         }
         return [...val, data];
       });
