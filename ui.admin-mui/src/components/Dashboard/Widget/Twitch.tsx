@@ -419,16 +419,18 @@ export const DashboardWidgetTwitch: React.FC = () => {
 
       // check
       setMessages(val => {
-        // ignore message from bot
-        if (!data.isBot) {
-          const lastMessage = val[val.length - 1];
-          // play sound if its first chat message or if its been a while
-          const diff = data.timestamp - (lastMessage ? lastMessage.timestamp : 0);
-          if (diff >= alertRef.current.timeBetweenMessages) {
-            if (alertRef.current.enabled) {
-              const audio = new Audio(notifAudio);
-              audio.volume = alertRef.current.volume;
-              audio.play();
+        if (!data.service.startsWith('@')) {
+          // ignore message from bot
+          if (!data.isBot) {
+            const lastMessage = val[val.length - 1];
+            // play sound if its first chat message or if its been a while
+            const diff = data.timestamp - (lastMessage ? lastMessage.timestamp : 0);
+            if (diff >= alertRef.current.timeBetweenMessages) {
+              if (alertRef.current.enabled) {
+                const audio = new Audio(notifAudio);
+                audio.volume = alertRef.current.volume;
+                audio.play();
+              }
             }
           }
         }
