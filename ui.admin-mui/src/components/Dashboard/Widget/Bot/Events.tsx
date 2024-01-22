@@ -1,10 +1,11 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
-import { Backdrop, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button,  CircularProgress,  circularProgressClasses,  Divider, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
+import { TrayPlus } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -221,7 +222,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     height: '100%', ...props.sx,
   }}>
     <Box sx={{
-      borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
+      borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900], display: 'flex'
     }}>
       <DashboardWidgetBotDialogFilterEvents/>
       <Tooltip title="Skip Alert">
@@ -244,6 +245,34 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
           {!status.areAlertsMuted && <NotificationsActive/>}
           {status.areAlertsMuted && <NotificationsOff/>}
         </IconButton>
+      </Tooltip>
+      <Box sx={{ width: '100%' }}/>
+
+      <Box>
+        <IconButton sx={{
+          width: 40, height: 40, position: 'relative',
+        }}>
+          <CircularProgress color='primary' sx={{
+            position: 'absolute',
+            [`& .${circularProgressClasses.circle}`]: {
+              strokeLinecap: 'round',
+              opacity: 0.5,
+            },
+          }}/>
+          <Typography variant='caption' sx={{
+            position: 'absolute',
+            top: 3,
+          }}>102</Typography>
+          <Divider sx={{ width: '100%', borderColor: theme.palette.grey[500] }}/>
+          <Typography variant='caption' sx={{
+            position: 'absolute',
+            bottom: 0,
+          }}>TTS</Typography>
+        </IconButton>
+      </Box>
+
+      <Tooltip title="Add new queue">
+        <IconButton><TrayPlus/></IconButton>
       </Tooltip>
     </Box>
     <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
