@@ -1,7 +1,7 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
-import { Backdrop, Box, Button,  CircularProgress,  circularProgressClasses,  Divider, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button,  IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
 import parse from 'html-react-parser';
 import get from 'lodash/get';
@@ -12,6 +12,7 @@ import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
+import { AlertQueueController } from './Events/AlertQueue';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
@@ -248,28 +249,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
       </Tooltip>
       <Box sx={{ width: '100%' }}/>
 
-      <Box>
-        <IconButton sx={{
-          width: 40, height: 40, position: 'relative',
-        }}>
-          <CircularProgress color='primary' sx={{
-            position: 'absolute',
-            [`& .${circularProgressClasses.circle}`]: {
-              strokeLinecap: 'round',
-              opacity: 0.5,
-            },
-          }}/>
-          <Typography variant='caption' sx={{
-            position: 'absolute',
-            top: 3,
-          }}>102</Typography>
-          <Divider sx={{ width: '100%', borderColor: theme.palette.grey[500] }}/>
-          <Typography variant='caption' sx={{
-            position: 'absolute',
-            bottom: 0,
-          }}>TTS</Typography>
-        </IconButton>
-      </Box>
+      <AlertQueueController/>
 
       <Tooltip title="Add new queue">
         <IconButton><TrayPlus/></IconButton>

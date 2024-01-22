@@ -43,10 +43,7 @@ declare module '@mui/material/Button' {
   }
 }
 
-const LinkBehavior = React.forwardRef<
-HTMLAnchorElement,
-Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
->((props, ref) => {
+const LinkBehavior = React.forwardRef<HTMLAnchorElement, Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }>((props, ref) => {
   const { href, ...other } = props;
   try {
     const to = href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.server)}`;
