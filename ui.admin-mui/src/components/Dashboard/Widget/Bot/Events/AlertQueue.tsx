@@ -13,6 +13,7 @@ enum AlertQueueState {
 
 const AlertQueueController = () => {
   const [ state, setState ] = React.useState(AlertQueueState.PAUSED);
+  const [ eventsCount ] = React.useState(0);
   const [ passthrough, setPassthrough ] = React.useState(false);
 
   return (
@@ -45,7 +46,7 @@ const AlertQueueController = () => {
                 <Typography variant='caption' sx={{
                   position: 'absolute',
                   top: 3,
-                }}>102</Typography>
+                }}>{eventsCount}</Typography>
                 {state === AlertQueueState.PLAYING && <LinearProgress sx={{ width: '100%', height: '2px' }} />}
                 {state !== AlertQueueState.PLAYING && <Divider sx={{ width: '100%', borderColor: theme.palette.grey[500] }}/>}
                 <Typography variant='caption' sx={{

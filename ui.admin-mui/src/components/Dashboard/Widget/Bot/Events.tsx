@@ -115,6 +115,8 @@ function RenderRow(props: any) {
       }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
 
+      {props.item.queue && <Typography color={grey[500]} fontSize={'0.8rem'} sx={{ pl: 1 }}>#{props.item.queue}</Typography>}
+
       <Backdrop open={hover} sx={classes.backdrop}>
         <Stack direction='row' sx={{
           justifyContent: 'flex-end', width: '100%', px: 2,

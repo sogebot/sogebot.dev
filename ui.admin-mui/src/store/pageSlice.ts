@@ -39,6 +39,7 @@ export interface PageState {
       showRedeems:             boolean,
       showSubGifts:            boolean,
       showSubCommunityGifts:   boolean,
+      showQueued?:            boolean,
       showSubs:                boolean,
       showSubsPrime:           boolean,
       showSubsTier1:           boolean,
