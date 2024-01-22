@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import { itemsToEvalPart } from '@sogebot/backend/src/helpers/queryFilter';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -17,7 +18,6 @@ import { AlertItemText } from './AlertItemText';
 import { AlertItemTTS } from './AlertItemTTS';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
-import { itemsToEvalPart } from '../../queryFilter';
 
 const log = console[(new URLSearchParams(window.location.search)).get('debug') ? 'error' : 'log'];
 

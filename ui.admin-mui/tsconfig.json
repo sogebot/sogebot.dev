@@ -22,5 +22,5 @@
       ]
     },
   },
-  "include": ["src", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts", "./shims/dummy.ts"]
+  "include": ["src", "**/*.ts", "**/*.tsx", "../ui-helpers/**/*.ts", "./shims/dummy.ts", "../backend/src/helpers/queryFilter.ts"]
 }
