@@ -3,7 +3,10 @@ import Icon from '@mdi/react';
 import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
 import { Backdrop, Box, Button,  IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
+import axios from 'axios';
 import parse from 'html-react-parser';
+import { useAtom } from 'jotai';
+import { isEqual } from 'lodash';
 import get from 'lodash/get';
 import { TrayPlus } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
@@ -13,6 +16,8 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
 import { AlertQueueController } from './Events/AlertQueue';
+import { alertQueueAtom } from '../../../../atoms';
+import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
@@ -140,6 +145,33 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   });
   const [ statusLoaded, setStatusLoaded ] = React.useState(false);
 
+  const endpoint = '/api/registries/alerts/queue';
+  const [ queue, setQueue ] = useAtom(alertQueueAtom);
+  const refreshQueue = () => {
+    axios.get(`${JSON.parse(localStorage.server)}${endpoint}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(({ data }) => {
+        // update only if queue is different
+        if (!isEqual(queue.map(o => o.updatedAt).sort(), data.data.map((o: any) => o.updatedAt).sort())) {
+          setQueue(data.data);
+        }
+      });
+  };
+  useIntervalWhen(() => {
+    refreshQueue();
+  }, 5000, true, true);
+
+  function createNewQueue () {
+    axios.post(`${JSON.parse(localStorage.server)}${endpoint}`, {
+      emitData: [],
+      filter: {},
+      passthrough: true,
+      play: false,
+    }, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        refreshQueue();
+      });
+  }
+
   function removeEvent (id: string) {
     console.log(`removeEvent => ${id}`);
     getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
@@ -249,12 +281,11 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
           {status.areAlertsMuted && <NotificationsOff/>}
         </IconButton>
       </Tooltip>
+
       <Box sx={{ width: '100%' }}/>
-
-      <AlertQueueController/>
-
+      {queue.map((q, i) => <AlertQueueController key={q.id} queue={q} index={i}/>)}
       <Tooltip title="Add new queue">
-        <IconButton><TrayPlus/></IconButton>
+        <IconButton onClick={createNewQueue}><TrayPlus/></IconButton>
       </Tooltip>
     </Box>
     <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>

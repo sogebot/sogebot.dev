@@ -43,6 +43,13 @@ declare module '@mui/material/Button' {
   }
 }
 
+declare module '@mui/material/Chip' {
+  interface ChipPropsColorOverrides {
+    dark:  true;
+    light: true;
+  }
+}
+
 const LinkBehavior = React.forwardRef<HTMLAnchorElement, Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }>((props, ref) => {
   const { href, ...other } = props;
   try {
