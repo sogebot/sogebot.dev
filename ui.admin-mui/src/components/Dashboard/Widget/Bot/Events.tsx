@@ -5,7 +5,7 @@ import { Backdrop, Box, Button,  IconButton, List, ListItem, ListItemIcon, ListI
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
 import axios from 'axios';
 import parse from 'html-react-parser';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import get from 'lodash/get';
 import { TrayPlus } from 'mdi-material-ui';
@@ -54,6 +54,11 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useAppSelector((state: any) => state.loader);
+
+  const queue = useAtomValue(alertQueueAtom);
+  const currentQueue = queue.findIndex(q => {
+    return q.emitData.map(e => e.eventId).includes(props.item.id);
+  });
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
@@ -120,13 +125,13 @@ function RenderRow(props: any) {
       }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
 
-      {props.item.queue && <Typography color={grey[500]} fontSize={'0.8rem'} sx={{ pl: 1 }}>#{props.item.queue}</Typography>}
+      {currentQueue > -1 && <Typography color={grey[500]} fontSize={'0.8rem'} sx={{ pl: 1 }}>#{currentQueue + 1}</Typography>}
 
       <Backdrop open={hover} sx={classes.backdrop}>
         <Stack direction='row' sx={{
           justifyContent: 'flex-end', width: '100%', px: 2,
         }} spacing={3}>
-          <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>
+          {currentQueue === -1 && <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>}
           <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
         </Stack>
       </Backdrop>
@@ -229,7 +234,10 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
       const subgift = widgetSettings.showSubGifts && event.event === 'subgift';
       const subcommunitygift = widgetSettings.showSubCommunityGifts && event.event === 'subcommunitygift';
 
-      return follow
+      const isQueued = !!queue.find(q => q.emitData.map(e => e.eventId).includes(event.id));
+      const queued = !(!widgetSettings.showQueued && isQueued);
+
+      return (follow
             || redeem
             || raid
             || (tip && tipMinimal)
@@ -237,7 +245,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
             || (resub && resubMinimal && (resubPrime || resubTier1 || resubTier2 || resubTier3))
             || (sub && (subPrime || subTier1 || subTier2 || subTier3))
             || subgift
-            || subcommunitygift;
+            || subcommunitygift)
+            && queued;
     });
   }, [ events, widgetSettings ]);
 

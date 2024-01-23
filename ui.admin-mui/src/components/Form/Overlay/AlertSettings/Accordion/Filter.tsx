@@ -1,17 +1,18 @@
 import { DeleteTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, Fade, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { Filter } from '@sogebot/backend/src/database/entity/overlay';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
 import { useTranslation } from '../../../../../hooks/useTranslation';
+import { FormRewardInput } from '../../../Input/Reward';
 
 type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   model:               Filter,
-  open:                string,
+  open:                string | boolean,
   label?:              string,
-  onOpenChange:        (value: string) => void;
+  onOpenChange?:        (value: string) => void;
   onChange:            (value: Filter) => void;
   onDelete?:           () => void;
   customLabelDetails?: React.ReactNode;
@@ -69,7 +70,9 @@ export const AccordionFilter: React.FC<Props> = (props) => {
   const [addRuleType, setRuleType ] = React.useState([props.rules[0][0]]);
 
   const handleClick = () => {
-    onOpenChange(open === accordionId ? '' : accordionId);
+    if (onOpenChange) {
+      onOpenChange(isOpened ? '' : accordionId);
+    }
   };
 
   const getRuleType = (type: string) => {
@@ -97,7 +100,7 @@ export const AccordionFilter: React.FC<Props> = (props) => {
   const generateComparators = (type: 'number' | 'string' | 'any') => {
     const items = [];
 
-    if (getRuleType(type) === 'service') {
+    if (getRuleType(type) === 'service' || getRuleType(type) === 'reward') {
       items.push({
         value: 'eq', text: translate('registry.alerts.filter.equal'),
       });
@@ -164,7 +167,9 @@ export const AccordionFilter: React.FC<Props> = (props) => {
       items: [], operator: 'and',
     });
     update.items[index] = item;
-    onChange(update);
+    if (!isEqual(model, update)) {
+      onChange(update);
+    }
   }, [ model ]);
 
   const deleteItem = React.useCallback((index: number) => {
@@ -183,7 +188,9 @@ export const AccordionFilter: React.FC<Props> = (props) => {
     return `<< ${translate('registry.alerts.filter.noFilter')} >>`;
   }, [ model?.items, model?.operator ]);
 
-  return <Accordion {...accordionProps} expanded={open === accordionId && !props.disabled}>
+  const isOpened = open === accordionId || (typeof open === 'boolean' && open);
+
+  return <Accordion {...accordionProps} expanded={isOpened && !props.disabled}>
     <AccordionSummary
       expandIcon={<ExpandMoreTwoTone />}
       onClick={() => handleClick()}
@@ -194,16 +201,14 @@ export const AccordionFilter: React.FC<Props> = (props) => {
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%',
       }}>
         {label ? label : translate('registry.alerts.filter.name')}
-        <Fade in={open !== accordionId}>
-          <Typography component='span' variant='caption' sx={{
-            textAlign: 'right', maxWidth: '200px',
-          }}>
-            {props.customLabelDetails
-              ? props.customLabelDetails
-              : stringifiedFilter
-            }
-          </Typography>
-        </Fade>
+        <Typography component='span' variant='caption' sx={{
+          textAlign: 'right', maxWidth: '200px',
+        }}>
+          {props.customLabelDetails
+            ? props.customLabelDetails
+            : stringifiedFilter
+          }
+        </Typography>
       </Typography>
     </AccordionSummary>
     <AccordionDetails>
@@ -255,7 +260,7 @@ export const AccordionFilter: React.FC<Props> = (props) => {
               {item.type}
               <IconButton color='error' sx={{ height: '40px' }} onClick={() => deleteItem(index)}><DeleteTwoTone/></IconButton>
             </Stack>
-            <Stack direction='row' sx={{ alignItems: 'center' }}>
+            <Stack direction='row' sx={{ alignItems: 'flex-start' }}>
               <FormControl variant="filled" sx={{
                 width:                  '100%',
                 '& .MuiInputBase-root': { borderTopRightRadius: 0 },
@@ -278,26 +283,12 @@ export const AccordionFilter: React.FC<Props> = (props) => {
               </FormControl>
 
               {!['is-even', 'is-odd', 'pr'].includes(item.comparator) && <>
-                {getRuleType(item.type) === 'service' && <FormControl variant="filled" sx={{
-                  width:                  '100%',
-                  '& .MuiInputBase-root': { borderTopLeftRadius: 0 },
-                }}>
-                  <InputLabel id="demo-simple-select-standard-label">{translate('registry.alerts.filter.value')}</InputLabel>
-                  <Select
-                    fullWidth
-                    labelId="demo-simple-select-standard-label"
-                    id="demo-simple-select-standard"
-                    value={item.value}
-                    label={translate('registry.alerts.filter.value')}
-                    onChange={(event) => updateItem(index, {
-                      ...item, value: event.target.value as any,
-                    })}
-                  >
-                    {['YouTube SuperChat', 'donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'].map(val => <MenuItem value={val} key={val}>
-                      {val}
-                    </MenuItem>)}
-                  </Select>
-                </FormControl>}
+                {getRuleType(item.type) === 'reward' && <FormRewardInput
+                  value={item.value === '' ? null : String(item.value)}
+                  onChange={(value) => updateItem(index, {
+                    ...item, value: value.id,
+                  })}
+                />}
 
                 {getRuleType(item.type) === 'tier' && <FormControl variant="filled" sx={{
                   width:                  '100%',

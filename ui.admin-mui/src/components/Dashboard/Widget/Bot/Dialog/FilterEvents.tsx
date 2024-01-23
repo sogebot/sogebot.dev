@@ -58,6 +58,11 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
           p: 1, height: 'calc(100% - 50px)', maxHeight: 'calc(100% - 50px)', overflow: 'auto',
         }}>
           <Grid container>
+            <Grid item xs={12}>
+              <FormGroup>
+                <FormControlLabel control={<Switch checked={events.showQueued} onClick={() => handleEventChange('showQueued', !events.showQueued)}/>} label="Queued alerts" />
+              </FormGroup>
+            </Grid>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Switch checked={events.showFollows} onClick={() => handleEventChange('showFollows', !events.showFollows)}/>} label="Follows" />
@@ -66,7 +71,6 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
                 <FormControlLabel control={<Switch checked={events.showRedeems} onClick={() => handleEventChange('showRedeems', !events.showRedeems)}/>} label="Reward Redeems" />
                 <FormControlLabel control={<Switch checked={events.showSubGifts} onClick={() => handleEventChange('showSubGifts', !events.showSubGifts)}/>} label="Subscription gifts" />
                 <FormControlLabel control={<Switch checked={events.showSubCommunityGifts} onClick={() => handleEventChange('showSubCommunityGifts', !events.showSubCommunityGifts)}/>} label="Subscription community gifts" />
-                <FormControlLabel control={<Switch checked={events.showQueued} onClick={() => handleEventChange('showQueued', !events.showQueued)}/>} label="Queued alerts" />
               </FormGroup>
             </Grid>
             <Grid item xs={6}>

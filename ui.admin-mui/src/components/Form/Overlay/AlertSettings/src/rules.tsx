@@ -15,7 +15,7 @@ export const rules = (type: string | null):[string, string][] => {
     case 'cmdredeem':
       return [['recipient', 'string'], ['amount', 'number'], ['name', 'string'], ['name', 'message']];
     case 'rewardredeem':
-      return [['recipient', 'string']];
+      return [['recipient', 'string'], ['rewardId', 'reward']];
     case 'tip':
       return [['username', 'string'], ['amount', 'number'], ['service', 'service']];
   }
