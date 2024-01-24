@@ -230,7 +230,7 @@ const AlertQueueController: React.FC<Props> = (props) => {
                   <DialogContent dividers>
                     <Typography>Select events to queue</Typography>
                     <Box sx={{ margin: 'auto', textAlign: 'center' }}>
-                      {events.map(ev =>
+                      {events.filter(ev => ev !== 'promo').map(ev =>
                         ev in filter
                           ? <Box sx={{ position: 'relative', display: 'inline-block' }}>
                             <Chip sx={{ m: 0.2, pr: 2.5 }} label={ev} color={ev === configureEvent ? 'light' : 'primary'} onClick={() => {
