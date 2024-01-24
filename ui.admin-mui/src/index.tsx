@@ -1,5 +1,6 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
+import { ConfirmProvider } from 'material-ui-confirm';
 import { SnackbarProvider } from 'notistack';
 import React, { lazy } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -41,10 +42,12 @@ root.render(
   <SnackbarProvider maxSnack={3} autoHideDuration={1500}>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
+        <ConfirmProvider>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
 
-        <RouterProvider router={router}/>
+          <RouterProvider router={router}/>
+        </ConfirmProvider>
       </ThemeProvider>
     </Provider>
   </SnackbarProvider>

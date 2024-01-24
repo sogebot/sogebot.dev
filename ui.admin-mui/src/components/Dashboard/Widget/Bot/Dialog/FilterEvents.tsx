@@ -58,6 +58,11 @@ export const DashboardWidgetBotDialogFilterEvents: React.FC = () => {
           p: 1, height: 'calc(100% - 50px)', maxHeight: 'calc(100% - 50px)', overflow: 'auto',
         }}>
           <Grid container>
+            <Grid item xs={12}>
+              <FormGroup>
+                <FormControlLabel control={<Switch checked={events.showQueued} onClick={() => handleEventChange('showQueued', !events.showQueued)}/>} label="Queued alerts" />
+              </FormGroup>
+            </Grid>
             <Grid item xs={6}>
               <FormGroup>
                 <FormControlLabel control={<Switch checked={events.showFollows} onClick={() => handleEventChange('showFollows', !events.showFollows)}/>} label="Follows" />

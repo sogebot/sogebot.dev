@@ -97,6 +97,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
     ];
 
     const emit: EmitData = {
+      eventId: null,
       amount:   amountRandom ? Math.floor(Math.random() * 1000) : Number(amountRef.current?.value ?? 5),
       rewardId: reward.id ?? undefined,
       name:

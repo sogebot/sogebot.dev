@@ -2,6 +2,8 @@ import { Box } from '@mui/material';
 import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/overlay';
 import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import { itemsToEvalPart } from '@sogebot/backend/dest/helpers/queryFilter';
+import axios from 'axios';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -17,7 +19,6 @@ import { AlertItemText } from './AlertItemText';
 import { AlertItemTTS } from './AlertItemTTS';
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
-import { itemsToEvalPart } from '../../queryFilter';
 
 const log = console[(new URLSearchParams(window.location.search)).get('debug') ? 'error' : 'log'];
 
@@ -86,7 +87,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
         continue;
       }
       if (isEnabled) {
-        fetch(`${JSON.stringify(localStorage.server)}/assets/vulgarities/${lang}.txt`)
+        fetch(`${JSON.parse(localStorage.server)}/assets/vulgarities/${lang}.txt`)
           .then(response2 => response2.text())
           .then((text) => {
             setDefaultProfanityList(Array.from(
@@ -97,7 +98,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
             console.error(e);
           });
 
-        fetch(`${JSON.stringify(localStorage.server)}/assets/happyWords/${lang}.txt`)
+        fetch(`${JSON.parse(localStorage.server)}/assets/happyWords/${lang}.txt`)
           .then(response2 => response2.text())
           .then((text) => {
             setListHappyWords([...listHappyWords, ...text.split(/\r?\n/)]);
@@ -182,6 +183,10 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     }
     log(new Date().toISOString(), `alert-${id}`, '=== processing', JSON.stringify(data));
 
+    if (data.eventId) {
+      axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+    }
+
     // checking for vulgarities
     if (data.message && data.message.length > 0) {
       for (const vulgar of defaultProfanityList) {
@@ -228,9 +233,24 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   React.useEffect(() => {
     if (typeof emitData[id] !== 'undefined') {
       log(new Date().toISOString(), `alert-${id}`, '= emit data changed', JSON.stringify(emitData[id]));
+      log(new Date().toISOString(), `alert-${id}`, '= emit data ref', JSON.stringify(emitDataRef.current));
+      if (emitData[id] === null && emitDataRef.current && emitDataRef.current.queueId) {
+        // release after setting to null
+        log(new Date().toISOString(), `alert-${id}`, '= sending queue release');
+        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${emitDataRef.current.queueId}/release`);
+      }
       emitDataRef.current = emitData[id] ?? null;
     }
   }, [ emitData[id] ]);
+
+  useIntervalWhen(() => {
+    // extend alert if in emit data list
+    for (const data of emitDataList) {
+      if (data.eventId) {
+        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+      }
+    }
+  }, 10000, true, true);
 
   useIntervalWhen(() => {
     if (emitDataList.length === 0 || emitData[id] !== null) {

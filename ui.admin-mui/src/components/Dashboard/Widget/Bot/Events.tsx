@@ -1,16 +1,23 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
-import { Backdrop, Box, Button, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Backdrop, Box, Button,  IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
+import axios from 'axios';
 import parse from 'html-react-parser';
+import { useAtom, useAtomValue } from 'jotai';
+import { isEqual } from 'lodash';
 import get from 'lodash/get';
+import { TrayPlus } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import { DashboardWidgetBotDialogFilterEvents } from './Dialog/FilterEvents';
+import { AlertQueueController } from './Events/AlertQueue';
+import { alertQueueAtom } from '../../../../atoms';
+import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
@@ -47,6 +54,11 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useAppSelector((state: any) => state.loader);
+
+  const queue = useAtomValue(alertQueueAtom);
+  const currentQueue = queue.findIndex(q => {
+    return q.emitData.map(e => e.eventId).includes(props.item.id);
+  });
 
   const prepareMessage = useCallback((event: any) => {
     let t = translate(`eventlist-events.${event.event}`);
@@ -113,11 +125,13 @@ function RenderRow(props: any) {
       }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
       {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
 
+      {currentQueue > -1 && <Typography color={grey[500]} fontSize={'0.8rem'} sx={{ pl: 1 }}>#{currentQueue + 1}</Typography>}
+
       <Backdrop open={hover} sx={classes.backdrop}>
         <Stack direction='row' sx={{
           justifyContent: 'flex-end', width: '100%', px: 2,
         }} spacing={3}>
-          <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>
+          {currentQueue === -1 && <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>}
           <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
         </Stack>
       </Backdrop>
@@ -135,6 +149,33 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     isTTSMuted:     false,
   });
   const [ statusLoaded, setStatusLoaded ] = React.useState(false);
+
+  const endpoint = '/api/registries/alerts/queue';
+  const [ queue, setQueue ] = useAtom(alertQueueAtom);
+  const refreshQueue = () => {
+    axios.get(`${JSON.parse(localStorage.server)}${endpoint}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(({ data }) => {
+        // update only if queue is different
+        if (!isEqual(queue.map(o => o.updatedAt).sort(), data.data.map((o: any) => o.updatedAt).sort())) {
+          setQueue(data.data);
+        }
+      });
+  };
+  useIntervalWhen(() => {
+    refreshQueue();
+  }, 5000, true, true);
+
+  function createNewQueue () {
+    axios.post(`${JSON.parse(localStorage.server)}${endpoint}`, {
+      emitData: [],
+      filter: {},
+      passthrough: true,
+      play: false,
+    }, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        refreshQueue();
+      });
+  }
 
   function removeEvent (id: string) {
     console.log(`removeEvent => ${id}`);
@@ -193,7 +234,10 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
       const subgift = widgetSettings.showSubGifts && event.event === 'subgift';
       const subcommunitygift = widgetSettings.showSubCommunityGifts && event.event === 'subcommunitygift';
 
-      return follow
+      const isQueued = !!queue.find(q => q.emitData.map(e => e.eventId).includes(event.id));
+      const queued = !(!widgetSettings.showQueued && isQueued);
+
+      return (follow
             || redeem
             || raid
             || (tip && tipMinimal)
@@ -201,7 +245,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
             || (resub && resubMinimal && (resubPrime || resubTier1 || resubTier2 || resubTier3))
             || (sub && (subPrime || subTier1 || subTier2 || subTier3))
             || subgift
-            || subcommunitygift;
+            || subcommunitygift)
+            && queued;
     });
   }, [ events, widgetSettings ]);
 
@@ -221,7 +266,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     height: '100%', ...props.sx,
   }}>
     <Box sx={{
-      borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900],
+      borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900], display: 'flex'
     }}>
       <DashboardWidgetBotDialogFilterEvents/>
       <Tooltip title="Skip Alert">
@@ -244,6 +289,12 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
           {!status.areAlertsMuted && <NotificationsActive/>}
           {status.areAlertsMuted && <NotificationsOff/>}
         </IconButton>
+      </Tooltip>
+
+      <Box sx={{ width: '100%' }}/>
+      {queue.map((q, i) => <AlertQueueController key={q.id} queue={q} index={i}/>)}
+      <Tooltip title="Add new queue">
+        <IconButton onClick={createNewQueue}><TrayPlus/></IconButton>
       </Tooltip>
     </Box>
     <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
