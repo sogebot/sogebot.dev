@@ -278,11 +278,34 @@ const PageSettingsModulesServiceGoogle: React.FC<{
         </Stack>
 
         <Stack direction='row' spacing={1} alignItems='center'>
+          <TextField
+            variant='filled'
+            fullWidth
+            helperText="Title can be only 100 chars, chars over this limit will be truncated. Available variables: $game, $title, $tags"
+            value={settings.onStreamTitle[0]}
+            label="On Stream Title"
+            onChange={(event) => handleChange('onStreamTitle', event.target.value)}
+          />
+        </Stack>
+
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <TextField
+            variant='filled'
+            fullWidth
+            multiline
+            helperText="Description can be only 5000 chars, chars over this limit will be truncated. Available variables: $chapters, $title, $date, $tags"
+            value={settings.onStreamDescription[0]}
+            label="On Stream Description"
+            onChange={(event) => handleChange('onStreamDescription', event.target.value)}
+          />
+        </Stack>
+
+        <Stack direction='row' spacing={1} alignItems='center'>
           <Checkbox onChange={(_, checked) => handleChange('onStreamEndTitleEnabled', checked)} checked={settings.onStreamEndTitleEnabled[0]} />
           <TextField
             variant='filled'
             fullWidth
-            helperText="Title can be only 100 chars. Available variables: $gamesList, $title, $date"
+            helperText="Title can be only 100 chars, chars over this limit will be truncated. Available variables: $gamesList, $title, $date"
             value={settings.onStreamEndTitle[0]}
             disabled={!settings.onStreamEndTitleEnabled[0]}
             label="On Stream End Title"
@@ -296,7 +319,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
             variant='filled'
             fullWidth
             multiline
-            helperText="Description can be only 5000 chars. Available variables: $chapters, $title, $date"
+            helperText="Description can be only 5000 chars, chars over this limit will be truncated. Available variables: $chapters, $title, $date"
             value={settings.onStreamEndDescription[0]}
             disabled={!settings.onStreamEndDescriptionEnabled[0]}
             label="On Stream End Description"
