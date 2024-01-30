@@ -297,7 +297,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
     </Alert>}
 
     {mergedChat
-      ? <SimpleBar ref={scrollBarRef} style={{ maxHeight: split ? '70%' : '100%', padding: '5px' }} autoHide={false} onWheel={() => {
+      ? <SimpleBar ref={scrollBarRef} style={{ maxHeight: split ? '70%' : '100%', padding: '5px', paddingRight: '15px' }} autoHide={false} onWheel={() => {
         setTimeout(() => {
           const scrollElement = (scrollBarRef.current as any).contentWrapperEl;
 
