@@ -1,6 +1,6 @@
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
@@ -259,6 +259,10 @@ const PageSettingsModulesServiceGoogle: React.FC<{
             {streams.map(item => <MenuItem value={item.id} key={item.id}>{item.snippet.title}</MenuItem>)}
           </Select>
         </FormControl>
+
+        <FormGroup>
+          <FormControlLabel control={<Switch checked={settings.shouldPrepareBroadcast[0]} onClick={() => handleChange('shouldPrepareBroadcast', !settings.shouldPrepareBroadcast[0])} />} label={'Automatically prepare new broadcast'} />
+        </FormGroup>
 
         <Stack direction='row' spacing={1} alignItems='center'>
           <FormControl fullWidth variant='filled'>
