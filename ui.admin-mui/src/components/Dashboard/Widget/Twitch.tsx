@@ -1,6 +1,6 @@
 import { mdiCrown, mdiDiamond, mdiTwitch, mdiWrench, mdiYoutube } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ChatTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
+import { ChatTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, OpenInNewTwoTone, SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Button, Card, Divider, IconButton, Menu, MenuItem, Paper, Popover, Slider, Stack, Tab, Typography } from '@mui/material';
 import HTMLReactParser from 'html-react-parser';
@@ -14,6 +14,7 @@ import SimpleBar from 'simplebar-react';
 import notifAudio from './assets/message-notification.mp3';
 import { DAY, HOUR, MINUTE } from '../../../constants';
 import { dayjs } from '../../../helpers/dayjsHelper';
+import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -333,6 +334,10 @@ export const DashboardWidgetTwitch: React.FC = () => {
 
   const [ , setBanMenuForId ] = useAtom(anBanMenuForId);
 
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
+  const popoutURL = baseURL + '/popout/widget/chat?server=' + server;
+  const isPopout = window.location.href.includes('/popout/widget/chat');
+
   const [value, setValue] = React.useState('1');
   const [timestamp, setTimestamp] = React.useState(Date.now());
   const [room, setRoom] = React.useState('');
@@ -586,6 +591,15 @@ export const DashboardWidgetTwitch: React.FC = () => {
             <IconButton onClick={() => setUnfold(false)} sx={{ height: '40px' }}>
               <UnfoldLessTwoTone/>
             </IconButton>
+            {!isPopout && <IconButton sx={{ height: '40px' }}
+              target="popup"
+              onClick={(ev) => {
+                ev.preventDefault();
+                window.open(popoutURL, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+              } }
+              href={popoutURL}>
+              <OpenInNewTwoTone/>
+            </IconButton>}
           </Box>
           <IconButton onClick={() => setUnfold(true)} sx={{
             display: !unfold ? undefined : 'none', mt: 0.5,

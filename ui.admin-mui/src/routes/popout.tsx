@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { DashboardWidgetBot } from '../components/Dashboard/Widget/Bot';
+import { DashboardWidgetTwitch } from '../components/Dashboard/Widget/Twitch';
 import { LoginWarning } from '../components/LoginWarning';
 import { ServerRouterQueryParam } from '../components/ServerRouterQueryParam';
 import { ServerSelect } from '../components/ServerSelect';
@@ -118,6 +119,7 @@ export default function Root() {
       <Box>
         { state && <Routes>
           <Route path="/widget/bot/" element={<DashboardWidgetBot/>}/>
+          <Route path="/widget/chat/" element={<DashboardWidgetTwitch/>}/>
         </Routes>}
       </Box>
     </Fade>
