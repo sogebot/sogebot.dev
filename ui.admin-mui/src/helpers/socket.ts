@@ -49,7 +49,7 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
         const token = localStorage.getItem(`${localStorage.server}::accessToken`);
         if (token) {
           cb({ token: localStorage.getItem(`${localStorage.server}::accessToken`) });
-          break;
+          return;
         } else {
           if (continueOnUnauthorized) {
             break;
