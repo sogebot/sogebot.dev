@@ -5,7 +5,7 @@ import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
-import { atom, useAtomValue } from 'jotai';
+import { atom, useAtom } from 'jotai';
 import { chunk, cloneDeep, orderBy } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -33,7 +33,7 @@ const fetchLocalOverlays = async () => {
     });
   });
 };
-const overlaysAtom = atom(fetchLocalOverlays());
+const overlaysAtom = atom([] as Overlay[]);
 
 export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ open, setOpen ] = React.useState(false);
@@ -46,7 +46,7 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   const [ remoteOverlays, setRemoteOverlays ] = React.useState<null | RemoteOverlay[]>(null);
-  const localOverlays = useAtomValue(overlaysAtom);
+  const [ localOverlays, setLocalOverlays ] = useAtom(overlaysAtom);
 
   const [, startTransition] = React.useTransition();
 
@@ -63,6 +63,10 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
   React.useEffect(() => {
     setPage(1);
   }, [filteredRemoteOverlays]);
+
+  React.useEffect(() => {
+    fetchLocalOverlays().then(setLocalOverlays);
+  }, []);
 
   React.useEffect(() => {
     if (open) {
