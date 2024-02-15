@@ -1,8 +1,9 @@
-go 1.21
+go 1.21.0
 
 use ./services/plugins/
 
 use (
+	./apps/openRGB
 	./services/credentials/
 	./services/webhooks/
 )
