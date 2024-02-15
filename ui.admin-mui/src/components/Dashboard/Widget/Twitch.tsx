@@ -6,7 +6,7 @@ import { Alert, Box, Button, Card, Divider, IconButton, Menu, MenuItem, Paper, P
 import HTMLReactParser from 'html-react-parser';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import PopupState, { bindMenu, bindPopover, bindTrigger } from 'material-ui-popup-state';
-import React from 'react';
+import React, { useEffect } from 'react';
 import usePortal from 'react-useportal';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -29,6 +29,7 @@ const anBanMenuForId = atom<null | string>(null);
 const anBanMenuPositionY = atom(0);
 const anBanMenuPositionX = atom(0);
 const anIsScrollBlocked = atom(false);
+const anChatIsMerged = atom(false);
 
 let mouseOverBanMenu = false;
 
@@ -186,7 +187,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
   const [ isScrollBlocked, setIsScrollBlocked ] = useAtom(anIsScrollBlocked);
   const banMenuPosition = useAtomValue(anBanMenuPositionY);
   const banMenuPositionX = useAtomValue(anBanMenuPositionX);
-  const [ mergedChat ] = useLocalstorageState(`${localStorage.server}::chat_merged`, false);
+  const mergedChat = useAtomValue(anChatIsMerged);
 
   return <>
     {banMenuForId && <Portal><Paper id="ban-paper" sx={{
@@ -354,7 +355,15 @@ export const DashboardWidgetTwitch: React.FC = () => {
     alertRef.current = alert;
   }, [ alert ]);
 
-  const [ mergedChat, setMergedChat ] = useLocalstorageState(`${localStorage.server}::chat_merged`, false);
+  const [ mergedChat, setMergedChat ] = useAtom(anChatIsMerged);
+  useEffect(() => {
+    const item = localStorage.getItem(`${localStorage.server}::chat_merged`) ?? 'false';
+    setMergedChat(JSON.parse(item));
+  }, []);
+  useEffect(() => {
+    localStorage.setItem(`${localStorage.server}::chat_merged`, mergedChat.toString());
+  }, [mergedChat]);
+
   const [ isScrollBlocked ] = useAtom(anIsScrollBlocked);
 
   const [ messages, setMessages ] = useLocalstorageState<OverlayState['chat']['messages']>(`${localStorage.server}::chat_messages`, []);
