@@ -209,7 +209,7 @@ export const RandomizerEdit: React.FC = () => {
   const [ loading, setLoading ] = React.useState(true);
   const [ saving, setSaving ] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Randomizer().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Randomizer()._schema });
 
   const [ emptyItemToAdd, setEmptyItemToAdd ] = React.useState<Randomizer['items'][number]>({
     id:              v4(),
@@ -287,7 +287,7 @@ export const RandomizerEdit: React.FC = () => {
   React.useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`/api/registries/randomizer/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           console.log(data.data);
           setItem(data.data ?? Object.assign(new Randomizer(), emptyItem));
@@ -312,7 +312,7 @@ export const RandomizerEdit: React.FC = () => {
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer`,
+    axios.post(`/api/registries/randomizer`,
       { ...item },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {

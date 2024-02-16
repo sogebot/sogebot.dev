@@ -34,7 +34,7 @@ export const KeywordEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Keyword().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Keyword()._schema });
 
   const handleValueChange = <T extends keyof Keyword>(key: T, value: Keyword[T]) => {
     if (!item) {
@@ -70,8 +70,9 @@ export const KeywordEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`/api/systems/keywords/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
+          console.log({ data });
           setItem(data.data);
           setLoading(false);
         });
@@ -94,7 +95,7 @@ export const KeywordEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/keywords`,
+    axios.post(`/api/systems/keywords`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

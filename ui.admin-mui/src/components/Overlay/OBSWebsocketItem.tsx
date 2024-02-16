@@ -218,7 +218,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
         const res = await obs.call(opts.event as any, opts.args);
         console.log({ res });
         console.groupEnd();
-        axios.post(`${JSON.parse(localStorage.server)}/api/plugins/obs`, res, { headers: {
+        axios.post(`/api/plugins/obs`, res, { headers: {
           id: opts.id,
           'Content-Type': 'application/json',
         } });
@@ -238,7 +238,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
         const res = await obs.callBatch(opts.requests as any, opts.options).then(cb);
         console.log({ res });
         console.groupEnd();
-        axios.post(`${JSON.parse(localStorage.server)}/api/plugins/obs/`, res, { headers: {
+        axios.post(`/api/plugins/obs/`, res, { headers: {
           id: opts.id,
           'Content-Type': 'application/json',
         } });

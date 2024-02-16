@@ -22,11 +22,13 @@ import { PermissionTypeProvider } from '../../components/Table/PermissionTypePro
 import { Responses } from '../../components/Table/Responses';
 import getAccessToken from '../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsKeyword = () => {
+  const scope = useScope('systems:keywords');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -38,7 +40,7 @@ const PageCommandsKeyword = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Keyword>([
+  const columnTpl: ColumnMakerProps<Keyword> = [
     {
       columnName: 'keyword',
       filtering:  { type: 'string' },
@@ -88,7 +90,10 @@ const PageCommandsKeyword = () => {
         },
       },
     },
-    {
+  ];
+
+  if (scope.manage) {
+    columnTpl.push({
       columnName:  'actions',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
@@ -101,15 +106,17 @@ const PageCommandsKeyword = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Keyword>(columnTpl);
 
   const groups = useMemo(() => {
     return Array.from(new Set(items.map(o => o.group)));
   }, [items]);
 
   const deleteItem = useCallback((item: Keyword) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Keyword ${item.keyword} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -125,16 +132,20 @@ const PageCommandsKeyword = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data);
+            if (data.status === 'success') {
+              setItems(data.data);
+            }
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/groups/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setGroupsSettings(data.data);
+            if (data.status === 'success') {
+              setGroupsSettings(data.data);
+            }
             resolve();
           });
       }),
@@ -171,7 +182,7 @@ const PageCommandsKeyword = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(localStorage.server)}/api/systems/keywords`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`/api/systems/keywords`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -206,7 +217,7 @@ const PageCommandsKeyword = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
@@ -229,32 +240,34 @@ const PageCommandsKeyword = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='keywords'/>
-        <Grid item>
-          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/create/'>Create new keyword</LinkButton>
-        </Grid>
-        <Grid item>
-          <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/group/edit' color='secondary'>Group settings</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/create/'>Create new keyword</LinkButton>
+          </Grid>
+          <Grid item>
+            <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/keywords/group/edit' color='secondary'>Group settings</LinkButton>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -298,7 +311,7 @@ const PageCommandsKeyword = () => {
               selection={selection}
               onSelectionChange={setSelection}
             />
-            <IntegratedSelection/>
+            {scope.manage && <IntegratedSelection/>}
             <Table columnExtensions={tableColumnExtensions}/>
             <TableHeaderRow showSortingControls/>
             <TableColumnVisibility

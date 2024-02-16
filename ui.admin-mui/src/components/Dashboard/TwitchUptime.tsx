@@ -1,10 +1,11 @@
 import { Backdrop, Grid, Paper, Typography } from '@mui/material';
+import axios from 'axios';
 import { capitalize } from 'lodash';
 import React, { useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
+import getAccessToken from '../../getAccessToken';
 import { getTime } from '../../helpers/getTime';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setStreamOnline } from '../../store/pageSlice';
@@ -18,7 +19,7 @@ export const DashboardStatsUptime: React.FC = () => {
   const { currentStats } = useAppSelector(state => state.page);
 
   const saveHighlight = () => {
-    getSocket('/systems/highlights').emit('highlight');
+    axios.post(`/api/systems/highlights`, null, { headers: { authorization: `Bearer ${getAccessToken()}` } });
   };
 
   const uptime = React.useMemo(() => currentStats.uptime, [currentStats.uptime]);

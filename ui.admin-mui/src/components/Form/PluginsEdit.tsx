@@ -36,7 +36,7 @@ export const PluginsEdit: React.FC = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Plugin().schema });
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Plugin()._schema });
 
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);

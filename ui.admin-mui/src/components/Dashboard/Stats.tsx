@@ -27,7 +27,7 @@ export const DashboardStats: React.FC = () => {
   const currentStats = useAppSelector((state: any) => state.page.currentStats);
 
   useIntervalWhen(() => {
-    axios.get(`${JSON.parse(localStorage.server)}/api/stats/latest`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/stats/latest`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => {
         if (res.status === 200) {
           const data = res.data;
@@ -45,7 +45,7 @@ export const DashboardStats: React.FC = () => {
       })
       .catch(console.error);
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/stats/current`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/stats/current`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(res => {
         if (res.status === 200) {
           const data = res.data;

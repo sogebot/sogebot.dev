@@ -184,7 +184,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     log(new Date().toISOString(), `alert-${id}`, '=== processing', JSON.stringify(data));
 
     if (data.eventId) {
-      axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+      axios.post(`/api/registries/alerts/queue/${data.queueId}/extend`);
     }
 
     // checking for vulgarities
@@ -237,7 +237,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       if (emitData[id] === null && emitDataRef.current && emitDataRef.current.queueId) {
         // release after setting to null
         log(new Date().toISOString(), `alert-${id}`, '= sending queue release');
-        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${emitDataRef.current.queueId}/release`);
+        axios.post(`/api/registries/alerts/queue/${emitDataRef.current.queueId}/release`);
       }
       emitDataRef.current = emitData[id] ?? null;
     }
@@ -247,7 +247,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     // extend alert if in emit data list
     for (const data of emitDataList) {
       if (data.eventId) {
-        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+        axios.post(`/api/registries/alerts/queue/${data.queueId}/extend`);
       }
     }
   }, 10000, true, true);

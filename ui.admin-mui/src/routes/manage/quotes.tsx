@@ -1,12 +1,13 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
-import { Button, CircularProgress, Dialog, Grid, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, Dialog, Grid, Link, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { Quotes } from '@sogebot/backend/dest/database/entity/quotes';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { Link as RouterLink, useLocation , useParams } from 'react-router-dom';
+import { useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
@@ -23,18 +24,18 @@ import { useFilter } from '../../hooks/useFilter';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageManageQuotes = () => {
+  const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Quotes[]>([]);
-  const [ users, setUsers ] = useState<[userId: string, userName: string][]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { quotedByName: string, idWithCreatedAt: string }>([
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { idWithCreatedAt: string }>([
     {
       columnName:  'id',
       translation: '#',
@@ -67,14 +68,14 @@ const PageManageQuotes = () => {
       },
     },
     {
-      columnName:     'quotedByName',
+      columnName:     'quotedByUserName',
       translationKey: 'systems.quotes.by.name',
       filtering:      {
         type:    'list',
-        options: { listValues: Array.from(new Set(items.map(it => (users.find(o => o[0] === it.quotedBy) || ['', 'unknown user'])[1] ))) },
+        options: { listValues: Array.from(new Set(items.map(it => it.quotedByUserName ?? 'unknown user' ))) },
       },
       hidden: true,
-      column: { getCellValue: (row) => (users.find(o => o[0] === row.quotedBy) || ['', 'unknown user'])[1] },
+      // column: { getCellValue: (row) => (users.find(o => o[0] === row.quotedBy) || ['', 'unknown user'])[1] },
     },
     {
       columnName:     'quotedBy',
@@ -82,8 +83,9 @@ const PageManageQuotes = () => {
       column:         {
         getCellValue: (row) => [
           <Stack direction="row" key="row" sx={{ alignItems: 'baseline' }}>
-            <Typography sx={{ pr: 0.5 }}>{(users.find(o => o[0] === row.quotedBy) || ['', 'unknown user'])[1]}</Typography>
-            <Typography variant="caption">({ row.quotedBy })</Typography>
+            {row.quotedByUserName
+              ? <Link component={RouterLink} to={`/manage/viewers/${row.quotedBy}?server=${server}`}>{row.quotedByUserName}#{row.quotedBy}</Link>
+              : <Typography>{row.quotedByUserName ?? 'unknown user'}#{row.quotedBy}</Typography>}
           </Stack>,
         ],
       },
@@ -110,7 +112,7 @@ const PageManageQuotes = () => {
   const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 
   const deleteItem = useCallback((item: Quotes) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Quote ${item.id} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -124,9 +126,8 @@ const PageManageQuotes = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/quotes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setUsers(data.users);
             setItems(data.data);
             resolve();
           });
@@ -143,7 +144,7 @@ const PageManageQuotes = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
@@ -219,7 +220,7 @@ const PageManageQuotes = () => {
         open={open}
         fullWidth
         maxWidth='md'>
-        {open && <QuotesEdit items={items} users={users}/>}
+        {open && <QuotesEdit items={items}/>}
       </Dialog>
     </>
   );

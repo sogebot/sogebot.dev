@@ -1,7 +1,6 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, RowDetailState, SelectionState, Sorting, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableRowDetail, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { Button, CircularProgress, Dialog, Grid, Stack, Typography } from '@mui/material';
-import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
 import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
@@ -19,21 +18,22 @@ import { RowDetail } from '../../components/Table/HowLongToBeat/RowDetail';
 import getAccessToken from '../../getAccessToken';
 import { timestampToObject } from '../../helpers/getTime';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 import { setOffset, setToggle } from '../../store/hltbSlice';
 
 const PageManageHLTB = () => {
+  const scope = useScope('systems:howlongtobeat');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useTranslation();
 
-  const [ items, setItems ] = useState<HowLongToBeatGame[]>([]);
-  const [ thumbnails, setThumbnails ] = useState<CacheGamesInterface[]>([]);
+  const [ items, setItems ] = useState<(HowLongToBeatGame & { thumbnail?: string | null })[]>([]);
   const [ loading, setLoading ] = useState(true);
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
@@ -82,7 +82,7 @@ const PageManageHLTB = () => {
         if (stream) {
           stream.offset = offset.value;
 
-          axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+          axios.post(`/api/systems/howlongtobeat/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
           setItems(i => {
             const it = i.filter(o => o.id !== offset.id);
             it.push(item);
@@ -108,7 +108,7 @@ const PageManageHLTB = () => {
             stream.isCompletionistCounted = !stream.isCompletionistCounted;
           }
 
-          axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+          axios.post(`/api/systems/howlongtobeat/${item.id}`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } });
           setItems(i => {
             const it = i.filter(o => o.id !== toggle.id);
             it.push(item);
@@ -132,91 +132,92 @@ const PageManageHLTB = () => {
     time:          string;
   };
 
-  const getThumbnailURL = useCallback((game: string) => {
-    return thumbnails.find(o => o.name === game)?.thumbnail?.replace('{width}', '46').replace('{height}', '60') || `https://static-cdn.jtvnw.net/ttv-boxart/./${encodeURI(game)}-46x60.jpg`;
-  }, [thumbnails]);
+  const getThumbnailURL = (item: typeof items[number]) => {
+    return item.thumbnail?.replace('{width}', '46').replace('{height}', '60') || `https://static-cdn.jtvnw.net/ttv-boxart/./${encodeURI(item.game)}-46x60.jpg`;
+  };
 
   const deleteItem = useCallback((item: HowLongToBeatGame) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/howlongtobeat/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         setItems(i => i.filter(o => o.id !== item.id));
         enqueueSnackbar(`Game ${item.game} deleted.`, { variant: 'success' });
       });
   }, [ enqueueSnackbar ]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<HowLongToBeatGame & extension>([
-    {
-      columnName:  'thumbnail',
-      translation: ' ',
-      table:       {
-        align: 'center', width: '62',
-      },
-      sorting: { sortingEnabled: false },
-      column:  { getCellValue: (row) => <img width={46} height={60} alt={row.game} key={row.game} src={getThumbnailURL(row.game)}/> },
-    }, {
-      columnName:  'game',
-      translation: translate('systems.howlongtobeat.game'),
-      filtering:   { type: 'string' },
-    }, {
-      columnName:  'startedAt',
-      translation: translate('systems.howlongtobeat.startedAt'),
-      table:       { align: 'right' },
-    }, {
-      columnName:  'updatedAt',
-      translation: translate('systems.howlongtobeat.updatedAt'),
-      table:       { align: 'right' },
-    }, {
-      columnName:  'main',
-      translation: translate('systems.howlongtobeat.main'),
-      table:       { align: 'right' },
-      sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'main') + +row.offset + getStreamsOffset(row, 'main'), 0))) } {row.gameplayMain > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayMain * 3600000)) }</span>}
-        </Typography>,
-      },
-    }, {
-      columnName:  'extra',
-      translation: translate('systems.howlongtobeat.extra'),
-      table:       { align: 'right' },
-      sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'extra') + +row.offset + getStreamsOffset(row, 'extra'), 0))) } {row.gameplayMainExtra > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayMainExtra * 3600000)) }</span>}
-        </Typography>,
-      },
-    }, {
-      columnName:  'completionist',
-      translation: translate('systems.howlongtobeat.completionist'),
-      table:       { align: 'right' },
-      sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'completionist') + +row.offset + getStreamsOffset(row, 'completionist'), 0))) } {row.gameplayCompletionist > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayCompletionist * 3600000)) }</span>}
-        </Typography>,
-      },
-    }, {
-      columnName:  'offset',
-      translation: translate('systems.howlongtobeat.offset'),
-      table:       { align: 'right' },
-      sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => <Typography>
-          { minutesFormatter(row.offset) }
-        </Typography>,
-      },
-    }, {
-      columnName:  'time',
-      translation: translate('systems.howlongtobeat.overallTime'),
-      table:       { align: 'right' },
-      sorting:     { sortingEnabled: false },
-      column:      {
-        getCellValue: (row) => <Typography>
-          { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'all') + +row.offset + getStreamsOffset(row, 'all'), 0)))}
-        </Typography>,
-      },
+  const columnTpl: ColumnMakerProps<HowLongToBeatGame & extension> = [{
+    columnName:  'thumbnail',
+    translation: ' ',
+    table:       {
+      align: 'center', width: '62',
     },
-    {
+    sorting: { sortingEnabled: false },
+    column:  { getCellValue: (row) => <img width={46} height={60} alt={row.game} key={row.game} src={getThumbnailURL(row)}/> },
+  }, {
+    columnName:  'game',
+    translation: translate('systems.howlongtobeat.game'),
+    filtering:   { type: 'string' },
+  }, {
+    columnName:  'startedAt',
+    translation: translate('systems.howlongtobeat.startedAt'),
+    table:       { align: 'right' },
+  }, {
+    columnName:  'updatedAt',
+    translation: translate('systems.howlongtobeat.updatedAt'),
+    table:       { align: 'right' },
+  }, {
+    columnName:  'main',
+    translation: translate('systems.howlongtobeat.main'),
+    table:       { align: 'right' },
+    sorting:     { sortingEnabled: false },
+    column:      {
+      getCellValue: (row) => <Typography>
+        { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'main') + +row.offset + getStreamsOffset(row, 'main'), 0))) } {row.gameplayMain > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayMain * 3600000)) }</span>}
+      </Typography>,
+    },
+  }, {
+    columnName:  'extra',
+    translation: translate('systems.howlongtobeat.extra'),
+    table:       { align: 'right' },
+    sorting:     { sortingEnabled: false },
+    column:      {
+      getCellValue: (row) => <Typography>
+        { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'extra') + +row.offset + getStreamsOffset(row, 'extra'), 0))) } {row.gameplayMainExtra > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayMainExtra * 3600000)) }</span>}
+      </Typography>,
+    },
+  }, {
+    columnName:  'completionist',
+    translation: translate('systems.howlongtobeat.completionist'),
+    table:       { align: 'right' },
+    sorting:     { sortingEnabled: false },
+    column:      {
+      getCellValue: (row) => <Typography>
+        { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'completionist') + +row.offset + getStreamsOffset(row, 'completionist'), 0))) } {row.gameplayCompletionist > 0 && <span>/ { timeToReadable(timestampToObject(row.gameplayCompletionist * 3600000)) }</span>}
+      </Typography>,
+    },
+  }, {
+    columnName:  'offset',
+    translation: translate('systems.howlongtobeat.offset'),
+    table:       { align: 'right' },
+    sorting:     { sortingEnabled: false },
+    column:      {
+      getCellValue: (row) => <Typography>
+        { minutesFormatter(row.offset) }
+      </Typography>,
+    },
+  }, {
+    columnName:  'time',
+    translation: translate('systems.howlongtobeat.overallTime'),
+    table:       { align: 'right' },
+    sorting:     { sortingEnabled: false },
+    column:      {
+      getCellValue: (row) => <Typography>
+        { timeToReadable(timestampToObject(Math.max(getStreamsTimestamp(row, 'all') + +row.offset + getStreamsOffset(row, 'all'), 0)))}
+      </Typography>,
+    },
+  }];
+
+  if (scope.manage) {
+    columnTpl.push({
       columnName:  'actions',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
@@ -229,9 +230,10 @@ const PageManageHLTB = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
 
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<HowLongToBeatGame & extension>(columnTpl);
   const { element: filterElement, filters } = useFilter<HowLongToBeatGame>(useFilterSetup);
 
   useEffect(() => {
@@ -241,10 +243,9 @@ const PageManageHLTB = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/hltb`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/howlongtobeat`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
-            setThumbnails(data.thumbnails);
             console.debug('Loaded', { data });
             resolve();
           });
@@ -261,7 +262,7 @@ const PageManageHLTB = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>(resolve => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -284,12 +285,14 @@ const PageManageHLTB = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='howlongtobeat'/>
-        <Grid item>
-          <Button sx={{ width: 250 }} variant="contained" href='/manage/howlongtobeat/create/'>Add new tracked game</Button>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <Button sx={{ width: 250 }} variant="contained" href='/manage/howlongtobeat/create/'>Add new tracked game</Button>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -326,7 +329,7 @@ const PageManageHLTB = () => {
               onSelectionChange={setSelection}
             />
 
-            <IntegratedSelection/>
+            {scope.manage && <IntegratedSelection/>}
             <Table columnExtensions={tableColumnExtensions}/>
             <TableHeaderRow showSortingControls/>
             <TableRowDetail

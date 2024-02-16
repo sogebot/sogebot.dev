@@ -2,12 +2,13 @@ import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
+import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
@@ -35,7 +36,7 @@ export const AliasEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Alias().schema });
+  const { propsError, reset, validate, haveErrors, showErrors } = useValidator({ schema: new Alias()._schema });
 
   const handleValueChange = <T extends keyof Alias>(key: T, value: Alias[T]) => {
     if (!alias) {
@@ -76,15 +77,21 @@ export const AliasEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    getSocket('/systems/alias').emit('generic::save', alias, (err, savedItem) => {
-      if (err) {
-        showErrors(err as any);
-      } else {
-        enqueueSnackbar('Alias saved.', { variant: 'success' });
-        navigate(`/commands/alias/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
-      }
-      setSaving(false);
-    });
+    axios.post(`/api/systems/alias`,
+      alias,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((response) => {
+        if (response.data.status === 'success') {
+          enqueueSnackbar('Alias saved.', { variant: 'success' });
+          navigate(`/commands/alias/edit/${response.data.data.id}`);
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .catch(e => {
+        showErrors(e.response.data.errors);
+      })
+      .finally(() => setSaving(false));
   };
 
   return(<>

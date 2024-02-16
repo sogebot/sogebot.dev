@@ -1,23 +1,37 @@
+import axios from 'axios';
+import { useAtom } from 'jotai';
 import React from 'react';
 
 import { useAppDispatch, useAppSelector } from './useAppDispatch';
-import { getSocket } from '../helpers/socket';
+import { scopesAtom } from '../atoms';
+import getAccessToken from '../getAccessToken';
 import { setPermissions } from '../store/pageSlice';
 
 export const usePermissions = () => {
   const dispatch = useAppDispatch();
   const { permissions } = useAppSelector(state => state.page);
+  const [ scopes, setScopes ] = useAtom(scopesAtom);
 
   const refresh = React.useCallback(() => {
     if (permissions.length === 0) {
-      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-        if (err) {
-          return console.error(err);
-        }
-        dispatch(setPermissions(res));
-      });
+      axios.get(`/api/core/permissions`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            console.log('permissions', data.data);
+            dispatch(setPermissions(data.data));
+          }
+        });
     }
-  }, [ dispatch, permissions ]);
+    if (scopes.length === 0) {
+      axios.get(`/api/core/permissions/availableScopes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            console.log('scopes', data.data);
+            setScopes(data.data);
+          }
+        });
+    }
+  }, [ dispatch, permissions, scopes ]);
 
   React.useEffect(() => {
     if (permissions.length === 0) {
@@ -25,5 +39,5 @@ export const usePermissions = () => {
     }
   }, [ refresh, permissions ]);
 
-  return { permissions };
+  return { permissions, refresh, scopes };
 };

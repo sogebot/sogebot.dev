@@ -1,5 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, FormHelperText, Grid, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntervalWhen, useRefElement } from 'rooks';
@@ -72,12 +73,8 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 
   const [ lastActiveDevice, setLastActiveDevice ] = useState('');
   useIntervalWhen(() => {
-    getSocket(`/integrations/spotify`).emit('get.value', 'lastActiveDeviceId', (err, value: string) => {
-      if (err) {
-        return console.error(err);
-      } else {
-        setLastActiveDevice(value);
-      }
+    axios.get('/api/settings/integrations/spotify/lastActiveDeviceId').then(({ data }) => {
+      setLastActiveDevice(data.data);
     });
   }, 1000, true, true);
 

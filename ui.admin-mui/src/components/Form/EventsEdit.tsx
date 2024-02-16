@@ -43,7 +43,7 @@ export const EventsEdit: React.FC = () => {
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { reset, haveErrors, validate, showErrors, propsError, dirtify } = useValidator({
-    schema: new Event().schema,
+    schema: new Event()._schema,
   });
 
   React.useEffect(() => {

@@ -1,10 +1,10 @@
-import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 
-import { getSocket } from './socket';
+import getAccessToken from '../getAccessToken';
 
-export const saveSettings = async (endpoint: keyof ClientToServerEventsWithNamespace, settings: Record<string, any>) => {
+export const saveSettings = async (endpoint: string, settings: Record<string, any>) => {
   let clonedSettings = cloneDeep(settings);
 
   if (clonedSettings.settings) {
@@ -57,13 +57,18 @@ export const saveSettings = async (endpoint: keyof ClientToServerEventsWithNames
   console.log({ clonedSettings });
 
   return new Promise((resolve, reject) => {
-    getSocket(endpoint).emit('settings.update', clonedSettings, (err) => {
-      if (err) {
-        return reject(err);
-      } else {
-        getSocket(endpoint).emit('settings.refresh');
+    axios.post(endpoint, clonedSettings, {
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    }).then((response) => {
+      if (response.data.status === 'success') {
         resolve(true);
+      } else {
+        reject(response.data.error);
       }
+    }).catch((err) => {
+      reject(err);
     });
   });
 };
