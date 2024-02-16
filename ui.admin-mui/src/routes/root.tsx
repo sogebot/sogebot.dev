@@ -56,6 +56,7 @@ import { OnboardingTokens } from '../components/OnboardingTokens';
 import { ServerRouterQueryParam } from '../components/ServerRouterQueryParam';
 import { ServerSelect } from '../components/ServerSelect';
 import { Version } from '../components/Version';
+import getAccessToken from '../getAccessToken';
 import checkTokenValidity from '../helpers/check-token-validity';
 import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
@@ -74,6 +75,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     }, 100);
     return;
   }
+
+  axios.defaults.baseURL = JSON.parse(localStorage.server);
+  axios.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
 
   dispatch(setState(false));
 
@@ -123,7 +127,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 
   console.log('Populating configuration.');
   const configuration = await getConfiguration();
-  console.log('Dispatching configuration.');
+  console.log('Dispatching configuration.', JSON.stringify(configuration));
   dispatch(setConfiguration(configuration));
 
   // translations hydration
@@ -199,7 +203,6 @@ export default function Root() {
               </AppBar>
             </Slide>
             <NavDrawer />
-
             {state && tokensOnboardingState && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
               <Fade in={isIndexPage}>
                 <Box sx={{

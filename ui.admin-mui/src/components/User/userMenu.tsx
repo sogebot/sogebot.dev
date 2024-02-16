@@ -50,7 +50,7 @@ export const UserMenu: React.FC = () => {
     localStorage[`${localStorage.server}::accessToken`] = '';
     localStorage[`${localStorage.server}::refreshToken`] = '';
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
-    window.location.assign(`${baseURL}/credentials/login#error=logged+out`);
+    window.location.assign(`${baseURL}`);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

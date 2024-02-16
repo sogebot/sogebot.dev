@@ -1,4 +1,5 @@
 import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import { cloneDeep, get, set } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -7,8 +8,8 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch } from './useAppDispatch';
 import { usePermissions } from './usePermissions';
 import { useTranslation } from './useTranslation';
+import getAccessToken from '../getAccessToken';
 import { saveSettings } from '../helpers/settings';
-import { getSocket } from '../helpers/socket';
 import { addSettingsLoading, rmSettingsLoading } from '../store/loaderSlice';
 
 export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[] }) => {
@@ -40,37 +41,24 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [errors]);
 
-  const refresh = useCallback(async (retryCount = 0) => {
-    console.debug('Refreshing settings', endpoint, retryCount, new Error().stack);
+  const refresh = useCallback(async () => {
+    console.debug('Refreshing settings', endpoint, new Error().stack);
     setLoading(true);
-    return new Promise<Record<string,any>>((resolve, reject) => {
-      let refreshId: NodeJS.Timeout | null = null;
-      if (retryCount > 5) {
-        setTimeout(() => reject('Timeout'), 1000);
-        return;
-      } else {
-        refreshId = setTimeout(() => refresh(retryCount++), 1000);
-      }
-      getSocket(endpoint)
-        .emit('settings', (err, _settings: {
-          [x: string]: any
-        }, _ui: {
-          [x: string]: {
-            [attr: string]: any
-          }
-        } ) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          setUI(_ui);
-          setSettings(_settings);
-          setSettingsInitial(_settings);
-          resolve(_settings);
-          setLoading(false);
-          refreshId && clearTimeout(refreshId);
-        });
-    });
+
+    const response = await axios.get(`/api${endpoint}/settings`, { headers: {
+      'Authorization': `Bearer ${getAccessToken()}`
+    } });
+
+    if (response.data.status === 'success') {
+      console.log(response.data.data.settings);
+      response.data.data.settings && setSettings(response.data.data.settings);
+      response.data.data.settings && setSettingsInitial(response.data.data.settings);
+      response.data.data.settings && setUI(response.data.data.settings);
+      setLoading(false);
+      return response.data.data.settings;
+    } else {
+      throw new Error(response.data.error);
+    }
   }, [ endpoint ]);
 
   useEffect(() => {

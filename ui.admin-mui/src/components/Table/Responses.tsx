@@ -3,6 +3,7 @@ import { Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material'
 import { Keyword } from '@sogebot/backend/src/database/entity/keyword';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
+import { v4 } from 'uuid';
 
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -11,6 +12,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 export const Responses: React.FC<{
   responses: Keyword['responses'],
 }> = ({ responses }) => {
+  const [ id ] = React.useState(v4());
   const { translate } = useTranslation();
   const { permissions } = usePermissions();
 
@@ -18,7 +20,7 @@ export const Responses: React.FC<{
     {responses.length === 0
       ? translate('systems.customcommands.no-responses-set')
       : <List dense>
-        {orderBy(responses, 'order', 'asc').map((response, idx) => (<ListItem key={response.id}>
+        {orderBy(responses, 'order', 'asc').map((response, idx) => (<ListItem key={`${id}-${idx}`}>
           <Stack width={'100%'}>
             {idx > 0 && <Divider flexItem variant="middle" sx={{ mb: 1 }}/>}
             <Grid container spacing={2}>

@@ -71,7 +71,7 @@ const PageCommandsPrice = () => {
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Price) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -85,7 +85,7 @@ const PageCommandsPrice = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -181,7 +181,7 @@ const PageCommandsPrice = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
+          axios.post(`/api/systems/price`,
             { ...item },
             { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
@@ -214,7 +214,7 @@ const PageCommandsPrice = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }

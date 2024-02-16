@@ -2,13 +2,14 @@ import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
+import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { classes } from '../styles';
@@ -34,20 +35,17 @@ export const AliasGroupEdit: React.FC<{
       setGroup(null);
       return;
     }
-    getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-      if (err) {
-        return console.error(err);
-      }
-      const _group = res.find(o => o.name === id) ?? {
-        name:    id,
-        options: {
-          filter:     null,
-          permission: null,
-        },
-      };
-      setGroup(_group);
-      setLoading(false);
-    });
+    axios.get(`/api/systems/groups/alias/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(({ data }) => {
+        setGroup(data.data ?? {
+          name:    id,
+          options: {
+            filter:     null,
+            permission: null,
+          },
+        });
+        setLoading(false);
+      });
   }, [id]);
 
   const handleClose = () => {
@@ -56,18 +54,22 @@ export const AliasGroupEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    getSocket('/systems/alias').emit('generic::groups::save', group, (err) => {
-      setSaving(false);
-      if (err) {
-        enqueueSnackbar('Something went wrong during saving.', { variant: 'error' });
-        return console.error(err);
-      }
-      enqueueSnackbar('Alias group data saved.', { variant: 'success' });
-      onSave();
-    });
+    axios.post(`/api/systems/groups/alias`,
+      group,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((response) => {
+        if (response.data.status === 'success') {
+          enqueueSnackbar('Alias group saved.', { variant: 'success' });
+          onSave();
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .finally(() => setSaving(false));
   }, [ group, onSave, enqueueSnackbar ]);
 
   const handleValueChange = <T extends keyof AliasGroup['options']>(key: T, value: string | null, append = false) => {
+    console.log({ key, value, append, group });
     if (!group) {
       return;
     }

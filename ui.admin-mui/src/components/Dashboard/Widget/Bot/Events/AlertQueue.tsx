@@ -25,7 +25,7 @@ type Props = {
 };
 
 const AlertQueueController: React.FC<Props> = (props) => {
-  const endpoint = `${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${props.queue.id}`;
+  const endpoint = `/api/registries/alerts/queue/${props.queue.id}`;
   const eventsCount = props.queue.emitData.length;
   const setQueue = useSetAtom(alertQueueAtom);
 
@@ -99,7 +99,7 @@ const AlertQueueController: React.FC<Props> = (props) => {
       console.log('Alert queue is empty, cannot send alert to overlay.');
       return;
     }
-    axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${props.queue.id}/trigger`, {}, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.post(`/api/registries/alerts/queue/${props.queue.id}/trigger`, {}, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
         enqueueSnackbar('Alert sent to overlay from queue.', { variant: 'success' });
       });
@@ -109,7 +109,7 @@ const AlertQueueController: React.FC<Props> = (props) => {
     confirm({ description: 'This action is permanent!' })
       .then(() => {
         popupState.close();
-        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${props.queue.id}/reset`, {}, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.post(`/api/registries/alerts/queue/${props.queue.id}/reset`, {}, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(() => {
             enqueueSnackbar('Alert queue reset.', { variant: 'success' });
           });

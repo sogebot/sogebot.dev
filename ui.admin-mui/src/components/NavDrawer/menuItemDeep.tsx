@@ -1,11 +1,13 @@
 import { ChevronRight } from '@mui/icons-material';
 import { ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
+import { getUserLoggedIn } from '../../helpers/isUserLoggedIn';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -29,10 +31,26 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
     if (!state || !connectedToServer) {
       return;
     }
-    getSocket('/core/general').emit('menu::private', (items) => {
-      setMenuItems(items.filter(o => o.category === props.category).sort((a: { name: string; }, b: { name: string; }) => {
-        return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-      }));
+    axios.get(`/api/ui/menu`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    }).then(res => {
+      const user = getUserLoggedIn();
+      const items = res.data as any[];
+      setMenuItems(items
+        // get only items that are in the category
+        .filter(o => o.category === props.category)
+        // get only items that user has access to
+        .filter(o => {
+          return o.scopeParent
+            ? !!user.bot_scopes[localStorage.server].find((scope: string) => scope.includes(o.scopeParent))
+            : true;
+        })
+        // sort items by name
+        .sort((a: { name: string; }, b: { name: string; }) => {
+          return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
+        }));
     });
   }, [state, connectedToServer, props, translate]);
 

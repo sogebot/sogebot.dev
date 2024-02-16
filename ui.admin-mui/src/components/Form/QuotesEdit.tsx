@@ -34,7 +34,7 @@ export const QuotesEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Quotes().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Quotes()._schema });
 
   const handleValueChange = <T extends keyof Quotes>(key: T, value: Quotes[T]) => {
     if (!item) {
@@ -74,7 +74,7 @@ export const QuotesEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/Quotes`,
+    axios.post(`/api/systems/Quotes`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

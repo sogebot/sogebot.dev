@@ -29,7 +29,7 @@ const TTSGoogle: React.FC<Props> = (props) => {
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
 
   useEffect(() => {
-    axios.get(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => setPrivateKeys(response.data.data));
   }, []);
 
