@@ -1,7 +1,6 @@
 import CookieIcon from '@mui/icons-material/Cookie';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Fade, FormControlLabel, FormGroup, Paper, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
@@ -15,7 +14,7 @@ export default function CookieBar() {
   const connected = useMemo(() => connectedToServer && state, [connectedToServer, state]);
 
   const [ cookieControlConsent, setCookieControlConsent ] = useLocalstorageState('cookie_control_consent', 0);
-  const [ cookieControlEnabledCookies, setCookieControlEnabled ] = useLocalstorageState('cookie_control_enabled_cookies', ['mandatory', 'functional']);
+  const [ /*cookieControlEnabledCookies*/, setCookieControlEnabled ] = useLocalstorageState('cookie_control_enabled_cookies', ['mandatory', 'functional']);
 
   useEffect(() => {
     if (connected) {
@@ -37,8 +36,7 @@ export default function CookieBar() {
 
   const acceptAll = () => {
     setCookieControlConsent(Date.now() + 3.154e+10); // add year consent
-    setCookieControlEnabled(['mandatory', 'functional', 'ms-clarity' ]);
-    (window as any).clarity('consent');
+    setCookieControlEnabled(['mandatory', 'functional' ]);
   };
 
   const revokeAll = () => {
@@ -52,17 +50,14 @@ export default function CookieBar() {
     }
   }, [cookieControlConsent, setCookieControlConsent]);
 
-  const updateEnabledCookies = useCallback((key: string, checked: boolean) => {
-    if (checked) {
-      if (key === 'ms-clarity') {
-        (window as any).clarity('consent');
-      }
-      setCookieControlEnabled(Array.from(new Set([...cookieControlEnabledCookies ?? [], key])));
-    } else {
-      setCookieControlEnabled((cookieControlEnabledCookies ?? []).filter(val => val !== key));
-    }
-    setCookieControlConsent(Date.now() + 3.154e+10); // add year consent
-  }, [ cookieControlEnabledCookies, setCookieControlConsent, setCookieControlEnabled ]);
+  // const updateEnabledCookies = useCallback((key: string, checked: boolean) => {
+  //   if (checked) {
+  //     setCookieControlEnabled(Array.from(new Set([...cookieControlEnabledCookies ?? [], key])));
+  //   } else {
+  //     setCookieControlEnabled((cookieControlEnabledCookies ?? []).filter(val => val !== key));
+  //   }
+  //   setCookieControlConsent(Date.now() + 3.154e+10); // add year consent
+  // }, [ cookieControlEnabledCookies, setCookieControlConsent, setCookieControlEnabled ]);
 
   return (<>
     {!connected && <Fade in={cookieControlConsent !== null}>
@@ -108,14 +103,9 @@ export default function CookieBar() {
             </Typography>} />
           </FormGroup>
 
-          <Typography variant={'h5'} sx={{
+          {/* <Typography variant={'h5'} sx={{
             fontWeight: 'bold', py: 2,
-          }}>Optional cookies</Typography>
-          <FormGroup>
-            <FormControlLabel control={<Checkbox onChange={(_, checked) => updateEnabledCookies('ms-clarity', checked)} checked={cookieControlEnabledCookies?.includes('ms-clarity')}/>} label={<Typography>
-              <Typography component='span' sx ={{ fontWeight: 'bold' }}>MICROSOFT CLARITY</Typography> - differentation of user session.
-            </Typography>} />
-          </FormGroup>
+          }}>Optional cookies</Typography> */}
 
         </DialogContentText>
       </DialogContent>
@@ -131,17 +121,5 @@ export default function CookieBar() {
         }}>Decline all</Button>
       </DialogActions>
     </Dialog>
-
-    <Helmet>
-      <script
-        id="clarityFnc"
-        dangerouslySetInnerHTML={{
-          __html: `(function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "cnni7q4jrp");`,
-        }}/>
-    </Helmet>
   </>);
 }
