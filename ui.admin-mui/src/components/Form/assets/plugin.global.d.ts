@@ -137,7 +137,7 @@ declare const ListenTo: {
      *    })
      *
      */
-    onSubscription(callback: (userState: UserState, params: { method: string, subCumulativeMonths: number, tier: string }) => void): void,
+    onSubscription(callback: (userState: UserState, params: { method: string, subCumulativeMonths: number, tier: 'Prime' | '1' | '2' | '3' }) => void): void,
     /**
      *  Listen to Twitch resubscripton event
      *  @param callback.userState contains userId and userName
@@ -151,7 +151,7 @@ declare const ListenTo: {
      *    })
      *
      */
-    onResub(callback: (userState: UserState, params: { subStreakShareEnabled: boolean; subStreak: number; subStreakName: string; subCumulativeMonthsName: string; message: string; subCumulativeMonths: number; tier: string; }) => void): void,
+    onResub(callback: (userState: UserState, params: { subStreakShareEnabled: boolean; subStreak: number; subStreakName: string; subCumulativeMonthsName: string; message: string; subCumulativeMonths: number; tier: 'Prime' | '1' | '2' | '3'; }) => void): void,
     /**
      *  Listen to Twitch reward subgift event
      *  @param callback.userState contains userId and userName
@@ -165,7 +165,7 @@ declare const ListenTo: {
      *    })
      *
      */
-    onSubGift(callback: (userState: UserState, params: { recipient: string; tier: number }) => void): void,
+    onSubGift(callback: (userState: UserState, params: { recipient: string; tier: 'Prime' | '1' | '2' | '3' }) => void): void,
     /**
      *  Listen to Twitch reward subgift event
      *  @param callback.userState contains userId and userName
@@ -193,7 +193,7 @@ declare const ListenTo: {
      *    })
      *
      */
-    onSubCommunityGift(callback: (userState: UserState, params: { count: number }) => void): void,
+    onSubCommunityGift(callback: (userState: UserState, params: { count: number, tier: 'Prime' | '1' | '2' | '3' }) => void): void,
     /**
      *  Listen to Twitch reward redemption event
      *  @param callback.userState contains userId and userName

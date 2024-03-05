@@ -4,6 +4,7 @@ export const rules = (type: string | null):[string, string][] => {
       return [['username', 'string'], ['game', 'string'], ['message', 'string']];
     case 'cheer':
     case 'subcommunitygift':
+      return [['username', 'string'], ['amount', 'number'], ['tier', 'tier']];
     case 'raid':
       return [['username', 'string'], ['amount', 'number']];
     case 'sub':
@@ -11,7 +12,7 @@ export const rules = (type: string | null):[string, string][] => {
     case 'resub':
       return [['username', 'string'], ['tier', 'tier'], ['amount', 'number']];
     case 'subgift':
-      return [['username', 'string'], ['recipient', 'string'], ['amount', 'number']];
+      return [['username', 'string'], ['recipient', 'string'], ['amount', 'number'], ['tier', 'tier']];
     case 'cmdredeem':
       return [['recipient', 'string'], ['amount', 'number'], ['name', 'string'], ['name', 'message']];
     case 'rewardredeem':
