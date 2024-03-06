@@ -71,6 +71,9 @@ const PageCommandsKeyword = () => {
       columnName: 'enabled', filtering: { type: 'boolean' }, table: { align: 'center' },
     },
     {
+      columnName: 'areResponsesRandomized', filtering: { type: 'boolean' }, table: { align: 'center' }, translation: 'Randomized',
+    },
+    {
       columnName: 'group',
       column:     { getCellValue: (row) => row.group ? row.group : '_ungroup' },
       filtering:  {

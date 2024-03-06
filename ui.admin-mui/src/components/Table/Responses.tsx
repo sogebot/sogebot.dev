@@ -1,6 +1,6 @@
 import { FilterAlt, Key, Pause, PlayArrow } from '@mui/icons-material';
 import { Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material';
-import { KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
+import { Keyword } from '@sogebot/backend/src/database/entity/keyword';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 
@@ -9,7 +9,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const Responses: React.FC<{
-  responses: KeywordResponses[],
+  responses: Keyword['responses'],
 }> = ({ responses }) => {
   const { translate } = useTranslation();
   const { permissions } = usePermissions();

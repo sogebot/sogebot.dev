@@ -218,6 +218,7 @@ const postKeyword = async (keyword: CustomCommand) => {
     keyword:   keyword.name,
     enabled:   true,
     group:     'nightbot-import',
+    areResponsesRandomized: false,
     responses: [
       {
         order:          0,

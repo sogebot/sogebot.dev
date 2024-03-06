@@ -2,10 +2,10 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
-import { Keyword, KeywordGroup, KeywordResponses } from '@sogebot/backend/dest/database/entity/keyword';
+import { Keyword, KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
-import { cloneDeep, orderBy } from 'lodash';
+import { capitalize, cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -54,14 +54,14 @@ export const KeywordEdit: React.FC<{
       return;
     }
 
-    const response = new KeywordResponses();
-    response.id = v4();
-    response.order = item.responses.length;
-    response.filter = '';
-    response.response = '';
-    response.stopIfExecuted = false;
-    response.permission = defaultPermissions.VIEWERS;
-
+    const response = {
+      id: v4(),
+      order: item.responses.length,
+      filter: '',
+      response: '',
+      stopIfExecuted: false,
+      permission: defaultPermissions.VIEWERS,
+    };
     const update = cloneDeep(item);
     update.responses = [...item.responses, response];
     setItem(update);
@@ -107,7 +107,7 @@ export const KeywordEdit: React.FC<{
       .finally(() => setSaving(false));
   };
 
-  const updateResponse = useCallback((value: KeywordResponses) => {
+  const updateResponse = useCallback((value: Keyword['responses'][number]) => {
     if (!item) {
       return;
     }
@@ -115,7 +115,7 @@ export const KeywordEdit: React.FC<{
 
     for (let i = 0; i < update.responses.length; i++) {
       if (update.responses[i].id === value.id) {
-        update.responses[i] = value as KeywordResponses;
+        update.responses[i] = value as Keyword['responses'][number];
       }
     }
     setItem(update);
@@ -128,7 +128,7 @@ export const KeywordEdit: React.FC<{
     const update = cloneDeep(item);
     update.responses = update.responses.filter(o => o.id !== responseId).map((o, idx) => ({
       ...o, order: idx,
-    })) as KeywordResponses[];
+    })) as Keyword['responses'];
     setItem(update);
   }, [item]);
 
@@ -222,6 +222,14 @@ export const KeywordEdit: React.FC<{
                   position: 'relative', top: '-10px',
                 }}>
                   {item?.enabled ? 'Keyword is enabled': 'Keyword is disabled'}
+                </FormHelperText>
+              </FormGroup>
+              <FormGroup sx={{ width: '100%' }}>
+                <FormControlLabel control={<Checkbox checked={item?.areResponsesRandomized || false} onChange={(event) => handleValueChange('areResponsesRandomized', event.target.checked)}/>} label={capitalize('Randomized')} />
+                <FormHelperText sx={{
+                  position: 'relative', top: '-10px',
+                }}>
+                  {item?.areResponsesRandomized ? 'Commands responses will be randomized.': 'Command responses will be triggered in exact order.'}
                 </FormHelperText>
               </FormGroup>
             </Grid>
