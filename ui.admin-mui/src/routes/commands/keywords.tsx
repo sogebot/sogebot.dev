@@ -278,7 +278,7 @@ const PageCommandsKeyword = () => {
               for={['group']}
             />
             <BoolTypeProvider
-              for={['visible', 'enabled']}
+              for={['visible', 'enabled', 'areResponsesRandomized']}
             />
 
             <SortingState
