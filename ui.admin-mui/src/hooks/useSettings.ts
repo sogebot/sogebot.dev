@@ -45,7 +45,7 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     console.debug('Refreshing settings', endpoint, new Error().stack);
     setLoading(true);
 
-    const response = await axios.get(`/api${endpoint}/settings`, { headers: {
+    const response = await axios.get(`/api/settings${endpoint}`, { headers: {
       'Authorization': `Bearer ${getAccessToken()}`
     } });
 
@@ -134,13 +134,13 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
   const save = useCallback(() => {
     if (settings) {
       setSaving(true);
-      saveSettings(endpoint, settings)
+      saveSettings(`/api/settings${endpoint}`, settings)
         .then(() => {
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
         .finally(() => setSaving(false));
     }
-  }, [ settings, enqueueSnackbar, endpoint ]);
+  }, [ settings, enqueueSnackbar, endpoint, refresh ]);
 
   const handleChange = useCallback((key: string, value: any): void => {
     console.log({

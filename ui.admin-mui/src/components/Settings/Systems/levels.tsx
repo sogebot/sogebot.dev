@@ -1,9 +1,10 @@
 import { LoadingButton, Skeleton } from '@mui/lab';
 import { Alert, Box, List, ListItem, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
-import { getSocket } from '../../../helpers/socket';
+import getAccessToken from '../../../getAccessToken';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -82,16 +83,18 @@ const PageSettingsModulesSystemsLevels: React.FC<{
   useEffect(() => {
     if (settings) {
       setShowcase(null);
-      getSocket(`/systems/levels`).emit('getLevelsExample', {
+      axios.post('/api/systems/levels/example',  {
         firstLevelStartsAt: settings.levels.firstLevelStartsAt[0], nextLevelFormula: settings.levels.nextLevelFormula[0], xpName: settings.xp.xpName[0],
-      }, (err, _data: string[]) => {
-        if (err) {
-          console.error(String(err));
-          setShowcase(typeof err === 'string' ? err : (err as Error).message);
-        } else {
-          setShowcase(_data);
-        }
-      });
+      }, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            setShowcase(data.data);
+          } else {
+            setShowcase(data.errors);
+          }
+        }).catch((err) => {
+          setShowcase(err.response.data.errors);
+        });
     }
   }, [ settings ]);
 
