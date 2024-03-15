@@ -101,7 +101,7 @@ const PageManageViewers = () => {
       axios.get(`/api/systems/highlights`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           if (data.status === 'success') {
-            setItems(data.data.items);
+            setItems(data.data);
             resolve();
           } else {
             reject(data.message);

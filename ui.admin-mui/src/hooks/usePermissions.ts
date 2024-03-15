@@ -17,8 +17,8 @@ export const usePermissions = () => {
       axios.get(`/api/core/permissions`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           if (data.status === 'success') {
-            console.log('permissions', data.data.items);
-            dispatch(setPermissions(data.data.items));
+            console.log('permissions', data.data);
+            dispatch(setPermissions(data.data));
           }
         });
     }

@@ -114,7 +114,7 @@ const PageCommandsAliasGroup = () => {
         axios.get(`/api/systems/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              setItems(data.data.items);
+              setItems(data.data);
             }
             resolve();
           });
@@ -123,7 +123,7 @@ const PageCommandsAliasGroup = () => {
         axios.get(`/api/systems/groups/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              setGroupsSettings(data.data.items);
+              setGroupsSettings(data.data);
             }
             resolve();
           });

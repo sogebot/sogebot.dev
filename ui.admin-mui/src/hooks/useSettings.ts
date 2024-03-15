@@ -27,6 +27,11 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
 
   const [ errors, setErrors ] = useState<{ propertyName: string, message: string }[]>([]);
 
+  // refresh settings on mount
+  useEffect(() => {
+    refresh();
+  }, []);
+
   useEffect(() => {
     if (loading && !settingsInitial) {
       dispatch(addSettingsLoading(endpoint));
@@ -50,7 +55,6 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     } });
 
     if (response.data.status === 'success') {
-      console.log(response.data.data.settings);
       response.data.data.settings && setSettings(response.data.data.settings);
       response.data.data.settings && setSettingsInitial(response.data.data.settings);
       response.data.data.settings && setUI(response.data.data.settings);
@@ -131,10 +135,12 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [ settings, validator, translate, endpoint ]);
 
-  const save = useCallback(() => {
-    if (settings) {
+  const save = useCallback((values?: any) => {
+    const data = values ?? settings;
+    console.log('Saving', data);
+    if (data) {
       setSaving(true);
-      saveSettings(`/api/settings${endpoint}`, settings)
+      saveSettings(`/api/settings${endpoint}`, data)
         .then(() => {
           enqueueSnackbar('Settings saved.', { variant: 'success' });
         })
@@ -142,24 +148,43 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [ settings, enqueueSnackbar, endpoint, refresh ]);
 
-  const handleChange = useCallback((key: string, value: any): void => {
-    console.log({
-      key, value,
-    });
+  const handleChange = useCallback(<T extends string | { [x: string]: any }>(key: T, value?: any, immediateSave?: boolean) => {
+    if (typeof key === 'object') {
+      console.log('Handling many', key);
+    } else {
+      console.log('Handling one', key, value);
+      if (typeof value === 'undefined') {
+        throw new Error('Value cannot be undefined');
+      }
+    }
     setSettings((settingsObj) => {
       if (!settingsObj) {
         return null;
       }
+
+      const transformType = (k: string, v: any) => {
+        // try to keep string/number
+        if (get(settingsObj, `${k}[1]`) === 'number') {
+          if (!isNaN(Number(v))) {
+            v = Number(v);
+          }
+        }
+        return v;
+      };
+
       const newSettingsObj = cloneDeep(settingsObj);
 
-      // try to keep string/number
-      if (get(settingsObj, `${key}[1]`) === 'number') {
-        if (!isNaN(Number(value))) {
-          value = Number(value);
+      if (typeof key === 'object') {
+        for (const [ k, v ] of Object.entries(key)) {
+          set(newSettingsObj, k, [transformType(k, v), get(settingsObj, `${k}[1]`)]);
         }
+      } else {
+        set(newSettingsObj, key, [transformType(key, value), get(settingsObj, `${key}[1]`)]);
       }
 
-      set(newSettingsObj, key, [value, get(settingsObj, `${key}[1]`)]);
+      if (immediateSave) {
+        save(newSettingsObj);
+      }
       return newSettingsObj;
     });
   }, []);

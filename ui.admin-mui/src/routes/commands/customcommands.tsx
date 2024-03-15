@@ -142,7 +142,7 @@ const PageCommandsCommands = () => {
         axios.get(`/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              const commands = data.data.items;
+              const commands = data.data;
               for (const command of commands) {
                 command.count = data.data.count.find((o: any) => o.command === command.command)?.count || 0;
               }
@@ -155,7 +155,7 @@ const PageCommandsCommands = () => {
         axios.get(`/api/systems/groups/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              setGroupsSettings(data.data.items);
+              setGroupsSettings(data.data);
             }
             resolve();
           });

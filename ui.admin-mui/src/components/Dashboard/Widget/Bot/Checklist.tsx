@@ -22,7 +22,7 @@ export const DashboardWidgetBotChecklist: React.FC<{ sx: SxProps }> = ({
     axios.get(`/api/systems/checklist`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         if (data.status === 'success') {
-          setItems(data.data.items);
+          setItems(data.data);
           setLoading(false);
         }
       });

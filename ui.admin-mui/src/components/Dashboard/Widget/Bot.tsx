@@ -22,6 +22,7 @@ export const DashboardWidgetBot: React.FC = () => {
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { translate } = useTranslation();
   const checklistScope = useScope('systems:checklist');
+  const queueScope = useScope('systems:queue');
 
   const [value, setValue] = React.useState('1');
 
@@ -59,7 +60,7 @@ export const DashboardWidgetBot: React.FC = () => {
             <TabList onChange={handleChange} variant='scrollable' scrollButtons="auto" sx={{ flexGrow: 1 }}>
               <Tab label={translate('widget-title-eventlist')} value="1" />
               {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
-              <Tab label={translate('widget-title-queue')} value="3" />
+              {queueScope.read && <Tab label={translate('widget-title-queue')} value="3" />}
               <Tab label={translate('widget-title-raffles')} value="4"/>
               {checklistScope.read && <Tab label={translate('menu.checklist')} value="5" />}
               <Tab label={translate('widget-title-custom')} value="6" />
@@ -80,7 +81,7 @@ export const DashboardWidgetBot: React.FC = () => {
         }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>
+          {queueScope.read && <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>}
           <DashboardWidgetBotRaffles active={value === '4'}  sx={value === '4' ? classes.showTab : classes.hideTab}/>
           {checklistScope.read && <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>}
           <DashboardWidgetBotCustom sx={value === '6' ? classes.showTab : classes.hideTab}/>

@@ -122,14 +122,14 @@ const PageCommandsKeyword = () => {
       new Promise<void>(resolve => {
         axios.get(`/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data.items);
+            setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
         axios.get(`/api/systems/groups/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setGroupsSettings(data.data.items);
+            setGroupsSettings(data.data);
             resolve();
           });
       }),

@@ -39,7 +39,7 @@ export const CommandGroupEdit: React.FC<{
     axios.get(`/api/systems/groups/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         console.log({ data });
-        const _group = data.data.items.find((o: { name: string }) => o.name === id) ?? {
+        const _group = data.data.find((o: { name: string }) => o.name === id) ?? {
           name:    id,
           options: {
             filter:     null,

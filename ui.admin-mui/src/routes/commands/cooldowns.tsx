@@ -129,7 +129,7 @@ const PageCommandsCooldown = () => {
       new Promise<void>(resolve => {
         axios.get(`/api/systems/cooldown`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data.items);
+            setItems(data.data);
             resolve();
           });
       }),

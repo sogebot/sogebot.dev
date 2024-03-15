@@ -245,7 +245,7 @@ const PageManageHLTB = () => {
       new Promise<void>(resolve => {
         axios.get(`/api/systems/howlongtobeat`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data.items);
+            setItems(data.data);
             console.debug('Loaded', { data });
             resolve();
           });

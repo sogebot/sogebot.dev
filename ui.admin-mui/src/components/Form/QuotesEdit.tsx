@@ -18,7 +18,6 @@ newItem.quote = '';
 
 export const QuotesEdit: React.FC<{
   items: Quotes[]
-  users: [userId: string, userName: string][]
 }> = (props) => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -53,14 +52,14 @@ export const QuotesEdit: React.FC<{
     if (id) {
       const it = props.items?.find(o => o.id === Number(id)) ?? newItem;
       setItem(it);
-      setQuotedByUserName((props.users.find(o => o[0] === it.quotedBy) || ['', 'unknown user'])[1]);
+      setQuotedByUserName(it.quotedByUserName ?? 'unknown user');
     } else {
       setItem(newItem);
       setQuotedByUserName(currentUser.login);
     }
     setLoading(false);
     reset();
-  }, [id, props.items, props.users, reset, currentUser.id, currentUser.login]);
+  }, [id, props.items, reset, currentUser.id, currentUser.login]);
 
   useEffect(() => {
     if (!loading && item) {

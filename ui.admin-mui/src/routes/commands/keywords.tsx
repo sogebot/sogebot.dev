@@ -135,7 +135,7 @@ const PageCommandsKeyword = () => {
         axios.get(`/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              setItems(data.data.items);
+              setItems(data.data);
             }
             resolve();
           });
@@ -144,7 +144,7 @@ const PageCommandsKeyword = () => {
         axios.get(`/api/systems/groups/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              setGroupsSettings(data.data.items);
+              setGroupsSettings(data.data);
             }
             resolve();
           });
