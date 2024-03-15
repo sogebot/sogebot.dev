@@ -12,6 +12,14 @@ import { setTokensOnboardingState } from '../store/loaderSlice';
 
 export const OnboardingTokens: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const user = JSON.parse(localStorage.getItem('cached-logged-user') || 'null');
+  if (!user || !user.bot_scopes[localStorage.server].includes('dashboard:admin:manage')) {
+    // do nothing if user is not admin
+    dispatch(setTokensOnboardingState(true));
+    return <></>;
+  }
+
   const location = useLocation();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();

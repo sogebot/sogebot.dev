@@ -11,7 +11,7 @@ type Props = {
   translations?: Record<string, string>;
   /** Values needs to be changed to trigger errors  */
   mustBeDirty?:  boolean;
-  schema:        NonNullable<BotEntity['schema']>;
+  schema:        NonNullable<BotEntity['_schema']>;
 };
 
 export const useValidator = (props: Props) => {

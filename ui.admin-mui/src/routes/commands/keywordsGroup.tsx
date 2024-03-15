@@ -17,9 +17,11 @@ import { PermissionTypeProvider } from '../../components/Table/PermissionTypePro
 import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageCommandsKeyword = () => {
+  const scope = useScope('systems:keywords');
   const { translate } = useTranslation();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -56,44 +58,60 @@ const PageCommandsKeyword = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: KeywordGroup) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/keywords/groups/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Keyword group ${item.name} deleted successfully. You can still see this group if it is being activelly used by keywords.`, { variant: 'success' });
         refresh();
       });
   }, [ enqueueSnackbar ]);
 
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'name',
-      title: capitalize(translate('group')),
-    },
-    {
-      name:         'used',
-      title:        capitalize(translate('isUsed')),
-      getCellValue: (row) => groups.includes(row.name),
-    },
-    {
-      name:         'filter',
-      title:        capitalize(translate('filter')),
-      getCellValue: (row) => row.options.filter === null ? 'No filter set' : row.options.filter,
-    },
-    {
-      name:         'permission',
-      title:        translate('permission'),
-      getCellValue: (row) => row.options.permission === null ? 'No permission set' : getPermissionName(row.options.permission, permissions || []),
-    },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <EditButton href={'/commands/keywords/group/edit/' + row.name}/>
-          <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ permissions, translate, deleteItem, groups ]);
+  const columns = useMemo<Column[]>(() => {
+    const col: Column[] = [
+      {
+        name:  'name',
+        title: capitalize(translate('group')),
+      },
+      {
+        name:         'used',
+        title:        capitalize(translate('isUsed')),
+        getCellValue: (row) => groups.includes(row.name),
+      },
+      {
+        name:         'filter',
+        title:        capitalize(translate('filter')),
+        getCellValue: (row) => row.options.filter === null ? 'No filter set' : row.options.filter,
+      },
+      {
+        name:         'permission',
+        title:        translate('permission'),
+        getCellValue: (row) => row.options.permission === null ? 'No permission set' : getPermissionName(row.options.permission, permissions || []),
+      },
+      {
+        name:         'actions',
+        title:        ' ',
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <EditButton href={'/commands/keywords/group/edit/' + row.name}/>
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      },
+    ];
+
+    if (scope.manage) {
+      col.push({
+        name:         'actions',
+        title:        ' ',
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <EditButton href={'/commands/customcommands/group/edit/' + row.name}/>
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      });
+    }
+    return col;
+  }, [ permissions, translate, deleteItem, groups, scope ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -102,14 +120,14 @@ const PageCommandsKeyword = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
           });
       }),
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/groups/keywords`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setGroupsSettings(data.data);
             resolve();

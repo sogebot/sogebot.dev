@@ -231,7 +231,7 @@ const postKeyword = async (keyword: CustomCommand) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/keywords`,
+      `/api/systems/keywords`,
       convertedKeyword,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );
@@ -262,7 +262,7 @@ const postCommand = async (command: CustomCommand) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+      `/api/systems/customcommands`,
       convertedCommand,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );
@@ -336,7 +336,7 @@ const postTimer = async (timer: Timer) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/timer`,
+      `/api/systems/timer`,
       convertedTimer,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );

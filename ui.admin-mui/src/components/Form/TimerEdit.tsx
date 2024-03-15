@@ -28,7 +28,7 @@ export const TimerEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Timer().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Timer()._schema });
 
   const handleValueChange = useCallback(<T extends keyof Timer>(key: T, value: Timer[T]) => {
     if (!item) {
@@ -63,7 +63,7 @@ export const TimerEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/timer`,
+    axios.post(`/api/systems/timer`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

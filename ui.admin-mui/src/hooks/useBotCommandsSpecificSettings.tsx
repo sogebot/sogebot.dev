@@ -1,4 +1,5 @@
 import { Button, Checkbox, Divider, Fade, FormControlLabel, InputAdornment, TextField } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -38,11 +39,8 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
     await Promise.all(
       Object.keys(settings).map(key => {
         return new Promise<void>(resolve => {
-          getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any).emit('set.value', {
-            variable: key, value: settings[key][0],
-          }, () => {
-            resolve();
-          });
+          axios.post(`/api/settings/${item.type.toLowerCase()}/${item.name.toLowerCase()}/${key}`, { value: settings[key][0] })
+            .finally(() => resolve());
         });
       }),
     );

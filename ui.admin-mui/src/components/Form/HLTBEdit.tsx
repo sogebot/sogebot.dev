@@ -29,7 +29,7 @@ export const HLTBEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new HowLongToBeatGame().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new HowLongToBeatGame()._schema });
 
   const handleValueChange = useCallback(<T extends keyof HowLongToBeatGame>(key: T, value: HowLongToBeatGame[T]) => {
     if (!item) {
@@ -77,7 +77,7 @@ export const HLTBEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`,
+    axios.post(`/api/systems/howlongtobeat/${item.id}`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {

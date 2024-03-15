@@ -18,7 +18,6 @@ newItem.quote = '';
 
 export const QuotesEdit: React.FC<{
   items: Quotes[]
-  users: [userId: string, userName: string][]
 }> = (props) => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -34,7 +33,7 @@ export const QuotesEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Quotes().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Quotes()._schema });
 
   const handleValueChange = <T extends keyof Quotes>(key: T, value: Quotes[T]) => {
     if (!item) {
@@ -53,14 +52,14 @@ export const QuotesEdit: React.FC<{
     if (id) {
       const it = props.items?.find(o => o.id === Number(id)) ?? newItem;
       setItem(it);
-      setQuotedByUserName((props.users.find(o => o[0] === it.quotedBy) || ['', 'unknown user'])[1]);
+      setQuotedByUserName(it.quotedByUserName ?? 'unknown user');
     } else {
       setItem(newItem);
       setQuotedByUserName(currentUser.login);
     }
     setLoading(false);
     reset();
-  }, [id, props.items, props.users, reset, currentUser.id, currentUser.login]);
+  }, [id, props.items, reset, currentUser.id, currentUser.login]);
 
   useEffect(() => {
     if (!loading && item) {
@@ -74,7 +73,7 @@ export const QuotesEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/Quotes`,
+    axios.post(`/api/systems/Quotes`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

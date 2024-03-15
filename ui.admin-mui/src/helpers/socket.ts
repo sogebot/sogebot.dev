@@ -150,6 +150,6 @@ type Configuration = {
 };
 
 export const getConfiguration = async (): Promise<Configuration> => {
-  const response = await axios.get(`${JSON.parse(localStorage.server)}/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+  const response = await axios.get(`/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
   return response.data;
 };

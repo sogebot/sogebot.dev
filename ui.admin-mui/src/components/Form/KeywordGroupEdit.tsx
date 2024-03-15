@@ -36,7 +36,7 @@ export const KeywordGroupEdit: React.FC<{
       return;
     }
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         const _group = data.data.find((o: { name: string }) => o.name === id) ?? {
           name:    id,
@@ -56,7 +56,7 @@ export const KeywordGroupEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/keywords/group`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.post(`/api/systems/keywords/group`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
         setSaving(false);
         enqueueSnackbar('Keyword group data saved.', { variant: 'success' });

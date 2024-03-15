@@ -229,7 +229,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
   }, []);
 
   const refresh = React.useCallback(async () => {
-    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         setRandomizers(data.data);
       });
@@ -248,7 +248,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
     if (!active) {
       await refresh();
     } else {
-      const response = await axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/visible`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+      const response = await axios.get(`/api/registries/randomizer/visible`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       const randomizer = response.data.data;
 
       // if randomizer is not visible anymore, do midstate isShown:false, then remove

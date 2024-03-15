@@ -16,9 +16,11 @@ import { v4 } from 'uuid';
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
 import { FilterMaker } from '../../components/Permissions/FilterMaker';
 import { PermissionsListItem } from '../../components/Permissions/ListItem';
+import { ScopesSelector } from '../../components/Permissions/ScopesSelector';
 import { TestUserField } from '../../components/Permissions/TestUserField';
 import { UserSearchlist } from '../../components/Permissions/UserSearchList';
 import { getSocket } from '../../helpers/socket';
+import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageSettingsPermissions = () => {
@@ -29,33 +31,20 @@ const PageSettingsPermissions = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Permissions[]>([]);
+  const { permissions } = usePermissions();
   const [ loading, setLoading ] = useState(true);
   const [ removing, setRemoving ] = useState(false);
   const [ saving, setSaving ] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/permissions').emit('generic::getAll', (err, data) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.groupCollapsed('permissions::generic::getAll');
-          console.log(data);
-          console.groupEnd();
-          setItems(data);
-
-          if (!id) {
-            navigate(`/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
-          }
-          resolve();
-        });
-      }),
-    ]);
+    setItems(permissions);
     setLoading(false);
-  }, [ id, navigate ]);
+
+    if (!id) {
+      navigate(`/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
+    }
+  }, [ id, navigate, permissions ]);
 
   useEffect(() => {
     refresh();
@@ -152,9 +141,8 @@ const PageSettingsPermissions = () => {
       excludeUserIds:     [],
       filters:            [],
     });
-    setItems(permissions => {
-      permissions.push(data);
-      return [...permissions];
+    setItems(it => {
+      return [...it, data];
     });
     setTimeout(() => reorder(), 10); // include save
     return;
@@ -337,6 +325,12 @@ const PageSettingsPermissions = () => {
               {!selectedItem.isCorePermission
                 && <FilterMaker model={selectedItem.filters} onChange={filters => handlePermissionChange('filters', filters)}/>
               }
+
+              {selectedItem.id !== defaultPermissions.CASTERS
+              && <ScopesSelector modelAll={selectedItem.haveAllScopes} model={selectedItem.scopes}  onChange={values => {
+                handlePermissionChange('scopes', values.scopes);
+                handlePermissionChange('haveAllScopes', values.haveAllScopes);
+              }}/>}
 
               <Divider sx={{ mt: 1.5 }}/>
 

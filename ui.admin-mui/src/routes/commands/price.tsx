@@ -19,12 +19,15 @@ import { PriceEdit } from '../../components/Form/PriceEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import getAccessToken from '../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsPrice = () => {
+  const scope = useScope('systems:price');
+
   const { translate } = useTranslation();
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -36,7 +39,7 @@ const PageCommandsPrice = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Price>([
+  const columnsTpl: ColumnMakerProps<Price> = [
     {
       columnName: 'command', filtering: { type: 'string' }, table: { width: '40%' },
     },
@@ -51,8 +54,11 @@ const PageCommandsPrice = () => {
     },
     {
       columnName: 'priceBits', filtering: { type: 'number' }, translation: capitalize(translate('systems.price.price.name') + ' (bits)'), table: { align: 'right' },
-    },
-    {
+    }
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push({
       columnName:  'actions',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
@@ -65,13 +71,15 @@ const PageCommandsPrice = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Price>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Price) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Price ${item.command} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -85,7 +93,7 @@ const PageCommandsPrice = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/price`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -181,7 +189,7 @@ const PageCommandsPrice = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
+          axios.post(`/api/systems/price`,
             { ...item },
             { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
@@ -214,7 +222,7 @@ const PageCommandsPrice = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/price/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => resolve());
         });
       }
@@ -235,40 +243,42 @@ const PageCommandsPrice = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='price'/>
-        <Grid item>
+        {scope.manage && <Grid item>
           <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/price/create/'>Create new price</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable emit">
-            <Button disabled={!bulkCanEnableEmit} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', true)}><SignalWifi4Bar/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable emit">
-            <Button disabled={!bulkCanDisableEmit} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('emitRedeemEvent', false)}><SignalWifiOffTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        </Grid>}
+        {scope.manage && <>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable emit">
+              <Button disabled={!bulkCanEnableEmit} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('emitRedeemEvent', true)}><SignalWifi4Bar/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable emit">
+              <Button disabled={!bulkCanDisableEmit} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('emitRedeemEvent', false)}><SignalWifiOffTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}

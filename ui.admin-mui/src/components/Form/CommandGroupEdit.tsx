@@ -36,8 +36,9 @@ export const CommandGroupEdit: React.FC<{
       return;
     }
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/systems/groups/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
+        console.log({ data });
         const _group = data.data.find((o: { name: string }) => o.name === id) ?? {
           name:    id,
           options: {
@@ -56,10 +57,10 @@ export const CommandGroupEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/customcommands/group`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.post(`/api/systems/groups/customcommands`, group, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
         setSaving(false);
-        enqueueSnackbar('Keyword group data saved.', { variant: 'success' });
+        enqueueSnackbar('Custom command group data saved.', { variant: 'success' });
         onSave();
       });
   }, [ group, onSave, enqueueSnackbar ]);

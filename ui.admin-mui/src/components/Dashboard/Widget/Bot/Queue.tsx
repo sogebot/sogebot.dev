@@ -3,19 +3,23 @@ import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, SxProps, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 import React from 'react';
-import { useDidMount, useIntervalWhen, usePreviousImmediate } from 'rooks';
+import { useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import { dayjs } from '../../../../helpers/dayjsHelper';
-import { getSocket } from '../../../../helpers/socket';
+import { useScope } from '../../../../hooks/useScope';
+import { useSettings } from '../../../../hooks/useSettings';
 import { classes } from '../../../styles';
 
 export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   sx,
 }) => {
+  const scope = useScope('systems:queue');
+
   const [ value, setValue ] = React.useState('1');
 
   const [ picked, setPicked ] = React.useState<QueueInterface[]>([]);
@@ -24,11 +28,13 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   const [ locked, setLocked ] = React.useState(false);
   const [ selectCount, setSelectCount ] = React.useState(1);
 
-  const [ eligibility, setEligibilty ] = React.useState({
-    all:         true,
-    subscribers: false,
-  });
-  const eligibilityCache = usePreviousImmediate(eligibility);
+  const { settings, handleChange: handleSettingsChange } = useSettings('/systems/queue');
+
+  React.useEffect(() => {
+    axios.get('/api/settings/systems/queue/locked').then(({ data }) => {
+      setLocked(data.data);
+    });
+  }, []);
 
   React.useEffect(() => {
     if (selectCount < 1) {
@@ -37,161 +43,64 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, [selectCount]);
 
   useIntervalWhen(() => {
-    getSocket('/systems/queue').emit('queue::getAllPicked', (err, users2: QueueInterface[]) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (!isEqual(picked, users2)) {
-        setPicked(users2);
+    axios.get('/api/systems/queue?_action=picked').then(({ data }) => {
+      if (!isEqual(picked, data.data)) {
+        setPicked(data.data);
       }
     });
-
-    getSocket('/systems/queue').emit('generic::getAll', (err, usersGetAll: QueueInterface[]) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (!isEqual(items, usersGetAll)) {
-        setItems(usersGetAll);
+    axios.get('/api/systems/queue').then(({ data }) => {
+      if (!isEqual(items, data.data)) {
+        setItems(data.data);
       }
     });
   }, 1000, true, true);
 
-  useDidMount(() => {
-    getSocket('/systems/queue').emit('settings', (err, data: any) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      const newData = {
-        all:         data.eligibility.eligibilityAll[0],
-        subscribers: data.eligibility.eligibilitySubscribers[0],
-      };
-      if (!isEqual(eligibility, newData)) {
-        setEligibilty({
-          all:         data.eligibility.eligibilityAll[0],
-          subscribers: data.eligibility.eligibilitySubscribers[0],
-        });
-      }
-    });
-    getSocket('/systems/queue').emit('get.value', 'locked', (err, locked2: boolean) => {
-      if (err) {
-        return console.error(err);
-      }
-      setLocked(locked2);
-    });
-  });
-
-  const triggerEligibilityUpdate = React.useCallback(() => {
-    if (eligibilityCache) {
-      // all was disabled
-      if (!eligibility.all && !eligibility.subscribers) {
-        setEligibilty({
-          all: true, subscribers: false,
-        });
-        return;
-      }
-      if (!eligibility.all && eligibilityCache.all) {
-        // we cannot disable if flws and subs are disabled
-        if (!eligibility.subscribers) {
-          setEligibilty({
-            all: true, subscribers: false,
-          });
-          return;
-        }
-      } else if (eligibility.all && !eligibilityCache.all) {
-        // remove subscribers if all was enabled
-        setEligibilty({
-          all: true, subscribers: false,
-        });
-        return;
-      }
-
-      if (eligibility.all && eligibility.subscribers) {
-        setEligibilty({
-          all: false, subscribers: eligibility.subscribers,
-        });
-        return;
-      }
-    }
-    const data = {
-      eligibility: {
-        eligibilityAll:         eligibility.all,
-        eligibilitySubscribers: eligibility.subscribers,
-      },
-    };
-    getSocket('/systems/queue').emit('settings.update', data, () => {
-      return true;
-    });
-  }, [eligibility, eligibilityCache]);
-
   React.useEffect(() => {
-    getSocket('/systems/queue').emit('set.value', {
-      variable: 'locked', value: locked,
-    }, () => {
-      return true;
-    });
+    axios.post('/api/settings/systems/queue/locked', { value: locked });
   }, [locked]);
-
-  React.useEffect(() => {
-    triggerEligibilityUpdate();
-  }, [triggerEligibilityUpdate]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
   function clear () {
-    getSocket('/systems/queue').emit('queue::clear', (err) => {
-      if (err) {
-        return console.error(err);
-      }
-    });
+    axios.post('/api/systems/queue?_action=clear');
   }
   function pick (random: boolean, count: number) {
-    const data = {
-      random,
-      count: count,
-    };
-    getSocket('/systems/queue').emit('queue::pick', data, (err, users2) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (users2) {
-        setPicked(users2);
+    axios.post('/api/systems/queue?_action=pick', { random, count })
+      .then(({ data }) => {
+        setPicked(data.data);
         setSelectedUsers([]);
         setValue('1');
-      }
-    });
+      });
   }
 
   const fUsers = React.useMemo(() => {
-    if (eligibility.all) {
+    if (!settings) {
+      return [];
+    }
+    if (settings.eligibility.eligibilityAll[0]) {
       return items;
     } else {
       let filteredUsers = items;
-      if (eligibility.subscribers) {
+      if (settings.eligibility.eligibilitySubscribers) {
         filteredUsers = filteredUsers.filter(o => o.isSubscriber);
       }
       return filteredUsers.sort(o => -(new Date(o.createdAt).getTime()));
     }
-  }, [eligibility, items]);
+  }, [settings, items]);
 
   function pickSelected () {
-    const data = {
+    axios.post('/api/systems/queue?_action=pick', {
       username: selectedUsers.map(idx => fUsers[idx].username),
       random:   false,
       count:    0,
-    };
-    getSocket('/systems/queue').emit('queue::pick', data, (err, users2) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (users2) {
-        setPicked(users2);
+    })
+      .then(({ data }) => {
+        setPicked(data.data);
         setSelectedUsers([]);
         setValue('1');
-      }
-    });
+      });
   }
 
   const handleSelectOf = (id: number) => {
@@ -225,26 +134,28 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
               borderBottom: 1, borderColor: 'divider', backgroundColor: grey[900],
             }}>
               <Stack direction="row" alignItems={'center'}>
-                <ButtonGroup color={'secondary'} variant="text" size='small' sx={{
+                <ButtonGroup disabled={!scope.manage} color={'secondary'} variant="text" size='small' sx={{
                   p: 0.5, width: '100%',
                 }}>
                   <Button
-                    onClick={() => setEligibilty({
-                      all: true, subscribers: false,
-                    })}
-                    color={eligibility.all ? 'success' : 'error'}
+                    onClick={() => handleSettingsChange({
+                      'eligibility.eligibilityAll': true,
+                      'eligibility.eligibilitySubscribers': false,
+                    }, undefined, true)}
+                    color={settings?.eligibility.eligibilityAll[0] ? 'success' : 'error'}
                   >ALL</Button>
                   <Button
-                    onClick={() => setEligibilty({
-                      all: false, subscribers: !eligibility.subscribers,
-                    })}
-                    color={eligibility.subscribers ? 'success' : 'error'}>SUBSCRIBERS</Button>
+                    onClick={() => handleSettingsChange({
+                      'eligibility.eligibilityAll': false,
+                      'eligibility.eligibilitySubscribers': !settings?.eligibility.eligibilitySubscribers[0],
+                    }, undefined, true)}
+                    color={settings?.eligibility.eligibilitySubscribers[0] ? 'success' : 'error'}>SUBSCRIBERS</Button>
                 </ButtonGroup>
                 <Tooltip title="Clear list">
                   <IconButton onClick={clear}><Backspace fontSize={'small'}/></IconButton>
                 </Tooltip>
                 <Tooltip title={ locked ? 'Queue locked' : 'Queue opened' }>
-                  <IconButton onClick={() => setLocked(!locked)} color={locked ? 'error' : 'success'}>
+                  <IconButton onClick={() => setLocked(!locked)} color={locked ? 'error' : 'success'} disabled={!scope.manage}>
                     {locked && <Lock/>}
                     {!locked && <LockOpenTwoTone/>}
                   </IconButton>
@@ -253,27 +164,29 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
             </Box>
             <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
               <Box>
-                <TextField
-                  variant="filled"
-                  label='Select count to pick'
-                  value={selectCount}
-                  fullWidth
-                  type='number'
-                  inputProps={{
-                    inputMode: 'numeric', pattern: '[0-9]*', min: '1',
-                  }}
-                  onChange={(event) => setSelectCount(Number(event.target.value))}
-                />
+                {scope.manage && <>
+                  <TextField
+                    variant="filled"
+                    label='Select count to pick'
+                    value={selectCount}
+                    fullWidth
+                    type='number'
+                    inputProps={{
+                      inputMode: 'numeric', pattern: '[0-9]*', min: '1',
+                    }}
+                    onChange={(event) => setSelectCount(Number(event.target.value))}
+                  />
 
-                <Button fullWidth onClick={() => pickSelected()} disabled={fUsers.length === 0 || selectedUsers.length === 0}>
+                  <Button fullWidth onClick={() => pickSelected()} disabled={fUsers.length === 0 || selectedUsers.length === 0}>
                   Pick { selectedUsers.length } selected
-                </Button>
-                <Button fullWidth onClick={() => pick(false, selectCount)} disabled={fUsers.length === 0}>
+                  </Button>
+                  <Button fullWidth onClick={() => pick(false, selectCount)} disabled={fUsers.length === 0}>
                   Pick first { selectCount }
-                </Button>
-                <Button fullWidth onClick={() => pick(true, selectCount)} disabled={fUsers.length === 0}>
+                  </Button>
+                  <Button fullWidth onClick={() => pick(true, selectCount)} disabled={fUsers.length === 0}>
                   Pick random { selectCount }
-                </Button>
+                  </Button>
+                </>}
 
                 <Divider sx={{ my: 1 }}>Users ({fUsers.length})</Divider>
                 <List dense disablePadding>
