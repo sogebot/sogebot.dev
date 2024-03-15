@@ -142,8 +142,7 @@ const PageSettingsPermissions = () => {
       filters:            [],
     });
     setItems(it => {
-      it.push(data);
-      return [...it];
+      return [...it, data];
     });
     setTimeout(() => reorder(), 10); // include save
     return;
