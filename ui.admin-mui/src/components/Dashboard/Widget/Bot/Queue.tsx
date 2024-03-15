@@ -43,7 +43,7 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, [selectCount]);
 
   useIntervalWhen(() => {
-    axios.get('/api/systems/queue', { headers: { 'x-action': 'picked' } }).then(({ data }) => {
+    axios.get('/api/systems/queue?_action=picked').then(({ data }) => {
       if (!isEqual(picked, data.data)) {
         setPicked(data.data);
       }
@@ -64,10 +64,10 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   };
 
   function clear () {
-    axios.post('/api/systems/queue', undefined, { headers: { 'x-action': 'clear' } });
+    axios.post('/api/systems/queue?_action=clear');
   }
   function pick (random: boolean, count: number) {
-    axios.post('/api/systems/queue', { random, count }, { headers: { 'x-action': 'pick' } })
+    axios.post('/api/systems/queue?_action=pick', { random, count })
       .then(({ data }) => {
         setPicked(data.data);
         setSelectedUsers([]);
@@ -91,11 +91,11 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, [settings, items]);
 
   function pickSelected () {
-    axios.post('/api/systems/queue', {
+    axios.post('/api/systems/queue?_action=pick', {
       username: selectedUsers.map(idx => fUsers[idx].username),
       random:   false,
       count:    0,
-    }, { headers: { 'x-action': 'pick' } })
+    })
       .then(({ data }) => {
         setPicked(data.data);
         setSelectedUsers([]);
