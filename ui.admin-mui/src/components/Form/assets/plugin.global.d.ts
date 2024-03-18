@@ -537,6 +537,37 @@ declare const ListenTo: {
       raidingBroadcasterId:          string;
       viewers:                       number;
     }) => void): void,
+    onChannelHypeTrainBegin(callback: () => void): void,
+    onChannelHypeTrainProgress(callback: (args: {
+      level: number,
+      total: number,
+      goal: number,
+      topContributionsBitsUserId: string;
+      topContributionsBitsUsername: string;
+      topContributionsBitsTotal: number;
+      topContributionsSubsUserId: string;
+      topContributionsSubsUsername: string;
+      topContributionsSubsTotal: number;
+      lastContributionType: 'bits' | 'subscription';
+      lastContributionUserId: string;
+      lastContributionUsername: string;
+      lastContributionTotal: number;
+    }) => void): void,
+    onChannelHypeTrainEnd(callback: (args: {
+      level: number,
+      total: number,
+      goal: number,
+      topContributionsBitsUserId: string;
+      topContributionsBitsUsername: string;
+      topContributionsBitsTotal: number;
+      topContributionsSubsUserId: string;
+      topContributionsSubsUsername: string;
+      topContributionsSubsTotal: number;
+      lastContributionType: 'bits' | 'subscription';
+      lastContributionUserId: string;
+      lastContributionUsername: string;
+      lastContributionTotal: number;
+    }) => void): void,
     onChannelRedemptionUpdate(callback: (args: {
       broadcasterDisplayName: string;
       broadcasterId:          string;
