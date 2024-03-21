@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, FormHelperText, Grid, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -18,7 +19,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 
   const { translate } = useTranslation();
 
-  const { settings, loading, refresh, handleChange, TextFieldProps } = useSettings('/integrations/spotify' as any);
+  const { settings, loading, refresh, handleChange, TextFieldProps, saving, save } = useSettings('/integrations/spotify' as any);
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -169,6 +170,10 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
         />
       </Stack>
     </Paper>}
+
+    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
+    </Stack>
   </Box>
   );
 };

@@ -18,7 +18,7 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { settings, loading, refresh, TextFieldProps } = useSettings('/integrations/streamelements' as any);
+  const { settings, loading, refresh, TextFieldProps, saving, save } = useSettings('/integrations/streamelements' as any);
 
   useEffect(() => {
     refresh();
@@ -81,6 +81,10 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
         />
       </Stack>
     </Paper>}
+
+    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
+    </Stack>
   </Box>
   );
 };
