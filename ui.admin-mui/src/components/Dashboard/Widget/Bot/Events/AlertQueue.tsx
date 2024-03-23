@@ -134,7 +134,6 @@ const AlertQueueController: React.FC<Props> = (props) => {
               <Typography component='div' variant='caption' sx={{
                 display: 'flex',
                 alignItems: 'center',
-                pb: '4px',
                 '& svg': { pr: 0.5 }
               }}>
                 <Icon path={mdiMouseRightClick} size={1} /> Context Menu

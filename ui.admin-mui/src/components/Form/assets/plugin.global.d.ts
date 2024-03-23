@@ -78,6 +78,33 @@ declare const ListenTo: {
   };
 
   /**
+   * Discord listeners
+   */
+  Discord: {
+    /**
+     *  Listen to Discord message event
+     *  @param callback.data contains data regarding message
+     *  @example
+     *
+     *    ListenTo.Discord.onMessage((data) => {
+     *
+     *      // your function logic here
+     *
+     *    })
+     *
+     */
+    onMessage(callback: (data: {
+      channelId: string,
+      channelName: string,
+      userName: string,
+      userId: string,
+      userDisplayName: string,
+      twitchLinkedUserId: string | null,
+      message: string,
+    }) => void): void,
+  },
+
+  /**
    * Twitch listeners
    */
   Twitch: {

@@ -1,3 +1,5 @@
+import { mdiMouseRightClick } from '@mdi/js';
+import Icon from '@mdi/react';
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, Fade, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
@@ -371,7 +373,15 @@ export const PluginsEdit: React.FC = () => {
                       sx={{
                         px: '8px', py: 0,
                       }}>
-                      <Tooltip title="Right click for menu" disableInteractive>
+                      <Tooltip title={<>
+                        <Typography component='div' variant='caption' sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          '& svg': { pr: 0.5 }
+                        }}>
+                          <Icon path={mdiMouseRightClick} size={1} /> Context Menu
+                        </Typography>
+                      </>} disableInteractive>
                         <ListItemButton sx={{ height: '48px' }} onContextMenu={ev => handleContextMenu(ev, file)} onClick={() => setEditFile(file.id)} selected={file.id === editFile}>
                           <ListItemText>{file.name}</ListItemText >
                         </ListItemButton>
@@ -483,7 +493,7 @@ export const PluginsEdit: React.FC = () => {
                 width="100%"
                 language={openedFileType === 'overlay' ? 'html' : 'typescript'}
                 theme='vs-dark'
-                options={{ readOnly: editFile.endsWith('d.ts') }}
+                options={{ readOnly: editFile.endsWith('d.ts'), wordWrap: 'on' }}
                 onChange={(value) => updateFileSource(value ?? '')}
                 key={openedFileSource.id}
                 defaultValue={openedFileSource.source}
