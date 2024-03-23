@@ -604,6 +604,13 @@ declare const ListenTo: {
   }
 };
 
+declare const Discord: {
+  /**
+   * Bot will send message to discord channel
+   * */
+  sendMessage(channelName: string, message:string): Promise<void>;
+};
+
 declare const Twitch: {
   /**
    * Bot will send message to chat
