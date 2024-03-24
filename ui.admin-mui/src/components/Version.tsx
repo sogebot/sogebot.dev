@@ -1,8 +1,10 @@
-import { Box, Fade, Typography } from '@mui/material';
+import { CloseTwoTone } from '@mui/icons-material';
+import { Box, Fade, IconButton, Stack, Typography } from '@mui/material';
 import axios from 'axios';
-import { useSnackbar } from 'notistack';
+import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 
+import { LinearProgressTimeout } from './Progress/LinearProgressTimeout';
 import { useAppSelector } from '../hooks/useAppDispatch';
 
 console.group('UI VERSION');
@@ -28,9 +30,20 @@ export const Version: React.FC = () => {
           if (process.env.REACT_APP_VERSION) {
             if (!process.env.REACT_APP_VERSION.includes(res.data)) {
               console.warn(`UI version (${process.env.REACT_APP_VERSION}) does not match docker version (${res.data})`);
-              enqueueSnackbar(<>There is new version of UI available. Please force refresh page by <Typography component='strong' variant='button' sx={{ fontWeight: 'bold', pl: 0.5, }}>Ctrl+Shift+R</Typography>. If refresh doesn't help, wait few minutes and try again.</>, {
+              const notif = enqueueSnackbar(<Stack>
+                <div>There is new version of UI available. <br/> Please force refresh page by <Typography component='strong' variant='button' sx={{ fontWeight: 'bold', pl: 0.5, }}>Ctrl+Shift+R</Typography>. <br/>If refresh doesn't help, wait few minutes and try again.</div>
+                <LinearProgressTimeout sx={{
+                  position: 'absolute',
+                  width: '100%',
+                  bottom: 0,
+                  left: 0,
+                }} timeout={9000} />
+              </Stack>, {
+                action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
+                  <CloseTwoTone/>
+                </IconButton>,
                 variant: 'info',
-                persist: true,
+                autoHideDuration: 10000,
               });
             } else {
               console.log('UI version matches docker version');
