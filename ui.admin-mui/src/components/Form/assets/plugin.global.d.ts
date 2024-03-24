@@ -1,12 +1,27 @@
 type UserState = { userName: string, userId: string };
 type AlertsCustomOptions = {
-  volume?:          number;
-  alertDuration?:   number;
-  textDelay?:       number;
-  layout?:          number;
-  messageTemplate?: string;
-  audioId?:         string;
-  mediaId?:         string;
+  volume?: number;
+  alertDuration? : number;
+  textDelay? : number;
+  layout? : number;
+  messageTemplate? : string;
+  audioId? : string;
+  mediaId? : string;
+
+  animationIn?: string;
+  animationInDuration?: number;
+  animationInWindowBoundaries?: boolean;
+
+  animationOut?: string;
+  animationOutDuration?: number;
+  animationOutWindowBoundaries?: boolean;
+
+  animationText?: any;
+  animationTextOptions?: any;
+
+  components?: {
+    [componentId: string]: any
+  }
 };
 
 /**
@@ -699,7 +714,10 @@ declare const OBS: {
 };
 
 declare const Alerts: {
-  trigger(uuid: string, name?: string, message?: string, customOptions?: AlertsCustomOptions): Promise<void>,
+  /**
+   * Configure in alert trigger editor
+   */
+  trigger(config?: string): Promise<void>,
 };
 
 declare const User: {

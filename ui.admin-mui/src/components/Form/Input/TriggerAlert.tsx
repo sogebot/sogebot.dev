@@ -95,8 +95,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
     return null;
   }, [selectedItemId, overlays ]);
 
-  // TODO: set as false
-  const [ expand, setExpand ] = React.useState(true);
+  const [ expand, setExpand ] = React.useState(false);
 
   React.useEffect(() => {
     getSocket('/registries/overlays').emit('generic::getAll', (err, data) => {
