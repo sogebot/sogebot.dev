@@ -102,11 +102,6 @@ export default function CookieBar() {
               <Typography component='span' sx ={{ fontWeight: 'bold' }}>FUNCTIONAL</Typography> - necessary cookies for bot usage.
             </Typography>} />
           </FormGroup>
-
-          {/* <Typography variant={'h5'} sx={{
-            fontWeight: 'bold', py: 2,
-          }}>Optional cookies</Typography> */}
-
         </DialogContentText>
       </DialogContent>
       <DialogActions>

@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { TriggerAlertDialog } from './PluginsEdit/TriggerAlertDialog';
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
@@ -29,6 +30,8 @@ type File = {
   source: string;
 };
 
+const regex = /Alerts\.trigger\(.*\)/g;
+
 export const PluginsEdit: React.FC = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
@@ -41,6 +44,9 @@ export const PluginsEdit: React.FC = () => {
   const [fileType, setFileType] = React.useState('code');
   const [contextMenuFile, setContextMenuFile] = React.useState<File | null>(null);
   const [editFile, setEditFile] = React.useState('');
+  const [timestamp, setTimestamp] = React.useState(Date.now());
+
+  const [ containsConfigurableAlertTriggers, setContainsConfigurableAlertTriggers ] = React.useState(false);
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -84,6 +90,9 @@ export const PluginsEdit: React.FC = () => {
     return newFilename[fId] && newFilename[fId].length > 0;
   }, [newFilename]);
   const updateFileSource = React.useCallback((source: string) => {
+    const matches = source.match(regex);
+    setContainsConfigurableAlertTriggers((matches && matches.length > 0) ?? false);
+
     setPlugin(pl => {
       if (!pl) {
         return pl;
@@ -205,6 +214,14 @@ export const PluginsEdit: React.FC = () => {
     }
   }, [plugin?.workflow, editFile]);
 
+  React.useEffect(() => {
+    if (editFile === 'global.d.ts') {
+      return;
+    }
+    const matches = openedFileSource?.source.match(regex);
+    setContainsConfigurableAlertTriggers((matches && matches.length > 0) ?? false);
+  }, [editFile, openedFileSource]);
+
   const open = React.useMemo(() => !!(type
     && (
       (type === 'edit' && id)
@@ -235,28 +252,33 @@ export const PluginsEdit: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (type === 'create') {
-      setLoading(false);
-      setPlugin({
-        id:       nanoid(),
-        name:     '',
-        enabled:  true,
-        workflow: JSON.stringify({
-          code:    [],
-          overlay: [],
-        }),
-        settings: null,
-      } as Plugin);
-    } else {
-      getSocket('/core/plugins').emit('generic::getOne', id, (err, item) => {
-        if (err) {
-          enqueueSnackbar(String(err), { action: 'error' });
-          console.error(err);
+    Promise.all([
+      new Promise<void>(resolve => {
+        resolve();
+        if (type === 'create') {
+          setPlugin({
+            id:       nanoid(),
+            name:     '',
+            enabled:  true,
+            workflow: JSON.stringify({
+              code:    [],
+              overlay: [],
+            }),
+            settings: null,
+          } as Plugin);
+        } else {
+          getSocket('/core/plugins').emit('generic::getOne', id, (err, item) => {
+            if (err) {
+              enqueueSnackbar(String(err), { action: 'error' });
+              console.error(err);
+            }
+            setPlugin(item);
+          });
         }
-        setPlugin(item);
-        setLoading(false);
-      });
-    }
+      })
+    ]);
+
+    setLoading(false);
     reset();
   }, [type, id, reset]);
 
@@ -331,13 +353,12 @@ export const PluginsEdit: React.FC = () => {
                 } as Plugin))}
                 fullWidth
               />
-
               <List
                 sx={{
                   width:    '100%',
                   bgcolor:  'background.paper',
                   overflow: 'auto',
-                  height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px)`,
+                  height:   `calc(100vh - 258px - ${ fileType === 'definition' ? 0 : 36.5 }px - ${ !containsConfigurableAlertTriggers ? 0 : 36.5 }px)`,
                   p:        0,
                   '& ul':   { padding: 0 },
                 }}
@@ -473,6 +494,22 @@ export const PluginsEdit: React.FC = () => {
                 }}>Delete file</MenuItem>
               </Menu>
 
+              {(fileType !== 'definition' && containsConfigurableAlertTriggers) && <>
+                <TriggerAlertDialog
+                  onSave={(source) => {
+                    updateFileSource(source); setTimestamp(Date.now());
+                  }}
+                  source={openedFileSource?.source ?? ''}
+                  buttonsx={{
+                    bgcolor:              'background.paper',
+                    borderTopLeftRadius:  0,
+                    borderTopRightRadius: 0,
+                    '&:hover':            {
+                      bgcolor: '#ffa000', color: 'black',
+                    },
+                  }} />
+              </>}
+
               {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
                 bgcolor:              'background.paper',
                 borderTopLeftRadius:  0,
@@ -495,7 +532,7 @@ export const PluginsEdit: React.FC = () => {
                 theme='vs-dark'
                 options={{ readOnly: editFile.endsWith('d.ts'), wordWrap: 'on' }}
                 onChange={(value) => updateFileSource(value ?? '')}
-                key={openedFileSource.id}
+                key={`${openedFileSource.id}-${timestamp}`}
                 defaultValue={openedFileSource.source}
                 beforeMount={configureMonaco}
               />}

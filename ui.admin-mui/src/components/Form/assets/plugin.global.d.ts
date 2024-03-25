@@ -1,13 +1,4 @@
 type UserState = { userName: string, userId: string };
-type AlertsCustomOptions = {
-  volume?:          number;
-  alertDuration?:   number;
-  textDelay?:       number;
-  layout?:          number;
-  messageTemplate?: string;
-  audioId?:         string;
-  mediaId?:         string;
-};
 
 /**
  * ListenTo contains all usable listeners for Twitch and other available services.
@@ -699,7 +690,10 @@ declare const OBS: {
 };
 
 declare const Alerts: {
-  trigger(uuid: string, name?: string, message?: string, customOptions?: AlertsCustomOptions): Promise<void>,
+  /**
+   * Configure in alert trigger editor
+   */
+  trigger(uuid?: string, config?: string): Promise<void>,
 };
 
 declare const User: {
