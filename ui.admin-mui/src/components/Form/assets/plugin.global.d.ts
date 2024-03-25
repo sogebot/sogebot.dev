@@ -1,28 +1,4 @@
 type UserState = { userName: string, userId: string };
-type AlertsCustomOptions = {
-  volume?: number;
-  alertDuration? : number;
-  textDelay? : number;
-  layout? : number;
-  messageTemplate? : string;
-  audioId? : string;
-  mediaId? : string;
-
-  animationIn?: string;
-  animationInDuration?: number;
-  animationInWindowBoundaries?: boolean;
-
-  animationOut?: string;
-  animationOutDuration?: number;
-  animationOutWindowBoundaries?: boolean;
-
-  animationText?: any;
-  animationTextOptions?: any;
-
-  components?: {
-    [componentId: string]: any
-  }
-};
 
 /**
  * ListenTo contains all usable listeners for Twitch and other available services.
@@ -717,7 +693,7 @@ declare const Alerts: {
   /**
    * Configure in alert trigger editor
    */
-  trigger(config?: string): Promise<void>,
+  trigger(uuid?: string, config?: string): Promise<void>,
 };
 
 declare const User: {

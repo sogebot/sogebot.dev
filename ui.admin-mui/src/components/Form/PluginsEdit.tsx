@@ -44,6 +44,7 @@ export const PluginsEdit: React.FC = () => {
   const [fileType, setFileType] = React.useState('code');
   const [contextMenuFile, setContextMenuFile] = React.useState<File | null>(null);
   const [editFile, setEditFile] = React.useState('');
+  const [timestamp, setTimestamp] = React.useState(Date.now());
 
   const [ containsConfigurableAlertTriggers, setContainsConfigurableAlertTriggers ] = React.useState(false);
 
@@ -214,7 +215,6 @@ export const PluginsEdit: React.FC = () => {
   }, [plugin?.workflow, editFile]);
 
   React.useEffect(() => {
-    console.log('Edit file changed', editFile, openedFileSource?.source);
     if (editFile === 'global.d.ts') {
       return;
     }
@@ -495,14 +495,19 @@ export const PluginsEdit: React.FC = () => {
               </Menu>
 
               {(fileType !== 'definition' && containsConfigurableAlertTriggers) && <>
-                <TriggerAlertDialog buttonsx={{
-                  bgcolor:              'background.paper',
-                  borderTopLeftRadius:  0,
-                  borderTopRightRadius: 0,
-                  '&:hover':            {
-                    bgcolor: '#ffa000', color: 'black',
-                  },
-                }} />
+                <TriggerAlertDialog
+                  onSave={(source) => {
+                    updateFileSource(source); setTimestamp(Date.now());
+                  }}
+                  source={openedFileSource?.source ?? ''}
+                  buttonsx={{
+                    bgcolor:              'background.paper',
+                    borderTopLeftRadius:  0,
+                    borderTopRightRadius: 0,
+                    '&:hover':            {
+                      bgcolor: '#ffa000', color: 'black',
+                    },
+                  }} />
               </>}
 
               {fileType !== 'definition' && <Button fullWidth variant='text' onClick={addNewFile} sx={{
@@ -527,7 +532,7 @@ export const PluginsEdit: React.FC = () => {
                 theme='vs-dark'
                 options={{ readOnly: editFile.endsWith('d.ts'), wordWrap: 'on' }}
                 onChange={(value) => updateFileSource(value ?? '')}
-                key={openedFileSource.id}
+                key={`${openedFileSource.id}-${timestamp}`}
                 defaultValue={openedFileSource.source}
                 beforeMount={configureMonaco}
               />}
