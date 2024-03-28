@@ -184,33 +184,6 @@ declare const ListenTo: {
      *
      */
     onSubGift(callback: (userState: UserState, params: { recipient: string; tier: 'Prime' | '1' | '2' | '3' }) => void): void,
-    /**
-     *  Listen to Twitch reward subgift event
-     *  @param callback.userState contains userId and userName
-     *  @param callback.params contains additional data
-     *  @example
-     *
-     *    ListenTo.Twitch.onSubCommunityGift((userState, params) => {
-     *
-     *      // your function logic here
-     *
-     *    })
-     *
-     */
-    onChannelAdBreakBegin(callback: (userState: UserState, params: { count: number }) => void): void,
-    /**
-     *  Listen to Twitch channel break
-     *  @param callback.userState contains userId and userName
-     *  @param callback.params contains additional data
-     *  @example
-     *
-     *    ListenTo.Twitch.onRewardRedeem((userState, params) => {
-     *
-     *      // your function logic here
-     *
-     *    })
-     *
-     */
     onSubCommunityGift(callback: (userState: UserState, params: { count: number, tier: 'Prime' | '1' | '2' | '3' }) => void): void,
     /**
      *  Listen to Twitch reward redemption event
@@ -413,7 +386,7 @@ declare const ListenTo: {
       userId:                 string;
       userName:               string;
     }) => void): void,
-    onChannelRewardAdd(callback: (args: {
+    onChannelAdBreakBegin(callback: (args: {
       duration: number;
       startedAt:              string,
       isAutomatic:            boolean,
