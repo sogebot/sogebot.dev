@@ -11,17 +11,18 @@ import { versions } from '../compatibilityList';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
 import useQuery from '../hooks/useQuery';
+import useSSL from '../hooks/useSSL';
 import sogebotLarge from '../images/sogebot_large.png';
 import { isBotStarted } from '../isBotStarted';
 import { setMessage, setServer } from '../store/loaderSlice';
+import theme from '../theme';
 
 const checkURLValidity = (serverURL: string) => {
   if (serverURL === '-- demo bot for demonstration purpose only --') {
     return true;
   }
   try {
-    const url = new URL(serverURL);
-    return url.hostname === 'localhost' || url.protocol === 'https:';
+    new URL(serverURL);
   } catch (e) {
     return false;
   }
@@ -41,6 +42,7 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
   const dispatch = useAppDispatch();
   const query = useQuery();
   const isMobile = useMobile();
+  const isSSL = useSSL();
   const { enqueueSnackbar } = useSnackbar();
 
   const [isInitial, setIsInitial] = React.useState(true);
@@ -269,12 +271,19 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
           }
         />
 
-        <Alert severity="warning" >
-            If you are using <strong>HTTP without SSL</strong>, you may not be able to connect due to use of unsecured bot access on secured website.
-            You need to allow mixed content for this website. It is <strong>strongly advised</strong> to use <strong>HTTPS</strong>.
-          {' '}
-          <Link href='https://stackoverflow.com/a/24434461' target='_blank'>How to allow mixed content?</Link>
-        </Alert>
+        {isSSL
+          ? <Alert severity="warning">
+              If you are using <strong>HTTP without SSL</strong>, you may not be able to connect due to use of unsecured bot access on secured website.
+              You need to allow mixed content for this website. It is <strong>strongly advised</strong> to use <strong>HTTPS</strong>.
+            {' '}
+            <Link href='https://stackoverflow.com/a/24434461' target='_blank'>How to allow mixed content?</Link>
+          </Alert>
+          : <Alert severity="error">
+            You are using <strong>HTTP</strong> connection. It is <strong>strongly advised</strong> to use <Link sx={{
+              color: theme.palette.error.light,
+            }} href='https://dash.sogebot.xyz'>secured dashboard</Link>.
+            Some of the features like Twitch embeds will not work on HTTP version.
+          </Alert>}
 
         <UserSimple/>
         {typeof window !== 'undefined' && !serverInputValue.includes('-- demo') && <TextField

@@ -53,11 +53,11 @@ declare module '@mui/material/Chip' {
 const LinkBehavior = React.forwardRef<HTMLAnchorElement, Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }>((props, ref) => {
   const { href, ...other } = props;
   try {
-    const to = href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.server)}`;
+    const to = href.toString().startsWith('http')
+      ? href
+      : href.toString().includes('?server=') ? href : `${href.toString()}?server=${JSON.parse(localStorage.server)}`;
     // Map href (MUI) -> to (react-router)
-    {
-      return <RouterLink ref={ref} to={to} {...other} />;
-    }
+    return <RouterLink ref={ref} to={to} {...other} />;
   } catch {
     return <RouterLink ref={ref} to={href} {...other} />;
   }
