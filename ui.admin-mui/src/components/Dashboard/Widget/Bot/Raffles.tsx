@@ -134,6 +134,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
       .then(({ data }) => {
         const raffleResponse = data.data;
         setRaffle(raffleResponse);
+      })
+      .catch((error) => {
+        console.error("Failed to open raffle:", error);
       });
   }, [keyword, isTypeKeywords, eligible, range ]);
 
