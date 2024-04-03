@@ -1,4 +1,3 @@
-import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { cloneDeep, get, set } from 'lodash';
@@ -12,7 +11,7 @@ import getAccessToken from '../getAccessToken';
 import { saveSettings } from '../helpers/settings';
 import { addSettingsLoading, rmSettingsLoading } from '../store/loaderSlice';
 
-export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, validator?: { [attribute: string]: ((value: any) => true | string | string[])[] }) => {
+export const useSettings = (endpoint: string, validator?: { [attribute: string]: ((value: any) => true | string | string[])[] }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();

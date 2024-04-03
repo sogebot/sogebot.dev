@@ -5,16 +5,15 @@ import { green, grey, red } from '@mui/material/colors';
 import { RaffleInterface } from '@sogebot/backend/dest/database/entity/raffle';
 import { RaffleParticipantInterface } from '@sogebot/backend/src/database/entity/raffle';
 import { UserInterface } from '@sogebot/backend/src/database/entity/user';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 import orderBy from 'lodash/orderBy';
+import { useConfirm } from 'material-ui-confirm';
 import React, { useCallback, useEffect } from 'react';
 import { useIntervalWhen } from 'rooks';
 
-import DashboardWidgetBotDialogConfirmRaffleClose from './Dialog/ConfirmRaffleClose';
-import DashboardWidgetBotDialogConfirmRafflePick from './Dialog/ConfirmRafflePick';
 import { SECOND } from '../../../../constants';
 import { dayjs } from '../../../../helpers/dayjsHelper';
-import { getSocket } from '../../../../helpers/socket';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import { minLength, required, startsWith } from '../../../../validators';
 import { classes } from '../../../styles';
@@ -26,6 +25,8 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
 }) => {
   const [ loading, setLoading ] = React.useState(true);
   const { translate } = useTranslation();
+
+  const confirm = useConfirm();
 
   const [ value, setValue ] = React.useState('1');
 
@@ -126,7 +127,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
     console.group('raffles open()');
     console.debug('out: ', out.join(' '));
     console.groupEnd();
-    getSocket('/systems/raffles').emit('raffle::open', out.join(' '));
+    axios.post('/api/systems/raffles/?_action=open', { message: out.join(' ') })
+      .then(({ data }) => {
+        const raffleResponse = data.data;
+        setRaffle(raffleResponse);
+      });
   }, [keyword, isTypeKeywords, eligible, range ]);
 
   const handleEligibilitySet = useCallback((newValue: typeof eligibleItems) => {
@@ -142,6 +147,22 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
     }
   }, [ eligibleItems ]);
 
+  const refresh = () => {
+    axios.get('/api/systems/raffles').then(({ data }) => {
+      const raffleResponse = data.data;
+      console.groupCollapsed('raffle:getLatest');
+      console.log({
+        raffle, raffleResponse
+      });
+      console.groupEnd();
+      setLoading(false);
+
+      if (!isEqual(raffle, raffleResponse)) {
+        setRaffle(raffleResponse || null);
+        setKeyword(raffleResponse?.keyword ?? '');
+      }
+    });
+  };
   useIntervalWhen(() => {
     if (!active) {
       // do nothing if not visible
@@ -155,23 +176,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
 
     lastUpdateAt = Date.now();
 
-    getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffleResponse) => {
-      console.groupCollapsed('raffle:getLatest');
-      console.log({
-        err, raffle,
-      });
-      console.groupEnd();
-      setLoading(false);
-      if (err) {
-        console.error(err);
-        return;
-      }
-
-      if (!isEqual(raffle, raffleResponse)) {
-        setRaffle(raffleResponse || null);
-        setKeyword(raffleResponse?.keyword ?? '');
-      }
-    });
+    refresh();
   }, 1000, true, true);
 
   useEffect(() => {
@@ -179,14 +184,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
       if (!raffle.winner) {
         setWinner(null);
       } else if (winner === null || winner.userName !== raffle.winner) {
-        getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user) => {
-          if (err2) {
-            return console.error(err2);
-          }
-          if (user) {
-            setWinner(user);
-          }
-        });
+        axios.get(`/api/core/users/${raffle.winner}?_query=userName`)
+          .then(({ data }) => {
+            setWinner(data.data);
+          });
       }
 
       if (!raffle?.isClosed) {
@@ -215,13 +216,40 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
       ...r, participants: [...r.participants.filter(o => o.id !== participant.id), participant],
     } : null);
 
-    getSocket('/systems/raffles').emit('raffle::setEligibility', {
-      id: participant.id as string, isEligible: participant.isEligible,
-    }, (err) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.post('/api/systems/raffles/?_action=eligibility', {
+      id: participant.id, isEligible: participant.isEligible,
     });
+  };
+
+  const closeRaffle = () => {
+    confirm({
+      title: 'Do you want to close raffle without a winner?',
+      confirmationText: 'Ok',
+      cancellationText: 'Cancel',
+    })
+      .then(() => {
+        axios.post('/api/systems/raffles/?_action=close')
+          .then(() => {
+            refresh();
+          });
+      })
+      .catch(() => {});
+  };
+
+  const pickRaffle = () => {
+    confirm({
+      title: 'Do you want to close pick a winner of raffle?',
+      confirmationText: 'Ok',
+      cancellationText: 'Cancel',
+    })
+      .then(() => {
+        axios.post('/api/systems/raffles/?_action=pick')
+          .then(() => {
+            refresh();
+            setValue('3');
+          });
+      })
+      .catch(() => {});
   };
 
   return (
@@ -317,7 +345,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                     onChange={(event) => setRange([Number(event.target.value), range[1]])}
                     inputProps={{
                       step:              10,
-                      min:               0,
+                      min:               1,
                       max:               10000,
                       type:              'number',
                       'aria-labelledby': 'input-slider',
@@ -329,6 +357,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                     value={range}
                     disabled={!raffle?.isClosed}
                     valueLabelDisplay="auto"
+                    min={1}
                     max={10000}
                     onChange={(event, newValue) => setRange(newValue as [min: number, max: number])}
                   />
@@ -341,7 +370,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                     onChange={(event) => setRange([range[0], Number(event.target.value)])}
                     inputProps={{
                       step:              10,
-                      min:               0,
+                      min:               1,
                       max:               10000,
                       type:              'number',
                       'aria-labelledby': 'input-slider',
@@ -359,8 +388,12 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
               </Button>}
 
               {!raffle?.isClosed && <Stack spacing={1} sx={{ alignItems: 'center' }}>
-                <DashboardWidgetBotDialogConfirmRaffleClose/>
-                <DashboardWidgetBotDialogConfirmRafflePick onPick={() => setValue('3')}/>
+                <Button onClick={closeRaffle} sx={{ width: '400px' }} variant='contained' color='warning'>
+                  Close raffle
+                </Button>
+                <Button onClick={pickRaffle} sx={{ width: '400px' }} variant='contained' color='success'>
+                  Pick winner
+                </Button>
               </Stack>}
             </Box>
           </Box>
@@ -412,7 +445,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                 <Grid item xs={12} sx={{
                   pt: 2, textAlign: 'center',
                 }}>
-                  {countEligibleParticipants > 0 && <DashboardWidgetBotDialogConfirmRafflePick onPick={() => setValue('3')} color="primary" title={<Stack direction="row"><Sync/>{ translate('roll-again')}</Stack>}/>}
+                  {countEligibleParticipants > 0 && <Button onClick={pickRaffle}><Stack direction="row"><Sync/>{ translate('roll-again')}</Stack></Button>}
                   {countEligibleParticipants === 0 && <Button disabled sx={{ width: '400px' }} variant='contained'><SyncDisabled/>{ translate('no-eligible-participants') }</Button>}
                 </Grid>
 
