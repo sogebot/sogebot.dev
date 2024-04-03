@@ -19,7 +19,9 @@ export const LinearProgressTimeout: React.FC<Props> = ({ timeout, sx, onClose })
 
   useEffect(() => {
     if (countdown === 100) {
-      onClose();
+      setTimeout(() => {
+        onClose();
+      }, 250);
     }
   }, [ countdown ]);
 
