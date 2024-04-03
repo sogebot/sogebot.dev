@@ -164,6 +164,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
         setRaffle(raffleResponse || null);
         setKeyword(raffleResponse?.keyword ?? '');
       }
+    })
+    .catch((error) => {
+      console.error("Failed to refresh raffle data:", error);
+      setLoading(false);
     });
   };
   useIntervalWhen(() => {
