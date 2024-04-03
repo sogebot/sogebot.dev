@@ -190,7 +190,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
         axios.get(`/api/core/users/${raffle.winner}?_query=userName`)
           .then(({ data }) => {
             setWinner(data.data);
-          });
+          })
+         .catch((error) => {
+           console.error("Failed to fetch winner information:", error);
+         });
       }
 
       if (!raffle?.isClosed) {
