@@ -224,6 +224,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
 
     axios.post('/api/systems/raffles/?_action=eligibility', {
       id: participant.id, isEligible: participant.isEligible,
+    })
+    .catch((error) => {
+      console.error("Failed to update participant eligibility:", error);
+    });
     });
   };
 
