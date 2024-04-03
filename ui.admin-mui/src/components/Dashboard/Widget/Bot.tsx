@@ -23,6 +23,7 @@ export const DashboardWidgetBot: React.FC = () => {
   const { translate } = useTranslation();
   const checklistScope = useScope('systems:checklist');
   const queueScope = useScope('systems:queue');
+  const rafflesScope = useScope('systems:raffles');
 
   const [value, setValue] = React.useState('1');
 
@@ -61,7 +62,7 @@ export const DashboardWidgetBot: React.FC = () => {
               <Tab label={translate('widget-title-eventlist')} value="1" />
               {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
               {queueScope.read && <Tab label={translate('widget-title-queue')} value="3" />}
-              <Tab label={translate('widget-title-raffles')} value="4"/>
+              {rafflesScope.read && <Tab label={translate('widget-title-raffles')} value="4"/>}
               {checklistScope.read && <Tab label={translate('menu.checklist')} value="5" />}
               <Tab label={translate('widget-title-custom')} value="6" />
             </TabList>

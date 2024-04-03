@@ -1,4 +1,4 @@
-import { Chat, Sync, SyncDisabled, VisibilityOff } from '@mui/icons-material';
+import { ChatTwoTone, SyncDisabledTwoTone, SyncTwoTone, VisibilityOffTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, SxProps, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from '@mui/material';
 import { green, grey, red } from '@mui/material/colors';
@@ -14,6 +14,7 @@ import { useIntervalWhen } from 'rooks';
 
 import { SECOND } from '../../../../constants';
 import { dayjs } from '../../../../helpers/dayjsHelper';
+import { useScope } from '../../../../hooks/useScope';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import { minLength, required, startsWith } from '../../../../validators';
 import { classes } from '../../../styles';
@@ -23,6 +24,8 @@ let lastUpdateAt = 0;
 export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean }> = ({
   sx, active,
 }) => {
+  const scope = useScope('systems:raffles');
+
   const [ loading, setLoading ] = React.useState(true);
   const { translate } = useTranslation();
 
@@ -211,6 +214,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
   }, [ raffle, eligibleItems, winner ]);
 
   const handleUserEligibility = (participant: RaffleParticipantInterface) => {
+    if (!scope.manage) {
+      return;
+    }
     participant.isEligible = !participant.isEligible;
     setRaffle(r => r ? {
       ...r, participants: [...r.participants.filter(o => o.id !== participant.id), participant],
@@ -284,7 +290,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
               variant="filled"
               label='Raffle command'
               fullWidth
-              disabled={!raffle?.isClosed}
+              disabled={!raffle?.isClosed || !scope.manage}
               value={keyword }
               onChange={(event) => setKeyword(event.target.value)}
               InputProps={{ endAdornment: <InputAdornment position="end">{!raffle?.isClosed && <CircularProgress size={20}/>}</InputAdornment> }}
@@ -295,7 +301,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
               isOptionEqualToValue={(option, v) => {
                 return option.value === v.value;
               }}
-              disabled={!raffle?.isClosed}
+              disabled={!raffle?.isClosed || !scope.manage}
               getOptionLabel={(option) => option.title}
               disableClearable
               value={eligible}
@@ -316,7 +322,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
             <Autocomplete
               value={typeItemSelected}
               options={typeItems}
-              disabled={!raffle?.isClosed}
+              disabled={!raffle?.isClosed || !scope.manage}
               disableClearable
               onChange={(event, newValue) => setIsTypeKeywords(newValue ? newValue.value : true)}
               getOptionLabel={(option) => option.title}
@@ -333,14 +339,14 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
             {!isTypeKeywords && <Box sx={{
               width: '100%', p: 1,
             }}>
-              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed ? grey[500] : classes.whiteColor}>
+              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed || !scope.manage ? grey[500] : classes.whiteColor}>
                 { translate('raffle-tickets-range') }
               </Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
                   <Input
                     value={range[0]}
-                    disabled={!raffle?.isClosed}
+                    disabled={!raffle?.isClosed || !scope.manage}
                     size="small"
                     onChange={(event) => setRange([Number(event.target.value), range[1]])}
                     inputProps={{
@@ -355,7 +361,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                 <Grid item xs>
                   <Slider
                     value={range}
-                    disabled={!raffle?.isClosed}
+                    disabled={!raffle?.isClosed || !scope.manage}
                     valueLabelDisplay="auto"
                     min={1}
                     max={10000}
@@ -366,7 +372,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                   <Input
                     value={range[1]}
                     size="small"
-                    disabled={!raffle?.isClosed}
+                    disabled={!raffle?.isClosed || !scope.manage}
                     onChange={(event) => setRange([range[0], Number(event.target.value)])}
                     inputProps={{
                       step:              10,
@@ -380,7 +386,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
               </Grid>
             </Box>}
 
-            <Box sx={{
+            {scope.manage && <Box sx={{
               width: '100%', p: 1, textAlign: 'center',
             }}>
               {!!raffle?.isClosed && <Button onClick={open} disabled={!isValid} sx={{ width: '400px' }} variant='contained'>
@@ -395,7 +401,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                   Pick winner
                 </Button>
               </Stack>}
-            </Box>
+            </Box>}
           </Box>
           <Box sx={value === '2' ? classes.showTab : classes.hideTab}>
             <TextField
@@ -412,7 +418,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                 {fParticipants.map((participant) => <ListItem key={participant.id} disablePadding disableGutters>
                   <ListItemButton onClick={() => handleUserEligibility(participant)}>
                     <ListItemIcon>
-                      <Checkbox checked={participant.isEligible}></Checkbox>
+                      <Checkbox checked={participant.isEligible} disabled={!scope.manage}></Checkbox>
                     </ListItemIcon>
                     <ListItemText>
                       { participant.username }
@@ -420,9 +426,13 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                   </ListItemButton>
                 </ListItem>)}
 
-                {Math.abs(fParticipants.length - (raffle?.participants || []).length) > 0 && <ListItem>
+                {Math.abs(fParticipants.length - (raffle?.participants || []).length) > 0 && <ListItem sx={{
+                  userSelect: 'none',
+                  p: 1.4,
+                  px: 3,
+                }}>
                   <ListItemIcon>
-                    <VisibilityOff/>
+                    <VisibilityOffTwoTone/>
                   </ListItemIcon>
                   <ListItemText>
                     { Math.abs(fParticipants.length - (raffle?.participants || []).length) } { translate('hidden') }
@@ -442,16 +452,16 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
                   <Typography variant="button" color={winner.isSubscriber ? green[400] : red[400]}>{ translate('subscriber') }</Typography>
                 </Grid>
 
-                <Grid item xs={12} sx={{
+                {scope.manage && <Grid item xs={12} sx={{
                   pt: 2, textAlign: 'center',
                 }}>
-                  {countEligibleParticipants > 0 && <Button onClick={pickRaffle}><Stack direction="row"><Sync/>{ translate('roll-again')}</Stack></Button>}
-                  {countEligibleParticipants === 0 && <Button disabled sx={{ width: '400px' }} variant='contained'><SyncDisabled/>{ translate('no-eligible-participants') }</Button>}
-                </Grid>
+                  {countEligibleParticipants > 0 && <Button onClick={pickRaffle}><Stack direction="row"><SyncTwoTone/>{ translate('roll-again')}</Stack></Button>}
+                  {countEligibleParticipants === 0 && <Button disabled sx={{ width: '400px' }} variant='contained'><SyncDisabledTwoTone/>{ translate('no-eligible-participants') }</Button>}
+                </Grid>}
 
                 <Grid item xs={12} sx={{ p: 2 }}>
                   <Stack direction='row' spacing={1}>
-                    <Chat/>
+                    <ChatTwoTone/>
                     <Typography variant="button">{ translate('messages') }</Typography>
                   </Stack>
 
