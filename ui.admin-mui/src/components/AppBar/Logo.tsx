@@ -1,5 +1,5 @@
 import { CloseTwoTone } from '@mui/icons-material';
-import { Badge, Box, IconButton, Link } from '@mui/material';
+import { Badge, Box, IconButton, Link, Stack } from '@mui/material';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import sogebotLarge from '../../images/sogebot_large.png';
 import sogebotSmall from '../../images/sogebot_small.png';
+import { LinearProgressTimeout } from '../Progress/LinearProgressTimeout';
 
 export const Logo: React.FC = () => {
   const { currentVersion, state, connectedToServer } = useAppSelector((s: any) => s.loader);
@@ -57,15 +58,22 @@ export const Logo: React.FC = () => {
           }}
           target="_blank" rel="noreferrer"
           href={`https://github.com/sogehige/sogeBot/releases/tag/${gitVersion}`}>GitHub</Link>);
-          const notif = enqueueSnackbar(
-            <>{message}</>,
-            {
-              action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
-                <CloseTwoTone/>
-              </IconButton>,
-              variant:          'info',
-              autoHideDuration: null,
-            });
+          const notif = enqueueSnackbar(<Stack>
+            <div>{message}</div>
+            <LinearProgressTimeout sx={{
+              position: 'absolute',
+              width: '100%',
+              bottom: 0,
+              left: 0,
+            }} timeout={9000} />
+          </Stack>,
+          {
+            action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
+              <CloseTwoTone/>
+            </IconButton>,
+            variant:          'info',
+            autoHideDuration: 10000,
+          });
         }
       } catch (e) {
         return;
