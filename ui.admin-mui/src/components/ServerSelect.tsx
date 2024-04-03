@@ -23,6 +23,7 @@ const checkURLValidity = (serverURL: string) => {
   }
   try {
     new URL(serverURL);
+    return true;
   } catch (e) {
     return false;
   }
