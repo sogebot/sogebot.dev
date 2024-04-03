@@ -60,19 +60,21 @@ export const Logo: React.FC = () => {
           href={`https://github.com/sogehige/sogeBot/releases/tag/${gitVersion}`}>GitHub</Link>);
           const notif = enqueueSnackbar(<Stack>
             <div>{message}</div>
-            <LinearProgressTimeout sx={{
-              position: 'absolute',
-              width: '100%',
-              bottom: 0,
-              left: 0,
-            }} timeout={9000} />
+            <LinearProgressTimeout
+              onClose={() => closeSnackbar(notif)}
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                bottom: 0,
+                left: 0,
+              }} timeout={10000} />
           </Stack>,
           {
             action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
               <CloseTwoTone/>
             </IconButton>,
             variant:          'info',
-            autoHideDuration: 10000,
+            autoHideDuration: null,
           });
         }
       } catch (e) {

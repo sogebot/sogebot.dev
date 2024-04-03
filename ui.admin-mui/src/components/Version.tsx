@@ -32,18 +32,20 @@ export const Version: React.FC = () => {
               console.warn(`UI version (${process.env.REACT_APP_VERSION}) does not match docker version (${res.data})`);
               const notif = enqueueSnackbar(<Stack>
                 <div>There is new version of UI available. <br/> Please force refresh page by <Typography component='strong' variant='button' sx={{ fontWeight: 'bold', pl: 0.5, }}>Ctrl+Shift+R</Typography>. <br/>If refresh doesn't help, wait few minutes and try again.</div>
-                <LinearProgressTimeout sx={{
-                  position: 'absolute',
-                  width: '100%',
-                  bottom: 0,
-                  left: 0,
-                }} timeout={9000} />
+                <LinearProgressTimeout
+                  onClose={() => closeSnackbar(notif)}
+                  sx={{
+                    position: 'absolute',
+                    width: '100%',
+                    bottom: 0,
+                    left: 0,
+                  }} timeout={10000} />
               </Stack>, {
                 action: <IconButton color='light' onClick={() => closeSnackbar(notif)} sx={{ color: 'white' }}>
                   <CloseTwoTone/>
                 </IconButton>,
                 variant: 'info',
-                autoHideDuration: 10000,
+                autoHideDuration: null,
               });
             } else {
               console.log('UI version matches docker version');
