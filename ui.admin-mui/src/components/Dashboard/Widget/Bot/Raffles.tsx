@@ -136,7 +136,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
         setRaffle(raffleResponse);
       })
       .catch((error) => {
-        console.error("Failed to open raffle:", error);
+        console.error('Failed to open raffle:', error);
       });
   }, [keyword, isTypeKeywords, eligible, range ]);
 
@@ -168,10 +168,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
         setKeyword(raffleResponse?.keyword ?? '');
       }
     })
-    .catch((error) => {
-      console.error("Failed to refresh raffle data:", error);
-      setLoading(false);
-    });
+      .catch((error) => {
+        console.error('Failed to refresh raffle data:', error);
+        setLoading(false);
+      });
   };
   useIntervalWhen(() => {
     if (!active) {
@@ -198,9 +198,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
           .then(({ data }) => {
             setWinner(data.data);
           })
-         .catch((error) => {
-           console.error("Failed to fetch winner information:", error);
-         });
+          .catch((error) => {
+            console.error('Failed to fetch winner information:', error);
+          });
       }
 
       if (!raffle?.isClosed) {
@@ -235,10 +235,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
     axios.post('/api/systems/raffles/?_action=eligibility', {
       id: participant.id, isEligible: participant.isEligible,
     })
-    .catch((error) => {
-      console.error("Failed to update participant eligibility:", error);
-    });
-    });
+      .catch((error) => {
+        console.error('Failed to update participant eligibility:', error);
+      });
   };
 
   const closeRaffle = () => {
