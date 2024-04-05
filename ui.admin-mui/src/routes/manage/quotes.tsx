@@ -19,11 +19,14 @@ import { ListTypeProvider } from '../../components/Table/ListTypeProvider';
 import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageManageQuotes = () => {
+  const scope = useScope('systems:quotes');
+
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -35,7 +38,7 @@ const PageManageQuotes = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { idWithCreatedAt: string }>([
+  const columnsTpl: ColumnMakerProps<Quotes> = [
     {
       columnName:  'id',
       translation: '#',
@@ -95,11 +98,14 @@ const PageManageQuotes = () => {
       translationKey: 'time',
       hidden:         true,
     },
-    {
-      columnName:  'actions',
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push({
+      columnName: 'actions',
       translation: ' ',
-      table:       { width: 130 },
-      column:      {
+      table: { width: 130 },
+      column: {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <EditButton href={'/manage/quotes/edit/' + row.id}/>
@@ -107,7 +113,10 @@ const PageManageQuotes = () => {
           </Stack>,
         ],
       },
-    }]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { idWithCreatedAt: string }>(columnTpl);
 
   const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 
@@ -167,12 +176,14 @@ const PageManageQuotes = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='quotes'/>
-        <Grid item>
-          <Button variant="contained" href='/manage/quotes/create/'>Create new quote</Button>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <Button variant="contained" href='/manage/quotes/create/'>Create new quote</Button>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}

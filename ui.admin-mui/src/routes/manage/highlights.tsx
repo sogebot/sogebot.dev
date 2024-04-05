@@ -15,8 +15,10 @@ import { DateTypeProvider } from '../../components/Table/DateTypeProvider';
 import getAccessToken from '../../getAccessToken';
 import { timestampToString } from '../../helpers/timestampToString';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { useScope } from '../../hooks/useScope';
 
 const PageManageViewers = () => {
+  const scope = useScope('systems:highlights');
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -133,11 +135,11 @@ const PageManageViewers = () => {
 
   return (
     <>
-      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+      {scope.manage && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <ConfirmButton handleOk={() => deleteExpired()} variant='contained' color='error'>Delete Expired</ConfirmButton>
         </Grid>
-      </Grid>
+      </Grid>}
 
       {loading
         ? <CircularProgress color="inherit" sx={{
