@@ -4,6 +4,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
+import axios from 'axios';
 import set from 'lodash/set';
 import { MuiColorInput } from 'mui-color-input';
 import React from 'react';
@@ -13,7 +14,6 @@ import { CSSDialog } from './HTMLSettings/css';
 import { HTMLDialog } from './HTMLSettings/html';
 import { JavascriptDialog } from './HTMLSettings/javascript';
 import { dayjs } from '../../../helpers/dayjsHelper';
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { isHexColor } from '../../../validators';
 import { AccordionFont } from '../../Accordion/Font';
@@ -40,7 +40,9 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
   const [ accordionBarOpen, setAccordionBarOpen ] = React.useState(false);
 
   useIntervalWhen(() => {
-    getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
+    axios.get('/api/integrations/tiltify/campaigns').then(({ data }) => {
+      setTiltifyCampaigns(data.data);
+    });
   }, 30000, true, true);
 
   const addNewGoal = () => {

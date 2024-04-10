@@ -38,7 +38,7 @@ const PageManageQuotes = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const columnsTpl: ColumnMakerProps<Quotes> = [
+  const columnsTpl: ColumnMakerProps<Quotes & { idWithCreatedAt: any }> = [
     {
       columnName:  'id',
       translation: '#',
@@ -116,7 +116,7 @@ const PageManageQuotes = () => {
     });
   }
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { idWithCreatedAt: string }>(columnTpl);
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Quotes & { idWithCreatedAt: any }>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter<Quotes>(useFilterSetup);
 

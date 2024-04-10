@@ -1,9 +1,10 @@
 import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import getAccessToken from '../../getAccessToken';
 import { baseURL } from '../../helpers/getBaseURL';
-import { getSocket } from '../../helpers/socket';
 
 const Tiltify = () => {
   const [state, setState] = useState<boolean | null>(null);
@@ -22,20 +23,25 @@ const Tiltify = () => {
       }
 
       if (urlCode) {
-        getSocket('/integrations/tiltify').emit('tiltify::code', urlCode, () => {
-          setState(true);
-          setTimeout(() => window.close(), 1000);
-          return;
-        });
+        axios.post(`${server}/api/integrations/tiltify/?_action=code`, { code: urlCode }, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(() => {
+            setState(true);
+            setTimeout(() => window.close(), 1000);
+            return;
+          })
+          .catch(() => {
+            console.error('Failed to save tiltify credentials');
+            setState(false);
+          });
       } else {
         setState(false);
       }
     } else {
-      location.href = `https://tiltify.soge.workers.dev/authorize?state=${Buffer.from(JSON.stringify({
+      location.href = `https://tiltify.soge.workers.dev/authorize?state=${window.btoa(JSON.stringify({
         server:   JSON.parse(localStorage.server),
         referrer: baseURL,
         version:  2,
-      })).toString('base64')}`;
+      }))}`;
     }
   }, [server]);
 

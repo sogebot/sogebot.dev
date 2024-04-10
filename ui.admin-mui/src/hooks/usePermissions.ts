@@ -17,8 +17,8 @@ export const usePermissions = () => {
       axios.get(`/api/core/permissions`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           if (data.status === 'success') {
-            console.log('permissions', data.data);
-            dispatch(setPermissions(data.data));
+            console.log('permissions', data.data.items);
+            dispatch(setPermissions(data.data.items));
           }
         });
     }
@@ -26,8 +26,8 @@ export const usePermissions = () => {
       axios.get(`/api/core/permissions/availableScopes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
           if (data.status === 'success') {
-            console.log('scopes', data.data);
-            setScopes(data.data);
+            console.log('scopes', data.data.items);
+            setScopes(data.data.items);
           }
         });
     }

@@ -1,10 +1,11 @@
 import { Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -42,10 +43,11 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    getSocket('/integrations/tiltify').emit('tiltify::revoke', () => {
-      enqueueSnackbar('User access revoked.', { variant: 'success' });
-      refresh();
-    });
+    axios.post('/api/integrations/tiltify?_action=revoke', undefined, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        enqueueSnackbar('User access revoked.', { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   const authorize = useCallback(() => {

@@ -1,6 +1,7 @@
 import { Box, LinearProgress, linearProgressClasses, Stack } from '@mui/material';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { isEqual } from 'lodash';
@@ -199,7 +200,9 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
   };
 
   useIntervalWhen(() => {
-    getSocket('/integrations/tiltify', true).emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
+    axios.get('/api/integrations/tiltify/campaigns').then(({data}) => {
+      setTiltifyCampaigns(data.data);
+    })
   }, 30000, true, true);
 
   return <Box sx={{
