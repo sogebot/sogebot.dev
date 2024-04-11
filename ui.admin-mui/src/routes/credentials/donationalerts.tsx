@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 
 const DonationAlerts = () => {
   const [state, setState] = useState<boolean | null>(null);
@@ -26,15 +26,17 @@ const DonationAlerts = () => {
           .then(({ data }) => {
             const accessToken = data.access_token;
             const refreshToken = data.refresh_token;
-            getSocket('/integrations/donationalerts').emit('donationalerts::token', {
-              accessToken, refreshToken,
-            }, () => {
-              setState(true);
-              setTimeout(() => window.close(), 1000);
-              return;
-            });
-          })
-          .catch(() => setState(false));
+            axios.post(`${server}/api/integrations/donationalerts`, { accessToken, refreshToken }, { headers: { 'Authorization': `Bearer ${getAccessToken()}}` } })
+              .then(() => {
+                setState(true);
+                setTimeout(() => window.close(), 1000);
+                return;
+              })
+              .catch(() => {
+                setState(false);
+                console.error('Failed to save tokens');
+              });
+          });
       } else {
         setState(false);
       }

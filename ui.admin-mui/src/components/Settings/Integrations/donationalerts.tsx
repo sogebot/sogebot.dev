@@ -1,10 +1,10 @@
 import { Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -42,7 +42,7 @@ const PageSettingsModulesIntegrationsDonationAlerts: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    getSocket('/integrations/donationalerts').emit('donationalerts::revoke', () => {
+    axios.post('/api/integrations/donationalerts/?_action=revoke').then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
