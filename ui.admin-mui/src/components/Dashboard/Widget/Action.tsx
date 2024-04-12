@@ -2,6 +2,7 @@ import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Card, IconButton, Tab, Typography } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
@@ -15,7 +16,6 @@ import { DashboardWidgetActionDividerButton } from './Action/DividerButton';
 import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
 import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import theme from '../../../theme';
 
@@ -42,11 +42,8 @@ export const DashboardWidgetAction: React.FC = () => {
     if (!user) {
       return;
     }
-    getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setActions(orderBy(items, 'order', 'asc'));
+    axios.get(`/api/widgets/quickaction`).then(({ data }) => {
+      setActions(orderBy(data.data, 'order', 'asc'));
     });
   }, [user, timestamp]);
 

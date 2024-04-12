@@ -64,6 +64,7 @@ import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
+import { useScope } from '../hooks/useScope';
 import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import { setScrollY } from '../store/pageSlice';
 import { setUser } from '../store/userSlice';
@@ -158,6 +159,7 @@ export default function Root() {
 
   const [ unfold ] = useLocalstorageState(`${localStorage.server}::action_unfold`, true);
   const [ chatUnfold ] = useLocalstorageState(`${localStorage.server}::chat_unfold`, true);
+  const scope = useScope('dashboard:admin');
 
   useEffect(() => {
     setIndexPage(location.pathname === '/');
@@ -226,13 +228,13 @@ export default function Root() {
                       xs={chatUnfold ? true : 'auto'}>
                       <DashboardWidgetTwitch/>
                     </Grid>
-                    <Grid item
+                    {scope.manage && <Grid item
                       sm={unfold ? 2 : 'auto'}
                       md={unfold ? 2 : 'auto'}
                       xs={unfold ? 12 : 'auto'}
                       sx={{ minWidth: unfold ? '180px' : 0 }}>
                       <DashboardWidgetAction/>
-                    </Grid>
+                    </Grid>}
                   </Grid>
                 </Box>
               </Fade>

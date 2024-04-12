@@ -3,9 +3,9 @@ import { Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import React, { useCallback, useRef, useState } from 'react';
 
-import { getSocket } from '../../../../../helpers/socket';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { ColorButton } from '../_ColorButton';
 
@@ -34,13 +34,7 @@ export const DashboardWidgetActionCustomVariableOptionsButton: React.FC<{ item: 
     }
     onUpdate(value);
     console.log(`quickaction::trigger::${item.id}`);
-    getSocket('/widgets/quickaction').emit('trigger', {
-      user: {
-        userId: user.id, userName: user.login,
-      },
-      id:    item.id,
-      value: value,
-    });
+    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: value });
     setAnchorEl(null);
   }, [ user, item, onUpdate ]);
 

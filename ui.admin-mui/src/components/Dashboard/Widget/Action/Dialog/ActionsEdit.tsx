@@ -103,14 +103,10 @@ const DraggableComponent: React.FC<{
     setUpdateItem(update);
   }, [ updateItem ]);
 
-  const deleteItem = () => {
-    getSocket('/widgets/quickaction').emit('generic::deleteById', updateItem.id, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      setActions(orderBy([...actions.filter(o => o.id !== item.id)], 'order', 'asc'));
-      setEditingItem('');
-    });
+  const deleteItem = async () => {
+    await axios.delete(`/api/widgets/quickaction/${updateItem.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+    setActions(orderBy([...actions.filter(o => o.id !== item.id)], 'order', 'asc'));
+    setEditingItem('');
   };
 
   const handleReset = () => {
@@ -120,14 +116,12 @@ const DraggableComponent: React.FC<{
 
   const handleSubmit = () => {
     setIsSaving(true);
-    getSocket('/widgets/quickaction').emit('generic::save', updateItem, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      setIsSaving(false);
-      setActions(orderBy([...actions.filter(o => o.id !== item.id), updateItem], 'order', 'asc'));
-      setEditingItem('');
-    });
+    axios.post(`/api/widgets/quickaction`, updateItem, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        setIsSaving(false);
+        setActions(orderBy([...actions.filter(o => o.id !== item.id), updateItem], 'order', 'asc'));
+        setEditingItem('');
+      });
   };
 
   return (
@@ -350,11 +344,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     setActions(items);
 
     for (const item of items) {
-      getSocket('/widgets/quickaction').emit('generic::save', item, (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
+      axios.post(`/api/widgets/quickaction`, item);
     }
   };
 
@@ -362,11 +352,8 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     if (!user) {
       return;
     }
-    getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setActions(orderBy(items, 'order', 'asc'));
+    axios.get(`/api/widgets/quickaction`).then(({ data }) => {
+      setActions(orderBy(data.data, 'order', 'asc'));
     });
 
     axios.get(`/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
@@ -428,13 +415,10 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       },
     };
 
-    getSocket('/widgets/quickaction').emit('generic::save', item, (err) => {
-      if (err) {
-        console.error(err);
-      }
+    axios.post(`/api/widgets/quickaction`, item).then(() => {
+      setActions([...actions, item]);
+      setEditingItem(item.id);
     });
-    setActions([...actions, item]);
-    setEditingItem(item.id);
   }, [ actions, user ]);
 
   return (

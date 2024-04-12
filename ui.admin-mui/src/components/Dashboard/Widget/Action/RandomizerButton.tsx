@@ -11,7 +11,6 @@ import { ColorButton } from './_ColorButton';
 import { getContrastColor } from '../../../../colors';
 import { SECOND } from '../../../../constants';
 import getAccessToken from '../../../../getAccessToken';
-import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { isHexColor } from '../../../../validators';
 
@@ -44,13 +43,7 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
         setRunning(false);
       }, 5000);
     } else {
-      getSocket('/widgets/quickaction').emit('trigger', {
-        user: {
-          userId: user.id, userName: user.login,
-        },
-        id:    item.id,
-        value: !currentRandomizer.isShown,
-      });
+      axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: !currentRandomizer.isShown });
       axios.get(`/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then((res: any) => setRandomizers(res.data.data));
 
