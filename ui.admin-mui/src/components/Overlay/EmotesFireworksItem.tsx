@@ -14,18 +14,17 @@ let model: EmotesFireworks;
 const ids: string[] = [];
 
 export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) => {
-  const [ containerId ] = React.useState(`emotes-fireworks-` + nanoid());
+  const containerId = React.useRef(`emotes-explode-` + nanoid());
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes', true);
 
   React.useEffect(() => {
     model = item; // workaround for firework not picking up changes on active
   }, [ item ]);
 
-  const firework = React.useCallback((opts: any) => {
+  const firework = (opts: any) => {
     opts.id ??= v4();
     if (ids.includes(opts.id)) {
       return;
@@ -35,7 +34,7 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
       ids.shift();
     }
 
-    const container = document.getElementById(containerId);
+    const container = document.getElementById(containerId.current);
     for (let i = 0; i < model.numOfExplosions; i++) {
       const commonTop = random(10, container!.offsetHeight - 10);
       const commonLeft = random(10, container!.offsetWidth - 10);
@@ -60,7 +59,7 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
         }]);
       }
     }
-  }, []);
+  };
 
   const cleanEmotes = () => {
     setEmotes(e => [...e.filter(o => !o.animation.finished)]);
@@ -116,16 +115,15 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
   }, 100, true, true);
 
   React.useEffect(() => {
-    console.log(`====== EMOTES FIREWORKS ${containerId} ======`);
-    listener();
-  }, []);
-
-  const listener = React.useCallback(() => {
-    getSocket('/services/twitch', true).on('emote.firework', (opts: any) => firework(opts));
+    console.log(`====== EMOTES FIREWORKS ${containerId.current} ======`);
+    getSocket('/services/twitch', true).on('emote.firework', firework);
+    return () => {
+      getSocket('/services/twitch', true).off('emote.firework', firework);
+    };
   }, []);
 
   return <Box
-    id={containerId}
+    id={containerId.current}
     sx={{
       width:  '100%',
       height: '100%',

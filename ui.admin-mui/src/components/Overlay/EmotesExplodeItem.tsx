@@ -14,18 +14,17 @@ let model: EmotesExplode;
 const ids: string[] = [];
 
 export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => {
-  const [ containerId ] = React.useState(`emotes-explode-` + nanoid());
+  const containerId = React.useRef(`emotes-explode-` + nanoid());
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   // initialize sockets
   getSocket('/services/twitch', true);
-  getSocket('/core/emotes', true);
 
   React.useEffect(() => {
     model = item; // workaround for explode not picking up changes on active
   }, [ item ]);
 
-  const explode = React.useCallback((opts: any) => {
+  const explode = (opts: any) => {
     opts.id ??= v4();
     if (ids.includes(opts.id)) {
       return;
@@ -35,7 +34,7 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
       ids.shift();
     }
 
-    const container = document.getElementById(containerId);
+    const container = document.getElementById(containerId.current);
     for (let j = 0; j < model.numOfEmotes; j++) {
       setEmotes(e => [...e, {
         id:        Math.random().toString(36).substr(2, 9) + '-' + Math.random().toString(36).substr(2, 9),
@@ -54,7 +53,7 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
         url: sample(opts.emotes)[model.emotesSize],
       }]);
     }
-  }, []);
+  };
 
   const cleanEmotes = () => {
     setEmotes(e => [...e.filter(o => !o.animation.finished)]);
@@ -110,16 +109,15 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
   }, 100, true, true);
 
   React.useEffect(() => {
-    console.log(`====== EMOTES EXPLODE ${containerId} ======`);
-    listener();
-  }, []);
-
-  const listener = React.useCallback(() => {
-    getSocket('/services/twitch', true).on('emote.explode', (opts: any) => explode(opts));
+    console.log(`====== EMOTES EXPLODE ${containerId.current} ======`);
+    getSocket('/services/twitch', true).on('emote.explode', explode);
+    return () => {
+      getSocket('/services/twitch', true).off('emote.explode', explode);
+    };
   }, []);
 
   return <Box
-    id={containerId}
+    id={containerId.current}
     sx={{
       width:  '100%',
       height: '100%',

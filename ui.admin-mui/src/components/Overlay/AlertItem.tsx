@@ -63,8 +63,6 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
   const [ id ] = React.useState(nanoid());
 
-  getSocket('/core/emotes', true); // init socket
-
   const [ defaultProfanityList, setDefaultProfanityList ] = React.useState<string[]>([]);
   const [ listHappyWords, setListHappyWords ] = React.useState<string[]>([]);
   const [ , setEmotesCache ] = useSessionstorageState<{
@@ -74,11 +72,9 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   }[]>('emotes::cache', []);
 
   React.useEffect(() => {
-    getSocket('/core/emotes', true).emit('getCache', (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-      setEmotesCache(data);
+    console.log('EMOTES');
+    axios.get(`/api/core/emotes`).then(({ data }) => {
+      setEmotesCache(data.data);
       log(new Date().toISOString(), `alert-${id}`, '= emotes loaded');
     });
 

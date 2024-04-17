@@ -44,7 +44,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         // get only items that user has access to
         .filter(o => {
           return o.scopeParent
-            ? !!user.bot_scopes[localStorage.server].find((scope: string) => scope.includes(o.scopeParent))
+            ? !!(user.bot_scopes ?? { [localStorage.server]: [] })[localStorage.server].find((scope: string) => scope.includes(o.scopeParent))
             : true;
         })
         // sort items by name

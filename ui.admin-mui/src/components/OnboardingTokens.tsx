@@ -7,14 +7,15 @@ import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import { baseURL } from '../helpers/getBaseURL';
 import { getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
+import { useScope } from '../hooks/useScope';
 import { useSettings } from '../hooks/useSettings';
 import { setTokensOnboardingState } from '../store/loaderSlice';
 
 export const OnboardingTokens: React.FC = () => {
   const dispatch = useAppDispatch();
+  const scope = useScope('dashboard:admin');
 
-  const user = JSON.parse(localStorage.getItem('cached-logged-user') || 'null');
-  if (!user || !user.bot_scopes[localStorage.server].includes('dashboard:admin:manage')) {
+  if (scope.manage) {
     // do nothing if user is not admin
     dispatch(setTokensOnboardingState(true));
     return <></>;
