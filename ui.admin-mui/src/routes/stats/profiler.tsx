@@ -1,10 +1,10 @@
 import { Backdrop, Box, capitalize, Checkbox, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import axios from 'axios';
 import React from 'react';
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { stringToColour } from './commandcount';
-import { getSocket } from '../../helpers/socket';
 
 const avg = (data: number[]) => {
   return data.reduce((a, b) => (a + b)) / data.length;
@@ -48,12 +48,9 @@ const PageStatsProfiler = () => {
     }, [_data, showChartFunctions]);
 
   const refresh = React.useCallback(() => {
-    getSocket('/stats/profiler').emit('profiler::load', (err, val) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get('/api/stats/profiler').then(({ data: axiosData }) => {
       const items: typeof _data = [];
-      for (const item of val) {
+      for (const item of axiosData.data) {
         items.push({
           function: item[0],
           min:      Number(min(item[1]).toFixed(4)),

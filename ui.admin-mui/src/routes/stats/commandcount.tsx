@@ -1,5 +1,6 @@
 import { Backdrop, Box, capitalize, Checkbox, CircularProgress, Paper, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { CommandsCount } from '@sogebot/backend/dest/database/entity/commands';
+import axios from 'axios';
 import { countBy } from 'lodash';
 import React from 'react';
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
@@ -7,7 +8,6 @@ import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { DAY } from '../../constants';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
 function shadeColor(color: string, percent: number) {
@@ -252,13 +252,11 @@ const PageStatsBits = () => {
     }, [_data, showChartCommands, interval, timestampList, timestampSmooth]);
 
   const refresh = React.useCallback(() => {
-    getSocket('/stats/commandcount').emit('commands::count', (err, val) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get('/api/stats/commandcount').then(({ data: axiosData }) => {
+      const val = axiosData.data;
       setData(val);
       if (showChartCommands.length === 0) {
-        setShowChartCommands(val.splice(0, 5).map(o => o.command));
+        setShowChartCommands(val.splice(0, 5).map((o: any) => o.command));
       }
       setLoading(false);
     });
