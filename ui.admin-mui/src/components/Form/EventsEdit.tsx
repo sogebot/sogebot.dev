@@ -16,7 +16,7 @@ import { EventsDefinitions } from './Input/EventsDefinitions';
 import { EventsTester } from './Input/EventsTester';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidatorZod';
+import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
 
 const newEvent = {

@@ -5,7 +5,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { AddTwoTone, DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, Button, Checkbox, Collapse, DialogActions, DialogContent, FormControl, FormLabel, Grid, IconButton, InputAdornment, InputLabel, LinearProgress, Link, MenuItem, Paper, Radio, Select, Slider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { Variable, variableSchema } from '@sogebot/backend/dest/database/entity/variable';
+import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import humanizeDuration from 'humanize-duration';
 import { cloneDeep } from 'lodash';
@@ -15,10 +15,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../helpers/socket';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidatorZod';
+import { useValidator } from '../../hooks/useValidator';
 
 // This is ugly hack but we need it to import lodash bindings
 /* eslint-disable */
@@ -50,6 +49,7 @@ import LODASH_util from '!raw-loader!@types/lodash/common/util.d.ts';
 import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
 import { DAY } from '../../constants';
 import { useAppSelector } from '../../hooks/useAppDispatch';
+import axios from 'axios';
 /* eslint-enable */
 
 const createInitialItem = async () => {
@@ -80,7 +80,7 @@ export const CustomVariablesEdit: React.FC = () => {
   const { configuration } = useAppSelector(state => state.loader);
   const { translate } = useTranslation();
   const { propsError, reset, showErrors, validate, haveErrors } = useValidator({
-    mustBeDirty: true, translations: { variableName: translate('name') }, schema: variableSchema,
+    mustBeDirty: true, translations: { variableName: translate('name') }, schema: new Variable()._schema,
   });
   const [ page, setPage ] = useState(0);
   const [ item, setItem ] = useState<Variable>();
@@ -264,27 +264,23 @@ export const CustomVariablesEdit: React.FC = () => {
       return;
     }
     setScriptIsRunning(true);
-    getSocket('/core/customvariables').emit('customvariables::testScript', {
+    axios.post(`/api/core/customvariables?_action=testScript`, {
       evalValue: item.evalValue, currentValue: item.currentValue,
-    }, (err, response: string) => {
-      if (err) {
-        enqueueSnackbar(String(err), { variant: 'error' });
-      } else {
-        handleValueChange('currentValue', response);
-      }
-      setScriptIsRunning(false);
-    });
+    }).then(({ data }) => {
+      handleValueChange('currentValue', data.data);
+    })
+      .catch(err => {
+        enqueueSnackbar(String(err.response.data.errors), { variant: 'error' });
+      })
+      .finally(() => setScriptIsRunning(false));
   }, [ item, enqueueSnackbar, handleValueChange ]);
 
   useEffect(() => {
     setLoading(true);
     if (id) {
-      getSocket('/core/customvariables').emit('customvariables::list', (err, val) => {
-        if (err) {
-          enqueueSnackbar('Something went wrong during data loading.');
-          navigate(`/registry/customvariables/?server=${JSON.parse(localStorage.server)}`);
-        } else {
-          const itemFromList = val.find(o => o.id === id);
+      axios.get(`/api/core/customvariables/`)
+        .then(({ data }) => {
+          const itemFromList = data.data.find((o: any) => o.id === id);
           if (itemFromList) {
             setItem(itemFromList);
             setLoading(false);
@@ -293,8 +289,7 @@ export const CustomVariablesEdit: React.FC = () => {
               .then(setItem)
               .finally(() => setLoading(false));
           }
-        }
-      });
+        });
     } else {
       createInitialItem()
         .then(setItem)
@@ -321,22 +316,20 @@ export const CustomVariablesEdit: React.FC = () => {
       return;
     }
     setSaving(true);
-    getSocket('/core/customvariables').emit('customvariables::save', item, (err, cid) => {
-      if (err || !cid) {
-        showErrors(err as any);
-      } else {
+    axios.post(`/api/core/customvariables/`, item)
+      .then(({ data }) => {
         enqueueSnackbar('Custom variable saved.', { variant: 'success' });
 
         // replace url and add cid to item
         setItem(() => {
-          item.id = cid;
+          item.id = data.data.id;
           return item;
         });
-        const asPath = `/registry/customvariables/edit/${cid}?server=${JSON.parse(localStorage.server)}`;
+        const asPath = `/registry/customvariables/edit/${data.data.id}?server=${JSON.parse(localStorage.server)}`;
         window.history.replaceState(null, '', asPath);
-      }
-      setSaving(false);
-    });
+      })
+      .catch(showErrors)
+      .finally(() => setSaving(false));
   }, [ item, enqueueSnackbar, validate ]);
 
   return(<>

@@ -82,8 +82,8 @@ export const DashboardWidgetBot: React.FC = () => {
         }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
           <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
-          {queueScope.read && <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>}
-          <DashboardWidgetBotRaffles active={value === '4'}  sx={value === '4' ? classes.showTab : classes.hideTab}/>
+          {(queueScope.read && value === '3') && <DashboardWidgetBotQueue sx={classes.showTab}/>}
+          {value === '4' && <DashboardWidgetBotRaffles sx={classes.showTab}/>}
           {checklistScope.read && <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>}
           <DashboardWidgetBotCustom sx={value === '6' ? classes.showTab : classes.hideTab}/>
         </Box>

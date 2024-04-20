@@ -2,6 +2,7 @@ import { CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { CustomVariableItem } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
@@ -12,7 +13,6 @@ import { DashboardWidgetActionCustomVariableOptionsButton } from './CustomVariab
 import { DashboardWidgetActionCustomVariableTextButton } from './CustomVariable/TextButton';
 import { DashboardWidgetActionCustomVariableUnknownButton } from './CustomVariable/UnknownButton';
 import { getContrastColor } from '../../../../colors';
-import { getSocket } from '../../../../helpers/socket';
 import { isHexColor } from '../../../../validators';
 
 export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomVariableItem }> = ({
@@ -31,12 +31,8 @@ export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomV
   }, [ variable ]);
 
   useIntervalWhen(() => {
-    getSocket('/core/customvariables').emit('customvariables::list', (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      const foundItem = items.find(o => o.variableName === item.options.customvariable);
+    axios.get('/api/core/customvariables').then(({ data }) => {
+      const foundItem = data.data.find((o: any) => o.variableName === item.options.customvariable);
       if (!foundItem) {
         setLoading(false);
         setUnknownVariable(item.options.customvariable.length > 0 ? item.options.customvariable : 'Variable not set');

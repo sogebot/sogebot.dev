@@ -48,12 +48,15 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
         setPicked(data.data);
       }
     });
+  }, 1000, true, true);
+
+  useIntervalWhen(() => {
     axios.get('/api/systems/queue').then(({ data }) => {
       if (!isEqual(items, data.data)) {
         setItems(data.data);
       }
     });
-  }, 1000, true, true);
+  }, 5000, true, true);
 
   React.useEffect(() => {
     axios.post('/api/settings/systems/queue/locked', { value: locked });

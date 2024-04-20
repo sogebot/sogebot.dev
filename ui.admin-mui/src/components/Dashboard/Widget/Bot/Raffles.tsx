@@ -21,8 +21,8 @@ import { classes } from '../../../styles';
 
 let lastUpdateAt = 0;
 
-export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean }> = ({
-  sx, active,
+export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
+  sx,
 }) => {
   const scope = useScope('systems:raffles');
 
@@ -174,11 +174,6 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps, active: boolean 
       });
   };
   useIntervalWhen(() => {
-    if (!active) {
-      // do nothing if not visible
-      return;
-    }
-
     if (Date.now() - lastUpdateAt < SECOND * 10) {
       // not time to update yet
       return;

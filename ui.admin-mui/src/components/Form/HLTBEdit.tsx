@@ -14,7 +14,7 @@ import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidatorZod';
+import { useValidator } from '../../hooks/useValidator';
 
 export const HLTBEdit: React.FC<{
   items: HowLongToBeatGame[]
