@@ -6,7 +6,6 @@ import capitalize from 'lodash/capitalize';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import getAccessToken from '../../getAccessToken';
 import { getUserLoggedIn } from '../../helpers/isUserLoggedIn';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
@@ -31,13 +30,9 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
     if (!state || !connectedToServer) {
       return;
     }
-    axios.get(`/api/ui/menu`, {
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    }).then(res => {
+    axios.get(`/api/ui/menu`).then(({ data }) => {
       const user = getUserLoggedIn();
-      const items = res.data as any[];
+      const items = data.data as any[];
       setMenuItems(items
         // get only items that are in the category
         .filter(o => o.category === props.category)

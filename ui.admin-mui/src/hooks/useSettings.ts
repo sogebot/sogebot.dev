@@ -11,7 +11,10 @@ import getAccessToken from '../getAccessToken';
 import { saveSettings } from '../helpers/settings';
 import { addSettingsLoading, rmSettingsLoading } from '../store/loaderSlice';
 
-export const useSettings = (endpoint: string, validator?: { [attribute: string]: ((value: any) => true | string | string[])[] }) => {
+export const useSettings = (
+  endpoint: string | null,
+  validator?: { [attribute: string]: ((value: any) => true | string | string[])[] },
+  disableEnqueueSnackbar = false) => {
   const { enqueueSnackbar } = useSnackbar();
   const { permissions } = usePermissions();
   const { translate } = useTranslation();
@@ -28,10 +31,15 @@ export const useSettings = (endpoint: string, validator?: { [attribute: string]:
 
   // refresh settings on mount
   useEffect(() => {
-    refresh();
-  }, []);
+    if (endpoint) {
+      refresh();
+    }
+  }, [endpoint]);
 
   useEffect(() => {
+    if (!endpoint) {
+      return;
+    }
     if (loading && !settingsInitial) {
       dispatch(addSettingsLoading(endpoint));
     } else {
@@ -46,6 +54,9 @@ export const useSettings = (endpoint: string, validator?: { [attribute: string]:
   }, [errors]);
 
   const refresh = useCallback(async () => {
+    if (!endpoint) {
+      return;
+    }
     console.debug('Refreshing settings', endpoint, new Error().stack);
     setLoading(true);
 
@@ -56,7 +67,7 @@ export const useSettings = (endpoint: string, validator?: { [attribute: string]:
     if (response.data.status === 'success') {
       response.data.data.settings && setSettings(response.data.data.settings);
       response.data.data.settings && setSettingsInitial(response.data.data.settings);
-      response.data.data.settings && setUI(response.data.data.settings);
+      response.data.data.settings && setUI(response.data.data.ui);
       setLoading(false);
       return response.data.data.settings;
     } else {
@@ -139,7 +150,9 @@ export const useSettings = (endpoint: string, validator?: { [attribute: string]:
     if (data) {
       setSaving(true);
       await saveSettings(`/api/settings${endpoint}`, data);
-      enqueueSnackbar('Settings saved.', { variant: 'success' });
+      if (!disableEnqueueSnackbar) {
+        enqueueSnackbar('Settings saved.', { variant: 'success' });
+      }
       setSaving(false);
     }
   }, [ settings, enqueueSnackbar, endpoint, refresh ]);

@@ -1,22 +1,20 @@
 import { Button, Checkbox, Divider, Fade, FormControlLabel, InputAdornment, TextField } from '@mui/material';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { useSettings } from './useSettings';
 import { useTranslation } from './useTranslation';
 import { Commands } from '../classes/Commands';
-import { getSocket } from '../helpers/socket';
 
 export const useBotCommandsSpecificSettings = (item: Commands | null) => {
   const location = useLocation();
-  const [ loading, setLoading ] = useState(true);
-  const [ saving, setSaving ] = useState(false);
-  const [ settings, setSettings ] = useState<Record<string, any>>({});
+
+  const { loading, refresh, settings: settings, setSettings, save, saving, settingsInitial } = useSettings(!item ? null : `/${item.type.toLowerCase()}/${item.name.toLowerCase()}`, undefined, true);
 
   const { translate } = useTranslation();
 
   useEffect(() => {
-    setLoading(true);
+    refresh();
   }, [location]);
 
   const handleSettingsValueChange = (key: string, val: any) => {
@@ -24,26 +22,14 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
       return {
         ...value,
         [key]: [
-          val, value[key][1],
+          val, settingsInitial![key][1],
         ],
       };
     });
   };
 
   const handleSave = async () => {
-    if (!item) {
-      return;
-    }
-
-    setSaving(true);
-    await Promise.all(
-      Object.keys(settings).map(key => {
-        return new Promise<void>(resolve => {
-          axios.post(`/api/settings/${item.type.toLowerCase()}/${item.name.toLowerCase()}/${key}`, { value: settings[key][0] })
-            .finally(() => resolve());
-        });
-      }),
-    );
+    save();
   };
 
   const handleSetSettingsDefaultValue = (key: string) => {
@@ -51,38 +37,14 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
       return {
         ...value,
         [key]: [
-          value[key][1], value[key][1],
+          settingsInitial![key][1], settingsInitial![key][1],
         ],
       };
     });
   };
 
-  useEffect(() => {
-    if (!item) {
-      setSettings({});
-      return;
-    }
-    getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any)
-      .emit('settings', (err: any, data: { [x: string]: any[]; }) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-
-        // select all command related settings
-        const commandSettings: Record<string, any> = {};
-        for (const key of Object.keys(data)) {
-          if (key.startsWith(item.defaultValue)) {
-            commandSettings[key] = data[key];
-          }
-        }
-        setSettings(commandSettings);
-        setLoading(false);
-      });
-  }, [ item ]);
-
   const generateInput = (key: string) => {
-    if (!item) {
+    if (!item || !settings) {
       return <></>;
     }
 
@@ -125,9 +87,9 @@ export const useBotCommandsSpecificSettings = (item: Commands | null) => {
     return <></>;
   };
 
-  const inputs = <>
-    { item && Object.keys(settings).length > 0 && <Divider sx={{ pt: 3 }}>Command specific settings</Divider> }
-    { item && Object.keys(settings).map(key => generateInput(key))}
+  const inputs = !settings ? <></> : <>
+    { item && Object.keys(settings).filter(o => o.startsWith(item.defaultValue)).length > 0 && <Divider sx={{ pt: 3 }}>Command specific settings</Divider> }
+    { item && Object.keys(settings).filter(o => o.startsWith(item.defaultValue)).map(key => generateInput(key))}
   </>;
 
   return {
