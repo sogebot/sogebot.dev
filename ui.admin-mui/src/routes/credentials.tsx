@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
@@ -12,6 +13,8 @@ import Streamlabs from './credentials/streamlabs';
 import Tiltify from './credentials/tiltify';
 import TwitchOwnAppTokens from './credentials/tokens';
 import Twitch from './credentials/twitch';
+
+axios.defaults.baseURL = JSON.parse(localStorage.server);
 
 export default function Credentials() {
   return <>

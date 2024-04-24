@@ -16,7 +16,6 @@ import LinkButton from '../../components/Buttons/LinkButton';
 import { PluginsEdit } from '../../components/Form/PluginsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import getAccessToken from '../../getAccessToken';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -62,22 +61,17 @@ const PageRegistryPlugins = () => {
   const { element: filterElement, filters } = useFilter<Plugin>(useFilterSetup);
 
   const refresh = useCallback(async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/plugins').emit('generic::getAll', (_, data) => {
-          setItems(data);
-          resolve();
-        });
-      }),
-    ]);
+    const response = await axios.get('/api/core/plugins');
+    setItems(response.data.data);
     setLoading(false);
   }, []);
 
   const deleteItem = useCallback((item: Plugin) => {
-    getSocket('/core/plugins').emit('generic::deleteById', item.id, () => {
-      enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.delete(`/api/core/plugins/${item.id}`)
+      .then(() => {
+        enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar, refresh ]);
 
   useEffect(() => {

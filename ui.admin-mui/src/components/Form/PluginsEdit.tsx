@@ -12,7 +12,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { TriggerAlertDialog } from './PluginsEdit/TriggerAlertDialog';
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
-import { getSocket } from '../../helpers/socket';
 import { useValidator } from '../../hooks/useValidator';
 import { ExportDialog } from '../Plugin/ExportDialog';
 import { ImportDialog } from '../Plugin/ImportDialog';
@@ -20,6 +19,7 @@ import { ImportDialog } from '../Plugin/ImportDialog';
 /* eslint-disable */
 // @ts-ignore: TS2307
 import libSource from '!raw-loader!./assets/plugin.global.d.ts';
+import axios from 'axios';
 /* eslint-enable */
 
 const leftPanelWidth = 352;
@@ -267,13 +267,12 @@ export const PluginsEdit: React.FC = () => {
             settings: null,
           } as Plugin);
         } else {
-          getSocket('/core/plugins').emit('generic::getOne', id, (err, item) => {
-            if (err) {
-              enqueueSnackbar(String(err), { action: 'error' });
-              console.error(err);
-            }
-            setPlugin(item);
-          });
+          if (id) {
+            axios.get(`/api/core/plugins/${id}`)
+              .then(response => {
+                setPlugin(response.data.data);
+              });
+          }
         }
       })
     ]);
@@ -290,15 +289,15 @@ export const PluginsEdit: React.FC = () => {
 
   const handleSave = () => {
     setSaving(true);
-    getSocket('/core/plugins').emit('generic::save', plugin, (err, savedItem) => {
-      if (err) {
-        showErrors(err as any);
-      } else {
+    axios.post(`/api/core/plugins`, plugin)
+      .then((response) => {
         enqueueSnackbar('Plugin saved.', { variant: 'success' });
-        navigate(`/registry/plugins/edit/${ savedItem.id }?server=${ JSON.parse(localStorage.server) }`);
-      }
-      setSaving(false);
-    });
+        navigate(`/registry/plugins/edit/${response.data.data.id}`);
+      })
+      .catch(e => {
+        showErrors(e.response.data.errors);
+      })
+      .finally(() => setSaving(false));
   };
 
   const copyToClipboard = (pluginId: string, overlayId: string) => {

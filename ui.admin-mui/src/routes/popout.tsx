@@ -23,6 +23,8 @@ import { setConfiguration, setMessage, setState, setSystem, setTranslation, show
 import { setUser } from '../store/userSlice';
 import theme from '../theme';
 
+axios.defaults.baseURL = JSON.parse(localStorage.server);
+
 const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
   if (!server || !connectedToServer) {
     setTimeout(() => {

@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 
 import { Box } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -32,6 +33,8 @@ import { WordcloudItem } from '../components/Overlay/WordcloudItem';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setConfiguration, setTranslation } from '../store/loaderSlice';
+
+axios.defaults.baseURL = JSON.parse(localStorage.server);
 
 export default function Overlays() {
   const { base64 } = useParams();
@@ -144,7 +147,7 @@ export default function Overlays() {
         {item.opts.typeId === 'randomizer' && <RandomizerItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
-        {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/overlays/plugin/${item.opts.pluginId}/${item.opts.overlayId}`} scrolling='0' frameBorder={0} style={{
+        {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/api/overlays/plugins/${item.opts.pluginId}/${item.opts.overlayId}?_raw`} scrolling='0' frameBorder={0} style={{
           width: `100%`, height: `100%`,
         }} />}
       </Box>,
