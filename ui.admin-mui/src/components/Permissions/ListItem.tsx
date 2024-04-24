@@ -13,12 +13,18 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
 }) => {
   const { id } = useParams();
   const { translate } = useTranslation();
+  const isActive = id === permission.id;
 
   return <Button key={permission.id}
     ref={draggableProvided?.innerRef}
     {...draggableProvided?.draggableProps}
     href={`/settings/permissions/edit/${permission.id}`}
-    selected={id === permission.id}>
+    sx={{
+      '& *': {
+        color: isActive ? 'black !important' : 'inherit',
+      }
+    }}
+    variant={isActive ? 'contained' : 'text'}>
     {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
       <DragIndicatorTwoTone/>
     </ListItemIcon>}

@@ -1,12 +1,12 @@
 import { Alert, AlertTitle, LoadingButton } from '@mui/lab';
 import { Link, TextField, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import { capitalize } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const TestUserField: React.FC<{ permissionId: string }> = ({
@@ -51,23 +51,20 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
     if (testUserName.trim().length === 0) {
       setIsTesting(false);
     } else {
-      getSocket('/core/permissions').emit('test.user', {
+      axios.post('/api/core/permissions/?_action=testUser', {
         pid: permissionId, value: testUserName, state,
-      }, (err, r) => {
-        console.log({
-          err, r,
-        });
-        if (err) {
-          setError(err instanceof Error ? err.stack ?? '' : String(err));
-          setIsTesting(false);
-          return console.error(translate('core.permissions.' + err));
-        }
-        if (r && r.state === state) {
+      }).then(({ data }) => {
+        console.log({ data });
+        if (data.state === state) {
           // expecting this data
-          setStatus(r.status);
-          setPartialStatus(r.partial);
+          setStatus(data.status);
+          setPartialStatus(data.partial);
           setIsTesting(false);
         }
+      }).catch(err => {
+        setError(err instanceof Error ? err.stack ?? '' : String(err));
+        setIsTesting(false);
+        console.error(translate('core.permissions.' + err));
       });
     }
   };

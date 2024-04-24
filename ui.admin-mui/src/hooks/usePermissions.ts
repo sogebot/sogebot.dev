@@ -13,24 +13,28 @@ export const usePermissions = () => {
   const [ scopes, setScopes ] = useAtom(scopesAtom);
 
   const refresh = React.useCallback(() => {
-    if (permissions.length === 0) {
-      axios.get(`/api/core/permissions`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-        .then(({ data }) => {
-          if (data.status === 'success') {
-            console.log('permissions', data.data.items);
-            dispatch(setPermissions(data.data.items));
-          }
-        });
-    }
-    if (scopes.length === 0) {
-      axios.get(`/api/core/permissions/availableScopes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
-        .then(({ data }) => {
-          if (data.status === 'success') {
-            console.log('scopes', data.data.items);
-            setScopes(data.data.items);
-          }
-        });
-    }
+    return Promise.all([
+      new Promise<void>(resolve => {
+        axios.get(`/api/core/permissions`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              console.log('permissions', data.data);
+              dispatch(setPermissions(data.data));
+              resolve();
+            }
+          });
+      }),
+      new Promise<void>(resolve => {
+        axios.get(`/api/core/permissions/availableScopes`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              console.log('scopes', data.data);
+              setScopes(data.data);
+              resolve();
+            }
+          });
+      })
+    ]);
   }, [ dispatch, permissions, scopes ]);
 
   React.useEffect(() => {
