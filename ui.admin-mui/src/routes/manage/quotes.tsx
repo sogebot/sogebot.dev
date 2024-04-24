@@ -223,7 +223,7 @@ const PageManageQuotes = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 
