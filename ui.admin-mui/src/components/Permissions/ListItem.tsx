@@ -21,7 +21,7 @@ export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission
     href={`/settings/permissions/edit/${permission.id}`}
     sx={{
       '& *': {
-        color: isActive ? 'black !important' : 'inherit',
+        color: isActive ? 'black !important' : undefined,
       }
     }}
     variant={isActive ? 'contained' : 'text'}>

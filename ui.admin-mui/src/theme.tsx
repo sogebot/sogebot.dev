@@ -43,6 +43,13 @@ declare module '@mui/material/Button' {
   }
 }
 
+declare module '@mui/material/Slider' {
+  interface SliderPropsColorOverrides {
+    dark:  true;
+    light: true;
+  }
+}
+
 declare module '@mui/material/Chip' {
   interface ChipPropsColorOverrides {
     dark:  true;
