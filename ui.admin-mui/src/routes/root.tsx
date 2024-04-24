@@ -159,7 +159,7 @@ export default function Root() {
 
   const [ unfold ] = useLocalstorageState(`${localStorage.server}::action_unfold`, true);
   const [ chatUnfold ] = useLocalstorageState(`${localStorage.server}::chat_unfold`, true);
-  const scope = useScope('dashboard:admin');
+  const scope = useScope('dashboard');
 
   useEffect(() => {
     setIndexPage(location.pathname === '/');

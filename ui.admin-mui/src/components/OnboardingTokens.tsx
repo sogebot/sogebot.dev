@@ -13,7 +13,7 @@ import { setTokensOnboardingState } from '../store/loaderSlice';
 
 export const OnboardingTokens: React.FC = () => {
   const dispatch = useAppDispatch();
-  const scope = useScope('dashboard:admin');
+  const scope = useScope('dashboard');
 
   if (scope.manage) {
     // do nothing if user is not admin

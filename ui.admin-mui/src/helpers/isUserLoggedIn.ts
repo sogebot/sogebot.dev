@@ -32,10 +32,10 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
   } else {
     try {
       if (mustBeAdmin) {
-        // check if user have dashboard:admin access
+        // check if user have dashboard access
         const token = jwtDecode(localStorage.getItem(`${localStorage.server}::accessToken`) ?? '') as any;
         console.log('Scopes', JSON.stringify(token.privileges.scopes));
-        if (token.privileges.haveAdminPrivileges || token.privileges.scopes.includes('dashboard:admin:read') || token.privileges.scopes.includes('dashboard:admin:manage')) {
+        if (token.privileges.haveAdminPrivileges || token.privileges.scopes.includes('dashboard:read') || token.privileges.scopes.includes('dashboard:manage')) {
           user.bot_scopes = {
             ...user.bot_scopes ?? {},
             [localStorage.server]: token.privileges.scopes

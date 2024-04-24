@@ -55,7 +55,7 @@ function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useAppSelector((state: any) => state.loader);
-  const scope = useScope('dashboard:admin');
+  const scope = useScope('dashboard');
 
   const queue = useAtomValue(alertQueueAtom);
   const currentQueue = queue.findIndex(q => {
@@ -157,7 +157,7 @@ function RenderRow(props: any) {
 export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   const [ events, setEvents ] = React.useState<any[]>([]);
   const { events: widgetSettings } = useAppSelector((state: any) => state.page.widgets);
-  const scope = useScope('dashboard:admin');
+  const scope = useScope('dashboard');
 
   const [ status, setStatus ] = React.useState({
     areAlertsMuted: false,
