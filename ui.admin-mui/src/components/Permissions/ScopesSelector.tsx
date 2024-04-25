@@ -15,12 +15,6 @@ export const ScopesSelector: React.FC<{
 }> = ({
   onChange, model, modelAll, modelSensitive
 }) => {
-  // const { scopes } = usePermissions();
-
-  // const toggle = (scope: string) => {
-  //   onChange({ scopes: model.includes(scope) ? model.filter(s => s !== scope) : [...model, scope], haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
-  // };
-
   const toggleAll = () => {
     onChange({ scopes: model, haveAllScopes: !modelAll, excludeSensitiveScopes: true });
   };
