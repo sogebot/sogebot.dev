@@ -18,7 +18,7 @@ import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useScope } from '../../hooks/useScope';
 
 const PageManageViewers = () => {
-  const scope = useScope('systems:highlights');
+  const scope = useScope('highlights');
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
 

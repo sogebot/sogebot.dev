@@ -25,7 +25,7 @@ import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageManageQuotes = () => {
-  const scope = useScope('systems:quotes');
+  const scope = useScope('quotes');
 
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const dispatch = useAppDispatch();

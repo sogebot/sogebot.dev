@@ -26,7 +26,7 @@ import { setBulkCount } from '../../store/appbarSlice';
 import { setOffset, setToggle } from '../../store/hltbSlice';
 
 const PageManageHLTB = () => {
-  const scope = useScope('systems:howlongtobeat');
+  const scope = useScope('howlongtobeat');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();

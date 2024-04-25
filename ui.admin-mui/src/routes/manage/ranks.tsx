@@ -21,7 +21,7 @@ import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsKeywords = () => {
-  const scope = useScope('systems:ranks');
+  const scope = useScope('ranks');
 
   const dispatch = useAppDispatch();
   const location = useLocation();

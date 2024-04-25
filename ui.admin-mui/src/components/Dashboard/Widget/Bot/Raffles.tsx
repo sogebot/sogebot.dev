@@ -24,7 +24,7 @@ let lastUpdateAt = 0;
 export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   sx,
 }) => {
-  const scope = useScope('systems:raffles');
+  const scope = useScope('raffles');
 
   const [ loading, setLoading ] = React.useState(true);
   const { translate } = useTranslation();

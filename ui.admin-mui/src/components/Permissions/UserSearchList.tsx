@@ -9,9 +9,10 @@ let state = v4();
 export const UserSearchlist: React.FC<{
   onChange: (users: string[]) => void,
   users:    string[],
-  label:    string
+  label:    string,
+  disabled?: boolean,
 }> = ({
-  onChange, users, label,
+  onChange, users, label, disabled
 }) => {
   const [ inputValue, setInputValue ] = useState('');
   const [ isSearching, setIsSearching ] = useState(false);
@@ -75,6 +76,7 @@ export const UserSearchlist: React.FC<{
   }, [ users, mapping ]);
 
   return  <Autocomplete
+    disabled={disabled}
     selectOnFocus
     disableCloseOnSelect
     fullWidth

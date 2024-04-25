@@ -21,7 +21,7 @@ import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageCommandsAliasGroup = () => {
-  const scope = useScope('systems:alias');
+  const scope = useScope('alias');
 
   const { translate } = useTranslation();
   const { id } = useParams();

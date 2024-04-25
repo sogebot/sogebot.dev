@@ -21,9 +21,11 @@ import { ScopesSelector } from '../../components/Permissions/ScopesSelector';
 import { TestUserField } from '../../components/Permissions/TestUserField';
 import { UserSearchlist } from '../../components/Permissions/UserSearchList';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageSettingsPermissions = () => {
+  const scope = useScope('permissions');
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
@@ -293,7 +295,7 @@ const PageSettingsPermissions = () => {
             >
               <TextField
                 fullWidth
-                disabled={selectedItem.isCorePermission}
+                disabled={selectedItem.isCorePermission || !scope.manage}
                 variant="filled"
                 value={selectedItem.name}
                 required
@@ -302,7 +304,7 @@ const PageSettingsPermissions = () => {
               />
 
               {!selectedItem.isCorePermission
-                && <FormControl fullWidth variant="filled" >
+                && <FormControl fullWidth variant="filled" disabled={!scope.manage}>
                   <InputLabel id="permission-select-label" shrink>{translate('permissions')}</InputLabel>
                   <Select
                     value={selectedItem.automation}
@@ -317,7 +319,7 @@ const PageSettingsPermissions = () => {
 
               {!selectedItem.isCorePermission
                 && <FormGroup>
-                  <FormControlLabel control={<Checkbox checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange({ isWaterfallAllowed: !selectedItem.isWaterfallAllowed })} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
+                  <FormControlLabel control={<Checkbox disabled={!scope.manage} checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange({ isWaterfallAllowed: !selectedItem.isWaterfallAllowed })} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
                 </FormGroup>}
 
               {!selectedItem.isCorePermission
@@ -325,16 +327,16 @@ const PageSettingsPermissions = () => {
                   <Divider sx={{ m: 1.5 }}>
                     <FormLabel>{ translate('responses.variable.users') }</FormLabel>
                   </Divider>
-                  <UserSearchlist label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
+                  <UserSearchlist disabled={!scope.manage} label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
                     handlePermissionChange({ userIds: value });
                   }}/>
-                  <UserSearchlist label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
+                  <UserSearchlist disabled={!scope.manage} label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
                     handlePermissionChange({ excludeUserIds: value });
                   }}/>
                 </>}
 
               {!selectedItem.isCorePermission
-                && <FilterMaker model={selectedItem.filters} onChange={filters => handlePermissionChange({ filters: filters })}/>
+                && <FilterMaker disabled={!scope.manage} model={selectedItem.filters} onChange={filters => handlePermissionChange({ filters: filters })}/>
               }
 
               {selectedItem.id !== defaultPermissions.CASTERS
@@ -350,16 +352,18 @@ const PageSettingsPermissions = () => {
                   });
                 }}/>}
 
-              <Divider sx={{ mt: 1.5 }}/>
+              {scope.manage && <>
+                <Divider sx={{ mt: 1.5 }}/>
 
-              <Grid container sx={{ py: 1 }} justifyContent='space-between'>
-                <Grid item>
-                  {!selectedItem.isCorePermission && <ConfirmButton loading={removing} variant="contained" color='error' sx={{ minWidth: '250px' }} handleOk={() => removeSelectedPermission()}>{ translate('delete') }</ConfirmButton>}
+                <Grid container sx={{ py: 1 }} justifyContent='space-between'>
+                  <Grid item>
+                    {!selectedItem.isCorePermission && <ConfirmButton loading={removing} variant="contained" color='error' sx={{ minWidth: '250px' }} handleOk={() => removeSelectedPermission()}>{ translate('delete') }</ConfirmButton>}
+                  </Grid>
+                  <Grid item>
+                    <LoadingButton loading={saving} variant="contained" sx= {{ minWidth: '250px' }} onClick={() => saveSelectedPermission()}>{ translate('dialog.buttons.saveChanges.idle') }</LoadingButton>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <LoadingButton loading={saving} variant="contained" sx= {{ minWidth: '250px' }} onClick={() => saveSelectedPermission()}>{ translate('dialog.buttons.saveChanges.idle') }</LoadingButton>
-                </Grid>
-              </Grid>
+              </>}
             </Box>
           </Box>}
 

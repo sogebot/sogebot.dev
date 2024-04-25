@@ -18,7 +18,7 @@ import { classes } from '../../../styles';
 export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   sx,
 }) => {
-  const scope = useScope('systems:queue');
+  const scope = useScope('queue');
 
   const [ value, setValue ] = React.useState('1');
 

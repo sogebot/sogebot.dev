@@ -27,7 +27,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsCooldown = () => {
-  const scope = useScope('systems:cooldown');
+  const scope = useScope('cooldown');
 
   const { translate } = useTranslation();
   const dispatch = useAppDispatch();

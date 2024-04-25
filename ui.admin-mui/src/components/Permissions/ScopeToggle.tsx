@@ -1,7 +1,9 @@
 import { Box, Grid, Paper, Slider, Stack, Typography } from '@mui/material';
+import { capitalize } from 'lodash';
 import React from 'react';
 
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import theme from '../../theme';
 
 type Props = {
@@ -20,6 +22,7 @@ const scopeColors = [
 
 export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected, onChange, customName, flat }) => {
   const { scopes: allScopes } = usePermissions();
+  const permissionScope = useScope('permissions');
 
   const filteredScopes = [...allScopes.filter(scope => scopes.some(avscope => scope.startsWith(avscope)))];
   if (customName) {
@@ -44,6 +47,9 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
         : 3);
 
   React.useEffect(() => {
+    if (!permissionScope.manage) {
+      return;
+    }
     if (scope === 0) {
       setNoAccess();
     }
@@ -56,7 +62,7 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
     if (scope === 3) {
       setCustom();
     }
-  }, [scope]);
+  }, [scope, permissionScope]);
   const setNoAccess = () => onChange([], filteredScopes);
   const setReadOnly = () => onChange(filteredScopes.filter(s => s.endsWith('read')), filteredScopes);
   const setManageOnly = () => onChange(filteredScopes.filter(s => s.endsWith('manage')), filteredScopes);
@@ -65,8 +71,8 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
   return <Paper variant='outlined' sx={{
     p: 2,
     border: flat ? 0 : undefined,
-    width: flat ? undefined : 'max(1000px, 50%)',
-    margin: 'auto'
+    margin: 'auto',
+    mt: !flat ? 0.5 : undefined,
   }}>
     <Grid container spacing={1}>
       <Grid item xs={6}>
@@ -86,16 +92,16 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
             left: customName ? '25px' : undefined,
             width: customName ? '145px' : undefined,
           }}>
-            <Typography variant='caption' onClick={() => setScope(1)} sx={{
+            <Typography variant='caption' onClick={() => permissionScope.manage && setScope(1)} sx={{
               color: scope === 1 ? theme.palette.light.main : theme.palette.text.disabled,
-              cursor: 'pointer',
+              cursor: permissionScope.manage ? 'pointer' : 'not-allowed',
               position: 'absolute',
               height: '50px',
               left: customName ? 0 : undefined,
             }}>Read-only</Typography>
-            {customName && <Typography variant='caption' onClick={() => setScope(3)} sx={{
+            {customName && <Typography variant='caption' onClick={() => permissionScope.manage && setScope(3)} sx={{
               color: scope === 3 ? theme.palette.info.main : theme.palette.text.disabled,
-              cursor: 'pointer',
+              cursor: permissionScope.manage ? 'pointer' : 'not-allowed',
               position: 'absolute',
               height: '50px',
               right: 0,
@@ -108,9 +114,11 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
               position: 'relative',
               top: '12px',
               marginBottom: '6px',
+              cursor: permissionScope.manage ? 'pointer' : 'not-allowed'
             }}
+            disabled={!permissionScope.manage}
             value={scope}
-            onChangeCommitted={(_, v) => setScope(v as number)}
+            onChangeCommitted={(_, v) => permissionScope.manage && setScope(v as number)}
             step={1}
             color={scopeColors[scope]}
             max={customName ? 3 : 2}
@@ -124,16 +132,16 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
             left: '-30px',
             width: customName ? '160px' : '205px'
           }}>
-            <Typography variant='caption' onClick={() => setScope(0)} sx={{
+            <Typography variant='caption' onClick={() => permissionScope.manage && setScope(0)} sx={{
               color: scope === 0 ? theme.palette.error.main : theme.palette.text.disabled,
-              cursor: 'pointer',
+              cursor: permissionScope.manage ? 'pointer' : 'not-allowed',
               position: 'absolute',
               height: '50px',
               left: flat ? 0 : undefined,
             }}>No access</Typography>
-            <Typography variant='caption' onClick={() => setScope(2)} sx={{
+            <Typography variant='caption' onClick={() => permissionScope.manage && setScope(2)} sx={{
               color: scope === 2 ? theme.palette.success.main : theme.palette.text.disabled,
-              cursor: 'pointer',
+              cursor: permissionScope.manage ? 'pointer' : 'not-allowed',
               position: 'absolute',
               height: '50px',
               right: 0,
@@ -144,12 +152,12 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
     </Grid>
 
     {isCustom && <Grid container>
-      {scopes.map((sc) => <Grid item xs={12} xl={6}>
+      {scopes.map((sc) => <Grid item xs={12} xl={6} key={capitalize(sc.replace(/_/g, ' '))}>
         <ScopeToggle
           flat
           selected={selected.filter(s => s.startsWith(sc))}
           scopes={[sc]}
-          label={sc}
+          label={capitalize(sc.replace(/_/g, ' '))}
           onChange={(change, remove) => {
             onChange(change, remove);
           }}/>

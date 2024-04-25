@@ -28,7 +28,7 @@ import { setBulkCount } from '../../store/appbarSlice';
 type CommandWithCount = Commands & { count: number };
 
 const PageCommandsCommands = () => {
-  const scope = useScope('systems:customcommands');
+  const scope = useScope('custom_commands');
 
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -142,7 +142,7 @@ const PageCommandsCommands = () => {
         axios.get(`/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             if (data.status === 'success') {
-              const commands = data.data;
+              const commands = data.data.items;
               for (const command of commands) {
                 command.count = data.data.count.find((o: any) => o.command === command.command)?.count || 0;
               }

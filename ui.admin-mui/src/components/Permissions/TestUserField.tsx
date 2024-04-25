@@ -55,10 +55,10 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
         pid: permissionId, value: testUserName, state,
       }).then(({ data }) => {
         console.log({ data });
-        if (data.state === state) {
+        if (data.data.state === state) {
           // expecting this data
-          setStatus(data.status);
-          setPartialStatus(data.partial);
+          setStatus(data.data.status);
+          setPartialStatus(data.data.partial);
           setIsTesting(false);
         }
       }).catch(err => {

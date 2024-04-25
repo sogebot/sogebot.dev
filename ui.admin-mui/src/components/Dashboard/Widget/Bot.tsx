@@ -21,9 +21,9 @@ export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useAppSelector((state: any) => state.loader);
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { translate } = useTranslation();
-  const checklistScope = useScope('systems:checklist');
-  const queueScope = useScope('systems:queue');
-  const rafflesScope = useScope('systems:raffles');
+  const checklistScope = useScope('checklist');
+  const queueScope = useScope('queue');
+  const rafflesScope = useScope('raffles');
 
   const [value, setValue] = React.useState('1');
 

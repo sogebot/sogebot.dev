@@ -12,7 +12,7 @@ export const DashboardWidgetBotChecklist: React.FC<{ sx: SxProps }> = ({
     id: string; isCompleted: boolean;
   }[]>([]);
   const [ loading, setLoading ] = React.useState(true);
-  const scope = useScope('systems:checklist');
+  const scope = useScope('checklist');
 
   React.useEffect(() => {
     if (!loading) {

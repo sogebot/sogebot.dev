@@ -30,7 +30,7 @@ import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsAlias = () => {
-  const scope = useScope('systems:alias');
+  const scope = useScope('alias');
 
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();

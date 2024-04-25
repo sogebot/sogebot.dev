@@ -21,7 +21,7 @@ import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageCommandsKeyword = () => {
-  const scope = useScope('systems:keywords');
+  const scope = useScope('keywords');
   const { translate } = useTranslation();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();

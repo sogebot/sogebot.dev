@@ -26,7 +26,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsPrice = () => {
-  const scope = useScope('systems:price');
+  const scope = useScope('price');
 
   const { translate } = useTranslation();
   const dispatch = useAppDispatch();

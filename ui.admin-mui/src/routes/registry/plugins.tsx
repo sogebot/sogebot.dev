@@ -23,7 +23,7 @@ import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryPlugins = () => {
-  const scope = useScope('core:plugins');
+  const scope = useScope('plugins');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();

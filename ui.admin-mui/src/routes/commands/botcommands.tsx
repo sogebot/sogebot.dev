@@ -18,7 +18,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useScope } from '../../hooks/useScope';
 
 const PageCommandsBot = () => {
-  const scope = useScope('core:general');
+  const scope = useScope('bot_commands');
   const location = useLocation();
   const { type, id } = useParams();
 
