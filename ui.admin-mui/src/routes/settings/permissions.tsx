@@ -226,14 +226,14 @@ const PageSettingsPermissions = () => {
                 { translate('core.permissions.permissionsGroups') }
               </Typography>
 
-              <IconButton
+              {scope.manage && <IconButton
                 onClick={() => addNewPermissionGroup()}
                 color="inherit"
                 aria-label="open drawer"
                 edge="start"
               >
                 <AddTwoTone />
-              </IconButton>
+              </IconButton>}
             </Toolbar>
 
             <Stack>
