@@ -50,7 +50,15 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
     });
   }, [ enqueueSnackbar ]);
 
-  const authorize = useCallback(() => {
+  const authorize = useCallback(async () => {
+    // enable module
+    await new Promise<void>(resolve => {
+      getSocket('/integrations/spotify').emit('settings.update', { enabled: true }, () => {
+        resolve();
+      });
+    });
+    // save changes
+    await save();
     const popup = window.open(baseURL + '/credentials/spotify', 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
     const checkPopup = setInterval(() => {
       if (!popup || popup.closed) {

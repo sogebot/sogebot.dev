@@ -143,14 +143,12 @@ export const useSettings = (endpoint: keyof ClientToServerEventsWithNamespace, v
     }
   }, [ settings, validator, translate, endpoint ]);
 
-  const save = useCallback(() => {
+  const save = useCallback(async () => {
     if (settings) {
       setSaving(true);
-      saveSettings(endpoint, settings)
-        .then(() => {
-          enqueueSnackbar('Settings saved.', { variant: 'success' });
-        })
-        .finally(() => setSaving(false));
+      await saveSettings(endpoint, settings);
+      enqueueSnackbar('Settings saved.', { variant: 'success' });
+      setSaving(false);
     }
   }, [ settings, enqueueSnackbar, endpoint ]);
 
