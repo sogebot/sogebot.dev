@@ -9,8 +9,8 @@ import React, { useCallback, useRef, useState } from 'react';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void }> = ({
-  item, variable, onUpdate,
+export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void, disabled: boolean }> = ({
+  item, variable, onUpdate, disabled
 }) => {
   const { user } = useAppSelector(state => state.user);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -47,6 +47,7 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
       fullWidth
       startIcon={<Box width={20} height={20}/>}
       endIcon={<Edit/>}
+      disabled={disabled}
       sx={{ borderRadius: 0 }}>
       <Box sx={{
         position: 'absolute', width: '100%', height: '100%',

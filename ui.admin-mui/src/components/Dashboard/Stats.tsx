@@ -62,7 +62,7 @@ export const DashboardStats: React.FC = () => {
         }
       })
       .catch(console.error);
-  }, 10000, true, true);
+  }, 2000, true, true);
 
   return (
     <Grid container spacing={0.5}>

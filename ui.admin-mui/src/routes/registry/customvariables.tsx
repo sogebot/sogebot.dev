@@ -32,7 +32,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
-  const scope = useScope('custom_variables');
+  const scope = useScope('customvariables');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();

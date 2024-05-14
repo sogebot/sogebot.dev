@@ -10,8 +10,8 @@ import { useIntervalWhen } from 'rooks';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void }> = ({
-  item, variable, onUpdate,
+export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void, disabled: boolean }> = ({
+  item, variable, onUpdate, disabled
 }) => {
   const { user } = useAppSelector(state => state.user);
   const [ isIncrement, setIsIncrement ] = useState(true);
@@ -68,6 +68,7 @@ export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: Q
       startIcon={<Remove/>}
       endIcon={<Add />}
       fullWidth
+      disabled={disabled}
       sx={{ borderRadius: 0 }}>
       <Box sx={{
         position: 'absolute', width: '100%', height: '100%',

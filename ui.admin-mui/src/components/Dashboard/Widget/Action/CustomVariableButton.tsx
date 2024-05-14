@@ -13,11 +13,13 @@ import { DashboardWidgetActionCustomVariableOptionsButton } from './CustomVariab
 import { DashboardWidgetActionCustomVariableTextButton } from './CustomVariable/TextButton';
 import { DashboardWidgetActionCustomVariableUnknownButton } from './CustomVariable/UnknownButton';
 import { getContrastColor } from '../../../../colors';
+import { useScope } from '../../../../hooks/useScope';
 import { isHexColor } from '../../../../validators';
 
 export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomVariableItem }> = ({
   item,
 }) => {
+  const scope = useScope('customvariables');
   const [ loading, setLoading ] = useState(true);
   const [ variable, setVariable ] = useState<Variable | null>(null);
   const [ unknownVariable, setUnknownVariable ] = useState<null | string>(null);
@@ -47,9 +49,9 @@ export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomV
   return (<Box>
     {loading && <ColorButton htmlcolor={item.options.color} fullWidth><CircularProgress sx={{ color: getContrastColor(isHexColor(item.options.color) === true ? item.options.color : '#444444') }} size={28}/></ColorButton>}
     {!loading && unknownVariable && <DashboardWidgetActionCustomVariableUnknownButton variableName={unknownVariable} item={item}/>}
-    {!loading && variable && variable.type === 'number' && <DashboardWidgetActionCustomVariableNumberButton item={item} variable={variable} onUpdate={onUpdateHandle}/>}
-    {!loading && variable && variable.type === 'text' && <DashboardWidgetActionCustomVariableTextButton item={item} variable={variable} onUpdate={onUpdateHandle}/>}
-    {!loading && variable && variable.type === 'options' && <DashboardWidgetActionCustomVariableOptionsButton item={item} variable={variable} onUpdate={onUpdateHandle}/>}
+    {!loading && variable && variable.type === 'number' && <DashboardWidgetActionCustomVariableNumberButton disabled={!scope.manage} item={item} variable={variable} onUpdate={onUpdateHandle}/>}
+    {!loading && variable && variable.type === 'text' && <DashboardWidgetActionCustomVariableTextButton disabled={!scope.manage} item={item} variable={variable} onUpdate={onUpdateHandle}/>}
+    {!loading && variable && variable.type === 'options' && <DashboardWidgetActionCustomVariableOptionsButton disabled={!scope.manage} item={item} variable={variable} onUpdate={onUpdateHandle}/>}
     {!loading && variable && variable.type === 'eval' && <DashboardWidgetActionCustomVariableEvalButton item={item} variable={variable}/>}
   </Box>);
 };

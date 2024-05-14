@@ -17,9 +17,11 @@ import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
 import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import theme from '../../../theme';
 
 export const DashboardWidgetAction: React.FC = () => {
+  const customVariableScope = useScope('customvariables');
   const [value, setValue] = React.useState('1');
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
@@ -97,7 +99,9 @@ export const DashboardWidgetAction: React.FC = () => {
               return <DashboardWidgetActionCommandButton key={action.id} item={action}/>;
             }
             if (action.type === 'customvariable') {
-              return <DashboardWidgetActionCustomVariableButton key={action.id} item={action}/>;
+              return customVariableScope.read
+                ? <DashboardWidgetActionCustomVariableButton key={action.id} item={action}/>
+                : <></>;
             }
             if (action.type === 'randomizer') {
               return <DashboardWidgetActionRandomizerButton key={action.id} item={action}/>;
