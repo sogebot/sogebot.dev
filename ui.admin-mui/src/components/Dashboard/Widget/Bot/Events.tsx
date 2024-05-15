@@ -26,6 +26,8 @@ import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
 
+let timestamp = 0;
+
 export const DotDivider: React.FC = () => {
   return (
     <Typography component='span' fontSize={'0.8rem'} color={grey[500]}>•</Typography>
@@ -223,7 +225,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   }, [ status, statusLoaded ]);
 
   const filteredEvents = React.useMemo(() => {
-    return events.filter(event => {
+    const filtered = events.filter(event => {
       const follow = widgetSettings.showFollows && event.event === 'follow';
       const raid = widgetSettings.showRaids && event.event === 'raid';
       const bit = widgetSettings.showBits && event.event === 'cheer';
@@ -264,19 +266,35 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
             || subcommunitygift)
             && queued;
     });
+    return filtered.sort((a, b) => b.timestamp - a.timestamp);
   }, [ events, widgetSettings ]);
+
+  const refresh = () => {
+    let url = `/api/widgets/eventlist?timestamp=${timestamp}`;
+    if (timestamp === 0) {
+      url = `/api/widgets/eventlist?count=100`;
+    }
+    axios.get(url)
+      .then(({ data }) => {
+        if (data.data.length === 0) {
+          return;
+        }
+        setEvents(ev => {
+          return [...ev, ...data.data];
+        });
+      });
+    timestamp = Date.now();
+
+  };
 
   React.useEffect(() => {
     getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
-    getSocket('/widgets/eventlist').on('update', (values: any) => {
-      setEvents(values);
-    });
-    getSocket('/widgets/eventlist').emit('eventlist::get', 100);
+    refresh();
   }, []);
 
   useIntervalWhen(() => {
-    getSocket('/widgets/eventlist').emit('eventlist::get', 100);
-  }, 60000, true, true);
+    refresh();
+  }, 2000, true, true);
 
   return (<Box sx={{
     height: '100%', ...props.sx,
