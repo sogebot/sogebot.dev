@@ -45,12 +45,12 @@ function blockquote (event: any) {
 
 function emitSkipAlertEvent () {
   console.log('Skipping current alert');
-  getSocket('/widgets/eventlist').emit('skip');
+  axios.post(`/api/widgets/eventlist/?_action=skip`);
 }
 
 function resendAlert (id: string) {
   console.log(`resendAlert => ${id}`);
-  getSocket('/widgets/eventlist').emit('eventlist::resend', id);
+  axios.post(`/api/widgets/eventlist/${id}?_action=resend`);
 }
 
 function RenderRow(props: any) {
@@ -197,9 +197,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
 
   function removeEvent (id: string) {
     console.log(`removeEvent => ${id}`);
-    getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
-      setEvents(evs => [...evs.filter(o => o.id !== id)]);
-    });
+    axios.delete(`/api/widgets/eventlist/${id}`);
+    setEvents(evs => [...evs.filter(o => o.id !== id)]);
   }
 
   const handleStatusChange = (type: keyof typeof status, value: boolean) => {
@@ -288,7 +287,6 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   };
 
   React.useEffect(() => {
-    getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
     refresh();
   }, []);
 

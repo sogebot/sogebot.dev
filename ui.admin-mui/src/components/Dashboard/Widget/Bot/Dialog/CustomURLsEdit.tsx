@@ -4,11 +4,11 @@ import { Alert, Button, Container, Divider, Drawer, Grid, IconButton, Stack, Tex
 import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
+import axios from 'axios';
 import clone from 'lodash/clone';
 import React from 'react';
 import { v4 } from 'uuid';
 
-import { getSocket } from '../../../../../helpers/socket';
 import { useAppSelector } from '../../../../../hooks/useAppDispatch';
 
 export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimestamp: React.Dispatch<React.SetStateAction<number>> }> = ({
@@ -24,11 +24,8 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimest
     if (!user) {
       return;
     }
-    getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCustom(items);
+    axios.get('/api/widgets/custom').then(({ data }) => {
+      setCustom(data.data);
     });
     if (open) {
       setIdxDelete([]);
@@ -54,23 +51,9 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimest
     setIsSaving(true);
     for (const item of custom) {
       if (idxDelete.includes(item.id)) {
-        await new Promise<void>(resolve => {
-          getSocket('/widgets/custom').emit('generic::deleteById', item.id, (err) => {
-            if (err) {
-              return console.error(err);
-            }
-            resolve();
-          });
-        });
+        await axios.delete(`/api/widgets/custom/${item.id}`);
       } else {
-        await new Promise<void>(resolve => {
-          getSocket('/widgets/custom').emit('generic::save', item, (err) => {
-            if (err) {
-              return console.error(err);
-            }
-            resolve();
-          });
-        });
+        await axios.post('/api/widgets/custom', item);
       }
     }
     setIsSaving(false);

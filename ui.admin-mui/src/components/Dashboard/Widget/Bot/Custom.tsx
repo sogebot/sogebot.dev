@@ -1,10 +1,10 @@
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Stack, SxProps, Tab } from '@mui/material';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
+import axios from 'axios';
 import React, { useEffect } from 'react';
 
 import { DashboardWidgetBotDialogCustomURLsEdit } from './Dialog/CustomURLsEdit';
-import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
@@ -21,11 +21,8 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
     if (!user) {
       return;
     }
-    getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCustom(items);
+    axios.get('/api/widgets/custom').then(({ data }) => {
+      setCustom(data.data);
     });
     setTab('1');
   }, [user, refreshTimestamp]);

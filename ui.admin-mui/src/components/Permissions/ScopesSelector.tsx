@@ -72,7 +72,7 @@ export const ScopesSelector: React.FC<{
       <ScopeToggle
         customName='dashboard'
         selected={model}
-        scopes={['dashboard', 'checklist', 'queue', 'raffles']}
+        scopes={['dashboard', 'checklist', 'queue', 'raffles', 'alerts']}
         label='Dashboard access'
         caption='User will be able to login to dashboard or manage dashboard'
         onChange={(change, remove) => {
@@ -98,9 +98,33 @@ export const ScopesSelector: React.FC<{
       <ScopeToggle
         customName='quotes'
         selected={model}
-        scopes={['quotes', 'timers']}
-        label='Quotes / Timers'
-        caption='User will be able to read or manage quotes and timers'
+        scopes={['quotes', 'timers', 'randomizer']}
+        label='Quotes / Timers / Randomizer'
+        caption='User will be able to read or manage quotes, timers and randomizers'
+        onChange={(change, remove) => {
+          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
+          cleanedScopes.push(...change);
+          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
+        }}
+      />
+
+      <ScopeToggle
+        selected={model}
+        scopes={['overlays']}
+        label='overlays'
+        caption='User will be able to read, manage or control overlays related settings'
+        onChange={(change, remove) => {
+          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
+          cleanedScopes.push(...change);
+          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
+        }}
+      />
+
+      <ScopeToggle
+        selected={model}
+        scopes={['integrations']}
+        label='Integrations'
+        caption='User will be able to read or manage integrations'
         onChange={(change, remove) => {
           const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
           cleanedScopes.push(...change);
