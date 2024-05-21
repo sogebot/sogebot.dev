@@ -2,11 +2,11 @@ import { LoadingButton } from '@mui/lab';
 import { Alert, Box, CircularProgress, FormControl, FormLabel, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { JsonViewer, NamedColorspace } from '@textea/json-viewer';
+import axios from 'axios';
 import { escapeRegExp } from 'lodash';
 import React from 'react';
 import { useDebouncedValue, useRefElement } from 'rooks';
 
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -76,15 +76,14 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
     for (const key of Object.keys(flatten(dataset))) {
       text = text.replace(new RegExp(escapeRegExp(`$${key}`), 'gi'), flatten(dataset)[key]);
     }
-    getSocket(`/integrations/pubg`).emit('pubg::exampleParse', { text }, (err, data: any) => {
-      if (err) {
-        return console.error(err);
-      } else if (statsType === 'rankedGameModeStats') {
-        setExample1(data);
-      } else {
-        setExample2(data);
-      }
-    });
+    axios.post('/integrations/pubg?_action=exampleParse', { text })
+      .then(({ data }) => {
+        if (statsType === 'rankedGameModeStats') {
+          setExample1(data.data);
+        } else {
+          setExample2(data.data);
+        }
+      });
   }, [selectedRankedStats, selectedNormalStats]);
 
   React.useEffect(() => {
@@ -111,17 +110,17 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
     if (debouncedSearchTerm && settings && !search && lastSearch !== debouncedSearchTerm) {
       setLastSearch(debouncedSearchTerm);
       setSearch(true);
-      getSocket(`/integrations/pubg`).emit('pubg::searchForPlayerId', {
+      axios.post('/integrations/pubg?_action=searchForPlayerId', {
         apiKey:     settings.apiKey[0],
         platform:   settings.player.platform[0],
         playerName: settings.player.playerName[0],
-      }, (err, data: any) => {
-        if (err) {
-          console.error(err);
-          handleChange('player.playerId', '');
-        } else {
-          handleChange('player.playerId', data.data[0].id);
-        }
+      }).then(({ data }) => {
+        handleChange('player.playerId', data.data[0].id);
+        setSearch(false);
+      }).catch((err) => {
+        console.error(err);
+        handleChange('player.playerId', '');
+      }).finally(() => {
         setSearch(false);
       });
     }
