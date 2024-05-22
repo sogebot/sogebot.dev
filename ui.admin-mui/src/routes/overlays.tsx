@@ -100,11 +100,8 @@ export default function Overlays() {
             resolve(true);
             return;
           }
-          getSocket('/registries/overlays', true).emit('generic::getOne', id, (err, result) => {
-            if (err) {
-              return console.error(err);
-            }
-            setOverlay(result);
+          axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+            setOverlay(data.data);
             resolve(true);
           });
         }),

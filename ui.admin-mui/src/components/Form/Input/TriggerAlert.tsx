@@ -1,11 +1,11 @@
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { Alerts, EmitData, Overlay } from '@sogebot/backend/src/database/entity/overlay';
+import axios from 'axios';
 import { useSetAtom } from 'jotai';
 import React from 'react';
 
 import { AdditionalGridFormResponse } from './Response';
-import { getSocket } from '../../../helpers/socket';
 import { anItems, anMoveableId } from '../atoms';
 import { AccordionAnimationIn } from '../Overlay/AlertSettings/Accordion/AnimationIn';
 import { AccordionAnimationOut } from '../Overlay/AlertSettings/Accordion/AnimationOut';
@@ -98,22 +98,18 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   const [ expand, setExpand ] = React.useState(false);
 
   React.useEffect(() => {
-    getSocket('/registries/overlays').emit('generic::getAll', (err, data) => {
-      if (err) {
-        console.error(err);
-      } else {
-        // filter data to overlays only with alert item with custom hook
-        setOverlays(data.filter((o) => {
-          // first check if there is any alert item
-          const itemsWithAlerts = o.items.filter(b => b.opts.typeId === 'alerts');
-          if (itemsWithAlerts.length === 0) {
-            return false;
-          }
-          // second check if alert item contains custom hook
-          const containsCustomHook = itemsWithAlerts.filter(b => (b.opts as Alerts).items.filter(c => c.hooks[0] === 'custom'));
-          return containsCustomHook.length > 0;
-        }));
-      }
+    axios.get('/registries/overlays').then(({ data }) => {
+      // filter data to overlays only with alert item with custom hook
+      setOverlays(data.data.filter((o: any) => {
+        // first check if there is any alert item
+        const itemsWithAlerts = o.items.filter((b: any) => b.opts.typeId === 'alerts');
+        if (itemsWithAlerts.length === 0) {
+          return false;
+        }
+        // second check if alert item contains custom hook
+        const containsCustomHook = itemsWithAlerts.filter((b: any) => (b.opts as Alerts).items.filter(c => c.hooks[0] === 'custom'));
+        return containsCustomHook.length > 0;
+      }));
       setLoading(false);
     });
   }, []);

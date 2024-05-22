@@ -23,13 +23,9 @@ type Props = {
 const endpoint = 'https://registry.sogebot.xyz';
 
 const fetchLocalOverlays = async () => {
-  return new Promise<Overlay[]>((resolve, reject) => {
-    getSocket('/registries/overlays', true).emit('generic::getAll', (err, result) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      }
-      resolve(result);
+  return new Promise<Overlay[]>((resolve) => {
+    axios.get('/api/registries/overlays').then(({ data }) => {
+      resolve(data.data);
     });
   });
 };

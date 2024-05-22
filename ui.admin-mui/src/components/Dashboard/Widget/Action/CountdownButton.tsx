@@ -3,6 +3,7 @@ import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayCountdownItem } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
@@ -61,11 +62,8 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
   }, [countdown, isStarted, handleClick]);
 
   useEffect(() => {
-    getSocket('/registries/overlays').emit('generic::getOne', item.options.countdownId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCountdown(result?.items.find(o => o.id === item.options.countdownId && o.opts.typeId === 'countdown')?.opts as Countdown ?? null);
+    axios.get(`/api/registries/overlays/${item.options.countdownId}`).then(({ data }) => {
+      setCountdown(data.data?.items.find((o: any) => o.id === item.options.countdownId && o.opts.typeId === 'countdown')?.opts as Countdown ?? null);
     });
   }, [item.options.countdownId]);
 

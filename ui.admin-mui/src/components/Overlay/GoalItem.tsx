@@ -11,7 +11,6 @@ import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { loadFont } from '../Accordion/Font';
@@ -97,16 +96,12 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
       return;
     }
 
-    getSocket('/registries/overlays', true).emit('generic::getOne', groupId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      if (!result) {
+    axios.get(`/api/registries/overlays/${groupId}`).then(({ data }) => {
+      if (!data.data) {
         return;
       }
 
-      const goals = result.items.filter(o => o.opts.typeId === 'goal');
+      const goals = data.data.items.filter((o: any) => o.opts.typeId === 'goal');
       for (const goal of goals) {
         if (goal.id === id) {
             console.log(`Goal ${goal.id} check.`);

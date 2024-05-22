@@ -15,7 +15,6 @@ import { v4 } from 'uuid';
 
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
-import { getSocket } from '../../../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { setCountdowns, setMarathons, setRandomizers, setStopwatchs } from '../../../../../store/quickActionsSlice';
 import { isHexColor } from '../../../../../validators';
@@ -363,22 +362,19 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
         }))));
       });
 
-    getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get(`/api/registries/overlays`).then(({ data }) => {
       const _countdowns: { id: string, label: string }[] = [];
       const _marathons: { id: string, label: string }[] = [];
       const _stopwatches: { id: string, label: string }[] = [];
 
-      for (const item of result) {
-        _countdowns.push(...item.items.filter(o => o.opts.typeId === 'countdown').map(o => ({
+      for (const item of data.data) {
+        _countdowns.push(...item.items.filter((o: any) => o.opts.typeId === 'countdown').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Countdown).time, (o.opts as Countdown).showMilliseconds)}`,
         })));
-        _marathons.push(...item.items.filter(o => o.opts.typeId === 'marathon').map(o => ({
+        _marathons.push(...item.items.filter((o: any) => o.opts.typeId === 'marathon').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime(Math.max(Math.max((o.opts as Marathon).endTime, Date.now() - Date.now())), (o.opts as Marathon).showMilliseconds)}`,
         })));
-        _stopwatches.push(...item.items.filter(o => o.opts.typeId === 'stopwatch').map(o => ({
+        _stopwatches.push(...item.items.filter((o: any) => o.opts.typeId === 'stopwatch').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Stopwatch).currentTime, (o.opts as Stopwatch).showMilliseconds)}`,
         })));
       }

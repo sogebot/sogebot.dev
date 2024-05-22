@@ -1,11 +1,11 @@
 import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import { Box, Button, LinearProgress, Typography } from '@mui/material';
 import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
+import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 
 import { dayjs } from '../../../helpers/dayjsHelper';
-import { getSocket } from '../../../helpers/socket';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -76,11 +76,8 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
   }, [filter, history]);
 
   useEffect(() => {
-    getSocket('/overlays/eventlist').emit('eventlist::getUserEvents', row.userId, (err, events) => {
-      if (err) {
-        return console.error(err);
-      }
-      setHistory(events);
+    axios.get(`/api/core/events/${row.userId}`).then(({ data }) => {
+      setHistory(data.data);
       setLoading(false);
     });
   }, [ row ]);

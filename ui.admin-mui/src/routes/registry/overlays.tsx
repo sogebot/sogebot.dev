@@ -5,6 +5,7 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import { ContentCopyTwoTone, ContentPasteTwoTone, LinkTwoTone } from '@mui/icons-material';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -47,18 +48,8 @@ const PageRegistryOverlays = () => {
   const [ selection, setSelection ] = useState<(number|string)[]>([]);
 
   const refresh = useCallback(async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/registries/overlays').emit('generic::getAll', (err, data) => {
-          if (err) {
-            console.error(err);
-          } else {
-            setItems(data);
-            resolve();
-          }
-        });
-      }),
-    ]);
+    const response = await axios.get('/api/registries/overlays');
+    setItems(response.data.data);
   }, []);
 
   const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Overlay>([

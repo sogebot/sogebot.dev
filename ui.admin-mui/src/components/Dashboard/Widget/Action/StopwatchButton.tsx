@@ -3,6 +3,7 @@ import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayStopwatchItem } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
@@ -61,11 +62,8 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   }, [stopwatch, isStarted, handleClick]);
 
   useEffect(() => {
-    getSocket('/registries/overlays').emit('generic::getOne', item.options.stopwatchId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-      setStopwatch(result?.items.find(o => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
+    axios.get(`/api/registries/overlays/${item.options.stopwatchId}`).then(({ data }) => {
+      setStopwatch(data.data?.items.find((o: any) => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
     });
   }, [ item.options.stopwatchId ]);
 

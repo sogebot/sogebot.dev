@@ -4,6 +4,7 @@ import { Box, Button, DialogActions, DialogContent, Divider, Fade, Unstable_Grid
 import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
+import axios from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 import { cloneDeep, set } from 'lodash';
 import { nanoid } from 'nanoid';
@@ -188,17 +189,14 @@ export const OverlayEdit: React.FC = () => {
   React.useEffect(() => {
     if (id) {
       setLoading(true);
-      getSocket('/registries/overlays').emit('generic::getOne', id, (err, data) => {
-        if (err) {
-          return console.error(err);
-        }
-        if (!data) {
+      axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+        if (!data.data) {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
           navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
         } else {
           const withDefaultValues = {
-            ...data,
-            items: data.items.map(it => ({
+            ...data.data,
+            items: data.data.items.map((it: any) => ({
               ...it, opts: setDefaultOpts(it.opts, it.opts.typeId),
             })),
           };
