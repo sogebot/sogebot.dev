@@ -4,6 +4,7 @@ import type { UserInterface } from '@entity/user';
 import { Backdrop, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -264,37 +265,37 @@ const PageManageViewers = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const resetPoints = () => {
-    getSocket('/core/users').emit('viewers::resetPointsAll', () => {
+    axios.post('/core/users?_action=resetPointsAll').then(() => {
       refresh();
     });
   };
 
   const resetWatchedTime = () => {
-    getSocket('/core/users').emit('viewers::resetWatchedTimeAll', () => {
+    axios.post('/core/users?_action=resetWatchedTimeAll').then(() => {
       refresh();
     });
   };
 
   const resetMessages = () => {
-    getSocket('/core/users').emit('viewers::resetMessagesAll', () => {
+    axios.post('/core/users?_action=resetMessagesAll').then(() => {
       refresh();
     });
   };
 
   const resetBits = () => {
-    getSocket('/core/users').emit('viewers::resetBitsAll', () => {
+    axios.post('/core/users?_action=resetBitsAll').then(() => {
       refresh();
     });
   };
 
   const resetTips = () => {
-    getSocket('/core/users').emit('viewers::resetTipsAll', () => {
+    axios.post('/core/users?_action=resetTipsAll').then(() => {
       refresh();
     });
   };
 
   const resetSubgifts = () => {
-    getSocket('/core/users').emit('viewers::resetSubgiftsAll', () => {
+    axios.post('/core/users?_action=resetSubgiftsAll').then(() => {
       refresh();
     });
   };
