@@ -3,6 +3,7 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
 import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { Event } from '@sogebot/backend/dest/database/entity/event';
+import axios from 'axios';
 import { useAtom } from 'jotai';
 import { orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -18,7 +19,6 @@ import LinkButton from '../../components/Buttons/LinkButton';
 import { EventsEdit } from '../../components/Form/EventsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -33,12 +33,8 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
   const [ rewards, setRewards ] = useAtom(rewardsAtom);
   const [ rewardLoading, setRewardLoading ] = useState(true);
   React.useEffect(() => {
-
-    getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: { id: string, name: string }[]) => {
-      if (err) {
-        return console.error(err);
-      }
-      setRewards(orderBy(redeems, 'name', 'asc'));
+    axios.post('/api/core/events/?_action=getRedeemedRewards').then(({ data }) => {
+      setRewards(orderBy(data.data, 'name', 'asc'));
       setRewardLoading(false);
     });
   }, []);
@@ -194,7 +190,7 @@ const PageManageEvents = () => {
   const { element: filterElement, filters } = useFilter<Event>(useFilterSetup);
 
   const deleteItem = useCallback((item: Event) => {
-    getSocket('/core/events').emit('events::remove', item.id, () => {
+    axios.delete('/api/core/events/' + item.id).finally(() => {
       enqueueSnackbar(`Event ${item.id} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -207,12 +203,8 @@ const PageManageEvents = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('generic::getAll', (err, res: Event[]) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
+        axios.get('/api/core/events').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
       }),
@@ -249,9 +241,8 @@ const PageManageEvents = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/core/events').emit('events::save', item, () => {
-            resolve();
-          });
+          axios.post('/api/core/events/', item)
+            .finally(() => resolve());
         });
       }
     }
@@ -275,7 +266,7 @@ const PageManageEvents = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/core/events').emit('events::remove', item.id, () => {
+          axios.delete('/api/core/events/' + item.id).then(() => {
             resolve();
           });
         });

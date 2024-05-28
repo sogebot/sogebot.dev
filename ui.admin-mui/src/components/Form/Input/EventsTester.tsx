@@ -1,10 +1,10 @@
 import { CasinoTwoTone } from '@mui/icons-material';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 
 import { FormNumericInput } from './Numeric';
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -197,10 +197,8 @@ const EventsTester: React.FC<Props> = (props) => {
             id: props.eventId, randomized: randomized, values: values, variables: variables,
           });
           enqueueSnackbar('Event sent', { variant: 'success' });
-          getSocket('/core/events').emit('test.event', {
+          axios.post('/api/core/events/?_action=testEvent', {
             id: props.eventId, randomized: randomized, values: values, variables: variables,
-          }, () => {
-            return true;
           });
         }}>Test</Button>
       </DialogActions>

@@ -253,10 +253,10 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
         const userName = messageEl?.dataset.username ?? '';
         banText = banText?.toLowerCase();
         if (banText === 'delete' || banText === 'ban' || banText === '!autoban') {
-          axios.post(`/api/widgets/chat?action=moderation`, { userName, type: banText.replace('!', ''), messageId: banMenuForId });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: banText.replace('!', ''), messageId: banMenuForId });
         } else {
           const timeout = [...firstHalfBanTimes, ...secondHalfBanTimes].find(val => val.title.toLowerCase() === banText?.toLowerCase())?.value;
-          axios.post(`/api/widgets/chat?action=moderation`, { userName, type: 'timeout', messageId: banMenuForId, timeout });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: 'timeout', messageId: banMenuForId, timeout });
         }
       }
 

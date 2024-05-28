@@ -76,7 +76,7 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
   }, [filter, history]);
 
   useEffect(() => {
-    axios.get(`/api/core/events/${row.userId}`).then(({ data }) => {
+    axios.get(`/api/core/events/user/${row.userId}`).then(({ data }) => {
       setHistory(data.data);
       setLoading(false);
     });

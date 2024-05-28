@@ -4,6 +4,7 @@ import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Grid
 import { Event, SupportedEvent, SupportedOperation } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect , useState } from 'react';
@@ -14,7 +15,6 @@ import { CopyButton } from './Input/Adornment/Copy';
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import { EventsDefinitions } from './Input/EventsDefinitions';
 import { EventsTester } from './Input/EventsTester';
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
@@ -61,12 +61,8 @@ export const EventsEdit: React.FC = () => {
     Promise.all([
       new Promise<void>(resolve => {
         if (id) {
-          getSocket('/core/events').emit('generic::getOne', id, (err, res) => {
-            if (err || !res) {
-              console.error(err);
-            } else {
-              setItem(Event.create(res));
-            }
+          axios.get(`/api/core/events/${id}`).then(({ data }) => {
+            setItem(Event.create(data.data));
             resolve();
           });
         } else {
@@ -78,58 +74,50 @@ export const EventsEdit: React.FC = () => {
         }
       }),
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('list.supported.operations', (err, data: SupportedOperation[]) => {
-          if (err) {
-            console.error(err);
-          } else {
-            setAvailableOperations(data.sort((a, b) => {
-              const A = translate(a.id).toLowerCase();
-              const B = translate(b.id).toLowerCase();
-              if (A < B) { // sort string ascending
-                return -1;
-              }
-              if (A > B) {
-                return 1;
-              }
-              return 0; // default return value (no sorting)
-            }));
-          }
+        axios.post('/api/core/events/?_action=listSupportedOperations').then(({ data }) => {
+          setAvailableOperations(data.data.sort((a: any, b: any) => {
+            const A = translate(a.id).toLowerCase();
+            const B = translate(b.id).toLowerCase();
+            if (A < B) { // sort string ascending
+              return -1;
+            }
+            if (A > B) {
+              return 1;
+            }
+            return 0; // default return value (no sorting)
+          }));
           resolve();
         });
       }),
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('list.supported.events', (err, data: SupportedEvent[]) => {
-          if (err) {
-            console.error(err);
-          } else {
-            for (const d of data) {
-              // sort variables
-              if (d.variables) {
-                d.variables = d.variables.sort((A, B) => {
-                  if (A < B) { // sort string ascending
-                    return -1;
-                  }
-                  if (A > B) {
-                    return 1;
-                  }
-                  return 0; // default return value (no sorting)
-                });
-              } else {
-                d.variables = [];
-              }
+        axios.post('/api/core/events/?_action=listSupportedEvents').then(({ data }) => {
+          for (const d of data.data) {
+            // sort variables
+            if (d.variables) {
+              d.variables = d.variables.sort((A: any, B: any) => {
+                if (A < B) { // sort string ascending
+                  return -1;
+                }
+                if (A > B) {
+                  return 1;
+                }
+                return 0; // default return value (no sorting)
+              });
+            } else {
+              d.variables = [];
             }
-            setAvailableEvents(data.sort((a, b) => {
-              const A = translate(a.id).toLowerCase();
-              const B = translate(b.id).toLowerCase();
-              if (A < B) { // sort string ascending
-                return -1;
-              }
-              if (A > B) {
-                return 1;
-              }
-              return 0; // default return value (no sorting)
-            }));
           }
+          setAvailableEvents(data.data.sort((a: any, b: any) => {
+            const A = translate(a.id).toLowerCase();
+            const B = translate(b.id).toLowerCase();
+            if (A < B) { // sort string ascending
+              return -1;
+            }
+            if (A > B) {
+              return 1;
+            }
+            return 0; // default return value (no sorting)
+          }));
           resolve();
         });
       }),
@@ -148,15 +136,18 @@ export const EventsEdit: React.FC = () => {
       return;
     }
     setSaving(true);
-    getSocket('/core/events').emit('events::save', item, (err, savedItem) => {
-      if (err) {
-        showErrors(err as any);
-      } else {
+    axios.post('/api/core/events/', item).then((response) => {
+      if (response.data.status === 'success') {
         enqueueSnackbar('Event saved.', { variant: 'success' });
-        navigate(`/manage/events/edit/${savedItem.id}?server=${JSON.parse(localStorage.server)}`);
+        navigate(`/manage/events/edit/${response.data.data.id}`);
+      } else {
+        enqueueSnackbar('Unexpected state.', { variant: 'error' });
       }
-      setSaving(false);
-    });
+    })
+      .catch(e => {
+        showErrors(e.response.data.errors);
+      })
+      .finally(() => setSaving(false));
   };
 
   const getEmptyDefinitionOf = (name: string) => {
