@@ -424,7 +424,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
       setMessages(val => [...val, data]);
     });
 
-    getSocket('/overlays/chat').on('message', (data: any) => {
+    getSocket('/overlays/chat' as any).on('message', (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }
