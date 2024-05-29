@@ -37,7 +37,7 @@ export const FormRewardInput: React.FC<{
   const refreshRedeemedRewards = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      axios.post('/api/core/events/?_action=getRedeemedRewards').then(({ data }) => {
+      axios.get('/api/core/events/rewards').then(({ data }) => {
         setRewards(orderBy(data.data, 'name', 'asc'));
         setProgress(false);
         resolve();

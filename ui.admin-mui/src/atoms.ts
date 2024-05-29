@@ -2,7 +2,7 @@ import { AlertQueue } from '@sogebot/backend/dest/database/entity/overlay';
 import { atom } from 'jotai';
 
 /*
- * List of available copes
+ * List of available scopes
  */
 export const scopesAtom = atom<string[]>([]);
 
@@ -10,6 +10,9 @@ export const scopesAtom = atom<string[]>([]);
  * Logged in user
  */
 export const loggedUserAtom = atom<{
+  id: string;
+  profile_image_url: string;
+  display_name: string;
   bot_scopes: { [server: string]: string[] };
 } | null>(JSON.parse(localStorage.getItem('cached-logged-user') || 'null'));
 

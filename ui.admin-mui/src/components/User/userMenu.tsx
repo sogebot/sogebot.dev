@@ -1,13 +1,16 @@
-import { CookieTwoTone, PestControlTwoTone } from '@mui/icons-material';
+import { CookieTwoTone, KeyTwoTone, PestControlTwoTone } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Button, Chip, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { Avatar, Button, Chip, Divider, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
+import { useAtomValue } from 'jotai';
+import { useConfirm } from 'material-ui-confirm';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
+import { loggedUserAtom } from '../../atoms';
 import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -23,8 +26,9 @@ export const UserMenu: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useMobile();
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
 
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const { configuration } = useAppSelector(state => state.loader);
   const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
   const [ logged, setLogged ] = React.useState(false);
@@ -92,6 +96,8 @@ export const UserMenu: React.FC = () => {
   }, [ refresh ]);
   useIntervalWhen(() => refresh(), 60000, true, true);
 
+  const scopes = user?.bot_scopes ?? { [JSON.stringify(localStorage.server)]: [] };
+
   return (
     <>
       {user && Object.keys(configuration).length > 0
@@ -112,7 +118,10 @@ export const UserMenu: React.FC = () => {
       >
         <Box sx={{ px: 2 }}>
           <><Typography>{user.display_name}</Typography>
-            <Typography variant='subtitle2' color={theme.palette.info.main}>{viewer?.permission.name}</Typography>
+            <Stack direction='row' sx={{ maxWidth: '200px' }}>
+              <Typography variant='subtitle2' color={theme.palette.info.main}>{viewer?.permission.name}
+              </Typography>
+            </Stack>
             {viewerIs(viewer)
               .map(o => {
                 return (
@@ -133,6 +142,19 @@ export const UserMenu: React.FC = () => {
                 right:    `45px`,
                 top:      `25px`,
               }}><CookieTwoTone/></IconButton>
+            </Tooltip>
+            <Tooltip title="Scopes">
+              <IconButton onClick={(() =>
+                confirm({
+                  title: 'Your current scopes list',
+                  description: scopes[localStorage.server].join(', '),
+                  hideCancelButton: true,
+                }))} sx={{
+                position: 'absolute',
+                right:    `85px`,
+                top:      `25px`,
+              }}><KeyTwoTone/>
+              </IconButton>
             </Tooltip>
             <Divider sx={{ pt: 1 }}/>
 

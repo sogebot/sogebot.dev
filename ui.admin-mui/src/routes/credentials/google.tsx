@@ -4,8 +4,6 @@ import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../helpers/socket';
-
 const Google = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
@@ -36,7 +34,7 @@ const Google = () => {
         axios.get('https://credentials.sogebot.xyz/google/?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            getSocket('/services/google').emit('google::token', { refreshToken }, () => {
+            axios.post('/api/services/google?_action=token', { refreshToken }).then(() => {
               setProgress(true);
               setTimeout(() => window.close(), 1000);
               return;

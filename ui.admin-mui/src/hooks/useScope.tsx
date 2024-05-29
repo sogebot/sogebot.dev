@@ -10,12 +10,14 @@ export const useScope = (requiredScope: string) => {
   if (!user) {
     return {
       read: false,
-      manage: false
+      manage: false,
+      sensitive: false
     };
   }
   const scopes = user.bot_scopes ?? { [JSON.stringify(server)]: [] };
   return {
     read: !!(scopes[JSON.stringify(server)] ?? []).find((scope: string) => scope.includes(`${requiredScope}:read`)),
-    manage: !!(scopes[JSON.stringify(server)] ?? []).find((scope: string) => scope.includes(`${requiredScope}:manage`))
+    manage: !!(scopes[JSON.stringify(server)] ?? []).find((scope: string) => scope.includes(`${requiredScope}:manage`)),
+    sensitive: !!(scopes[JSON.stringify(server)] ?? []).find((scope: string) => scope.includes(`${requiredScope}:sensitive`))
   };
 };

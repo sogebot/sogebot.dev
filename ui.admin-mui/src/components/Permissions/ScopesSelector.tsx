@@ -111,8 +111,31 @@ export const ScopesSelector: React.FC<{
       <ScopeToggle
         selected={model}
         scopes={['overlays']}
-        label='overlays'
+        label='Overlays'
         caption='User will be able to read, manage or control overlays related settings'
+        onChange={(change, remove) => {
+          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
+          cleanedScopes.push(...change);
+          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
+        }}
+      />
+      <ScopeToggle
+        selected={model}
+        scopes={['games']}
+        label='Games'
+        caption='User will be able to read or manage games, e.g. Bets, Duel, Gamble, etc.'
+        onChange={(change, remove) => {
+          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
+          cleanedScopes.push(...change);
+          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
+        }}
+      />
+
+      <ScopeToggle
+        selected={model}
+        scopes={['services']}
+        label='Services'
+        caption='User will be able to read or manage services, e.g. Twitch, Google'
         onChange={(change, remove) => {
           const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
           cleanedScopes.push(...change);
@@ -134,9 +157,9 @@ export const ScopesSelector: React.FC<{
 
       <ScopeToggle
         selected={model}
-        scopes={['customvariables']}
-        label='Custom Variables'
-        caption='User will be able to read or manage custom variables'
+        scopes={['customvariables', 'events']}
+        label='Custom Variables / Events'
+        caption='User will be able to read or manage custom variables and events'
         onChange={(change, remove) => {
           const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
           cleanedScopes.push(...change);
