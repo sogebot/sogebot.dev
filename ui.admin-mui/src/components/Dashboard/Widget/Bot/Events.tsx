@@ -273,7 +273,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     if (timestamp === 0) {
       url = `/api/widgets/eventlist?count=100`;
     }
-    axios.get(url)
+    axios.get(url, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         if (data.data.length === 0) {
           return;

@@ -1,14 +1,15 @@
 import { CommandItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { useCallback } from 'react';
 
 import { ColorButton } from './_ColorButton';
-import { useAppSelector } from '../../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../../atoms';
 
 export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }> = ({
   item,
 }) => {
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
 
   const trigger = useCallback(() => {
     if (!user) {

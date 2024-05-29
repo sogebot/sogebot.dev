@@ -4,16 +4,17 @@ import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { MouseEventHandler, useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
-import { useAppSelector } from '../../../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../../../atoms';
 import { ColorButton } from '../_ColorButton';
 
 export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void, disabled: boolean }> = ({
   item, variable, onUpdate, disabled
 }) => {
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ isIncrement, setIsIncrement ] = useState(true);
   const [ isShiftKey, setIsShiftKey ] = useState(false);
   const [ isCtrlKey, setIsCtrlKey ] = useState(false);

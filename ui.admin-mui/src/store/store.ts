@@ -6,7 +6,6 @@ import { loaderSlice } from './loaderSlice';
 import { overlaySlice } from './overlaySlice';
 import { pageSlice } from './pageSlice';
 import { quickActionSlice } from './quickActionsSlice';
-import { userSlice } from './userSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +14,6 @@ export const store = configureStore({
     [loaderSlice.name]:      loaderSlice.reducer,
     [pageSlice.name]:        pageSlice.reducer,
     [quickActionSlice.name]: quickActionSlice.reducer,
-    [userSlice.name]:        userSlice.reducer,
     [overlaySlice.name]:     overlaySlice.reducer,
   },
   devTools: true,

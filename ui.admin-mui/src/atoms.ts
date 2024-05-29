@@ -11,10 +11,11 @@ export const scopesAtom = atom<string[]>([]);
  */
 export const loggedUserAtom = atom<{
   id: string;
+  login: string;
   profile_image_url: string;
   display_name: string;
   bot_scopes: { [server: string]: string[] };
-} | null>(JSON.parse(localStorage.getItem('cached-logged-user') || 'null'));
+} | null>(null);
 
 /*
  * List of available rewards

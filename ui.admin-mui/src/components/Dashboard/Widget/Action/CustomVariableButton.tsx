@@ -13,6 +13,7 @@ import { DashboardWidgetActionCustomVariableOptionsButton } from './CustomVariab
 import { DashboardWidgetActionCustomVariableTextButton } from './CustomVariable/TextButton';
 import { DashboardWidgetActionCustomVariableUnknownButton } from './CustomVariable/UnknownButton';
 import { getContrastColor } from '../../../../colors';
+import getAccessToken from '../../../../getAccessToken';
 import { useScope } from '../../../../hooks/useScope';
 import { isHexColor } from '../../../../validators';
 
@@ -33,7 +34,7 @@ export const DashboardWidgetActionCustomVariableButton: React.FC<{ item: CustomV
   }, [ variable ]);
 
   useIntervalWhen(() => {
-    axios.get('/api/core/customvariables').then(({ data }) => {
+    axios.get('/api/core/customvariables', { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
       const foundItem = data.data.find((o: any) => o.variableName === item.options.customvariable);
       if (!foundItem) {
         setLoading(false);

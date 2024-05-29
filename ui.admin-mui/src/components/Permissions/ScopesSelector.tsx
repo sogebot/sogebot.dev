@@ -121,33 +121,9 @@ export const ScopesSelector: React.FC<{
       />
       <ScopeToggle
         selected={model}
-        scopes={['games']}
-        label='Games'
-        caption='User will be able to read or manage games, e.g. Bets, Duel, Gamble, etc.'
-        onChange={(change, remove) => {
-          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
-          cleanedScopes.push(...change);
-          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
-        }}
-      />
-
-      <ScopeToggle
-        selected={model}
-        scopes={['services']}
-        label='Services'
-        caption='User will be able to read or manage services, e.g. Twitch, Google'
-        onChange={(change, remove) => {
-          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
-          cleanedScopes.push(...change);
-          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
-        }}
-      />
-
-      <ScopeToggle
-        selected={model}
-        scopes={['integrations']}
-        label='Integrations'
-        caption='User will be able to read or manage integrations'
+        scopes={['games', 'services', 'integrations', 'core', 'systems']}
+        label='Settings'
+        caption='User will be able to read or manage settings for games, services, integrations and more'
         onChange={(change, remove) => {
           const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
           cleanedScopes.push(...change);

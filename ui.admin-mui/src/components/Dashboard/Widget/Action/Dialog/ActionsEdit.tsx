@@ -7,12 +7,14 @@ import { Countdown, Marathon, Stopwatch } from '@sogebot/backend/dest/database/e
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
+import { useAtomValue } from 'jotai';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { CompactPicker } from 'react-color';
 import { v4 } from 'uuid';
 
+import { loggedUserAtom } from '../../../../../atoms';
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
@@ -318,7 +320,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
 }) => {
   const dispatch = useAppDispatch();
   const [ open, setOpen ] = React.useState(false);
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
 
   const { randomizers, countdowns, marathons, stopwatchs } = useAppSelector(state => state.quickaction);
@@ -351,7 +353,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     if (!user) {
       return;
     }
-    axios.get(`/api/widgets/quickaction`).then(({ data }) => {
+    axios.get(`/api/widgets/quickaction`, { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
       setActions(orderBy(data.data, 'order', 'asc'));
     });
 

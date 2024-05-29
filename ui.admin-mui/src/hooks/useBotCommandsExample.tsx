@@ -1,17 +1,18 @@
 import { Alert, CircularProgress, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import camelCase from 'lodash/camelCase';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
-import { useAppSelector } from './useAppDispatch';
 import { useSettings } from './useSettings';
+import { loggedUserAtom } from '../atoms';
 import { Commands } from '../classes/Commands';
 
 export const useBotCommandsExample = (item: Commands | null) => {
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const location = useLocation();
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 

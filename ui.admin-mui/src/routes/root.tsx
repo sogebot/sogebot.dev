@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { useSetAtom } from 'jotai';
 import { cloneDeep } from 'lodash';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
@@ -41,6 +42,7 @@ import PageStatsBits from './stats/bits';
 import PageStatsCommandCount from './stats/commandcount';
 import PageStatsProfiler from './stats/profiler';
 import PageStatsTips from './stats/tips';
+import { loggedUserAtom } from '../atoms';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';
@@ -67,12 +69,11 @@ import useMobile from '../hooks/useMobile';
 import { useScope } from '../hooks/useScope';
 import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import { setScrollY } from '../store/pageSlice';
-import { setUser } from '../store/userSlice';
 
-const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
+const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean, setUser: any) => {
   if (!server || !connectedToServer) {
     setTimeout(() => {
-      botInit(dispatch, server, connectedToServer);
+      botInit(dispatch, server, connectedToServer, setUser);
     }, 100);
     return;
   }
@@ -104,7 +105,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   }
 
   console.log('Waiting for user data.');
-  dispatch(setUser(await isUserLoggedIn()));
+  setUser(await isUserLoggedIn());
 
   console.log('Populating systems.');
   await populateListOf('core');
@@ -156,6 +157,7 @@ export default function Root() {
   const { server, connectedToServer, state, tokensOnboardingState, configuration } = useAppSelector((s: any) => s.loader);
   const [ isIndexPage, setIndexPage ] = useState(false);
   const isMobile = useMobile();
+  const setUser = useSetAtom(loggedUserAtom);
 
   const [ unfold ] = useLocalstorageState(`${localStorage.server}::action_unfold`, true);
   const [ chatUnfold ] = useLocalstorageState(`${localStorage.server}::chat_unfold`, true);
@@ -166,8 +168,8 @@ export default function Root() {
   }, [location.pathname, dispatch]);
 
   useEffect(() => {
-    botInit(dispatch, server, connectedToServer);
-  }, [server, dispatch, connectedToServer]);
+    botInit(dispatch, server, connectedToServer, setUser);
+  }, [server, dispatch, connectedToServer, setUser]);
 
   const [pageRef, element]  = useRefElement<HTMLElement>();
   const throttledFunction = useDebounce((el: HTMLElement) => {

@@ -3,10 +3,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { useSetAtom } from 'jotai';
 import { cloneDeep } from 'lodash';
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import { loggedUserAtom } from '../atoms';
 import { DashboardWidgetBot } from '../components/Dashboard/Widget/Bot';
 import { DashboardWidgetTwitch } from '../components/Dashboard/Widget/Twitch';
 import { LoginWarning } from '../components/LoginWarning';
@@ -20,15 +22,14 @@ import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
-import { setUser } from '../store/userSlice';
 import theme from '../theme';
 
 axios.defaults.baseURL = JSON.parse(localStorage.server);
 
-const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean) => {
+const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, connectedToServer: boolean, setUser: any) => {
   if (!server || !connectedToServer) {
     setTimeout(() => {
-      botInit(dispatch, server, connectedToServer);
+      botInit(dispatch, server, connectedToServer, setUser);
     }, 100);
     return;
   }
@@ -57,7 +58,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   }
 
   console.log('Waiting for user data.');
-  dispatch(setUser(await isUserLoggedIn()));
+  setUser(await isUserLoggedIn());
 
   console.log('Populating systems.');
   await populateListOf('core');
@@ -106,10 +107,11 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 export default function Root() {
   const dispatch = useAppDispatch();
   const { server, connectedToServer, state, configuration } = useAppSelector((s: any) => s.loader);
+  const setUser = useSetAtom(loggedUserAtom);
 
   useEffect(() => {
-    botInit(dispatch, server, connectedToServer);
-  }, [server, dispatch, connectedToServer]);
+    botInit(dispatch, server, connectedToServer, setUser);
+  }, [server, dispatch, connectedToServer, setUser]);
 
   return <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={configuration.lang}>
     <ServerSelect passive/>

@@ -4,21 +4,22 @@ import { Box } from '@mui/system';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { MouseEventHandler, useCallback, useMemo, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
+import { loggedUserAtom } from '../../../../atoms';
 import { getContrastColor } from '../../../../colors';
 import { SECOND } from '../../../../constants';
 import getAccessToken from '../../../../getAccessToken';
-import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { isHexColor } from '../../../../validators';
 
 const lastUpdateAt = new Map<string, number>();
 export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerItem }> = ({
   item,
 }) => {
-  const { user } = useAppSelector((state: any) => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ running, setRunning ] = useState(false);
 
   const [ randomizers, setRandomizers ] = useState<Randomizer[]>([]);

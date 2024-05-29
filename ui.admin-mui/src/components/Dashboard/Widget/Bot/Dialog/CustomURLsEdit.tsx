@@ -5,11 +5,13 @@ import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import clone from 'lodash/clone';
 import React from 'react';
 import { v4 } from 'uuid';
 
-import { useAppSelector } from '../../../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../../../atoms';
+import getAccessToken from '../../../../../getAccessToken';
 
 export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimestamp: React.Dispatch<React.SetStateAction<number>> }> = ({
   setRefreshTimestamp,
@@ -18,13 +20,13 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimest
   const [ idxDelete, setIdxDelete ] = React.useState<string[]>([]);
   const [ open, setOpen ] = React.useState(false);
   const [ isSaving, setIsSaving ] = React.useState(false);
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
 
   React.useEffect(() => {
     if (!user) {
       return;
     }
-    axios.get('/api/widgets/custom').then(({ data }) => {
+    axios.get('/api/widgets/custom', { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
       setCustom(data.data);
     });
     if (open) {

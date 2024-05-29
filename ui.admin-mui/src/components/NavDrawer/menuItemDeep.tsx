@@ -3,11 +3,13 @@ import { ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
+import getAccessToken from '../../getAccessToken';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import useMobile from '../../hooks/useMobile';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 import theme from '../../theme';
 
@@ -17,6 +19,13 @@ interface LinkedListItemProps {
   category: 'commands' | 'manage' | 'settings' | 'registry' | 'stats';
 }
 export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
+  const servicesScope = useScope('services');
+  const integrationsScope = useScope('integrations');
+  const gamesScope = useScope('games');
+  const dashboardScope = useScope('dashboard');
+  const systemsScope = useScope('systems');
+  const coreScope = useScope('core');
+
   const location = useLocation();
   const { translate } = useTranslation();
   const reducer = useAppSelector(state => state.loader);
@@ -25,11 +34,36 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   const { state, connectedToServer } = useAppSelector(s => s.loader);
   const isMobile = useMobile();
 
+  const settingsScopes = useMemo(() => {
+    const scopes = ['core', 'services', 'systems', 'integrations', 'games', 'import'];
+
+    if (!servicesScope.manage) {
+      scopes.splice(scopes.indexOf('services'), 1);
+    }
+    if (!integrationsScope.manage) {
+      scopes.splice(scopes.indexOf('integrations'), 1);
+    }
+    if (!gamesScope.manage) {
+      scopes.splice(scopes.indexOf('games'), 1);
+    }
+    if (!dashboardScope.manage) {
+      scopes.splice(scopes.indexOf('core'), 1);
+    }
+    if (!systemsScope.manage) {
+      scopes.splice(scopes.indexOf('systems'), 1);
+    }
+    if (!coreScope.manage) {
+      scopes.splice(scopes.indexOf('core'), 1);
+    }
+
+    return scopes;
+  }, [ servicesScope, integrationsScope, gamesScope, dashboardScope, systemsScope, coreScope ]);
+
   useEffect(() => {
     if (!state || !connectedToServer) {
       return;
     }
-    axios.get(`/api/ui/menu`).then(({ data }) => {
+    axios.get(`/api/ui/menu`, { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
       const items = data.data as any[];
       setMenuItems(items
         // get only items that are in the category
@@ -170,7 +204,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
           horizontal: isMobile ? 'center' : 'left',
         }}
       >
-        {['core', 'services', 'systems', 'integrations', 'games', 'import'].map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
+        {settingsScopes.map(item => <Link to={`/settings/modules/${item}?server=${JSON.parse(localStorage.server)}`} key={item} style={{
           textDecoration: 'none', color: 'white',
         }}>
           <MenuItem sx={{ fontSize: '14px' }}
