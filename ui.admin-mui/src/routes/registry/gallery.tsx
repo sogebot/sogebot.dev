@@ -2,6 +2,7 @@ import { Folder } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Button, CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
+import axios from 'axios';
 import chunk from 'lodash/chunk';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
@@ -12,7 +13,6 @@ import SimpleBar from 'simplebar-react';
 import { AudioButton } from '../../components/Audio/Button';
 import { getDirectoriesOf, normalizePath } from '../../components/Form/Selector/Gallery';
 import { getBase64FromUrl } from '../../helpers/getBase64FromURL';
-import { getSocket } from '../../helpers/socket';
 import theme from '../../theme';
 
 const PageRegistryGallery = () => {
@@ -37,11 +37,8 @@ const PageRegistryGallery = () => {
     setFolder('/');
 
     setLoading(true);
-    getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    axios.get(`/api/overlays/gallery`).then(({ data }) => {
+      const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items
         .map(item => ({
@@ -66,7 +63,7 @@ const PageRegistryGallery = () => {
     if (!selectedItem) {
       return;
     }
-    getSocket('/overlays/gallery').emit('generic::deleteById', selectedItem, () => {
+    axios.delete(`/api/overlays/gallery/${selectedItem}`).then(() => {
       const item = items.find(o => o.id === selectedItem);
       if (!item) {
         return;
@@ -92,12 +89,8 @@ const PageRegistryGallery = () => {
         const id = nanoid();
         for (const b64dataArr of chunk((await getBase64FromUrl(URL.createObjectURL(file))), chunkSize)) {
           const b64data = b64dataArr.join('');
-          await new Promise((resolve) => {
-            getSocket('/overlays/gallery').emit('gallery::upload', [
-              file.name,
-              {
-                folder, b64data, id,
-              }], resolve);
+          await axios.post(`/api/overlays/gallery`, {
+            id, b64data, folder, name: file.name
           });
         }
         enqueueSnackbar(<div>File <strong>{file.name}</strong> was uploaded successfully to folder <strong>{folder}</strong></div>, { variant: 'success' });
@@ -115,11 +108,8 @@ const PageRegistryGallery = () => {
 
   const refresh = () => {
     // refresh
-    getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    axios.get(`/api/overlays/gallery`).then(({ data }) => {
+      const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items
         .map(item => ({

@@ -14,7 +14,6 @@ import { v4 } from 'uuid';
 
 import { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 
 type Props = {
   onImport: (items: Overlay['items']) => void;
@@ -135,12 +134,8 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
         const id = nanoid();
         for (const b64dataArr of chunk(String(item), chunkSize)) {
           const b64data = b64dataArr.join('');
-          await new Promise((resolve) => {
-            getSocket('/overlays/gallery').emit('gallery::upload', [
-              `${data.name} #${i}`,
-              {
-                folder: '/overlays', b64data, id,
-              }], resolve);
+          await axios.post(`/api/overlays/gallery`, {
+            id, b64data, folder:'/overlays', name: `${data.name} #${i}`,
           });
         }
         for (const it of items) {
