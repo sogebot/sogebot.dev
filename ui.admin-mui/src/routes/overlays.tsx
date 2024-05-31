@@ -34,8 +34,6 @@ import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setConfiguration, setTranslation } from '../store/loaderSlice';
 
-axios.defaults.baseURL = JSON.parse(localStorage.server);
-
 export default function Overlays() {
   const { base64 } = useParams();
   const dispatch = useAppDispatch();
@@ -45,6 +43,11 @@ export default function Overlays() {
   const [ server, setServer ] = React.useState<null | string>(null);
   const [ id, setId ] = React.useState<null | string>(null);
 
+  React.useEffect(() => {
+    if (server) {
+      axios.defaults.baseURL = server;
+    }
+  }, [ server ]);
   document.getElementsByTagName('body')[0].style.backgroundColor = 'transparent';
 
   React.useEffect(() => {

@@ -72,7 +72,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   }[]>('emotes::cache', []);
 
   React.useEffect(() => {
-    console.log('EMOTES');
+    console.log(`====== ALERT#${id} ======`);
     axios.get(`/api/core/emotes`).then(({ data }) => {
       setEmotesCache(data.data);
       log(new Date().toISOString(), `alert-${id}`, '= emotes loaded');
@@ -126,7 +126,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       }
     }
     head.appendChild(style);
-  }, []);
+  }, [id]);
 
   // need to be done only for parryable alerts
   const haveAvailableAlert = (emitData: EmitData) => {
