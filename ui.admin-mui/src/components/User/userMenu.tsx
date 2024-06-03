@@ -4,6 +4,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Button, Chip, Divider, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
+import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useEffect } from 'react';
@@ -11,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
 import { loggedUserAtom } from '../../atoms';
+import getAccessToken from '../../getAccessToken';
 import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -46,7 +48,7 @@ export const UserMenu: React.FC = () => {
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
-    const socket = getSocket('/core/users', true);
+    const socket = getSocket('/core/users' as any, true);
     socket.emit('logout', {
       accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),
@@ -73,22 +75,17 @@ export const UserMenu: React.FC = () => {
     if (typeof user === 'undefined' || user === null) {
       return;
     }
-    getSocket('/core/users', true).emit('viewers::findOneBy', user.id, (err, recvViewer) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (recvViewer) {
+    axios.get('/api/core/users/' + user.id, { headers: { 'Authorization': 'Bearer ' + getAccessToken() } })
+      .then(({ data }) => {
+        console.log('User data refreshed', data.data);
+        setViewer(data.data);
         if (!logged) {
-          console.log('Logged in as', recvViewer);
           setLogged(true);
         }
-        console.log({ recvViewer });
-        setViewer(recvViewer);
-      } else {
+      }).catch(() => {
         console.error('Cannot find user data, try to write something in chat to load data');
         setViewer(null);
-      }
-    });
+      });
   }, [user, logged]);
 
   useEffect(() => {

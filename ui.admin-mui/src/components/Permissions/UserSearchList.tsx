@@ -1,8 +1,9 @@
 import { Autocomplete, TextField } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 
 let state = v4();
 
@@ -22,21 +23,19 @@ export const UserSearchlist: React.FC<{
 
   useEffect(() => {
     users.forEach((userId) => {
-      getSocket('/core/users').emit('getNameById', userId, (err, userName) => {
-        if (err) {
-          return console.error(err);
-        }
-        if (userName) {
-          console.log(`Mapping ${userId} => ${userName}`);
-          setMapping(i => ([...i, {
-            userId, userName,
-          }]));
-        } else {
-          setMapping(i => ([...i, {
-            userId, userName: 'unknown user',
-          }]));
-        }
-      });
+      axios.post('/api/core/users/' + userId + '?_action=getNameById', { headers: { 'Authorization': 'Bearer ' + getAccessToken() } })
+        .then(({ data }) => {
+          if (data.data) {
+            console.log(`Mapping ${userId} => ${data.data}`);
+            setMapping(i => ([...i, {
+              userId, userName: data.data,
+            }]));
+          } else {
+            setMapping(i => ([...i, {
+              userId, userName: 'unknown user',
+            }]));
+          }
+        });
     });
   }, [ users ]);
 
@@ -47,22 +46,15 @@ export const UserSearchlist: React.FC<{
 
     state = v4();
     setIsSearching(true);
-    getSocket('/core/users').emit('find.viewers', {
-      filter: [{
-        operation: 'contains', columnName: 'userName', value: inputValue,
-      }],
-      state,
-      exactUsernameFromTwitch: true,
-    }, (err, r, _count, state2) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (state === state2) {
-        r = r.filter(o => o.userName.length > 0);
+    axios.get(`/api/core/users?state=${state}&exactUsernameFromTwitch=true&filter=${JSON.stringify([{
+      operation: 'contains', columnName: 'userName', value: inputValue,
+    }])}`).then(({ data }) => {
+      if (state === data.data.state2) {
+        const viewers = data.data.viewers.filter((o: any) => o.userName.length > 0);
         // expecting this data
-        setOptions(r);
+        setOptions(viewers);
         setMapping(i => ([
-          ...i, ...r,
+          ...i, ...viewers,
         ]));
         setIsSearching(false);
       }

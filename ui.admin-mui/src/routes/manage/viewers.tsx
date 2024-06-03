@@ -17,8 +17,8 @@ import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { RowDetail } from '../../components/Table/Viewers/RowDetail';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -197,24 +197,9 @@ const PageManageViewers = () => {
           sortTable.orderBy = 'userName';
         }
 
-        getSocket('/core/users').emit('find.viewers', {
-          state:   v4(),
-          order:   sortTable,
-          page:    currentPage,
-          perPage: pageSize,
-          filter:  filters as any,
-        }, (err, items_, _count) => {
-          console.log({
-            err, items_, _count,
-          });
-          if (err) {
-            console.error(err);
-            resolve();
-            return;
-          }
-
-          setTotalCount(_count);
-          setItems(items_);
+        axios.get(`/api/core/users?state=${v4()}&order=${JSON.stringify(sortTable)}&page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+          setTotalCount(data.data.count);
+          setItems(data.data.viewers);
           resolve();
         });
       }),
@@ -223,7 +208,7 @@ const PageManageViewers = () => {
   }, [pageSize, currentPage, sorting, filters]);
 
   const deleteItem = useCallback((item: UserInterface) => {
-    getSocket('/core/users').emit('viewers::remove', item.userId, () => {
+    axios.delete(`/api/core/users/${item.userId}`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).finally(() => {
       enqueueSnackbar(`User ${item.userName}#${item.userId} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -249,14 +234,7 @@ const PageManageViewers = () => {
     for (const selected of selection) {
       const item = items.find(o => o.userId === selected);
       if (item) {
-        await new Promise<void>((resolve, reject) => {
-          getSocket('/core/users').emit('viewers::remove', item.userId, (err) => {
-            if (err) {
-              reject(console.error(err));
-            }
-            resolve();
-          });
-        });
+        await axios.delete(`/api/core/users/${item.userId}`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
       }
     }
     setItems(i => i.filter(item => !selection.includes(item.userId)));
