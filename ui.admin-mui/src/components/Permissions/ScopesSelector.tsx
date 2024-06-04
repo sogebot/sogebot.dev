@@ -142,18 +142,6 @@ export const ScopesSelector: React.FC<{
           onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
         }}
       />
-
-      <ScopeToggle
-        selected={model}
-        scopes={['permissions']}
-        label='Permission groups'
-        caption='User will be able to read or manage permission groups (this page)'
-        onChange={(change, remove) => {
-          const cleanedScopes = [...model.filter(sc => !remove.includes(sc))];
-          cleanedScopes.push(...change);
-          onChange({ scopes: Array.from(new Set(cleanedScopes)), haveAllScopes: modelAll, excludeSensitiveScopes: modelSensitive });
-        }}
-      />
     </>}
   </>;
 };

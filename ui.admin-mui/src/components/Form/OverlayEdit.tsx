@@ -44,7 +44,7 @@ import { StopwatchSettings } from './Overlay/StopwatchSettings';
 import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { getParentDelKeyStatus } from '../../store/overlaySlice';
 import theme from '../../theme';
@@ -237,17 +237,24 @@ export const OverlayEdit: React.FC = () => {
 
   const handleSave = React.useCallback(() => {
     setSaving(true);
-    getSocket('/registries/overlays').emit('generic::save', item, (err, data) => {
-      setSaving(false);
-      if (err || !data) {
+    axios.post(`/api/registries/overlays`,
+      item,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((response) => {
+        if (response.data.status === 'success') {
+          enqueueSnackbar('Saved successfully.', { variant: 'success' });
+          if (response.data.data.id) {
+            navigate(`/registry/overlays/edit/${response.data.data.id}?server=${JSON.parse(localStorage.server)}`);
+          }
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .catch(e => {
         enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
-        return console.error(err);
-      }
-      enqueueSnackbar('Saved successfully.', { variant: 'success' });
-      if (id !== data.id) {
-        navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(localStorage.server)}`);
-      }
-    });
+        console.error(e);
+      })
+      .finally(() => setSaving(false));
   }, [id, item, navigate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {

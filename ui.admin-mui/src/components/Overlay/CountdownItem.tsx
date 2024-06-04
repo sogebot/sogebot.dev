@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -54,13 +55,9 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
       localStorage.setItem(`countdown-controller-${id}-currentTime`, String(model.currentTime));
       localStorage.setItem(`countdown-controller-${id}-currentTimeAt`, new Date().toISOString());
       localStorage.setItem(`countdown-controller-${id}-enabled`, String(enabled));
-      if (model.isPersistent && Date.now() - lastSave > 10) {
+      if (model.isPersistent && Date.now() - lastSave > 1000) {
         lastSave = Date.now();
-        getSocket('/registries/overlays', true).emit('overlays::tick', {
-          id,
-          groupId,
-          millis: Number(model.currentTime),
-        });
+        axios.post(`/api/registries/overlays/tick/${groupId}/${id}/${Number(model.currentTime)}`);
       }
     }
   }, [ enabled, threadId, model ]);
@@ -73,8 +70,8 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
   }, [enabled, model]);
   const update = () => {
     if (localStorage.getItem(`countdown-controller-${id}`) !== threadId) {
-      console.debug('Secondary');
-      console.debug(localStorage.getItem(`countdown-controller-${id}-enabled`));
+      // console.debug('Secondary');
+      // console.debug(localStorage.getItem(`countdown-controller-${id}-enabled`));
 
       if (Date.now() - lastTimeSync > 1000 || !latestEnabled.current) {
       // get when it was set to get offset
@@ -82,7 +79,7 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
           ? new Date(localStorage.getItem(`countdown-controller-${id}-currentTimeAt`) || Date.now()).getTime()
           : Date.now();
         if (lastTimeSync === currentTimeAt) {
-          console.debug('No update, setting as controller');
+          // console.debug('No update, setting as controller');
           localStorage.setItem(`countdown-controller-${id}`, threadId);
         }
         lastTimeSync = currentTimeAt;
@@ -94,7 +91,7 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
 
       return;
     }
-    console.debug('Primary');
+    // console.debug('Primary');
     getSocket('/overlays/countdown', true)
       .emit('countdown::update', {
         id:        id,

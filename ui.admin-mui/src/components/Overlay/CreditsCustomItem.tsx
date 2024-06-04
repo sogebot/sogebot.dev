@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
 import { CreditsScreenCustom } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 
@@ -38,14 +38,12 @@ export const CreditsCustomItem: React.FC<Props<CreditsScreenCustom['items'][numb
 
   React.useEffect(() => {
     loadFont(item.font.family);
-    getSocket('/registries/overlays', true).emit('parse', item.html, (err, parsed) => {
-      if (err) {
-        console.error(err);
-      } else {
-        setText(parsed);
+    axios.post(`/api/registries/overlays/parse`, { text: item.html }).then(({ data }) => {
+      if (text !== data.data) {
+        setText(data.data);
         onLoaded && onLoaded();
       }
-    });
+    }).catch(console.error);
   }, [active, item]);
 
   return <Box sx={{

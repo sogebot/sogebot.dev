@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -36,13 +37,9 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
       localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(model.currentTime));
       localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
       localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(enabled));
-      if (model.isPersistent && Date.now() - lastSave > 10) {
+      if (model.isPersistent && Date.now() - lastSave > 1000) {
         lastSave = Date.now();
-        getSocket('/registries/overlays', true).emit('overlays::tick', {
-          id,
-          groupId,
-          millis: Number(model.currentTime),
-        });
+        axios.post(`/api/registries/overlays/tick/${groupId}/${id}/${Number(model.currentTime)}`);
       }
     }
   }, [ enabled, threadId, model ]);
@@ -55,8 +52,8 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
   }, [enabled, model]);
   const update = () => {
     if (localStorage.getItem(`stopwatch-controller-${id}`) !== threadId) {
-      console.debug('Secondary');
-      console.debug(localStorage.getItem(`stopwatch-controller-${id}-enabled`));
+      // console.debug('Secondary');
+      // console.debug(localStorage.getItem(`stopwatch-controller-${id}-enabled`));
 
       if (Date.now() - lastTimeSync > 1000 || !latestEnabled.current) {
       // get when it was set to get offset
@@ -64,7 +61,7 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
           ? new Date(localStorage.getItem(`stopwatch-controller-${id}-currentTimeAt`) || Date.now()).getTime()
           : Date.now();
         if (lastTimeSync === currentTimeAt) {
-          console.debug('No update, setting as controller');
+          // console.debug('No update, setting as controller');
           localStorage.setItem(`stopwatch-controller-${id}`, threadId);
         }
         lastTimeSync = currentTimeAt;
@@ -76,7 +73,7 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
 
       return;
     }
-    console.debug('Primary');
+    // console.debug('Primary');
     getSocket('/overlays/stopwatch', true)
       .emit('stopwatch::update', {
         id:        id,

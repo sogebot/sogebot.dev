@@ -4,14 +4,16 @@ import Collapse from '@mui/material/Collapse';
 import Select from '@mui/material/Select/Select';
 import { SxProps, Theme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useLocalstorageState, useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
@@ -23,6 +25,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   onVisible,
   sx,
 }) => {
+  const scope = useScope('services');
 
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/twitch');
   const { translate } = useTranslation();
@@ -130,7 +133,11 @@ const PageSettingsModulesServiceTwitch: React.FC<{
   }, [settings, redirectUri ]);
 
   const revoke = useCallback((accountType: 'bot' | 'broadcaster') => {
-    getSocket('/services/twitch').emit('twitch::revoke', { accountType }, () => {
+    axios.post('/api/services/twitch/?_action=revoke', {
+      accountType,
+    },
+    { headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+    }).then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
@@ -157,7 +164,7 @@ const PageSettingsModulesServiceTwitch: React.FC<{
       p: 1, mb: 2,
     }}>
       <Stack spacing={1}>
-        <FormControl fullWidth variant='filled'>
+        <FormControl fullWidth variant='filled' disabled={!scope.sensitive}>
           <InputLabel id="token-generator-label">Token Generator</InputLabel>
           <Select
             labelId="token-generator-label"
@@ -232,8 +239,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
           InputProps={{
             endAdornment: <InputAdornment position="end">
               { settings.bot.botUsername[0] !== ''
-                ? <Button color="error" variant="contained" onClick={() => revoke('bot')}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={() => authorize('bot')}>Authorize</Button>
+                ? <Button color="error" variant="contained" disabled={!scope.sensitive} onClick={() => revoke('bot')}>Revoke</Button>
+                : <Button color="success" variant="contained" disabled={!scope.sensitive} onClick={() => authorize('bot')}>Authorize</Button>
               }
             </InputAdornment>,
           }}
@@ -261,8 +268,8 @@ const PageSettingsModulesServiceTwitch: React.FC<{
           InputProps={{
             endAdornment: <InputAdornment position="end">
               { settings.broadcaster.broadcasterUsername[0] !== ''
-                ? <Button color="error" variant="contained" onClick={() => revoke('broadcaster')}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={() => authorize('broadcaster')}>Authorize</Button>
+                ? <Button color="error" variant="contained" disabled={!scope.sensitive} onClick={() => revoke('broadcaster')}>Revoke</Button>
+                : <Button color="success" variant="contained" disabled={!scope.sensitive} onClick={() => authorize('broadcaster')}>Authorize</Button>
               }
             </InputAdornment>,
           }}

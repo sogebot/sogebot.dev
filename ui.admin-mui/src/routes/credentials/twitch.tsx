@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 
 const serviceUrl = 'https://credentials.sogebot.xyz/twitch/';
 
@@ -52,12 +52,7 @@ const Twitch = () => {
         axios.get(serviceUrl + '?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            const accessToken = data.access_token;
-            getSocket('/services/twitch').emit('twitch::token', {
-              accessToken,
-              refreshToken,
-              accountType,
-            }, () => {
+            axios.post('/api/services/twitch/?_action=token', { refreshToken, accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(() => {
               setProgress(true);
               setTimeout(() => window.close(), 1000);
               return;

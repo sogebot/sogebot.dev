@@ -176,7 +176,7 @@ export const ScopeToggle: React.FC<Props> = ({ scopes, label, caption, selected,
               </Box>
             </>} />
             <FormHelperText sx={{
-              position: 'relative', top: '-10px',
+              position: 'relative', top: '-5px', height: '30px', width: '250px'
             }}>
               <Typography sx={{
                 fontSize: '0.75rem',

@@ -1,11 +1,12 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
+import getAccessToken from '../getAccessToken';
 import { baseURL } from '../helpers/getBaseURL';
-import { getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { useScope } from '../hooks/useScope';
 import { useSettings } from '../hooks/useSettings';
@@ -62,7 +63,7 @@ export const OnboardingTokens: React.FC = () => {
   useIntervalWhen(refresh, 1000, open, true);
 
   const revoke = useCallback((accountType: 'bot' | 'broadcaster') => {
-    getSocket('/services/twitch').emit('twitch::revoke', { accountType }, () => {
+    axios.post('/api/services/twitch/?_action=revoke', { accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(() => {
       enqueueSnackbar('User Access revoked.', { variant: 'success' });
       refresh();
     });

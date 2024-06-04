@@ -19,7 +19,6 @@ import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OverlayEdit } from '../../components/Form/OverlayEdit';
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -94,13 +93,9 @@ const PageRegistryOverlays = () => {
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Overlay) => {
-    getSocket('/registries/overlays').emit('generic::deleteById', item.id, (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        enqueueSnackbar(`Overlay ${item.name} deleted successfully.`, { variant: 'success' });
-        refresh();
-      }
+    axios.delete(`/api/registries/overlays/${item.id}`).finally(() => {
+      enqueueSnackbar(`Overlay ${item.name} deleted successfully.`, { variant: 'success' });
+      refresh();
     });
   }, [ enqueueSnackbar, refresh ]);
 
@@ -117,7 +112,7 @@ const PageRegistryOverlays = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/registries/overlays').emit('generic::deleteById', item.id, () => resolve());
+          axios.delete(`/api/registries/overlays/${item.id}`).finally(resolve);
         });
       }
     }
@@ -140,15 +135,20 @@ const PageRegistryOverlays = () => {
 
     setCloningItems(it => [...it, item.id]);
 
-    getSocket('/registries/overlays').emit('generic::save', clonedItem, (err, data) => {
-      setCloningItems(it => it.filter(o => o !== item.id));
-      if (err || !data) {
+    axios.post('/api/registries/overlays', clonedItem)
+      .then((response) => {
+        if (response.data.status === 'success') {
+          setCloningItems(it => it.filter(o => o !== item.id));
+          enqueueSnackbar(<div>Overlay <strong>{item.name}</strong> was successfully cloned into <strong>{clonedItem.name}</strong>.</div>, { variant: 'success' });
+          refresh();
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .catch(e => {
         enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
-        return console.error(err);
-      }
-      enqueueSnackbar(<div>Overlay <strong>{item.name}</strong> was successfully cloned into <strong>{clonedItem.name}</strong>.</div>, { variant: 'success' });
-      refresh();
-    });
+        console.error(e);
+      });
   }, [ enqueueSnackbar, refresh, items ]);
 
   const open = React.useMemo(() => !!(type
