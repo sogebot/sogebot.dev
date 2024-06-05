@@ -41,7 +41,7 @@ export const CreditsEvents: React.FC<Props<CreditsScreenEvents> & { onLoaded?: (
   }, [active, item]);
 
   React.useEffect(() => {
-    getSocket('/overlays/credits', true).emit('load', async (err, opts: any) => {
+    getSocket('/overlays/credits').emit('load', async (err: any, opts: any) => {
       if (err) {
         console.error(err);
         return;

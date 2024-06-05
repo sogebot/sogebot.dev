@@ -91,7 +91,7 @@ export default function Overlays() {
   React.useEffect(() => {
     if (server && id) {
       Promise.all([
-        new Promise(resolve => getSocket('/', true).emit('translations', (translations) => {
+        new Promise(resolve => getSocket('/').emit('translations', (translations: any) => {
           dispatch(setTranslation(translations));
           resolve(true);
         })),

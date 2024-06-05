@@ -36,7 +36,7 @@ export const FormOBSWebsocketSelect: React.FC<{
   const refreshItems = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      getSocket('/').emit('integration::obswebsocket::generic::getAll', (err, res) => {
+      getSocket('/').emit('integration::obswebsocket::generic::getAll', (err: any, res: any) => {
         if (err) {
           return console.error(err);
         }

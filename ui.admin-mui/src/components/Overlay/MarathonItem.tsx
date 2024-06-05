@@ -49,8 +49,8 @@ export const MarathonItem: React.FC<Props<Marathon>> = ({ item, id }) => {
   }, [times]);
 
   const update = () => {
-    getSocket('/overlays/marathon', true)
-      .emit('marathon::public', id, (_err, data) => {
+    getSocket('/overlays/marathon')
+      .emit('marathon::public', id, (_err: any, data: any) => {
         if (data) {
           setTimes(val => [...val, data.endTime - Date.now()]);
           setModel(o => ({

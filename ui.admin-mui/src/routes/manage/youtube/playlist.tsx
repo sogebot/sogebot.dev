@@ -161,7 +161,7 @@ const PageCommandsSongPlaylist = () => {
     setLoading(true);
     await Promise.all([
       new Promise<void>((resolve, reject) => {
-        getSocket('/systems/songs').emit('current.playlist.tag', (err, tag: string) => {
+        getSocket('/systems/songs').emit('current.playlist.tag', (err: any, tag: string) => {
           if (err) {
             enqueueSnackbar(String(err), { variant: 'error' });
             reject(err);
@@ -171,7 +171,7 @@ const PageCommandsSongPlaylist = () => {
         });
       }),
       new Promise<void>((resolve, reject) => {
-        getSocket('/systems/songs').emit('get.playlist.tags', (err, _tags) => {
+        getSocket('/systems/songs').emit('get.playlist.tags', (err: any, _tags: any) => {
           if (err) {
             enqueueSnackbar(String(err), { variant: 'error' });
             reject(err);
@@ -183,7 +183,7 @@ const PageCommandsSongPlaylist = () => {
       new Promise<void>(resolve => {
         getSocket('/systems/songs').emit('find.playlist', {
           page: currentPage, perPage: pageSize, filters,
-        }, (err, res, count) => {
+        }, (err: any, res: any, count: any) => {
           if (err) {
             resolve();
             return console.error(err);
@@ -242,7 +242,7 @@ const PageCommandsSongPlaylist = () => {
         setIsSaving(true);
         getSocket('/systems/songs').emit(value.includes('playlist') ? 'import.playlist' : 'import.video', {
           playlist: value, forcedTag: currentTag,
-        }, (err) => {
+        }, (err: any) => {
           setIsSaving(false);
           if (err) {
             enqueueSnackbar(String(err), { variant: 'error' });

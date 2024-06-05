@@ -19,7 +19,7 @@ export const UserSimple: React.FC = () => {
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
-    const socket = getSocket('/core/users' as any, true);
+    const socket = getSocket('/core/users' as any);
     socket.emit('logout', {
       accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),
@@ -32,7 +32,7 @@ export const UserSimple: React.FC = () => {
 
   React.useEffect(() => {
     if (user && isBotConnected) {
-      getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
+      getSocket('/').emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
           const notif = enqueueSnackbar(<Box>

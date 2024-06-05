@@ -57,7 +57,7 @@ const testValuesBet = {
 
 export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   // initialize socket
-  getSocket('/overlays/polls', true);
+  getSocket('/overlays/polls');
 
   const { translate } = useTranslation();
   const lang = useAppSelector(state => state.loader.configuration.lang );
@@ -80,7 +80,7 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
   }, 100, true, true);
 
   useIntervalWhen(() => {
-    getSocket('/overlays/polls', true).emit('data', (data) => {
+    getSocket('/overlays/polls').emit('data', (data: any) => {
       // force show if new vote
       if (currentVote === null) {
         setLastUpdatedAt(Date.now());
@@ -99,7 +99,7 @@ export const PollsItem: React.FC<Props<Polls>> = ({ active, item }) => {
         setCurrentVote(data);
       }
     });
-    getSocket('/overlays/bets', true).emit('data', (data) => {
+    getSocket('/overlays/bets').emit('data', (data: any) => {
       if (currentPrediction === null) {
         setPredictionUpdatedAt(Date.now());
       }

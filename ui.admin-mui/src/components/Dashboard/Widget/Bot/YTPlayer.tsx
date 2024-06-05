@@ -48,13 +48,13 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const refreshPlaylist = () => {
-    getSocket('/systems/songs').emit('current.playlist.tag', (err, tag: string) => {
+    getSocket('/systems/songs').emit('current.playlist.tag', (err: any, tag: string) => {
       if (err) {
         return console.error(err);
       }
       setCurrentTag(tag);
     });
-    getSocket('/systems/songs').emit('get.playlist.tags', (err, tags: string[]) => {
+    getSocket('/systems/songs').emit('get.playlist.tags', (err: any, tags: string[]) => {
       if (err) {
         return console.error(err);
       }
@@ -128,7 +128,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   useIntervalWhen(async () => {
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::currentSong', (err, botCurrentSong: currentSongType) => {
+      getSocket('/systems/songs').emit('songs::currentSong', (err: any, botCurrentSong: currentSongType) => {
         if (err) {
           resolve();
           return console.error(err);
@@ -141,7 +141,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
     });
 
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err, items) => {
+      getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err: any, items: any) => {
         if (err) {
           resolve();
           return console.error(err);

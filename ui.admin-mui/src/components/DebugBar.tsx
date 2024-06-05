@@ -21,7 +21,7 @@ export default function DebugBar() {
     }
 
     if (connectedToServer) {
-      getSocket('/').emit('debug::get', (err, debugEnv) => {
+      getSocket('/').emit('debug::get', (err: any, debugEnv: any) => {
         if (err) {
           return console.error(err);
         }
@@ -42,7 +42,7 @@ export default function DebugBar() {
       setTimeout(() => resolve(true), 200);
     });
     console.log('Checking debug');
-    const result = await new Promise<boolean>((resolve, reject) => getSocket('/').emit('debug::get', (err, debugEnv) => {
+    const result = await new Promise<boolean>((resolve, reject) => getSocket('/').emit('debug::get', (err: any, debugEnv: any) => {
       if (err) {
         return reject(err);
       }

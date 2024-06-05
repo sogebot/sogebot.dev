@@ -35,7 +35,7 @@ export const PlaylistEdit: React.FC<{
         page:    0,
         perPage: 1,
         search:  id,
-      }, (err, res) => {
+      }, (err: any, res: any) => {
         if (err) {
           console.error(err);
         } else {
@@ -83,7 +83,7 @@ export const PlaylistEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    getSocket('/systems/songs').emit('songs::save', item, (err) => {
+    getSocket('/systems/songs').emit('songs::save', item, (err: any) => {
       if (err) {
         enqueueSnackbar(String(err), { variant: 'error' });
         setSaving(false);

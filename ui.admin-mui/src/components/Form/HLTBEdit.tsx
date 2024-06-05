@@ -174,7 +174,7 @@ export const HLTBEdit: React.FC<{
         setIsSearching(false);
       } else {
         console.log('Searching for ' + inputValue);
-        getSocket('/').emit('getGameFromTwitch', inputValue, (values) => {
+        getSocket('/').emit('getGameFromTwitch', inputValue, (values: any) => {
           cachedSearch.set(inputValue, values.sort());
           setOptions(values.sort());
           setIsSearching(false);

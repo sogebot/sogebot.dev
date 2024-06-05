@@ -103,11 +103,11 @@ export const ChatItem: React.FC<Props<Chat> & { zoom: number }> = ({ item, activ
   }, []);
 
   React.useEffect(() => {
-    getSocket('/overlays/chat' as any, true).on('timeout', (userName: string) => {
+    getSocket('/overlays/chat' as any).on('timeout', (userName: string) => {
       dispatch(chatTimeout(userName));
     });
 
-    getSocket('/overlays/chat' as any, true).on('message', (data: any) => {
+    getSocket('/overlays/chat' as any).on('message', (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }

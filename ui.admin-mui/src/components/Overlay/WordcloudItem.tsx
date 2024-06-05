@@ -47,7 +47,7 @@ export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
   React.useEffect(() => {
     loadFont(item.wordFont.family);
 
-    getSocket('/overlays/wordcloud', true).on('wordcloud:word', data => {
+    getSocket('/overlays/wordcloud').on('wordcloud:word', data => {
       setWords(w => [...w, ...data]);
       setTimeout(() => {
         setWords(w => {

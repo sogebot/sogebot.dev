@@ -70,7 +70,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (stopwatch && !anchorEl) {
-      getSocket('/overlays/stopwatch').emit('stopwatch::check', item.options.stopwatchId, (_err, data) => {
+      getSocket('/overlays/stopwatch').emit('stopwatch::check', item.options.stopwatchId, (_err: any, data: any) => {
         if (data && stopwatch) {
           setIsStarted(data.isEnabled);
           setTimestamp(data.time);

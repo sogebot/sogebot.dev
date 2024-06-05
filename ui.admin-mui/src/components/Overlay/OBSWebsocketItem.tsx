@@ -192,12 +192,12 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
     for (const event of events) {
       obs.off(event);
       obs.on(event, (args) => {
-        getSocket('/', true).emit('integration::obswebsocket::listener', { event, args });
+        getSocket('/').emit('integration::obswebsocket::listener', { event, args });
         console.log('integration::obswebsocket::listener', event, args);
       });
     }
 
-    getSocket('/', true).on('integration::obswebsocket::trigger', async (opts, cb) => {
+    getSocket('/').on('integration::obswebsocket::trigger', async (opts, cb) => {
       console.log('integration::obswebsocket::trigger', opts);
       cb(); // resolve first so connection is OK
       try {
@@ -208,7 +208,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::call', async (opts) => {
+    getSocket('/').on('integration::obswebsocket::call', async (opts) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
@@ -228,7 +228,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::callBatch', async (opts, cb) => {
+    getSocket('/').on('integration::obswebsocket::callBatch', async (opts, cb) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
@@ -249,8 +249,8 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
     });
 
     // add listeners
-    switchScenes(obs, getSocket('/', true) as any);
-    inputMuted(obs, getSocket('/', true) as any);
+    switchScenes(obs, getSocket('/') as any);
+    inputMuted(obs, getSocket('/') as any);
   }, []);
 
   React.useEffect(() => {

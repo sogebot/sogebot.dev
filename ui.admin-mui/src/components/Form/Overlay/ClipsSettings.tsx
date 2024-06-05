@@ -1,8 +1,8 @@
 import { Box, Button, capitalize, FormControl, FormControlLabel, FormLabel, InputAdornment, InputLabel, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
 import { Clips } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -19,7 +19,7 @@ export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
     if (!testURLRef.current) {
       return;
     }
-    getSocket('/overlays/clips').emit('test', testURLRef.current.value);
+    axios.post('/api/overlays/clips/?_action=test', { clipId: testURLRef.current.value });
   };
 
   return <>

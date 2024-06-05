@@ -123,7 +123,7 @@ export const RandomizerItem: React.FC<Props<Overlay>> = ({ height, width, active
   React.useEffect(() => {
     console.log(`====== Randomizer (${threadId}) ======`);
 
-    getSocket('/registries/randomizer', true).on('spin', async ({ key }) => {
+    getSocket('/registries/randomizer').on('spin', async ({ key }) => {
       if (!currentRandomizerRef.current) {
         console.error('No randomizer is visible!');
         return;

@@ -20,7 +20,7 @@ export const StatsItem: React.FC<Props<Stats>> = ({ active }) => {
 
   useIntervalWhen(() => {
     if (active) {
-      getSocket('/overlays/stats', true).emit('get', (cb: any) => {
+      getSocket('/overlays/stats').emit('get', (cb: any) => {
         console.log({ cb });
         dispatch(statsUpdate(cb));
       });

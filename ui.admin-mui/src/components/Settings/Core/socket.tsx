@@ -1,13 +1,14 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useRefElement } from 'rooks';
 import { v4 } from 'uuid';
 import { z } from 'zod';
 
-import { getSocket } from '../../../helpers/socket';
+import getAccessToken from '../../../getAccessToken';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -52,7 +53,9 @@ const PageSettingsModulesCoreSocket: React.FC<{
   }, [ enqueueSnackbar ]);
 
   const purgeAll = useCallback(() => {
-    getSocket(`/core/socket`).emit('purgeAllConnections', () => {
+    axios.post(`/api/core/socket/purgeAllConnections`, undefined, { headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    } }).then(() => {
       enqueueSnackbar('Tokens purged.', { variant: 'success' });
     });
   }, [ enqueueSnackbar ]);

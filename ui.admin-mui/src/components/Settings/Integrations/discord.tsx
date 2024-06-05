@@ -35,7 +35,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
 
   useEffect(() => {
     refresh().then((data) => {
-      getSocket(`/integrations/discord`).emit('discord::getGuilds', (err2, guilds2: Guild[]) => {
+      getSocket(`/integrations/discord`).emit('discord::getGuilds', (err2: any, guilds2: Guild[]) => {
         console.groupCollapsed('discord::getGuilds');
         console.log({ guilds2 });
         console.groupEnd();
@@ -51,7 +51,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
           value: '', text: `-- ${translate('integrations.discord.settings.noGuildSelected')} --`,
         }, ...guilds2]);
       });
-      getSocket(`/integrations/discord`).emit('discord::getRoles', (err2, roles2: Guild[]) => {
+      getSocket(`/integrations/discord`).emit('discord::getRoles', (err2: any, roles2: Guild[]) => {
         if (err2) {
           return;
         }
@@ -60,7 +60,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
         console.groupEnd();
         setRoles(roles2);
       });
-      getSocket(`/integrations/discord`).emit('discord::getChannels', (err2, channels2: Channel[]) => {
+      getSocket(`/integrations/discord`).emit('discord::getChannels', (err2: any, channels2: Channel[]) => {
         console.groupCollapsed('discord::getChannels');
         console.log({ channels2 });
         console.groupEnd();

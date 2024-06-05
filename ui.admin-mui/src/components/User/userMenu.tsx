@@ -48,7 +48,7 @@ export const UserMenu: React.FC = () => {
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
-    const socket = getSocket('/core/users' as any, true);
+    const socket = getSocket('/core/users' as any);
     socket.emit('logout', {
       accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),

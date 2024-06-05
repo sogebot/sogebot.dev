@@ -61,7 +61,7 @@ const PageSettingsModulesSystemsModules: React.FC<{
   }, [ enqueueSnackbar ]);
 
   const refresh = useCallback(() => {
-    getSocket('/').emit('populateListOf', 'systems', (err, systems: any) => {
+    getSocket('/').emit('populateListOf', 'systems', (err: any, systems: any) => {
       if (err) {
         console.error(err);
         return;

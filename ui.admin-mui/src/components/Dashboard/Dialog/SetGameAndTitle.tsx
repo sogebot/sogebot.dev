@@ -126,7 +126,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
         setIsSearching(false);
       } else {
         console.log('Searching for ' + inputValue);
-        getSocket('/').emit('getGameFromTwitch', inputValue, (values) => {
+        getSocket('/').emit('getGameFromTwitch', inputValue, (values: any) => {
           cachedSearch.set(inputValue, values.sort());
           setOptions(values.sort());
           setIsSearching(false);
@@ -137,7 +137,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
 
   React.useEffect(() => {
     if (props.open) {
-      getSocket('/').emit('getUserTwitchGames', (_titles, games) => {
+      getSocket('/').emit('getUserTwitchGames', (_titles: any, games: any) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
         console.log({
           _titles, games,

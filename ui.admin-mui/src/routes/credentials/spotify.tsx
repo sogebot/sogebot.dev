@@ -13,7 +13,7 @@ const Spotify = () => {
       return;
     }
     if (window.location.hash || window.location.search) {
-      getSocket(`/integrations/spotify`).emit('spotify::state', (_err, spotifyState: any) => {
+      getSocket(`/integrations/spotify`).emit('spotify::state', (_err: any, spotifyState: any) => {
         let urlState = '';
         let urlCode = '';
         for (const url of window.location.search.split('&')) {
@@ -37,7 +37,7 @@ const Spotify = () => {
       });
     } else {
       getSocket(`/integrations/spotify`)
-        .emit('spotify::authorize', (err, op: any) => {
+        .emit('spotify::authorize', (err: any, op: any) => {
           if (err) {
             return console.error(err);
           } else {

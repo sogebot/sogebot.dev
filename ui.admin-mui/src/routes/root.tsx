@@ -135,7 +135,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   // translations hydration
   console.log('Populating translations.');
   await new Promise<void>(resolve => {
-    getSocket('/', true).emit('translations', (translations) => {
+    getSocket('/').emit('translations', (translations: any) => {
       console.log('Dispatching translations.');
       dispatch(setTranslation(translations));
       resolve();

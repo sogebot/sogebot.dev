@@ -153,7 +153,7 @@ const postTrack = async (track: Track) => {
         playlist:  track.providerId,
         forcedTag: 'nightbot-import',
       },
-      (err) => {
+      (err: any) => {
         if (err) {
           reject(err);
         } else {

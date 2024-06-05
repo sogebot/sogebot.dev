@@ -74,7 +74,7 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
       return;
     }
     // console.debug('Primary');
-    getSocket('/overlays/stopwatch', true)
+    getSocket('/overlays/stopwatch')
       .emit('stopwatch::update', {
         id:        id,
         isEnabled: latestEnabled.current,

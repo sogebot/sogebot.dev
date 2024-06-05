@@ -86,7 +86,7 @@ const PageCommandsSongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/songs').emit('songs::getAllBanned', {}, (err, res) => {
+        getSocket('/systems/songs').emit('songs::getAllBanned', {}, (err: any, res: any) => {
           if (err) {
             resolve();
             return console.error(err);
@@ -126,7 +126,7 @@ const PageCommandsSongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/systems/songs').emit('import.ban', value, (err) => {
+        getSocket('/systems/songs').emit('import.ban', value, (err: any) => {
           setIsSaving(false);
           if (err) {
             enqueueSnackbar(String(err), { variant: 'error' });

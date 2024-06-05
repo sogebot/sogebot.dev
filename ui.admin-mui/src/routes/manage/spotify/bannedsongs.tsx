@@ -79,7 +79,7 @@ const PageCommandsSpotifySongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/integrations/spotify').emit('spotify::getAllBanned', {}, (err, res) => {
+        getSocket('/integrations/spotify').emit('spotify::getAllBanned', {}, (err: any, res: any) => {
           if (err) {
             resolve();
             return console.error(err);
@@ -119,7 +119,7 @@ const PageCommandsSpotifySongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/integrations/spotify').emit('spotify::addBan', value, (err) => {
+        getSocket('/integrations/spotify').emit('spotify::addBan', value, (err: any) => {
           setIsSaving(false);
           if (err) {
             enqueueSnackbar(String(err), { variant: 'error' });

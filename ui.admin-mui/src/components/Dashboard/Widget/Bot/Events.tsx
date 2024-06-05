@@ -208,7 +208,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     });
   };
   React.useEffect(() => {
-    getSocket('/registries/alerts').emit('alerts::settings', null, (data) => {
+    getSocket('/registries/alerts').emit('alerts::settings', null, (data: any) => {
       setStatus(data);
       setStatusLoaded(true);
     });

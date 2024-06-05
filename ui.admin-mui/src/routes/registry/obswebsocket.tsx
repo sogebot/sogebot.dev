@@ -35,7 +35,7 @@ const PageRegistryCustomVariables = () => {
   const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/').emit('integration::obswebsocket::generic::getAll', (_, data) => {
+        getSocket('/').emit('integration::obswebsocket::generic::getAll', (_: any, data: any) => {
           setItems(data);
           resolve();
         });
@@ -85,7 +85,7 @@ const PageRegistryCustomVariables = () => {
 
   const deleteItem = useCallback((item: OBSWebsocket) => {
     return new Promise((resolve, reject) => {
-      getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err) => {
+      getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err: any) => {
         if (err) {
           console.error(err);
           reject();
@@ -111,7 +111,7 @@ const PageRegistryCustomVariables = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err) => {
+          getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err: any) => {
             if (err) {
               console.error(err);
             }

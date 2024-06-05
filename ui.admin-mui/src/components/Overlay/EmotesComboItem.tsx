@@ -16,7 +16,7 @@ export const EmotesComboItem: React.FC<Props<EmotesCombo>> = ({ item, active }) 
   const [ currentTime, setCurrentTime ] = React.useState(Date.now());
 
   // initialize sockets
-  getSocket('/services/twitch', true);
+  getSocket('/services/twitch');
 
   useIntervalWhen(() => {
     setCurrentTime(Date.now());
@@ -33,7 +33,7 @@ export const EmotesComboItem: React.FC<Props<EmotesCombo>> = ({ item, active }) 
   }, []);
 
   const listener = React.useCallback(() => {
-    getSocket('/systems/emotescombo', true).on('combo', (data: { count: number; url: string }) => {
+    getSocket('/systems/emotescombo').on('combo', (data: { count: number; url: string }) => {
       setURL(data.url);
       setCount(data.count);
       setUpdatedAt(Date.now());

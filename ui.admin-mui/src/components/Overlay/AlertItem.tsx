@@ -265,8 +265,8 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
   React.useEffect(() => {
     log(new Date().toISOString(), `alert-${id}`, '= listening to alert events');
-    getSocket('/registries/alerts', true).on('alert', (data) => processIncomingAlert(data));
-    getSocket('/registries/alerts', true).on('skip', () => {
+    getSocket('/registries/alerts').on('alert', (data: any) => processIncomingAlert(data));
+    getSocket('/registries/alerts').on('skip', () => {
       setActiveUntil(0);
       if (typeof (window as any).responsiveVoice !== 'undefined') {
         (window as any).responsiveVoice.cancel();

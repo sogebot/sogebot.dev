@@ -8,7 +8,6 @@ import { useIntervalWhen } from 'rooks';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { toBoolean } from '../../helpers/toBoolean';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -92,30 +91,26 @@ export const CountdownItem: React.FC<Props<Countdown>> = ({ item, active, id, gr
       return;
     }
     // console.debug('Primary');
-    getSocket('/overlays/countdown', true)
-      .emit('countdown::update', {
-        id:        id,
-        isEnabled: latestEnabled.current,
-        time:      latestModel.current.currentTime,
-      }, (_err: null, data?: { isEnabled: boolean | null, time: string | null }) => {
-        if (data) {
-          if (data.isEnabled !== null) {
-            setModel(o => ({
-              ...o, isStartedOnSourceLoad: data.isEnabled!,
-            }));
-          }
+    axios.post(`/api/overlays/countdown/${id}/update`, {
+      isEnabled: latestEnabled.current,
+      time:      latestModel.current.currentTime,
+    }).then(({ data }) => {
+      if (data.data.isEnabled !== null) {
+        setModel(o => ({
+          ...o, isStartedOnSourceLoad: data.data.isEnabled!,
+        }));
+      }
 
-          localStorage.setItem(`countdown-controller-${id}-currentTime`, String(latestModel.current.currentTime));
-          localStorage.setItem(`countdown-controller-${id}-currentTimeAt`, new Date().toISOString());
-          localStorage.setItem(`countdown-controller-${id}-enabled`, String(latestEnabled.current));
+      localStorage.setItem(`countdown-controller-${id}-currentTime`, String(latestModel.current.currentTime));
+      localStorage.setItem(`countdown-controller-${id}-currentTimeAt`, new Date().toISOString());
+      localStorage.setItem(`countdown-controller-${id}-enabled`, String(latestEnabled.current));
 
-          if (data.time !== null) {
-            setModel(o => ({
-              ...o, currentTime: Number(data.time!),
-            }));
-          }
-        }
-      });
+      if (data.data.time !== null) {
+        setModel(o => ({
+          ...o, currentTime: Number(data.data.time!),
+        }));
+      }
+    });
   };
 
   React.useEffect(() => {

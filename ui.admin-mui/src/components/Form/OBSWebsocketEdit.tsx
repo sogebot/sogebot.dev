@@ -86,7 +86,7 @@ export const OBSWebsocketEdit: React.FC<{
   useEffect(() => {
     setLoading(true);
     if (id) {
-      getSocket('/').emit('integration::obswebsocket::generic::getOne', id, (err, data: any) => {
+      getSocket('/').emit('integration::obswebsocket::generic::getOne', id, (err: any, data: any) => {
         if (err) {
           enqueueSnackbar('Something went wrong during data loading.');
           navigate(`/registry/obswebsocket/?server=${JSON.parse(localStorage.server)}`);
@@ -111,7 +111,7 @@ export const OBSWebsocketEdit: React.FC<{
       return;
     }
     setSaving(true);
-    getSocket('/').emit('integration::obswebsocket::generic::save', item, (err, it) => {
+    getSocket('/').emit('integration::obswebsocket::generic::save', item, (err: any, it: any) => {
       enqueueSnackbar('OBS Websocket script saved.', { variant: 'success' });
       // replace url and add cid to item
       setItem(() => {

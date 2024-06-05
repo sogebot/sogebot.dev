@@ -57,7 +57,7 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
     setKey(Date.now());
     // get actual status of opened overlay
     if (marathon) {
-      getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err, data) => {
+      getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err: any, data: any) => {
         if (data && marathon) {
           setTimestamp(Math.max(data.endTime, Date.now()));
         }

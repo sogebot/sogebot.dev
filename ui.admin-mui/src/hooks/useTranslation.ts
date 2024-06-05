@@ -21,7 +21,7 @@ export const useTranslation = () => {
   const state = useAppSelector(selectStateState);
 
   const refresh = React.useCallback(() => {
-    getSocket('/', true).emit('translations', (translations) => {
+    getSocket('/').emit('translations', (translations: any) => {
       dispatch(setTranslation(translations));
     });
   }, [dispatch]);

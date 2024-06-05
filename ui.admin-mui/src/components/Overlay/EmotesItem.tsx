@@ -29,7 +29,7 @@ export const EmotesItem: React.FC<Props<Emotes>> = ({ item }) => {
   };
 
   // initialize sockets
-  getSocket('/services/twitch', true);
+  getSocket('/services/twitch');
 
   React.useEffect(() => {
     model = item; // workaround for not picking up changes on active
@@ -205,7 +205,7 @@ export const EmotesItem: React.FC<Props<Emotes>> = ({ item }) => {
   }, []);
 
   const listener = React.useCallback(() => {
-    getSocket('/services/twitch', true).on('emote', (opts: any) => prepareEmote(opts));
+    getSocket('/services/twitch').on('emote', (opts: any) => prepareEmote(opts));
   }, []);
 
   return <Box

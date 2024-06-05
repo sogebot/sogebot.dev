@@ -10,7 +10,6 @@ import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
-import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCountdownItem }> = ({
@@ -51,7 +50,7 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
       handleClick(ev);
     } else {
       console.log('Setting state', !isStarted);
-      getSocket('/overlays/countdown').emit('countdown::update::set', {
+      axios.post(`/api/overlays/overlays`, {
         isEnabled: !isStarted,
         time:      null,
         id:        item.options.countdownId,
@@ -70,18 +69,16 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (countdown && !anchorEl) {
-      getSocket('/overlays/countdown').emit('countdown::check', item.options.countdownId, (_err, data) => {
-        if (data && countdown) {
-          setIsStarted(data.isEnabled);
-          setTimestamp(data.time);
-        }
+      axios.post(`/api/overlays/countdown/${item.options.countdownId}/check`).then(({ data }) => {
+        setIsStarted(data.data.isEnabled);
+        setTimestamp(data.data.time);
       });
     }
   }, 1000, true, true);
 
   const updateValue = (value: number) => {
     if (countdown) {
-      getSocket('/overlays/countdown').emit('countdown::update::set', {
+      axios.post(`/api/overlays/countdown/${item.options.countdownId}`, {
         isEnabled: null,
         time:      value,
         id:        item.options.countdownId,

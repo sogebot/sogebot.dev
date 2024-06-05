@@ -18,7 +18,7 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   // initialize sockets
-  getSocket('/services/twitch', true);
+  getSocket('/services/twitch');
 
   React.useEffect(() => {
     model = item; // workaround for firework not picking up changes on active
@@ -116,9 +116,9 @@ export const EmotesFireworksItem: React.FC<Props<EmotesFireworks>> = ({ item }) 
 
   React.useEffect(() => {
     console.log(`====== EMOTES FIREWORKS ${containerId.current} ======`);
-    getSocket('/services/twitch', true).on('emote.firework', firework);
+    getSocket('/services/twitch').on('emote.firework', firework);
     return () => {
-      getSocket('/services/twitch', true).off('emote.firework', firework);
+      getSocket('/services/twitch').off('emote.firework', firework);
     };
   }, []);
 

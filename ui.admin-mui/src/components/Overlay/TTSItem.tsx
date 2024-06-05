@@ -11,7 +11,7 @@ export const TTSItem: React.FC<Props<TTS>> = ({ item }) => {
 
   React.useEffect(() => {
     console.log('====== TTS ======');
-    getSocket('/overlays/texttospeech', true).on('speak', async (data) => {
+    getSocket('/overlays/texttospeech').on('speak', async (data: any) => {
       if (isAlreadyProcessed(data.key)) {
         return;
       }

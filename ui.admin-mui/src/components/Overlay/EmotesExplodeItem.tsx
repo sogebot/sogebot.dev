@@ -18,7 +18,7 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
   const [ emotes, setEmotes ] = React.useState<any[]>([]);
 
   // initialize sockets
-  getSocket('/services/twitch', true);
+  getSocket('/services/twitch');
 
   React.useEffect(() => {
     model = item; // workaround for explode not picking up changes on active
@@ -110,9 +110,9 @@ export const EmotesExplodeItem: React.FC<Props<EmotesExplode>> = ({ item  }) => 
 
   React.useEffect(() => {
     console.log(`====== EMOTES EXPLODE ${containerId.current} ======`);
-    getSocket('/services/twitch', true).on('emote.explode', explode);
+    getSocket('/services/twitch').on('emote.explode', explode);
     return () => {
-      getSocket('/services/twitch', true).off('emote.explode', explode);
+      getSocket('/services/twitch').off('emote.explode', explode);
     };
   }, []);
 
