@@ -3,8 +3,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../helpers/socket';
-
 const Spotify = () => {
   const [state, setState] = useState<boolean | null>(null);
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');

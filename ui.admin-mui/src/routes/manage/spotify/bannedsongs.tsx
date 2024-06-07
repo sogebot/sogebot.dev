@@ -15,7 +15,6 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
-import { getSocket } from '../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
