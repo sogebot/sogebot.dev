@@ -8,6 +8,7 @@ import { useIntervalWhen, useRefElement } from 'rooks';
 import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SettingsSystemsDialogStringArray } from '../Dialog/StringArray';
@@ -17,7 +18,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, handleChange, TextFieldProps, saving, save } = useSettings('/integrations/spotify' as any);
@@ -45,7 +46,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    getSocket('/integrations/spotify').emit('spotify::revoke', () => {
+    axios.post('/api/integrations/spotify/?_action=revoke').then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
@@ -154,8 +155,8 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
           InputProps={{
             endAdornment: <InputAdornment position="end">
               { user !== 'Not Authorized'
-                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+                ? <Button disabled={!scope.sensitive} color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                : <Button disabled={!scope.sensitive} color="success" variant="contained" onClick={authorize}>Authorize</Button>
               }
             </InputAdornment>,
           }}

@@ -1,4 +1,5 @@
 import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
 
@@ -13,41 +14,40 @@ const Spotify = () => {
       return;
     }
     if (window.location.hash || window.location.search) {
-      getSocket(`/integrations/spotify`).emit('spotify::state', (_err: any, spotifyState: any) => {
-        let urlState = '';
-        let urlCode = '';
-        for (const url of window.location.search.split('&')) {
-          if (url.startsWith('?code=') || url.startsWith('code=')) {
-            urlCode = url.replace(/\??code=/, '');
+      axios.post('/api/integrations/spotify?_action=state')
+        .then(({ data }) => {
+          let urlState = '';
+          let urlCode = '';
+          for (const url of window.location.search.split('&')) {
+            if (url.startsWith('?code=') || url.startsWith('code=')) {
+              urlCode = url.replace(/\??code=/, '');
+            }
+            if (url.startsWith('?state=') || url.startsWith('state=')) {
+              urlState = url.replace(/\??state=/, '');
+            }
           }
-          if (url.startsWith('?state=') || url.startsWith('state=')) {
-            urlState = url.replace(/\??state=/, '');
-          }
-        }
 
-        if (urlState === spotifyState) {
-          getSocket(`/integrations/spotify`).emit('code', urlCode, () => {
-            setState(true);
-            setTimeout(() => window.close(), 1000);
-          });
-        } else {
-          setState(false);
-          console.error('State is not matching!');
-        }
-      });
-    } else {
-      getSocket(`/integrations/spotify`)
-        .emit('spotify::authorize', (err: any, op: any) => {
-          if (err) {
-            return console.error(err);
+          if (urlState === data.data) {
+            axios.post('/api/integrations/spotify?_action=code', { code: urlCode })
+              .then(() => {
+                setState(true);
+                setTimeout(() => window.close(), 1000);
+              });
           } else {
-            // we need to replace redirectUri with dash uri
-            const url = new URL(op.opts[0]);
-            const params = new URLSearchParams(url.search);
-            params.set('redirect_uri', 'https://dash.sogebot.xyz/credentials/spotify');
-            window.location.href = `${url.origin}${url.pathname}?${params}`;
+            setState(false);
+            console.error('State is not matching!');
           }
         });
+    } else {
+      axios.post('/api/integrations/spotify?_action=authorize')
+        .then(({ data }) => {
+          const { opts } = data.data;
+          const url = new URL(opts[0]);
+          const params = new URLSearchParams(url.search);
+          params.set('redirect_uri', 'https://dash.sogebot.xyz/credentials/spotify');
+          window.location.href = `${url.origin}${url.pathname}?${params}`;
+        })
+        .catch(e => console.error(e.response.data));
     }
   }, [server]);
 

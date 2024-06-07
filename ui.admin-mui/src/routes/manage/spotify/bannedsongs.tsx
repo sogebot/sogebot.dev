@@ -5,6 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, CircularProgress, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import { SpotifySongBan } from '@sogebot/backend/dest/database/entity/spotify';
+import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -66,10 +67,11 @@ const PageCommandsSpotifySongBan = () => {
   const { element: filterElement, filters } = useFilter<SpotifySongBan>(useFilterSetup);
 
   const deleteItem = useCallback((item: SpotifySongBan) => {
-    getSocket('/integrations/spotify').emit('spotify::deleteBan', item.spotifyUri, () => {
-      enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+      .finally(() => {
+        enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   useEffect(() => {
@@ -79,15 +81,11 @@ const PageCommandsSpotifySongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/integrations/spotify').emit('spotify::getAllBanned', {}, (err: any, res: any) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
+        axios.get('/api/integrations/spotify/banned/all').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
-      }),
+      })
     ]);
   };
 
@@ -100,9 +98,8 @@ const PageCommandsSpotifySongBan = () => {
       const item = items.find(o => o.spotifyUri === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/integrations/spotify').emit('spotify::deleteBan', item.spotifyUri, () => {
-            resolve();
-          });
+          axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+            .finally(resolve);
         });
       }
     }
@@ -119,16 +116,16 @@ const PageCommandsSpotifySongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/integrations/spotify').emit('spotify::addBan', value, (err: any) => {
-          setIsSaving(false);
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-          } else {
+        axios.post('/api/integrations/spotify/?_action=addBan', { spotifyUri: value })
+          .then(() => {
             enqueueSnackbar('Song added to ban list.', { variant: 'success' });
             refresh();
             close();
-          }
-        });
+          })
+          .catch(err => {
+            enqueueSnackbar(String(err.response.data.messages), { variant: 'error' });
+          })
+          .finally(() => setIsSaving(false));
       }
     }
   }, [ input, enqueueSnackbar ]);
