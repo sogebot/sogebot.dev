@@ -5,6 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Backdrop, Button, CircularProgress, Dialog, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
+import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -160,36 +161,22 @@ const PageCommandsSongPlaylist = () => {
   const refresh = useCallback(async () => {
     setLoading(true);
     await Promise.all([
-      new Promise<void>((resolve, reject) => {
-        getSocket('/systems/songs').emit('current.playlist.tag', (err: any, tag: string) => {
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-            reject(err);
-          }
-          setCurrentTag(tag);
+      new Promise<void>((resolve) => {
+        axios.get('/api/core/songs/tag/current').then(({ data }) => {
+          setCurrentTag(data.data);
           resolve();
         });
       }),
-      new Promise<void>((resolve, reject) => {
-        getSocket('/systems/songs').emit('get.playlist.tags', (err: any, _tags: any) => {
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-            reject(err);
-          }
-          setTags(_tags);
+      new Promise<void>((resolve) => {
+        axios.get('/api/core/songs/tags').then(({ data }) => {
+          setTags(data.data);
           resolve();
         });
       }),
       new Promise<void>(resolve => {
-        getSocket('/systems/songs').emit('find.playlist', {
-          page: currentPage, perPage: pageSize, filters,
-        }, (err: any, res: any, count: any) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          setTotalCount(count);
+        axios.get(`/api/core/songs/playlist?page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+          setItems(data.data);
+          setTotalCount(data.total);
           resolve();
         });
       }),

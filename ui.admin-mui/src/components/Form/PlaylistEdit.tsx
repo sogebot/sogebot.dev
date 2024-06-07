@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,18 +32,9 @@ export const PlaylistEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      getSocket('/systems/songs').emit('find.playlist', {
-        page:    0,
-        perPage: 1,
-        search:  id,
-      }, (err: any, res: any) => {
-        if (err) {
-          console.error(err);
-        } else {
-          setItem(res[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
-        }
+      axios.get(`/api/core/songs/playlist?page=${0}&perPage=${1}&search=${id}`).then(({ data }) => {
+        setItem(data.data[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
         setLoading(false);
-
       });
       //setItem(props.items?.find(o => o.videoId === id) ?? Object.assign(new SongPlaylist(), { tags: [] }));
       setLoading(false);

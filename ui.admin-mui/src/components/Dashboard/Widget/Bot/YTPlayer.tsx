@@ -1,6 +1,7 @@
 import { Delete, PlayArrow, PlaylistRemove, SkipNext, Stop } from '@mui/icons-material';
 import { Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip } from '@mui/material';
 import { currentSongType } from '@sogebot/backend/src/database/entity/song';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
@@ -48,16 +49,11 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const refreshPlaylist = () => {
-    getSocket('/systems/songs').emit('current.playlist.tag', (err: any, tag: string) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCurrentTag(tag);
+    axios.get('/api/core/songs/tag/current').then(({ data }) => {
+      setCurrentTag(data.data);
     });
-    getSocket('/systems/songs').emit('get.playlist.tags', (err: any, tags: string[]) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get('/api/core/songs/tags').then(({ data }) => {
+      const tags = data.data as string[];
       if (!tags.includes('general')) {
         setAvailableTags(['general', ...tags]);
       } else {
@@ -128,11 +124,8 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   useIntervalWhen(async () => {
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::currentSong', (err: any, botCurrentSong: currentSongType) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
+      axios.get('/api/core/songs/current').then(({ data }) => {
+        const botCurrentSong = data.data as currentSongType;
         if (currentSong.videoId !== botCurrentSong.videoId) {
           setCurrentSong(botCurrentSong);
         }
@@ -162,7 +155,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   }, 10000, true, true);
 
   useEffect(() => {
-    getSocket('/systems/songs').emit('set.playlist.tag', currentTag);
+    axios.post('/api/core/songs/playlist/tag', { tag: currentTag });
   }, [currentTag]);
 
   const handlePlaylistTagChange = (event: SelectChangeEvent<string>) => {
