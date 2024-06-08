@@ -5,6 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, CircularProgress, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import { SongBan } from '@sogebot/backend/dest/database/entity/song';
+import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,13 +15,14 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
-import { getSocket } from '../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
+import { useScope } from '../../../hooks/useScope';
 import { setBulkCount } from '../../../store/appbarSlice';
 
 const PageCommandsSongBan = () => {
+  const scope = useScope('integrations');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -36,7 +38,8 @@ const PageCommandsSongBan = () => {
   type extension = {
     thumbnail: string;
   };
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<SongBan & extension>([
+
+  const columntTpl: ColumnMakerProps<SongBan & extension> = [
     {
       columnName:  'thumbnail',
       translation: ' ',
@@ -68,12 +71,17 @@ const PageCommandsSongBan = () => {
         ],
       },
     },
-  ]);
+  ];
+
+  if (!scope.manage) {
+    columntTpl.pop();
+  }
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<SongBan & extension>(columntTpl);
 
   const { element: filterElement, filters } = useFilter<SongBan>(useFilterSetup);
 
   const deleteItem = useCallback((item: SongBan) => {
-    getSocket('/systems/songs').emit('delete.ban', item.videoId, () => {
+    axios.delete('/api/systems/songs/ban/' + item.videoId).then(() => {
       enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -86,12 +94,8 @@ const PageCommandsSongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/songs').emit('songs::getAllBanned', {}, (err: any, res: any) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
+        axios.get('/api/systems/songs/ban').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
       }),
@@ -107,7 +111,7 @@ const PageCommandsSongBan = () => {
       const item = items.find(o => o.videoId === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/systems/songs').emit('delete.ban', item.videoId, () => {
+          axios.delete('/api/systems/songs/ban/' + item.videoId).then(() => {
             resolve();
           });
         });
@@ -126,16 +130,13 @@ const PageCommandsSongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/systems/songs').emit('import.ban', value, (err: any) => {
-          setIsSaving(false);
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-          } else {
-            enqueueSnackbar('Song added to ban list.', { variant: 'success' });
-            refresh();
-            close();
-          }
-        });
+        axios.post('/api/systems/songs/import/ban', { url: value }).then(() => {
+          enqueueSnackbar('Song added to ban list.', { variant: 'success' });
+          refresh();
+          close();
+        }).catch((err) => {
+          enqueueSnackbar(String(err), { variant: 'error' });
+        }).finally(() => setIsSaving(false));
       }
     }
   }, [ input, enqueueSnackbar ]);
@@ -144,50 +145,52 @@ const PageCommandsSongBan = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='songs'/>
-        <Grid item>
-          <PopupState variant="popover" popupId="demo-popup-popover">
-            {(popupState) => (
-              <div>
-                <Button sx={{ width: 200 }} variant="contained" {...bindTrigger(popupState)}>
+        {scope.manage && <>
+          <Grid item>
+            <PopupState variant="popover" popupId="demo-popup-popover">
+              {(popupState) => (
+                <div>
+                  <Button sx={{ width: 200 }} variant="contained" {...bindTrigger(popupState)}>
                   Add new song to ban
-                </Button>
-                <Popover
-                  {...bindPopover(popupState)}
-                  anchorOrigin={{
-                    vertical:   'bottom',
-                    horizontal: 'left',
-                  }}
-                  transformOrigin={{
-                    vertical:   'top',
-                    horizontal: 'left',
-                  }}
-                >
-                  <TextField
-                    ref={input}
-                    id="add-song-ban-input"
-                    label="VideoID or video URL"
-                    variant="filled"
-                    sx={{
-                      minWidth:               '400px',
-                      '& .MuiInputBase-root': { borderRadius: 0 },
-                    }}/>
-                  <LoadingButton
-                    color="primary"
-                    loading={isSaving}
-                    variant="contained"
-                    sx={{
-                      height:       '56px',
-                      borderRadius: 0,
+                  </Button>
+                  <Popover
+                    {...bindPopover(popupState)}
+                    anchorOrigin={{
+                      vertical:   'bottom',
+                      horizontal: 'left',
                     }}
-                    onClick={() => handleBanSongAdd(popupState.close)}>Add</LoadingButton>
-                </Popover>
-              </div>
-            )}
-          </PopupState>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+                    transformOrigin={{
+                      vertical:   'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <TextField
+                      ref={input}
+                      id="add-song-ban-input"
+                      label="VideoID or video URL"
+                      variant="filled"
+                      sx={{
+                        minWidth:               '400px',
+                        '& .MuiInputBase-root': { borderRadius: 0 },
+                      }}/>
+                    <LoadingButton
+                      color="primary"
+                      loading={isSaving}
+                      variant="contained"
+                      sx={{
+                        height:       '56px',
+                        borderRadius: 0,
+                      }}
+                      onClick={() => handleBanSongAdd(popupState.close)}>Add</LoadingButton>
+                  </Popover>
+                </div>
+              )}
+            </PopupState>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -222,7 +225,7 @@ const PageCommandsSongBan = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
     </>

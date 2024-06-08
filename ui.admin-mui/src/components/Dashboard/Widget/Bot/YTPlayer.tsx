@@ -31,9 +31,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
     if (confirm('Do you want to delete song request ' + requests.find(o => String(o.id) === id)?.title + ' from ' + requests.find(o => String(o.id) === id)?.username + '?')) {
       console.log('Removing => ' + id);
       setRequests(requests.filter(o => String(o.id) !== id));
-      getSocket('/systems/songs').emit('songs::removeRequest', id, () => {
-        return true;
-      });
+      axios.delete('/api/systems/songs/requests/' + id);
     }
   }, [requests]);
 
@@ -49,10 +47,10 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const refreshPlaylist = () => {
-    axios.get('/api/core/songs/tag/current').then(({ data }) => {
+    axios.get('/api/systems/songs/playlist/tag/current').then(({ data }) => {
       setCurrentTag(data.data);
     });
-    axios.get('/api/core/songs/tags').then(({ data }) => {
+    axios.get('/api/systems/songs/playlist/tags').then(({ data }) => {
       const tags = data.data as string[];
       if (!tags.includes('general')) {
         setAvailableTags(['general', ...tags]);
@@ -63,14 +61,12 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const next = () => {
-    getSocket('/systems/songs').emit('next');
+    axios.post('/api/systems/songs/?_action=next');
   };
 
   const nextAndRemoveFromPlaylist = () => {
     if (currentSong && currentSong.videoId) {
-      getSocket('/systems/songs').emit('delete.playlist', currentSong.videoId, () => {
-        return true;
-      });
+      axios.delete('/api/systems/songs/playlist/' + currentSong.videoId);
       next();
     }
   };
@@ -124,7 +120,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   useIntervalWhen(async () => {
     await new Promise<void>(resolve => {
-      axios.get('/api/core/songs/current').then(({ data }) => {
+      axios.get('/api/systems/songs/current').then(({ data }) => {
         const botCurrentSong = data.data as currentSongType;
         if (currentSong.videoId !== botCurrentSong.videoId) {
           setCurrentSong(botCurrentSong);
@@ -134,16 +130,12 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
     });
 
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err: any, items: any) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
+      axios.get('/api/systems/songs/requests').then(({ data }) => {
         if (currentSong.videoId === null && autoplay) {
           next();
         }
-        if (!isEqual(requests, items)) {
-          setRequests(items);
+        if (!isEqual(requests, data.data)) {
+          setRequests(data.data);
         }
         resolve();
       });
@@ -155,7 +147,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   }, 10000, true, true);
 
   useEffect(() => {
-    axios.post('/api/core/songs/playlist/tag', { tag: currentTag });
+    axios.post('/api/systems/songs/playlist/tag', { tag: currentTag });
   }, [currentTag]);
 
   const handlePlaylistTagChange = (event: SelectChangeEvent<string>) => {

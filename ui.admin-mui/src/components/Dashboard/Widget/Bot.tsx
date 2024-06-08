@@ -81,7 +81,7 @@ export const DashboardWidgetBot: React.FC = () => {
           position: 'relative', height: 'calc(100% - 48px);',
         }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
+          {(systems || []).find((o: any) => o.name === 'songs').enabled && <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>}
           {(queueScope.read && value === '3') && <DashboardWidgetBotQueue sx={classes.showTab}/>}
           {value === '4' && <DashboardWidgetBotRaffles sx={classes.showTab}/>}
           {checklistScope.read && <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>}

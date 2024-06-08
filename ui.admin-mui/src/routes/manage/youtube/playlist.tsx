@@ -19,14 +19,16 @@ import EditButton from '../../../components/Buttons/EditButton';
 import { ButtonsTagBulk } from '../../../components/Buttons/TagBulk';
 import { DisabledAlert } from '../../../components/DisabledAlert';
 import { PlaylistEdit } from '../../../components/Form/PlaylistEdit';
+import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
-import { getSocket } from '../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
+import { useScope } from '../../../hooks/useScope';
 import { setBulkCount } from '../../../store/appbarSlice';
 
 const PageCommandsSongPlaylist = () => {
+  const scope = useScope('integrations');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -56,7 +58,8 @@ const PageCommandsSongPlaylist = () => {
     thumbnail: string;
     data:      string;
   };
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<SongPlaylist & extension>([
+
+  const columnsTpl: ColumnMakerProps<SongPlaylist & extension> = [
     {
       columnName:  'thumbnail',
       translation: ' ',
@@ -129,7 +132,14 @@ const PageCommandsSongPlaylist = () => {
         ],
       },
     },
-  ]);
+  ];
+
+  if (!scope.manage) {
+    // remove actions column
+    columnsTpl.pop();
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames } = useColumnMaker<SongPlaylist & extension>(columnsTpl);
 
   const bulkToggleAttribute = useCallback(async <T extends keyof SongPlaylist>(attribute: T, value: SongPlaylist[T]) => {
     for (const selected of selection) {
@@ -137,9 +147,10 @@ const PageCommandsSongPlaylist = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/systems/songs').emit('songs::save', item, () => {
-            resolve();
-          });
+          axios.post(`/api/systems/songs/playlist`,
+            item,
+            { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(resolve);
         });
       }
     }
@@ -162,19 +173,19 @@ const PageCommandsSongPlaylist = () => {
     setLoading(true);
     await Promise.all([
       new Promise<void>((resolve) => {
-        axios.get('/api/core/songs/tag/current').then(({ data }) => {
+        axios.get('/api/systems/songs/playlist/tag/current').then(({ data }) => {
           setCurrentTag(data.data);
           resolve();
         });
       }),
       new Promise<void>((resolve) => {
-        axios.get('/api/core/songs/tags').then(({ data }) => {
+        axios.get('/api/systems/songs/playlist/tags').then(({ data }) => {
           setTags(data.data);
           resolve();
         });
       }),
       new Promise<void>(resolve => {
-        axios.get(`/api/core/songs/playlist?page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+        axios.get(`/api/systems/songs/playlist?page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
           setItems(data.data);
           setTotalCount(data.total);
           resolve();
@@ -185,10 +196,11 @@ const PageCommandsSongPlaylist = () => {
   }, [ currentPage, pageSize, filters, enqueueSnackbar ]);
 
   const deleteItem = useCallback((item: SongPlaylist) => {
-    getSocket('/systems/songs').emit('delete.playlist', item.videoId, () => {
-      enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.delete(`/api/systems/songs/playlist/${item.videoId}`)
+      .finally(() => {
+        enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar, refresh ]);
 
   useEffect(() => {
@@ -208,9 +220,7 @@ const PageCommandsSongPlaylist = () => {
       const item = items.find(o => o.videoId === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/systems/songs').emit('delete.playlist', item.videoId, () => {
-            resolve();
-          });
+          axios.delete(`/api/systems/songs/playlist/${item.videoId}`).finally(resolve);
         });
       }
     }
@@ -227,18 +237,13 @@ const PageCommandsSongPlaylist = () => {
         enqueueSnackbar('Cannot add empty song to playlist.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/systems/songs').emit(value.includes('playlist') ? 'import.playlist' : 'import.video', {
-          playlist: value, forcedTag: currentTag,
-        }, (err: any) => {
-          setIsSaving(false);
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-          } else {
-            enqueueSnackbar('Song added to playlist.', { variant: 'success' });
-            refresh();
-            close();
-          }
-        });
+        axios.post(`/api/systems/songs/import/${value.includes('playlist') ? 'playlist' : 'video'}`, { playlist: value, forcedTag: currentTag }).then(() => {
+          enqueueSnackbar('Song added to playlist.', { variant: 'success' });
+          refresh();
+          close();
+        }).catch((err) => {
+          enqueueSnackbar(String(err), { variant: 'error' });
+        }).finally(() => setIsSaving(false));
       }
     }
   }, [ input, enqueueSnackbar, currentTag, refresh ]);
@@ -254,53 +259,55 @@ const PageCommandsSongPlaylist = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='songs'/>
-        <Grid item>
-          <PopupState variant="popover" popupId="demo-popup-popover">
-            {(popupState) => (
-              <div>
-                <Button sx={{ width: 250 }} variant="contained" {...bindTrigger(popupState)}>
+        {scope.manage && <>
+          <Grid item>
+            <PopupState variant="popover" popupId="demo-popup-popover">
+              {(popupState) => (
+                <div>
+                  <Button sx={{ width: 250 }} variant="contained" {...bindTrigger(popupState)}>
                   Add new song to playlist
-                </Button>
-                <Popover
-                  {...bindPopover(popupState)}
-                  anchorOrigin={{
-                    vertical:   'bottom',
-                    horizontal: 'left',
-                  }}
-                  transformOrigin={{
-                    vertical:   'top',
-                    horizontal: 'left',
-                  }}
-                >
-                  <TextField
-                    ref={input}
-                    id="add-song-playlist-input"
-                    label="VideoID, video URL or playlist URL"
-                    variant="filled"
-                    sx={{
-                      minWidth:               '400px',
-                      '& .MuiInputBase-root': { borderRadius: 0 },
-                    }}/>
-                  <LoadingButton
-                    color="primary"
-                    loading={isSaving}
-                    variant="contained"
-                    sx={{
-                      height:       '56px',
-                      borderRadius: 0,
+                  </Button>
+                  <Popover
+                    {...bindPopover(popupState)}
+                    anchorOrigin={{
+                      vertical:   'bottom',
+                      horizontal: 'left',
                     }}
-                    onClick={() => handleSongAdd(popupState.close)}>Add</LoadingButton>
-                </Popover>
-              </div>
-            )}
-          </PopupState>
-        </Grid>
-        <Grid item>
-          <ButtonsTagBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('tags', groupId)} tags={tags} forceTags={['general']}/>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+                    transformOrigin={{
+                      vertical:   'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <TextField
+                      ref={input}
+                      id="add-song-playlist-input"
+                      label="VideoID, video URL or playlist URL"
+                      variant="filled"
+                      sx={{
+                        minWidth:               '400px',
+                        '& .MuiInputBase-root': { borderRadius: 0 },
+                      }}/>
+                    <LoadingButton
+                      color="primary"
+                      loading={isSaving}
+                      variant="contained"
+                      sx={{
+                        height:       '56px',
+                        borderRadius: 0,
+                      }}
+                      onClick={() => handleSongAdd(popupState.close)}>Add</LoadingButton>
+                  </Popover>
+                </div>
+              )}
+            </PopupState>
+          </Grid>
+          <Grid item>
+            <ButtonsTagBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('tags', groupId)} tags={tags} forceTags={['general']}/>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -343,7 +350,7 @@ const PageCommandsSongPlaylist = () => {
           <TableColumnVisibility
             defaultHiddenColumnNames={defaultHiddenColumnNames}
           />
-          <TableSelection showSelectAll/>
+          {scope.manage && <TableSelection showSelectAll/>}
           <PagingPanel/>
         </DataGrid>
       </SimpleBar>

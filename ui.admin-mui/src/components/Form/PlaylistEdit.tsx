@@ -12,8 +12,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import YouTube, { YouTubeProps } from 'react-youtube';
 
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
 
@@ -26,13 +26,13 @@ export const PlaylistEdit: React.FC<{
   const [ item, setItem ] = useState<SongPlaylist>(Object.assign(new SongPlaylist(), { tags: [] }));
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { reset, haveErrors, validate } = useValidator({ schema: new SongPlaylist()._schema });
+  const { reset, haveErrors, validate, showErrors } = useValidator({ schema: new SongPlaylist()._schema });
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`/api/core/songs/playlist?page=${0}&perPage=${1}&search=${id}`).then(({ data }) => {
+      axios.get(`/api/systems/songs/playlist?page=${0}&perPage=${1}&search=${id}`).then(({ data }) => {
         setItem(data.data[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
         setLoading(false);
       });
@@ -75,16 +75,21 @@ export const PlaylistEdit: React.FC<{
 
   const handleSave = useCallback(() => {
     setSaving(true);
-    getSocket('/systems/songs').emit('songs::save', item, (err: any) => {
-      if (err) {
-        enqueueSnackbar(String(err), { variant: 'error' });
-        setSaving(false);
-        return;
-      }
-      setSaving(false);
-      enqueueSnackbar('Song saved.', { variant: 'success' });
-      navigate(`/manage/songs/playlist`);
-    });
+    axios.post(`/api/systems/songs/playlist`,
+      item,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((response) => {
+        if (response.data.status === 'success') {
+          enqueueSnackbar('Song saved.', { variant: 'success' });
+          navigate(`/manage/songs/playlist`);
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .catch(e => {
+        showErrors(e.response.data.errors);
+      })
+      .finally(() => setSaving(false));
   }, [item, enqueueSnackbar, navigate]);
 
   const opts = useMemo<YouTubeProps['opts']>(() => {

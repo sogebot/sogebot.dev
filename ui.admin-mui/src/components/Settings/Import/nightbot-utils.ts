@@ -3,7 +3,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
 import getAccessToken from '../../../getAccessToken';
-import { getSocket } from '../../../helpers/socket';
 
 type Track = {
   providerId: string;
@@ -147,20 +146,10 @@ const fetchTracks = async (
 
 const postTrack = async (track: Track) => {
   await new Promise((resolve, reject) => {
-    getSocket('/systems/songs').emit(
-      'import.video',
-      {
-        playlist:  track.providerId,
-        forcedTag: 'nightbot-import',
-      },
-      (err: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve('resolved');
-        }
-      }
-    );
+    axios.post('/api/systems/songs/import/video', {
+      playlist:  track.providerId,
+      forcedTag: 'nightbot-import',
+    }).then(resolve).catch(reject);
   });
 };
 
