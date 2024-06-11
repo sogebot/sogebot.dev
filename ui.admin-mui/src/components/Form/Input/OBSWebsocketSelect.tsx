@@ -1,11 +1,11 @@
 import { RefreshTwoTone } from '@mui/icons-material';
 import { CircularProgress, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
@@ -36,11 +36,8 @@ export const FormOBSWebsocketSelect: React.FC<{
   const refreshItems = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      getSocket('/').emit('integration::obswebsocket::generic::getAll', (err: any, res: any) => {
-        if (err) {
-          return console.error(err);
-        }
-        setItems(orderBy(res, 'name', 'asc'));
+      axios.get('/api/integrations/obswebsocket').then(({ data }) => {
+        setItems(orderBy(data.data, 'name', 'asc'));
         setProgress(false);
         resolve();
       });
