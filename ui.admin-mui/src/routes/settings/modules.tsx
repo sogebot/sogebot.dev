@@ -143,7 +143,7 @@ const PageSettingsModules = () => {
               {[
                 'donatello', 'kofi', 'tiltify', 'discord', 'donationalerts',
                 'lastfm', 'pubg', 'qiwi', 'spotify', 'streamelements', 'streamlabs',
-                'tipeeestream', 'twitter',
+                'tipeeestream'
               ].map(item => <ListItemButton
                 key={`integrations-${item}`}
                 selected={activeTab === `integrations-${item}`}

@@ -128,54 +128,56 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
       </Stack>
     </Paper>}
 
-    <Typography variant='h5' sx={{ py: 2 }}>{ translate('categories.connection') }</Typography>
-    {settings && <Paper elevation={1} sx={{ p: 1 }}>
-      <Stack spacing={1}>
-        <TextField
-          {...TextFieldProps('connection.clientId')}
-          type="password"
-          label={translate('integrations.spotify.settings.clientId')}
-        />
-        <TextField
-          {...TextFieldProps('connection.clientSecret')}
-          type="password"
-          label={translate('integrations.spotify.settings.clientSecret')}
-        />
-        <TextField
-          disabled
-          variant='filled'
-          value="https://dash.sogebot.xyz/credentials/spotify"
-          label={translate('integrations.spotify.settings.redirectURI')}
-        />
-        <TextField
-          disabled
-          variant='filled'
-          value={user}
-          label={translate('integrations.lastfm.settings.username')}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">
-              { user !== 'Not Authorized'
-                ? <Button disabled={!scope.sensitive} color="error" variant="contained" onClick={revoke}>Revoke</Button>
-                : <Button disabled={!scope.sensitive} color="success" variant="contained" onClick={authorize}>Authorize</Button>
-              }
-            </InputAdornment>,
-          }}
-        />
-        <TextField
-          {...TextFieldProps('connection.manualDeviceId', { helperText: translate('integrations.spotify.settings.manualDeviceId.help') })}
-          label={translate('integrations.spotify.settings.manualDeviceId.title')}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">
-              {lastActiveDevice.length > 0
-                ? <>
-                  <Button onClick={() => handleChange('connection.manualDeviceId', lastActiveDevice)}>{lastActiveDevice}</Button>
-                </>
-                : ''}
-            </InputAdornment>,
-          }}
-        />
-      </Stack>
-    </Paper>}
+    {scope.sensitive && <>
+      <Typography variant='h5' sx={{ py: 2 }}>{ translate('categories.connection') }</Typography>
+      {settings && <Paper elevation={1} sx={{ p: 1 }}>
+        <Stack spacing={1}>
+          <TextField
+            {...TextFieldProps('connection.clientId')}
+            type="password"
+            label={translate('integrations.spotify.settings.clientId')}
+          />
+          <TextField
+            {...TextFieldProps('connection.clientSecret')}
+            type="password"
+            label={translate('integrations.spotify.settings.clientSecret')}
+          />
+          <TextField
+            disabled
+            variant='filled'
+            value="https://dash.sogebot.xyz/credentials/spotify"
+            label={translate('integrations.spotify.settings.redirectURI')}
+          />
+          <TextField
+            disabled
+            variant='filled'
+            value={user}
+            label={translate('integrations.lastfm.settings.username')}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                { user !== 'Not Authorized'
+                  ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                  : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+                }
+              </InputAdornment>,
+            }}
+          />
+          <TextField
+            {...TextFieldProps('connection.manualDeviceId', { helperText: translate('integrations.spotify.settings.manualDeviceId.help') })}
+            label={translate('integrations.spotify.settings.manualDeviceId.title')}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                {lastActiveDevice.length > 0
+                  ? <>
+                    <Button onClick={() => handleChange('connection.manualDeviceId', lastActiveDevice)}>{lastActiveDevice}</Button>
+                  </>
+                  : ''}
+              </InputAdornment>,
+            }}
+          />
+        </Stack>
+      </Paper>}
+    </>}
 
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>

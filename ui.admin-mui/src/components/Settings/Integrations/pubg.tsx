@@ -8,6 +8,7 @@ import React from 'react';
 import { useDebouncedValue, useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -37,7 +38,7 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, handleChange } = useSettings('/integrations/pubg' as any);
@@ -130,11 +131,11 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
     <Typography variant='h2' sx={{ pb: 2 }}>{ translate('menu.pubg') }</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
-        <TextField
+        {scope.sensitive && <TextField
           {...TextFieldProps('apiKey', { helperText: translate('integrations.pubg.settings.apiKey.help') })}
           type="password"
           label={translate('integrations.pubg.settings.apiKey.title')}
-        />
+        />}
         <FormControl variant="filled" sx={{ minWidth: 300 }}>
           <InputLabel id="platform-label" shrink>{translate('integrations.pubg.settings.platform')}</InputLabel>
           <Select

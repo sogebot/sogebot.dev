@@ -15,11 +15,13 @@ import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OBSWebsocketEdit } from '../../components/Form/OBSWebsocketEdit';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
+  const scope = useScope('integration');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -49,7 +51,7 @@ const PageRegistryCustomVariables = () => {
     enqueueSnackbar(<div>Command&nbsp;<strong>{command} {idc}</strong>&nbsp;copied to clipboard.</div>);
   }, [ command, enqueueSnackbar ]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<OBSWebsocket & { command: string }>([
+  const columnTpl: ColumnMakerProps<OBSWebsocket & { command: string }> = [
     {
       columnName:     'name',
       translationKey: 'timers.dialog.name',
@@ -79,7 +81,13 @@ const PageRegistryCustomVariables = () => {
         ],
       },
     },
-  ]);
+  ];
+
+  if (!scope.manage) {
+    columnTpl.splice(columnTpl.length - 1, 1);
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<OBSWebsocket & { command: string }>(columnTpl);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
@@ -125,12 +133,14 @@ const PageRegistryCustomVariables = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <LinkButton variant="contained" href='/registry/obswebsocket/create/'>Create new OBSWebsocket script</LinkButton>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton variant="contained" href='/registry/obswebsocket/create/'>Create new OBSWebsocket script</LinkButton>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -168,7 +178,7 @@ const PageRegistryCustomVariables = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 
