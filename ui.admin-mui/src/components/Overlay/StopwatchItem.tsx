@@ -8,7 +8,6 @@ import { useIntervalWhen } from 'rooks';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { toBoolean } from '../../helpers/toBoolean';
 import { loadFont } from '../Accordion/Font';
@@ -74,30 +73,28 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
       return;
     }
     // console.debug('Primary');
-    getSocket('/overlays/stopwatch')
-      .emit('stopwatch::update', {
-        id:        id,
-        isEnabled: latestEnabled.current,
-        time:      latestModel.current.currentTime,
-      }, (_err: null, data?: { isEnabled: boolean | null, time: string | null }) => {
-        if (data) {
-          if (data.isEnabled !== null) {
-            setModel(o => ({
-              ...o, isStartedOnSourceLoad: data.isEnabled!,
-            }));
-          }
-
-          localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(latestModel.current.currentTime));
-          localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
-          localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(latestEnabled.current));
-
-          if (data.time !== null) {
-            setModel(o => ({
-              ...o, currentTime: Number(data.time!),
-            }));
-          }
+    axios.post(`/api/registries/overlays/tick/${groupId}/${id}`, {
+      isEnabled: latestEnabled.current,
+      time:      latestModel.current.currentTime,
+    }).then(({ data }) =>  {
+      if (data.data) {
+        if (data.data.isEnabled !== null) {
+          setModel(o => ({
+            ...o, isStartedOnSourceLoad: data.data.isEnabled!,
+          }));
         }
-      });
+
+        localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(latestModel.current.currentTime));
+        localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
+        localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(latestEnabled.current));
+
+        if (data.data.time !== null) {
+          setModel(o => ({
+            ...o, currentTime: Number(data.data.time!),
+          }));
+        }
+      }
+    });
   };
 
   React.useEffect(() => {

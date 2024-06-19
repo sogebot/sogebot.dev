@@ -1,6 +1,7 @@
 import { Sparklines, SparklinesCurve } from '@jrwats/react-sparklines';
 import { Box, Stack } from '@mui/material';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -8,7 +9,6 @@ import { useIntervalWhen } from 'rooks';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { loadFont } from '../Accordion/Font';
 import { GenerateTime } from '../Dashboard/Widget/Action/GenerateTime';
@@ -49,15 +49,14 @@ export const MarathonItem: React.FC<Props<Marathon>> = ({ item, id }) => {
   }, [times]);
 
   const update = () => {
-    getSocket('/overlays/marathon')
-      .emit('marathon::public', id, (_err: any, data: any) => {
-        if (data) {
-          setTimes(val => [...val, data.endTime - Date.now()]);
-          setModel(o => ({
-            ...o, endTime: data.endTime,
-          }));
-        }
-      });
+    axios.get(`/api/overlays/marathon/${id}`).then(({ data }) => {
+      if (data.data) {
+        setTimes(val => [...val, data.endTime - Date.now()]);
+        setModel(o => ({
+          ...o, endTime: data.endTime,
+        }));
+      }
+    });
   };
 
   React.useEffect(() => {

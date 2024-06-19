@@ -19,7 +19,6 @@ import { AlertQueueController } from './Events/AlertQueue';
 import { alertQueueAtom } from '../../../../atoms';
 import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
-import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { useScope } from '../../../../hooks/useScope';
 import { useTranslation } from '../../../../hooks/useTranslation';
@@ -208,8 +207,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     });
   };
   React.useEffect(() => {
-    getSocket('/registries/alerts').emit('alerts::settings', null, (data: any) => {
-      setStatus(data);
+    axios.get('/api/registries/alerts/settings').then(({ data }) => {
+      setStatus(data.data);
       setStatusLoaded(true);
     });
   }, []);
@@ -218,9 +217,7 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     if (!statusLoaded) {
       return;
     }
-    getSocket('/registries/alerts').emit('alerts::settings', status, () => {
-      return;
-    });
+    axios.post('/api/registries/alerts/settings', status);
   }, [ status, statusLoaded ]);
 
   const filteredEvents = React.useMemo(() => {

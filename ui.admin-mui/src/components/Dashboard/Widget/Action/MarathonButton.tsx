@@ -10,7 +10,6 @@ import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
-import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarathonItem }> = ({
@@ -57,9 +56,9 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
     setKey(Date.now());
     // get actual status of opened overlay
     if (marathon) {
-      getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err: any, data: any) => {
-        if (data && marathon) {
-          setTimestamp(Math.max(data.endTime, Date.now()));
+      axios.get(`/api/overlays/marathon/${item.options.marathonId}`).then(({ data }) => {
+        if (data.data && marathon) {
+          setTimestamp(Math.max(data.data.endTime, Date.now()));
         }
       });
     }
@@ -70,7 +69,7 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       console.log({
         value, timestamp, newValue: timestamp + value,
       });
-      getSocket('/overlays/marathon').emit('marathon::update::set', {
+      axios.post(`/api/overlays/marathon/${item.options.marathonId}`, {
         time: value,
         id:   item.options.marathonId,
       });

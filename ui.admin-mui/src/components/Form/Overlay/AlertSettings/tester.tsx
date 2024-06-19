@@ -4,10 +4,10 @@ import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
 import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import axios from 'axios';
 import { shuffle } from 'lodash';
 import React from 'react';
 
-import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
@@ -113,7 +113,7 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
       monthsName: '', // will be added at server
     };
     console.log('Testing', emit);
-    getSocket('/registries/alerts').emit('test', emit);
+    axios.post('/api/registries/alerts/?_action=test', emit);
   }, [
     reward, selectedEvent, currency,
     amountRandom, usernameRandom, tierRandom, serviceRandom, recipientRandom, messageRandom,
