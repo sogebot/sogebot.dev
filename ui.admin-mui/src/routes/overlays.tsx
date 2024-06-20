@@ -5,7 +5,9 @@ import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import semver from 'semver';
 
+import { versions } from '../compatibilityList';
 import { AlertItem } from '../components/Overlay/AlertItem';
 import { ChatItem } from '../components/Overlay/ChatItem';
 import { ClipsCarouselItem } from '../components/Overlay/ClipsCarouselItem';
@@ -46,8 +48,32 @@ export default function Overlays() {
   React.useEffect(() => {
     if (server) {
       axios.defaults.baseURL = server;
+
+      const url = new URL(server);
+
+      axios.get(`${url.origin}/health`)
+        .then(res => {
+          // request is not valid anymore
+          if (server !== url.origin) {
+            return;
+          }
+
+          // we don't have base path, do checks
+          if ((process.env.REACT_APP_COMMIT || '').length === 0) {
+
+            // 'OK' response was last in 16.8.0
+            const version = res.data === 'OK' ? '16.8.0' : res.data;
+            for (const versionKey of Object.keys(versions).reverse()) {
+              if (semver.satisfies(version, versionKey)) {
+                // we have found version and returning basepath
+                window.location.href = `${new URL(window.location.href).origin}/${versions[versionKey as keyof typeof versions]}/overlays/${base64}`;
+                return;
+              }
+            }
+          }
+        });
     }
-  }, [ server ]);
+  }, [ server, base64 ]);
   document.getElementsByTagName('body')[0].style.backgroundColor = 'transparent';
 
   React.useEffect(() => {
