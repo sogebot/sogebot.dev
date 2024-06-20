@@ -16,13 +16,14 @@ import LinkButton from '../../components/Buttons/LinkButton';
 import { PluginsEdit } from '../../components/Form/PluginsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import getAccessToken from '../../getAccessToken';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryPlugins = () => {
+  const scope = useScope('plugins');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -33,15 +34,16 @@ const PageRegistryPlugins = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Plugin>([
-    {
-      columnName: 'name',
-      filtering:  { type: 'string' },
-    },
-    {
-      columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
-    },
-    {
+  const columnsTpl: ColumnMakerProps<Plugin> = [{
+    columnName: 'name',
+    filtering:  { type: 'string' },
+  },
+  {
+    columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
+  }];
+
+  if (scope.manage) {
+    columnsTpl.push({
       columnName:  'actions',
       table:       { width: 2.5 * 43 },
       sorting:     { sortingEnabled: false },
@@ -56,28 +58,25 @@ const PageRegistryPlugins = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Plugin>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter<Plugin>(useFilterSetup);
 
   const refresh = useCallback(async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/plugins').emit('generic::getAll', (_, data) => {
-          setItems(data);
-          resolve();
-        });
-      }),
-    ]);
+    const response = await axios.get('/api/core/plugins');
+    setItems(response.data.data);
     setLoading(false);
   }, []);
 
   const deleteItem = useCallback((item: Plugin) => {
-    getSocket('/core/plugins').emit('generic::deleteById', item.id, () => {
-      enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.delete(`/api/core/plugins/${item.id}`)
+      .then(() => {
+        enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar, refresh ]);
 
   useEffect(() => {
@@ -114,7 +113,7 @@ const PageRegistryPlugins = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`${JSON.parse(localStorage.server)}/api/registry/plugins`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`/api/registry/plugins`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -141,7 +140,7 @@ const PageRegistryPlugins = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/registry/plugins/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
@@ -158,26 +157,28 @@ const PageRegistryPlugins = () => {
       <PluginsEdit/>
 
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <LinkButton variant="contained" href='/registry/plugins/create/'>Create new plugin</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton variant="contained" href='/registry/plugins/create/'>Create new plugin</LinkButton>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -219,7 +220,7 @@ const PageRegistryPlugins = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
     </>

@@ -3,16 +3,17 @@ import { Popover, Stack, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { useCallback, useRef, useState } from 'react';
 
-import { getSocket } from '../../../../../helpers/socket';
-import { useAppSelector } from '../../../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../../../atoms';
 import { ColorButton } from '../_ColorButton';
 
-export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void }> = ({
-  item, variable, onUpdate,
+export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void, disabled: boolean }> = ({
+  item, variable, onUpdate, disabled
 }) => {
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ menuWidth, setMenuWidth ] = useState<string>('inherit');
   const open = Boolean(anchorEl);
@@ -34,13 +35,7 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
     }
     onUpdate(value);
     console.log(`quickaction::trigger::${item.id}`);
-    getSocket('/widgets/quickaction').emit('trigger', {
-      user: {
-        userId: user.id, userName: user.login,
-      },
-      id:    item.id,
-      value: value,
-    });
+    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: value });
   }, [ user, item, onUpdate ]);
 
   return (<>
@@ -53,6 +48,7 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
       fullWidth
       startIcon={<Box width={20} height={20}/>}
       endIcon={<Edit/>}
+      disabled={disabled}
       sx={{ borderRadius: 0 }}>
       <Box sx={{
         position: 'absolute', width: '100%', height: '100%',

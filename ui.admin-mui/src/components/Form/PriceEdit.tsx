@@ -29,7 +29,7 @@ export const PriceEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors, dirtify } = useValidator({ schema: new Price().schema });
+  const { propsError, reset, showErrors, validate, haveErrors, dirtify } = useValidator({ schema: new Price()._schema });
 
   const handleValueChange = <T extends keyof Price>(key: T, value: Price[T]) => {
     if (!item) {
@@ -69,7 +69,7 @@ export const PriceEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
+    axios.post(`/api/systems/price`,
       { ...item },
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

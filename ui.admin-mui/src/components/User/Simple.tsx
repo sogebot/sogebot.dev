@@ -2,6 +2,7 @@ import { CloseTwoTone } from '@mui/icons-material';
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import { Avatar, Box, IconButton, InputAdornment, Link, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
@@ -19,7 +20,7 @@ export const UserSimple: React.FC = () => {
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
-    const socket = getSocket('/core/users', true);
+    const socket = getSocket('/core/users' as any);
     socket.emit('logout', {
       accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),
@@ -32,7 +33,8 @@ export const UserSimple: React.FC = () => {
 
   React.useEffect(() => {
     if (user && isBotConnected) {
-      getSocket('/', true).emit('token::broadcaster-missing-scopes', (missingScopes: string[]) => {
+      axios.get('/api/services/twitch/broadcaster/missingScopes').then(({ data }) => {
+        const missingScopes = data.data;
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));
           const notif = enqueueSnackbar(<Box>

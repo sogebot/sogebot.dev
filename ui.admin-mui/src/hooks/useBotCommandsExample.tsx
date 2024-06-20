@@ -1,59 +1,53 @@
 import { Alert, CircularProgress, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import camelCase from 'lodash/camelCase';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLocalstorageState } from 'rooks';
 
-import { useAppSelector } from './useAppDispatch';
+import { useSettings } from './useSettings';
+import { loggedUserAtom } from '../atoms';
 import { Commands } from '../classes/Commands';
-import getAccessToken from '../getAccessToken';
-import { getSocket } from '../helpers/socket';
 
 export const useBotCommandsExample = (item: Commands | null) => {
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const location = useLocation();
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
-  const [ loading, setLoading ] = useState(true);
   const [ exampleData, setExampleData ] = useState<(string|{ if?: string, message: string, replace: { [x:string]: string } })[][]>([]);
-  const [ settings, setSettings ] = useState<Record<string, any>>({});
   const [ parsed, setParsed ] = useState<Record<string, string>>({});
+  const [ settings, setSettings ] = useState<Record<string, any>>({});
+
+  const { loading, refresh, ui, settings: settings2 } = useSettings(!item ? null : `/${item.type.toLowerCase()}/${item.name.toLowerCase()}`);
 
   useEffect(() => {
-    setLoading(true);
+    refresh();
   }, [location]);
 
   useEffect(() => {
-    if (!item) {
+    console.log({ item, ui, settings2 });
+    if (!item || !ui || !settings2) {
       setExampleData([]);
       return;
     }
-    getSocket(`/${item.type.toLowerCase()}/${item.name.toLowerCase()}` as any)
-      .emit('settings', (err: any, data: { [x: string]: any[]; }, ui: { [x: string]: any[]; }) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
 
-        const strippedCamelCaseCommand = camelCase(item.defaultValue.replace('!', ''));
+    const strippedCamelCaseCommand = camelCase(item.defaultValue.replace('!', ''));
 
-        if (ui[strippedCamelCaseCommand]) {
-          setExampleData(ui[strippedCamelCaseCommand]);
-        }
+    if (ui[strippedCamelCaseCommand]) {
+      setExampleData(ui[strippedCamelCaseCommand]);
+    }
 
-        // select all command related settings
-        const commandSettings: Record<string, any> = {};
-        for (const key of Object.keys(data)) {
-          if (key.startsWith(item.defaultValue)) {
-            commandSettings[key] = data[key];
-          }
-        }
-        setSettings(commandSettings);
-        setLoading(false);
-      });
-  }, [ item ]);
+    // select all command related settings
+    const commandSettings: Record<string, any> = {};
+    for (const key of Object.keys(settings2)) {
+      if (key.startsWith(item.defaultValue)) {
+        commandSettings[key] = settings2[key];
+      }
+    }
+    setSettings(commandSettings);
+  }, [ item, ui, settings2 ]);
 
   const generateExamples = useCallback((data: typeof exampleData[number], idx: number) => {
     if (!item && data.length > 0) {
@@ -118,8 +112,7 @@ export const useBotCommandsExample = (item: Commands | null) => {
                       user: {
                         id: user.id, username: user.login,
                       },
-                    },
-                    { headers: { authorization: `Bearer ${getAccessToken()}` } })
+                    })
                     .then((response) => {
                       setParsed(d => ({
                         ...d, [message]: response.data.data,

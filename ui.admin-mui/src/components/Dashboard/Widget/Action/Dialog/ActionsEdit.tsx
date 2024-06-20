@@ -7,15 +7,16 @@ import { Countdown, Marathon, Stopwatch } from '@sogebot/backend/dest/database/e
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
+import { useAtomValue } from 'jotai';
 import { cloneDeep } from 'lodash';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { CompactPicker } from 'react-color';
 import { v4 } from 'uuid';
 
+import { loggedUserAtom } from '../../../../../atoms';
 import { getContrastColor, getRandomColor } from '../../../../../colors';
 import getAccessToken from '../../../../../getAccessToken';
-import { getSocket } from '../../../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../../../hooks/useAppDispatch';
 import { setCountdowns, setMarathons, setRandomizers, setStopwatchs } from '../../../../../store/quickActionsSlice';
 import { isHexColor } from '../../../../../validators';
@@ -103,14 +104,10 @@ const DraggableComponent: React.FC<{
     setUpdateItem(update);
   }, [ updateItem ]);
 
-  const deleteItem = () => {
-    getSocket('/widgets/quickaction').emit('generic::deleteById', updateItem.id, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      setActions(orderBy([...actions.filter(o => o.id !== item.id)], 'order', 'asc'));
-      setEditingItem('');
-    });
+  const deleteItem = async () => {
+    await axios.delete(`/api/widgets/quickaction/${updateItem.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+    setActions(orderBy([...actions.filter(o => o.id !== item.id)], 'order', 'asc'));
+    setEditingItem('');
   };
 
   const handleReset = () => {
@@ -120,14 +117,12 @@ const DraggableComponent: React.FC<{
 
   const handleSubmit = () => {
     setIsSaving(true);
-    getSocket('/widgets/quickaction').emit('generic::save', updateItem, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      setIsSaving(false);
-      setActions(orderBy([...actions.filter(o => o.id !== item.id), updateItem], 'order', 'asc'));
-      setEditingItem('');
-    });
+    axios.post(`/api/widgets/quickaction`, updateItem, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        setIsSaving(false);
+        setActions(orderBy([...actions.filter(o => o.id !== item.id), updateItem], 'order', 'asc'));
+        setEditingItem('');
+      });
   };
 
   return (
@@ -325,7 +320,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
 }) => {
   const dispatch = useAppDispatch();
   const [ open, setOpen ] = React.useState(false);
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
 
   const { randomizers, countdowns, marathons, stopwatchs } = useAppSelector(state => state.quickaction);
@@ -350,11 +345,7 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     setActions(items);
 
     for (const item of items) {
-      getSocket('/widgets/quickaction').emit('generic::save', item, (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
+      axios.post(`/api/widgets/quickaction`, item);
     }
   };
 
@@ -362,36 +353,30 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     if (!user) {
       return;
     }
-    getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setActions(orderBy(items, 'order', 'asc'));
+    axios.get(`/api/widgets/quickaction`, { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
+      setActions(orderBy(data.data, 'order', 'asc'));
     });
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         dispatch(setRandomizers(data.data.map((o: any) => ({
           id: o.id, label: o.name,
         }))));
       });
 
-    getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get(`/api/registries/overlays`).then(({ data }) => {
       const _countdowns: { id: string, label: string }[] = [];
       const _marathons: { id: string, label: string }[] = [];
       const _stopwatches: { id: string, label: string }[] = [];
 
-      for (const item of result) {
-        _countdowns.push(...item.items.filter(o => o.opts.typeId === 'countdown').map(o => ({
+      for (const item of data.data) {
+        _countdowns.push(...item.items.filter((o: any) => o.opts.typeId === 'countdown').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Countdown).time, (o.opts as Countdown).showMilliseconds)}`,
         })));
-        _marathons.push(...item.items.filter(o => o.opts.typeId === 'marathon').map(o => ({
+        _marathons.push(...item.items.filter((o: any) => o.opts.typeId === 'marathon').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime(Math.max(Math.max((o.opts as Marathon).endTime, Date.now() - Date.now())), (o.opts as Marathon).showMilliseconds)}`,
         })));
-        _stopwatches.push(...item.items.filter(o => o.opts.typeId === 'stopwatch').map(o => ({
+        _stopwatches.push(...item.items.filter((o: any) => o.opts.typeId === 'stopwatch').map((o: any) => ({
           id: o.id, label: `${item.name} | ${GenerateTime((o.opts as Stopwatch).currentTime, (o.opts as Stopwatch).showMilliseconds)}`,
         })));
       }
@@ -428,13 +413,10 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       },
     };
 
-    getSocket('/widgets/quickaction').emit('generic::save', item, (err) => {
-      if (err) {
-        console.error(err);
-      }
+    axios.post(`/api/widgets/quickaction`, item).then(() => {
+      setActions([...actions, item]);
+      setEditingItem(item.id);
     });
-    setActions([...actions, item]);
-    setEditingItem(item.id);
   }, [ actions, user ]);
 
   return (

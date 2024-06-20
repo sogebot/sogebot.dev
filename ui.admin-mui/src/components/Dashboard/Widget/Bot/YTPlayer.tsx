@@ -1,6 +1,7 @@
 import { Delete, PlayArrow, PlaylistRemove, SkipNext, Stop } from '@mui/icons-material';
 import { Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip } from '@mui/material';
 import { currentSongType } from '@sogebot/backend/src/database/entity/song';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
@@ -30,9 +31,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
     if (confirm('Do you want to delete song request ' + requests.find(o => String(o.id) === id)?.title + ' from ' + requests.find(o => String(o.id) === id)?.username + '?')) {
       console.log('Removing => ' + id);
       setRequests(requests.filter(o => String(o.id) !== id));
-      getSocket('/systems/songs').emit('songs::removeRequest', id, () => {
-        return true;
-      });
+      axios.delete('/api/systems/songs/requests/' + id);
     }
   }, [requests]);
 
@@ -48,16 +47,11 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const refreshPlaylist = () => {
-    getSocket('/systems/songs').emit('current.playlist.tag', (err, tag: string) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCurrentTag(tag);
+    axios.get('/api/systems/songs/playlist/tag/current').then(({ data }) => {
+      setCurrentTag(data.data);
     });
-    getSocket('/systems/songs').emit('get.playlist.tags', (err, tags: string[]) => {
-      if (err) {
-        return console.error(err);
-      }
+    axios.get('/api/systems/songs/playlist/tags').then(({ data }) => {
+      const tags = data.data as string[];
       if (!tags.includes('general')) {
         setAvailableTags(['general', ...tags]);
       } else {
@@ -67,14 +61,12 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   };
 
   const next = () => {
-    getSocket('/systems/songs').emit('next');
+    axios.post('/api/systems/songs/?_action=next');
   };
 
   const nextAndRemoveFromPlaylist = () => {
     if (currentSong && currentSong.videoId) {
-      getSocket('/systems/songs').emit('delete.playlist', currentSong.videoId, () => {
-        return true;
-      });
+      axios.delete('/api/systems/songs/playlist/' + currentSong.videoId);
       next();
     }
   };
@@ -128,11 +120,8 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
 
   useIntervalWhen(async () => {
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::currentSong', (err, botCurrentSong: currentSongType) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
+      axios.get('/api/systems/songs/current').then(({ data }) => {
+        const botCurrentSong = data.data as currentSongType;
         if (currentSong.videoId !== botCurrentSong.videoId) {
           setCurrentSong(botCurrentSong);
         }
@@ -141,16 +130,12 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
     });
 
     await new Promise<void>(resolve => {
-      getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err, items) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
+      axios.get('/api/systems/songs/requests').then(({ data }) => {
         if (currentSong.videoId === null && autoplay) {
           next();
         }
-        if (!isEqual(requests, items)) {
-          setRequests(items);
+        if (!isEqual(requests, data.data)) {
+          setRequests(data.data);
         }
         resolve();
       });
@@ -162,7 +147,7 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
   }, 10000, true, true);
 
   useEffect(() => {
-    getSocket('/systems/songs').emit('set.playlist.tag', currentTag);
+    axios.post('/api/systems/songs/playlist/tag', { tag: currentTag });
   }, [currentTag]);
 
   const handlePlaylistTagChange = (event: SelectChangeEvent<string>) => {

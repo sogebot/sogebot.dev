@@ -1,10 +1,12 @@
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Checkbox, FormControlLabel, FormGroup, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControlLabel, FormGroup, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { dayjs } from '../../../helpers/dayjsHelper';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -70,22 +72,31 @@ const PageSettingsModulesSystemsPoints: React.FC<{
 
   const [cronIntervals, setCronIntervals] = useState<number[]>([]);
   const [cronError, setCronError] = useState('');
+  const confirm = useConfirm();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const manuallyResetPoints = React.useCallback(() => {
+    confirm({ description: 'This action is permanent!' })
+      .then(() => {
+        axios.post(`/api/systems/points/reset`)
+          .then(() => {
+            enqueueSnackbar('User points were reset.', { variant: 'success' });
+          });
+      }).catch(() => {});
+  }, [confirm]);
 
   useEffect(() => {
     if (settings?.reset.resetIntervalCron) {
-      getSocket(`/systems/points`).emit('parseCron', settings?.reset.resetIntervalCron[0], (err, intervals) => {
-        if (err) {
-          setCronIntervals([]);
-          if (err instanceof Error) {
-            setCronError(err.stack || err.message);
-          } else {
-            setCronError(String(err));
-          }
-        } else {
+      axios.post(`/api/systems/points/cron`, { cron: settings.reset.resetIntervalCron[0] })
+        .then(({ data }) => {
           setCronError('');
-          setCronIntervals(intervals);
-        }
-      });
+          setCronIntervals(data.data);
+        })
+        .catch(e => {
+          console.error(e);
+          setCronError(e.response.data.errors);
+          setCronIntervals([]);
+        });
     }
   }, [settings]);
 
@@ -148,10 +159,12 @@ const PageSettingsModulesSystemsPoints: React.FC<{
 
         {cronError.length > 0 && <Alert variant="filled" severity='error' >{ cronError }</Alert>}
       </Stack>
+
+      <Button sx={{ mt: 1 }} color='error' onClick={manuallyResetPoints}>Manually reset points</Button>
     </Paper>}
 
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0}>Save changes</LoadingButton>
+      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save} disabled={errors.length > 0 || cronError !== ''}>Save changes</LoadingButton>
     </Stack>
   </Box>
   );

@@ -1,11 +1,12 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -14,7 +15,7 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -64,27 +65,31 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
 
   return (loading ? null : <Box ref={ref} id="streamelements">
     <Typography variant='h2' sx={{ pb: 2 }}>StreamElements</Typography>
-    {settings && <Paper elevation={1} sx={{ p: 1 }}>
-      <Stack spacing={1}>
-        <TextField
-          {...TextFieldProps('jwtToken', { helperText: translate('integrations.streamelements.settings.jwtToken.help') })}
-          type="password"
-          label={translate('integrations.streamelements.settings.jwtToken.title')}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">
-              { settings.jwtToken[0].length > 0
-                ? <LoadingButton loading={validating} variant="contained" onClick={validate}>Validate</LoadingButton>
-                : ''
-              }
-            </InputAdornment>,
-          }}
-        />
-      </Stack>
-    </Paper>}
+    {scope.sensitive ? <>
+      {settings && <Paper elevation={1} sx={{ p: 1 }}>
+        <Stack spacing={1}>
+          <TextField
+            {...TextFieldProps('jwtToken', { helperText: translate('integrations.streamelements.settings.jwtToken.help') })}
+            type="password"
+            label={translate('integrations.streamelements.settings.jwtToken.title')}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                { settings.jwtToken[0].length > 0
+                  ? <LoadingButton loading={validating} variant="contained" onClick={validate}>Validate</LoadingButton>
+                  : ''
+                }
+              </InputAdornment>,
+            }}
+          />
+        </Stack>
+      </Paper>}
 
-    <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
-      <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
-    </Stack>
+      <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
+        <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving} onClick={save}>Save changes</LoadingButton>
+      </Stack>
+    </>
+      : <Alert severity='error'>You don't have access to any settings of Qiwi integration.</Alert>
+    }
   </Box>
   );
 };

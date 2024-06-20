@@ -1,8 +1,8 @@
 import { Button, Divider, FormControl, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { EmotesFireworks } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -14,9 +14,7 @@ export const EmotesFireworksSettings: React.FC<Props> = ({ model, onUpdate }) =>
   const { translate } = useTranslation();
 
   const test = () => {
-    getSocket('/core/emotes').emit('testFireworks', () => {
-      return true;
-    });
+    axios.post('/api/core/emotes?_action=testFireworks');
   };
   return <>
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>

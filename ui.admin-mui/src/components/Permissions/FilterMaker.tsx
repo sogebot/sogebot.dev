@@ -9,9 +9,10 @@ import { useTranslation } from '../../hooks/useTranslation';
 
 export const FilterMaker: React.FC<{
   model:    Permissions['filters'],
-  onChange: (filter: Permissions['filters']) => void
+  onChange: (filter: Permissions['filters']) => void,
+  disabled?: boolean,
 }> = ({
-  onChange, model,
+  onChange, model, disabled
 }) => {
   const { translate } = useTranslation();
   const [ items, setItems ] = useState(model);
@@ -59,7 +60,7 @@ export const FilterMaker: React.FC<{
       <FormLabel>{ translate('core.permissions.filters') }</FormLabel>
     </Divider>
     {items.map((o, idx) => <Stack direction='row' spacing={2} key={idx}>
-      <FormControl fullWidth variant='filled' hiddenLabel>
+      <FormControl fullWidth variant='filled' hiddenLabel disabled={disabled}>
         <Select
           value={o.type}
           onChange={(event) => updateFilter(idx, 'type', event.target.value as any)}
@@ -68,7 +69,7 @@ export const FilterMaker: React.FC<{
             .map((item, idx2) => <MenuItem key={`MenuItem${idx2}`} value={item}>{translate('core.permissions.' + item)}</MenuItem>)}
         </Select>
       </FormControl>
-      <FormControl fullWidth variant='filled' hiddenLabel>
+      <FormControl fullWidth variant='filled' hiddenLabel disabled={disabled}>
         <Select
           value={o.comparator}
           onChange={(event) => updateFilter(idx, 'comparator', event.target.value as any)}
@@ -78,6 +79,7 @@ export const FilterMaker: React.FC<{
       </FormControl>
 
       <TextField
+        disabled={disabled}
         hiddenLabel
         variant='filled'
         fullWidth
@@ -86,14 +88,14 @@ export const FilterMaker: React.FC<{
         onChange={event => updateFilter(idx, 'value', String(Number(event.target.value.length === 0 ? '0' : event.target.value)))}
       />
 
-      <IconButton color='error' sx={{
+      <IconButton disabled={disabled} color='error' sx={{
         height: 'fit-content', alignSelf: 'center',
       }} onClick={() => removeFilter(idx)}>
         <DeleteTwoTone/>
       </IconButton>
     </Stack>)}
     <Box sx={{ textAlign: 'center' }}>
-      <Button sx={{ width: 200 }} onClick={addNewFilter}>{ translate('core.permissions.addFilter') }</Button>
+      <Button disabled={disabled} sx={{ width: 200 }} onClick={addNewFilter}>{ translate('core.permissions.addFilter') }</Button>
     </Box>
   </>;
 };

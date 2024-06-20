@@ -1,10 +1,10 @@
 import { Box } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 
 const run = (type: 'onLoad' | 'onChange', contentWindow: Window, retry = 0) => {
   if (retry > 10000) {
@@ -56,16 +56,12 @@ export const HTMLItem: React.FC<Props<HTML>> = ({ item, active, width, height })
 
   useIntervalWhen(async () => {
     console.debug(`${Date().toLocaleString()} - refresh()`);
-    getSocket('/registries/overlays', true).emit('parse', item.html, (err, parsed) => {
-      if (err) {
-        console.error(err);
-      } else {
-        if (text !== parsed) {
-          setText(parsed);
-          onChange();
-        }
+    axios.post(`/api/registries/overlays/parse`, { text: item.html }).then(({ data }) => {
+      if (text !== data.data) {
+        setText(data.data);
+        onChange();
       }
-    });
+    }).catch(console.error);
   }, 2000, true, true);
 
   React.useEffect(() => {

@@ -5,21 +5,29 @@ import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const PermissionsListItem: React.FC<{ draggableProvided?: any, permission: Permissions }> = ({
   draggableProvided,
   permission,
 }) => {
+  const scope = useScope('permissions');
   const { id } = useParams();
   const { translate } = useTranslation();
+  const isActive = id === permission.id;
 
   return <Button key={permission.id}
     ref={draggableProvided?.innerRef}
     {...draggableProvided?.draggableProps}
     href={`/settings/permissions/edit/${permission.id}`}
-    selected={id === permission.id}>
-    {draggableProvided && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
+    sx={{
+      '& *': {
+        color: isActive ? 'black !important' : undefined,
+      }
+    }}
+    variant={isActive ? 'contained' : 'text'}>
+    {(draggableProvided && scope.manage) && <ListItemIcon sx={{ minWidth: '40px' }} {...draggableProvided.dragHandleProps}>
       <DragIndicatorTwoTone/>
     </ListItemIcon>}
     <ListItemIcon sx={{

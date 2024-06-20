@@ -3,13 +3,13 @@ import { IconButton, InputAdornment, Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayMarathonItem } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
-import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarathonItem }> = ({
@@ -47,11 +47,8 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
   }, [marathon, handleClick]);
 
   useEffect(() => {
-    getSocket('/registries/overlays').emit('generic::getOne', item.options.marathonId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-      setMarathon(result?.items.find(o => o.id === item.options.marathonId && o.opts.typeId === 'marathon')?.opts as Marathon ?? null);
+    axios.get(`/api/overlays/marathon/${item.options.marathonId}`).then(({ data }) => {
+      setMarathon(data.data?.items.find((o: any) => o.id === item.options.marathonId && o.opts.typeId === 'marathon')?.opts as Marathon ?? null);
     });
   }, [item.options.marathonId]);
 
@@ -59,9 +56,9 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
     setKey(Date.now());
     // get actual status of opened overlay
     if (marathon) {
-      getSocket('/overlays/marathon').emit('marathon::check', item.options.marathonId, (_err, data) => {
-        if (data && marathon) {
-          setTimestamp(Math.max(data.endTime, Date.now()));
+      axios.get(`/api/overlays/marathon/${item.options.marathonId}`).then(({ data }) => {
+        if (data.data && marathon) {
+          setTimestamp(Math.max(data.data.endTime, Date.now()));
         }
       });
     }
@@ -72,7 +69,7 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       console.log({
         value, timestamp, newValue: timestamp + value,
       });
-      getSocket('/overlays/marathon').emit('marathon::update::set', {
+      axios.post(`/api/overlays/marathon/${item.options.marathonId}`, {
         time: value,
         id:   item.options.marathonId,
       });

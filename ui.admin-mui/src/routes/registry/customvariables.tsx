@@ -7,7 +7,7 @@ import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Variable } from '@sogebot/backend/dest/database/entity/variable';
-import parse from 'html-react-parser';
+import axios from 'axios';
 import humanizeDuration from 'humanize-duration';
 import { capitalize } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -22,16 +22,17 @@ import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { CustomVariablesEdit } from '../../components/Form/CustomVariablesEdit';
 import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
 import { usePredicate } from '../../hooks/usePredicate';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
+  const scope = useScope('customvariables');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -56,32 +57,24 @@ const PageRegistryCustomVariables = () => {
   const [ evalsInProgress, setEvalsInProgress ] = useState<string[]>([]);
 
   const refresh = useCallback(async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/customvariables').emit('customvariables::list', (_, data) => {
-          setItems(data);
-          resolve();
-        });
-      }),
-    ]);
-    setLoading(false);
+    axios.get('/api/core/customvariables').then(({ data }) => {
+      setItems(data.data);
+      setLoading(false);
+    });
   }, []);
 
   const triggerEval = useCallback((item: Variable) => {
     setEvalsInProgress(v => [...v, item.id!]);
-    getSocket('/core/customvariables').emit('customvariables::runScript', item.id!, (err) => {
-      if (err) {
-        enqueueSnackbar('Script error. ' + err, { variant: 'error' });
-      } else {
-        enqueueSnackbar(parse(`Script&nbsp;<strong>${item.variableName}</strong>&nbsp;(${item.id}) finished successfully`), { variant: 'success' });
-        refresh();
-      }
-      setEvalsInProgress(v => v.filter(o => o !== item.id!));
-    });
+    axios.post(`/api/core/customvariables/${item.id}?_action=runScript`).then(() => {
+      enqueueSnackbar(<>Script&nbsp;<strong>{item.variableName}</strong>&nbsp; finished successfully</>, { variant: 'success' });
+      refresh();
+    })
+      .catch(err => enqueueSnackbar('Script error. ' + JSON.stringify(err.response.data), { variant: 'error' }))
+      .finally(() => setEvalsInProgress(v => v.filter(o => o !== item.id)));
   }, [enqueueSnackbar, refresh]);
 
   const { defaultStringForAttribute } = usePredicate();
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Variable & { additionalInfo: string }>([
+  const columnsTpl: ColumnMakerProps<Variable & { additionalInfo: string }> = [
     {
       columnName:     'variableName',
       translationKey: 'properties.variableName',
@@ -180,7 +173,10 @@ const PageRegistryCustomVariables = () => {
       },
       hidden: true,
     },
-    {
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push({
       columnName:  'actions',
       table:       { width: 200 },
       sorting:     { sortingEnabled: false },
@@ -204,8 +200,10 @@ const PageRegistryCustomVariables = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Variable & { additionalInfo: string }>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
@@ -217,28 +215,20 @@ const PageRegistryCustomVariables = () => {
       variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
     });
 
-    getSocket('/core/customvariables').emit('customvariables::save', clonedItem, (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) cloned.`, { variant: 'success' });
-      }
+    axios.post('/api/core/customvariables', clonedItem).then(() => {
+      enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) cloned.`, { variant: 'success' });
       refresh();
-    });
+    }).catch(err => enqueueSnackbar('Error cloning custom variable. ' + err.response.data, { variant: 'error' }));
   }, [refresh, enqueueSnackbar]);
 
   const deleteItem = useCallback((item: Variable) => {
-    return new Promise((resolve, reject) => {
-      getSocket('/core/customvariables').emit('customvariables::delete', item.id!, (err) => {
-        if (err) {
-          console.error(err);
-          reject();
-          return;
-        }
-        enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) deleted successfully.`, { variant: 'success' });
-        refresh();
-        resolve(true);
-      });
+    return new Promise((resolve) => {
+      axios.delete(`/api/core/customvariables/${item.id}`)
+        .then(() => {
+          enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) deleted successfully.`, { variant: 'success' });
+          refresh();
+          resolve(true);
+        });
     });
   }, [ enqueueSnackbar, refresh ]);
 
@@ -254,14 +244,7 @@ const PageRegistryCustomVariables = () => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
-        await new Promise<void>((resolve) => {
-          getSocket('/core/customvariables').emit('customvariables::delete', item.id!, (err) => {
-            if (err) {
-              console.error(err);
-            }
-            resolve();
-          });
-        });
+        await axios.delete(`/api/core/customvariables/${item.id}`);
       }
     }
     setItems(i => i.filter(item => !selection.includes(item.id!)));
@@ -272,12 +255,14 @@ const PageRegistryCustomVariables = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <LinkButton variant="contained" href='/registry/customvariables/create/'>Create new custom variable</LinkButton>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton variant="contained" href='/registry/customvariables/create/'>Create new custom variable</LinkButton>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -315,7 +300,7 @@ const PageRegistryCustomVariables = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 

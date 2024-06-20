@@ -2,14 +2,16 @@ import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, InputLabel, List, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import { xor } from 'lodash';
+import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
 
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SortableListItem } from '../../Sortable/SortableListItem';
@@ -23,8 +25,9 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, settingsInitial, handleChange } = useSettings('/integrations/discord' as any);
   const { permissions } = usePermissions();
@@ -34,46 +37,24 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
   const [ channels, setChannels ] = useState<Channel[]>([]);
 
   useEffect(() => {
-    refresh().then((data) => {
-      getSocket(`/integrations/discord`).emit('discord::getGuilds', (err2, guilds2: Guild[]) => {
-        console.groupCollapsed('discord::getGuilds');
-        console.log({ guilds2 });
-        console.groupEnd();
-
-        if (err2) {
-          return;
-        }
-
-        if (!guilds2.find((o: any) => String(o.value) === String(data.bot.guild[0]))) {
+    refresh().then((settingsData) => {
+      axios.get('/api/integrations/discord/guilds').then(({ data }) => {
+        if (!data.data.find((o: any) => String(o.value) === String(settingsData.bot.guild[0]))) {
           handleChange('bot.guild', '');
         }
         setGuilds([{
           value: '', text: `-- ${translate('integrations.discord.settings.noGuildSelected')} --`,
-        }, ...guilds2]);
+        }, ...data.data]);
       });
-      getSocket(`/integrations/discord`).emit('discord::getRoles', (err2, roles2: Guild[]) => {
-        if (err2) {
-          return;
-        }
-        console.groupCollapsed('discord::getRoles');
-        console.log({ roles2 });
-        console.groupEnd();
-        setRoles(roles2);
+      axios.get('/api/integrations/discord/roles').then(({ data }) => {
+        setRoles(data.data);
       });
-      getSocket(`/integrations/discord`).emit('discord::getChannels', (err2, channels2: Channel[]) => {
-        console.groupCollapsed('discord::getChannels');
-        console.log({ channels2 });
-        console.groupEnd();
-
-        if (err2) {
-          return;
-        }
-
-        if (!channels2.find((o: any) => String(o.value) === String(data?.bot.guild[0]))) {
+      axios.get('/api/integrations/discord/channels').then(({ data }) => {
+        if (!data.data.find((o: any) => String(o.value) === String(settingsData?.bot.guild[0]))) {
           handleChange('bot.listenAtChannels', ['']);
         }
-        handleChange('bot.listenAtChannels', data.bot.listenAtChannels[0].filter(Boolean));
-        setChannels(channels2);
+        handleChange('bot.listenAtChannels', settingsData.bot.listenAtChannels[0].filter(Boolean));
+        setChannels(data.data);
       });
     });
   }, [ handleChange, translate ]);
@@ -135,9 +116,22 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
     }
   }, [settings, handleChange]);
 
+  const authorize = useCallback((clientId: string) => {
+    const url = `https://discordapp.com/oauth2/authorize?&scope=bot&permissions=8&client_id=${clientId}`;
+    const popup = window.open(url, 'popup', 'popup=true,width=500,height=500,toolbar=no,location=no,status=no,menubar=no');
+    const checkPopup = setInterval(() => {
+      if (!popup || popup.closed) {
+        enqueueSnackbar('Bot is logging into your discord server.', { variant: 'success' });
+        setTimeout(() => refresh(), 5000);
+        clearInterval(checkPopup);
+        return;
+      }
+    }, 1000);
+  }, [ enqueueSnackbar, refresh ]);
+
   return (loading ? null : <Box ref={ref} id="discord">
     <Typography variant='h2' sx={{ pb: 2 }}>Discord</Typography>
-    {settings && settingsInitial && <Paper elevation={1} sx={{ p: 1 }}>
+    {settings && settingsInitial && scope.sensitive && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1} alignItems='center'>
         <TextField
           {...TextFieldProps('general.clientId')}
@@ -149,7 +143,9 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
           type="password"
           label={translate('integrations.discord.settings.token')}
         />
-        <Button disabled={settingsInitial.general.clientId[0].length === 0 || settingsInitial.general.token[0].length === 0} sx={{ width: 400 }}>
+        <Button onClick={() => {
+          authorize(TextFieldProps('general.clientId').value);
+        }} disabled={settingsInitial.general.clientId[0].length === 0 || settingsInitial.general.token[0].length === 0} sx={{ width: 400 }}>
           {(settingsInitial.general.clientId[0].length === 0 || settingsInitial.general.token[0].length === 0)
             ? translate('integrations.discord.settings.joinToServerBtnDisabled')
             : translate('integrations.discord.settings.joinToServerBtn') }

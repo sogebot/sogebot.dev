@@ -1,11 +1,13 @@
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Stack, SxProps, Tab } from '@mui/material';
 import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
+import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 
 import { DashboardWidgetBotDialogCustomURLsEdit } from './Dialog/CustomURLsEdit';
-import { getSocket } from '../../../../helpers/socket';
-import { useAppSelector } from '../../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../../atoms';
+import getAccessToken from '../../../../getAccessToken';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
 
@@ -13,7 +15,7 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
   sx,
 }) => {
   const [ custom, setCustom ] = React.useState<WidgetCustomInterface[]>([]);
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ tab, setTab ] = React.useState('1');
   const [ refreshTimestamp, setRefreshTimestamp ] = React.useState(Date.now());
 
@@ -21,11 +23,8 @@ export const DashboardWidgetBotCustom: React.FC<{ sx: SxProps }> = ({
     if (!user) {
       return;
     }
-    getSocket('/widgets/custom').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setCustom(items);
+    axios.get('/api/widgets/custom', { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
+      setCustom(data.data);
     });
     setTab('1');
   }, [user, refreshTimestamp]);

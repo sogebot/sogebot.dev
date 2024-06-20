@@ -3,6 +3,7 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import ContentPasteIcon from '@mui/icons-material/ContentPasteTwoTone';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -13,13 +14,14 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OBSWebsocketEdit } from '../../components/Form/OBSWebsocketEdit';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
+  const scope = useScope('integration');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -35,8 +37,8 @@ const PageRegistryCustomVariables = () => {
   const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/').emit('integration::obswebsocket::generic::getAll', (_, data) => {
-          setItems(data);
+        axios.get('/api/integrations/obswebsocket').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
       }),
@@ -49,7 +51,7 @@ const PageRegistryCustomVariables = () => {
     enqueueSnackbar(<div>Command&nbsp;<strong>{command} {idc}</strong>&nbsp;copied to clipboard.</div>);
   }, [ command, enqueueSnackbar ]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<OBSWebsocket & { command: string }>([
+  const columnTpl: ColumnMakerProps<OBSWebsocket & { command: string }> = [
     {
       columnName:     'name',
       translationKey: 'timers.dialog.name',
@@ -79,22 +81,23 @@ const PageRegistryCustomVariables = () => {
         ],
       },
     },
-  ]);
+  ];
+
+  if (!scope.manage) {
+    columnTpl.splice(columnTpl.length - 1, 1);
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<OBSWebsocket & { command: string }>(columnTpl);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: OBSWebsocket) => {
     return new Promise((resolve, reject) => {
-      getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err) => {
-        if (err) {
-          console.error(err);
-          reject();
-          return;
-        }
+      axios.delete(`/api/integrations/obswebsocket/${item.id}`).then(() => {
         enqueueSnackbar(`Custom variable ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
         refresh();
         resolve(true);
-      });
+      }).catch(reject);
     });
   }, [ enqueueSnackbar, refresh ]);
 
@@ -111,12 +114,7 @@ const PageRegistryCustomVariables = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id!, (err) => {
-            if (err) {
-              console.error(err);
-            }
-            resolve();
-          });
+          axios.delete(`/api/integrations/obswebsocket/${item.id}`).then(() => resolve());
         });
       }
     }
@@ -135,12 +133,14 @@ const PageRegistryCustomVariables = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <LinkButton variant="contained" href='/registry/obswebsocket/create/'>Create new OBSWebsocket script</LinkButton>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton variant="contained" href='/registry/obswebsocket/create/'>Create new OBSWebsocket script</LinkButton>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -178,7 +178,7 @@ const PageRegistryCustomVariables = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 

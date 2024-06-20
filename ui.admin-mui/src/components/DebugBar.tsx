@@ -1,9 +1,9 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
-import { getSocket } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { toggleDebugManager } from '../store/loaderSlice';
 
@@ -21,49 +21,27 @@ export default function DebugBar() {
     }
 
     if (connectedToServer) {
-      getSocket('/').emit('debug::get', (err, debugEnv) => {
-        if (err) {
-          return console.error(err);
-        }
-        console.log({ debug: debugEnv });
-        setDebug(debugEnv);
+      axios.get(`/api/core/debug`).then(({ data }) => {
+        console.log({ debug: data.data });
+        setDebug(data.data);
       });
     }
   }, [showDebugManager, connectedToServer]);
 
-  const setDebugEnv = async (debugInput: string, isRetry = false) => {
+  const setDebugEnv = async (debugInput: string) => {
     setSaving(true);
 
     console.groupCollapsed('debug::set');
 
     console.log('Sending debug', debugInput);
     await new Promise(resolve => {
-      getSocket('/').emit('debug::set', debugInput, () => {});
+      axios.post(`/api/core/debug`, { debug: debugInput });
       setTimeout(() => resolve(true), 200);
     });
-    console.log('Checking debug');
-    const result = await new Promise<boolean>((resolve, reject) => getSocket('/').emit('debug::get', (err, debugEnv) => {
-      if (err) {
-        return reject(err);
-      }
 
-      console.log('Received debug', { debugEnv });
-      resolve(debugEnv === debugInput);
-    }));
-
-    if (result) {
-      setSaving(false);
-      setOpen(false);
-      enqueueSnackbar('Debug set successfully', { variant: 'success' });
-      return;
-    } else {
-      if (isRetry) {
-        setSaving(false);
-        enqueueSnackbar('Failed to set debug', { variant: 'error' });
-        return console.error('Failed to set debug');
-      }
-      setDebugEnv(debugInput, true);
-    }
+    setSaving(false);
+    setOpen(false);
+    enqueueSnackbar('Debug set successfully', { variant: 'success' });
     console.groupEnd();
   };
 

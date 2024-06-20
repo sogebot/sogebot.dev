@@ -4,6 +4,7 @@ import { Link } from '@mui/icons-material';
 import { CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { Highlight } from '@sogebot/backend/dest/database/entity/highlight';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -11,11 +12,13 @@ import SimpleBar from 'simplebar-react';
 
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
 import { DateTypeProvider } from '../../components/Table/DateTypeProvider';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { timestampToString } from '../../helpers/timestampToString';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { useScope } from '../../hooks/useScope';
 
 const PageManageViewers = () => {
+  const scope = useScope('highlights');
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -96,15 +99,16 @@ const PageManageViewers = () => {
   }, [location.pathname]);
 
   const refresh = async () => {
-    return new Promise((resolve, reject) => {
-      getSocket('/systems/highlights').emit('generic::getAll', (err, _items) => {
-        if (err) {
-          return reject(err);
-        }
-        console.debug({ _items });
-        setItems(_items);
-        resolve(true);
-      });
+    return new Promise<void>((resolve, reject) => {
+      axios.get(`/api/systems/highlights`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        .then(({ data }) => {
+          if (data.status === 'success') {
+            setItems(data.data);
+            resolve();
+          } else {
+            reject(data.message);
+          }
+        });
     });
   };
 
@@ -112,17 +116,16 @@ const PageManageViewers = () => {
     await Promise.all(
       items.filter(o => o.expired).map((item) => {
         console.debug('Deleting', item);
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
           if (!item.id) {
             reject('Missing item id');
             return;
           }
-          getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err) => {
-            if (err) {
-              reject(err);
-            }
-            resolve(true);
-          });
+
+          axios.delete(`/api/systems/highlights/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => {
+              resolve();
+            });
         });
       }),
     );
@@ -132,11 +135,11 @@ const PageManageViewers = () => {
 
   return (
     <>
-      <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
+      {scope.manage && <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <Grid item>
           <ConfirmButton handleOk={() => deleteExpired()} variant='contained' color='error'>Delete Expired</ConfirmButton>
         </Grid>
-      </Grid>
+      </Grid>}
 
       {loading
         ? <CircularProgress color="inherit" sx={{

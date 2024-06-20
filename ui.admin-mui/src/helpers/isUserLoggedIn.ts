@@ -1,4 +1,10 @@
+import { jwtDecode } from 'jwt-decode';
+
 import { baseURL } from './getBaseURL';
+
+export const getUserLoggedIn = function() {
+  return JSON.parse(localStorage.getItem('cached-logged-user') || 'null');
+};
 
 export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin = true): Promise<any | boolean | null> {
   if (sessionStorage.connectedToServer === 'false') {
@@ -26,23 +32,19 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
   } else {
     try {
       if (mustBeAdmin) {
-        await new Promise<void>((resolve, reject) => {
-          const check = () => {
-            const userType = localStorage.getItem(`${localStorage.server}::userType`);
-            if (!userType) {
-              setTimeout(() => check(), 100);
-            }
-
-            if (userType) {
-              if (userType === 'admin') {
-                resolve();
-              } else {
-                reject('User doesn\'t have access to this endpoint');
-              }
-            }
+        // check if user have dashboard access
+        const token = jwtDecode(localStorage.getItem(`${localStorage.server}::accessToken`) ?? '') as any;
+        console.log('Scopes', JSON.stringify(token.privileges.scopes));
+        if (token.privileges.haveAdminPrivileges || token.privileges.scopes.includes('dashboard:read') || token.privileges.scopes.includes('dashboard:manage')) {
+          user.bot_scopes = {
+            ...user.bot_scopes ?? {},
+            [localStorage.server]: token.privileges.scopes
           };
-          check();
-        });
+          localStorage.setItem('cached-logged-user', JSON.stringify(user));
+          return user;
+        } else {
+          throw new Error('User doesn\'t have access to this endpoint');
+        }
       }
     } catch(e) {
       console.error(e);
@@ -52,16 +54,24 @@ export const isUserLoggedIn = async function (mustBeLogged = true, mustBeAdmin =
             console.warn('Network error, using cached logged user', user);
             return user;
           }
-        }
-        if (e === 'User doesn\'t have access to this endpoint') {
-          window.location.assign(baseURL + '/credentials/login#error=must+be+caster');
-        } else {
-          console.log('Redirecting, user code expired');
-          if (window.location.href.includes('popout')) {
-            window.location.assign(baseURL + '/credentials/login#error=popout+must+be+logged');
-          } else {
-            window.location.assign(baseURL + '/credentials/login');
+          if (e.message && typeof e.message === 'string' && e.message == 'User doesn\'t have access to this endpoint' && user) {
+            console.error('Clearing tokens');
+            delete localStorage[`${localStorage.server}::accessToken`];
+            delete localStorage[`${localStorage.server}::refreshToken`];
+            console.error(`Redirecting to ${baseURL}#error=access_denied`);
+            window.location.assign(baseURL + '#error=access_denied');
+            return;
           }
+        }
+        console.log('Redirecting, user code expired');
+        if (window.location.href.includes('popout')) {
+          console.error(`Redirecting to ${baseURL}/credentials/login#error=popout+must+be+logged`);
+          window.location.assign(baseURL + '/credentials/login#error=popout+must+be+logged');
+          return;
+        } else {
+          console.error(`Redirecting to ${baseURL}/credentials/login`);
+          window.location.assign(baseURL + '/credentials/login');
+          return;
         }
       }
     }

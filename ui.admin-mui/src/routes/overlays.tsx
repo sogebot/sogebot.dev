@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 
 import { Box } from '@mui/material';
 import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -42,6 +43,11 @@ export default function Overlays() {
   const [ server, setServer ] = React.useState<null | string>(null);
   const [ id, setId ] = React.useState<null | string>(null);
 
+  React.useEffect(() => {
+    if (server) {
+      axios.defaults.baseURL = server;
+    }
+  }, [ server ]);
   document.getElementsByTagName('body')[0].style.backgroundColor = 'transparent';
 
   React.useEffect(() => {
@@ -85,7 +91,7 @@ export default function Overlays() {
   React.useEffect(() => {
     if (server && id) {
       Promise.all([
-        new Promise(resolve => getSocket('/', true).emit('translations', (translations) => {
+        new Promise(resolve => getSocket('/').emit('translations', (translations: any) => {
           dispatch(setTranslation(translations));
           resolve(true);
         })),
@@ -97,11 +103,8 @@ export default function Overlays() {
             resolve(true);
             return;
           }
-          getSocket('/registries/overlays', true).emit('generic::getOne', id, (err, result) => {
-            if (err) {
-              return console.error(err);
-            }
-            setOverlay(result);
+          axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+            setOverlay(data.data);
             resolve(true);
           });
         }),
@@ -144,7 +147,7 @@ export default function Overlays() {
         {item.opts.typeId === 'randomizer' && <RandomizerItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'hypetrain' && <HypeTrainItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
         {item.opts.typeId === 'wordcloud' && <WordcloudItem key={item.id} id={item.id} groupId={id} item={item.opts} height={item.height} width={item.width} active />}
-        {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/overlays/plugin/${item.opts.pluginId}/${item.opts.overlayId}`} scrolling='0' frameBorder={0} style={{
+        {item.opts.typeId === 'plugin' && <iframe title="plugin iframe" src={`${server}/api/overlays/plugins/${item.opts.pluginId}/${item.opts.overlayId}?_raw`} scrolling='0' frameBorder={0} style={{
           width: `100%`, height: `100%`,
         }} />}
       </Box>,

@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -7,7 +8,6 @@ import { useIntervalWhen } from 'rooks';
 import * as workerTimers from 'worker-timers';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { toBoolean } from '../../helpers/toBoolean';
 import { loadFont } from '../Accordion/Font';
@@ -36,13 +36,9 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
       localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(model.currentTime));
       localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
       localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(enabled));
-      if (model.isPersistent && Date.now() - lastSave > 10) {
+      if (model.isPersistent && Date.now() - lastSave > 1000) {
         lastSave = Date.now();
-        getSocket('/registries/overlays', true).emit('overlays::tick', {
-          id,
-          groupId,
-          millis: Number(model.currentTime),
-        });
+        axios.post(`/api/registries/overlays/tick/${groupId}/${id}/${Number(model.currentTime)}`);
       }
     }
   }, [ enabled, threadId, model ]);
@@ -55,8 +51,8 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
   }, [enabled, model]);
   const update = () => {
     if (localStorage.getItem(`stopwatch-controller-${id}`) !== threadId) {
-      console.debug('Secondary');
-      console.debug(localStorage.getItem(`stopwatch-controller-${id}-enabled`));
+      // console.debug('Secondary');
+      // console.debug(localStorage.getItem(`stopwatch-controller-${id}-enabled`));
 
       if (Date.now() - lastTimeSync > 1000 || !latestEnabled.current) {
       // get when it was set to get offset
@@ -64,7 +60,7 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
           ? new Date(localStorage.getItem(`stopwatch-controller-${id}-currentTimeAt`) || Date.now()).getTime()
           : Date.now();
         if (lastTimeSync === currentTimeAt) {
-          console.debug('No update, setting as controller');
+          // console.debug('No update, setting as controller');
           localStorage.setItem(`stopwatch-controller-${id}`, threadId);
         }
         lastTimeSync = currentTimeAt;
@@ -76,31 +72,29 @@ export const StopwatchItem: React.FC<Props<Stopwatch>> = ({ item, active, id, gr
 
       return;
     }
-    console.debug('Primary');
-    getSocket('/overlays/stopwatch', true)
-      .emit('stopwatch::update', {
-        id:        id,
-        isEnabled: latestEnabled.current,
-        time:      latestModel.current.currentTime,
-      }, (_err: null, data?: { isEnabled: boolean | null, time: string | null }) => {
-        if (data) {
-          if (data.isEnabled !== null) {
-            setModel(o => ({
-              ...o, isStartedOnSourceLoad: data.isEnabled!,
-            }));
-          }
-
-          localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(latestModel.current.currentTime));
-          localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
-          localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(latestEnabled.current));
-
-          if (data.time !== null) {
-            setModel(o => ({
-              ...o, currentTime: Number(data.time!),
-            }));
-          }
+    // console.debug('Primary');
+    axios.post(`/api/registries/overlays/tick/${groupId}/${id}`, {
+      isEnabled: latestEnabled.current,
+      time:      latestModel.current.currentTime,
+    }).then(({ data }) =>  {
+      if (data.data) {
+        if (data.data.isEnabled !== null) {
+          setModel(o => ({
+            ...o, isStartedOnSourceLoad: data.data.isEnabled!,
+          }));
         }
-      });
+
+        localStorage.setItem(`stopwatch-controller-${id}-currentTime`, String(latestModel.current.currentTime));
+        localStorage.setItem(`stopwatch-controller-${id}-currentTimeAt`, new Date().toISOString());
+        localStorage.setItem(`stopwatch-controller-${id}-enabled`, String(latestEnabled.current));
+
+        if (data.data.time !== null) {
+          setModel(o => ({
+            ...o, currentTime: Number(data.data.time!),
+          }));
+        }
+      }
+    });
   };
 
   React.useEffect(() => {

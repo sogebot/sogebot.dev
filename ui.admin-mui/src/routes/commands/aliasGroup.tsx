@@ -2,6 +2,7 @@ import { Column } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import { Button, CircularProgress, Dialog, Grid, Stack } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,12 +14,15 @@ import EditButton from '../../components/Buttons/EditButton';
 import { AliasGroupEdit } from '../../components/Form/AliasGroupEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
+import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageCommandsAliasGroup = () => {
+  const scope = useScope('alias');
+
   const { translate } = useTranslation();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -55,43 +59,49 @@ const PageCommandsAliasGroup = () => {
   }, [ groupsSettings, groups ]);
 
   const deleteItem = useCallback((item: AliasGroup) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.name, () => {
-      enqueueSnackbar(`Alias group ${item.name} deleted successfully. You can still see this group if it is being activelly used by aliases.`, { variant: 'success' });
-      refresh();
-    });
+    axios.delete(`/api/systems/groups/alias/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Alias group ${item.name} deleted successfully. You can still see this group if it is being activelly used by aliases.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
-  const columns = useMemo<Column[]>(() => [
-    {
-      name:  'name',
-      title: capitalize(translate('group')),
-    },
-    {
-      name:         'used',
-      title:        capitalize(translate('isUsed')),
-      getCellValue: (row) => groups.includes(row.name),
-    },
-    {
-      name:         'filter',
-      title:        capitalize(translate('filter')),
-      getCellValue: (row) => row.options.filter === null ? 'No filter set' : row.options.filter,
-    },
-    {
-      name:         'permission',
-      title:        translate('permission'),
-      getCellValue: (row) => row.options.permission === null ? 'No permission set' : getPermissionName(row.options.permission, permissions || []),
-    },
-    {
-      name:         'actions',
-      title:        ' ',
-      getCellValue: (row) => [
-        <Stack direction="row" key="row">
-          <EditButton href={'/commands/alias/group/edit/' + row.name}/>
-          <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
-        </Stack>,
-      ],
-    },
-  ], [ permissions, translate, deleteItem, groups ]);
+  const columns = useMemo<Column[]>(() => {
+    const clmns: Column[] = [
+      {
+        name:  'name',
+        title: capitalize(translate('group')),
+      },
+      {
+        name:         'used',
+        title:        capitalize(translate('isUsed')),
+        getCellValue: (row) => groups.includes(row.name),
+      },
+      {
+        name:         'filter',
+        title:        capitalize(translate('filter')),
+        getCellValue: (row) => row.options.filter === null ? 'No filter set' : row.options.filter,
+      },
+      {
+        name:         'permission',
+        title:        translate('permission'),
+        getCellValue: (row) => row.options.permission === null ? 'No permission set' : getPermissionName(row.options.permission, permissions || []),
+      }
+    ];
+    if (scope.manage) {
+      clmns.push({
+        name:         'actions',
+        title:        ' ',
+        getCellValue: (row) => [
+          <Stack direction="row" key="row">
+            <EditButton href={'/commands/alias/group/edit/' + row.name}/>
+            <DeleteButton key='delete' onDelete={() => deleteItem(row)} />
+          </Stack>,
+        ],
+      });
+    }
+    return clmns;
+  }, [ permissions, translate, deleteItem, groups ]);
 
   useEffect(() => {
     refresh().then(() => setLoading(false));
@@ -101,24 +111,22 @@ const PageCommandsAliasGroup = () => {
     console.log('Refresh');
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`/api/systems/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              setItems(data.data);
+            }
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
+          });
       }),
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
+        axios.get(`/api/systems/groups/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              setGroupsSettings(data.data);
+            }
             resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };

@@ -1,7 +1,7 @@
 import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 
 import { useAppSelector } from './useAppDispatch';
-import { getSocket } from '../helpers/socket';
 
 let snd: HTMLAudioElement | undefined;
 speechSynthesis.getVoices(); // force loading of voices
@@ -61,7 +61,7 @@ export const useTTS = () => {
   | ElevenLabsSpeakProps) => {
     const { text, service, volume, voice } = props;
 
-    if (window.responsiveVoice === undefined) {
+    if (window.responsiveVoice === undefined && service === TTSService.RESPONSIVEVOICE) {
       await loadResponsiveVoice();
     }
 
@@ -74,7 +74,7 @@ export const useTTS = () => {
             resolve();
           } else if (service === TTSService.ELEVENLABS) {
             const { clarity, stability, exaggeration } = props as ElevenLabsSpeakProps;
-            getSocket('/core/tts').emit('speak', {
+            axios.post('/api/core/tts/speak', {
               key: props.key ?? '',
               service: service,
               clarity,
@@ -83,16 +83,14 @@ export const useTTS = () => {
               volume: volume,
               voice: voice,
               text: text,
-            }, (err, b64mp3) => {
-              if (err) {
-                log(new Date().toISOString(), err);
-                return;
-              }
-              snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
+            }).then(({ data }) => {
+              snd = new Audio(`data:audio/mp3;base64,` + data.data);
               snd.volume = volume;
               snd.play();
               snd.onended = () => setTimeout(() => resolve(), 500);
               snd.onpause = () => setTimeout(() => resolve(), 500);
+            }).catch((err) => {
+              log(new Date().toISOString(), err);
             });
             return;
           } else if (service === TTSService.RESPONSIVEVOICE) {
@@ -105,7 +103,7 @@ export const useTTS = () => {
             });
             return;
           } else if (service === TTSService.GOOGLE) {
-            getSocket('/core/tts').emit('speak', {
+            axios.post('/api/core/tts/speak', {
               key: props.key ?? '',
               service: service,
               rate: props.rate,
@@ -113,16 +111,14 @@ export const useTTS = () => {
               volume: volume,
               voice: voice,
               text: text,
-            }, (err, b64mp3) => {
-              if (err) {
-                log(new Date().toISOString(), err);
-                return;
-              }
-              snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
+            }).then(({ data }) => {
+              snd = new Audio(`data:audio/mp3;base64,` + data.data);
               snd.volume = volume;
               snd.play();
               snd.onended = () => setTimeout(() => resolve(), 500);
               snd.onpause = () => setTimeout(() => resolve(), 500);
+            }).catch((err) => {
+              log(new Date().toISOString(), err);
             });
           } else if (service === TTSService.SPEECHSYNTHESIS) {
             const utterance = new SpeechSynthesisUtterance(text);

@@ -54,7 +54,7 @@ export const ClipsItem: React.FC<Props<Clips>> = ({ item, active }) => {
   }, [active, item]);
 
   React.useEffect(() => {
-    getSocket('/overlays/clips', true).on('clips', (data) => {
+    getSocket('/overlays/clips' as any).on('clips', (data: any) => {
       setClips(val => [...val, ...data.clips]);
     });
 

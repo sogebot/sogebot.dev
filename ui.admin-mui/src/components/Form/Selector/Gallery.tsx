@@ -1,12 +1,12 @@
 import { CollectionsTwoTone, Folder } from '@mui/icons-material';
 import { Box, Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography } from '@mui/material';
 import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
+import axios from 'axios';
 import { uniq } from 'lodash';
 import { enqueueSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
-import { getSocket } from '../../../helpers/socket';
 import theme from '../../../theme';
 import { AudioButton } from '../../Audio/Button';
 import defaultImage from '../../Overlay/assets/alerts/default.gif';
@@ -89,11 +89,8 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
     setFolder('/');
 
     setLoading(true);
-    getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    axios.get('/api/overlays/gallery').then(({ data }) => {
+      const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items
         .filter(item => {

@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import { ChatTwoTone, NotificationsActiveTwoTone, NotificationsOffTwoTone, OpenInNewTwoTone, SplitscreenTwoTone, UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Button, Card, Divider, IconButton, Menu, MenuItem, Paper, Popover, Slider, Stack, Tab, Typography } from '@mui/material';
+import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import PopupState, { bindMenu, bindPopover, bindTrigger } from 'material-ui-popup-state';
@@ -249,13 +250,13 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
 
       if ((banText ?? '').length > 0) {
         const messageEl = document.getElementById(banMenuForId);
-        const username = messageEl?.dataset.username ?? '';
+        const userName = messageEl?.dataset.username ?? '';
         banText = banText?.toLowerCase();
         if (banText === 'delete' || banText === 'ban' || banText === '!autoban') {
-          getSocket('/widgets/chat').emit('moderation', { username, type: banText.replace('!', '') as any, messageId: banMenuForId });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: banText.replace('!', ''), messageId: banMenuForId });
         } else {
           const timeout = [...firstHalfBanTimes, ...secondHalfBanTimes].find(val => val.title.toLowerCase() === banText?.toLowerCase())?.value;
-          getSocket('/widgets/chat').emit('moderation', { username, type: 'timeout', messageId: banMenuForId, timeout });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: 'timeout', messageId: banMenuForId, timeout });
         }
       }
 
@@ -391,14 +392,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const scrollBarRef = React.useRef(null);
 
   React.useEffect(() => {
-    getSocket('/widgets/chat').emit('room', (err, val) => {
-      if (err) {
-        return console.error(err);
-      }
-      setRoom(val);
+    axios.get('/api/widgets/chat/room').then(({ data }) => {
+      setRoom(data.data);
     });
 
-    getSocket('/widgets/chat').on('message-removed' as any, (data: any) => {
+    getSocket('/widgets/chat' as any).on('message-removed' as any, (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }
@@ -406,7 +404,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
       setBannedMessages(val => [...val, data.msgId]);
     });
 
-    getSocket('/widgets/chat').on('ban' as any, (data: any) => {
+    getSocket('/widgets/chat' as any).on('ban' as any, (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }
@@ -418,7 +416,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
       setBannedMessages(val => [...val, ...messagesToBan]);
     });
 
-    getSocket('/widgets/chat').on('bot-message' as any, (data: any) => {
+    getSocket('/widgets/chat' as any).on('bot-message' as any, (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }
@@ -426,7 +424,7 @@ export const DashboardWidgetTwitch: React.FC = () => {
       setMessages(val => [...val, data]);
     });
 
-    getSocket('/overlays/chat').on('message', (data: any) => {
+    getSocket('/overlays/chat' as any).on('message', (data: any) => {
       if (isAlreadyProcessed(data.id)) {
         return;
       }

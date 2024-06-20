@@ -4,6 +4,7 @@ import type { UserInterface } from '@entity/user';
 import { Backdrop, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -16,8 +17,8 @@ import { ButtonsDeleteBulk } from '../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { RowDetail } from '../../components/Table/Viewers/RowDetail';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -196,24 +197,9 @@ const PageManageViewers = () => {
           sortTable.orderBy = 'userName';
         }
 
-        getSocket('/core/users').emit('find.viewers', {
-          state:   v4(),
-          order:   sortTable,
-          page:    currentPage,
-          perPage: pageSize,
-          filter:  filters as any,
-        }, (err, items_, _count) => {
-          console.log({
-            err, items_, _count,
-          });
-          if (err) {
-            console.error(err);
-            resolve();
-            return;
-          }
-
-          setTotalCount(_count);
-          setItems(items_);
+        axios.get(`/api/core/users?state=${v4()}&order=${JSON.stringify(sortTable)}&page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+          setTotalCount(data.data.count);
+          setItems(data.data.viewers);
           resolve();
         });
       }),
@@ -222,7 +208,7 @@ const PageManageViewers = () => {
   }, [pageSize, currentPage, sorting, filters]);
 
   const deleteItem = useCallback((item: UserInterface) => {
-    getSocket('/core/users').emit('viewers::remove', item.userId, () => {
+    axios.delete(`/api/core/users/${item.userId}`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).finally(() => {
       enqueueSnackbar(`User ${item.userName}#${item.userId} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -248,14 +234,7 @@ const PageManageViewers = () => {
     for (const selected of selection) {
       const item = items.find(o => o.userId === selected);
       if (item) {
-        await new Promise<void>((resolve, reject) => {
-          getSocket('/core/users').emit('viewers::remove', item.userId, (err) => {
-            if (err) {
-              reject(console.error(err));
-            }
-            resolve();
-          });
-        });
+        await axios.delete(`/api/core/users/${item.userId}`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
       }
     }
     setItems(i => i.filter(item => !selection.includes(item.userId)));
@@ -264,37 +243,37 @@ const PageManageViewers = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const resetPoints = () => {
-    getSocket('/core/users').emit('viewers::resetPointsAll', () => {
+    axios.post('/core/users?_action=resetPointsAll').then(() => {
       refresh();
     });
   };
 
   const resetWatchedTime = () => {
-    getSocket('/core/users').emit('viewers::resetWatchedTimeAll', () => {
+    axios.post('/core/users?_action=resetWatchedTimeAll').then(() => {
       refresh();
     });
   };
 
   const resetMessages = () => {
-    getSocket('/core/users').emit('viewers::resetMessagesAll', () => {
+    axios.post('/core/users?_action=resetMessagesAll').then(() => {
       refresh();
     });
   };
 
   const resetBits = () => {
-    getSocket('/core/users').emit('viewers::resetBitsAll', () => {
+    axios.post('/core/users?_action=resetBitsAll').then(() => {
       refresh();
     });
   };
 
   const resetTips = () => {
-    getSocket('/core/users').emit('viewers::resetTipsAll', () => {
+    axios.post('/core/users?_action=resetTipsAll').then(() => {
       refresh();
     });
   };
 
   const resetSubgifts = () => {
-    getSocket('/core/users').emit('viewers::resetSubgiftsAll', () => {
+    axios.post('/core/users?_action=resetSubgiftsAll').then(() => {
       refresh();
     });
   };

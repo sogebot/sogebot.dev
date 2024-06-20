@@ -39,7 +39,7 @@ export const DashboardStatsTwitchStatus: React.FC = () => {
 
   const loadCustomVariableValue = (variable: string) => {
     return new Promise<string>((resolve) => {
-      getSocket('/').emit('custom.variable.value', variable, (err, value) => {
+      getSocket('/').emit('custom.variable.value', variable, (err: any, value: any) => {
         if (err) {
           console.error(err);
         }

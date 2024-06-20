@@ -1,13 +1,13 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, Fade, FormControl, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
 import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Commands, schema } from '../../classes/Commands';
-import { getSocket } from '../../helpers/socket';
 import { useBotCommandsExample } from '../../hooks/useBotCommandsExample';
 import { useBotCommandsSpecificSettings } from '../../hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -53,6 +53,7 @@ export const BotCommandEdit: React.FC<{
   }, [ item ]);
 
   const loading = useMemo(() => {
+    console.log({ loading1, loading2, loading3 });
     return loading1 || loading2 || loading3;
   }, [ loading1, loading2, loading3 ]);
 
@@ -86,11 +87,10 @@ export const BotCommandEdit: React.FC<{
 
     setSaving(true);
     await handleBotCommandSpecificSettingsSave();
-    getSocket('/core/general').emit('generic::setCoreCommand', item, () => {
+    axios.post('/api/core/general/commands', item).then(() => {
       enqueueSnackbar('Bot command saved.', { variant: 'success' });
-      setSaving(false);
       navigate(`/commands/botcommands/edit/${item.id}`);
-    });
+    }).finally(() => setSaving(false));
   }, [item, enqueueSnackbar, navigate, handleBotCommandSpecificSettingsSave]);
 
   return(<>

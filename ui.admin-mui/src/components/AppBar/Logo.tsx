@@ -24,7 +24,7 @@ export const Logo: React.FC = () => {
       return;
     }
 
-    getSocket('/', true).emit('version', async (version: string) => {
+    getSocket('/').emit('version', async (version: string) => {
       try {
         const { response } = await new Promise<{ response: Record<string, any> }>((resolve) => {
           const request = new XMLHttpRequest();

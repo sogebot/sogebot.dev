@@ -50,7 +50,7 @@ const PageSettingsTranslations = () => {
     setLoading(true);
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/').emit('responses.get', null, (data) => {
+        getSocket('/').emit('responses.get', null, (data: any) => {
           console.groupCollapsed('translations::responses.get');
           console.log(data);
           console.groupEnd();

@@ -2,13 +2,13 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, Grid, LinearProgress, TextField } from '@mui/material';
 import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const createInitialItem = async () => {
@@ -72,29 +72,27 @@ export const OBSWebsocketEdit: React.FC<{
     }
     setScriptIsRunning(true);
 
-    getSocket('/').emit('integration::obswebsocket::trigger', { code: item.code }, (err: any) => {
-      if (err) {
+    axios.post(`/api/integrations/obswebsocket?_action=trigger`, { code: item.code })
+      .then(() => enqueueSnackbar('Test done!', { variant: 'success' }))
+      .catch(err => {
         console.error({ err });
         enqueueSnackbar('Something went wrong. Check the logs.', { variant: 'error' });
-      } else {
-        enqueueSnackbar('Test done!', { variant: 'success' });
-      }
-      setScriptIsRunning(false);
-    });
+      })
+      .finally(() => setScriptIsRunning(false));
   }, [ item, enqueueSnackbar ]);
 
   useEffect(() => {
     setLoading(true);
     if (id) {
-      getSocket('/').emit('integration::obswebsocket::generic::getOne', id, (err, data: any) => {
-        if (err) {
+      axios.get(`/api/integrations/obswebsocket/${id}`)
+        .then(({ data }) => {
+          setItem(data.data);
+          setLoading(false);
+        })
+        .catch(() => {
           enqueueSnackbar('Something went wrong during data loading.');
           navigate(`/registry/obswebsocket/?server=${JSON.parse(localStorage.server)}`);
-        } else {
-          setItem(data);
-          setLoading(false);
-        }
-      });
+        });
     } else {
       createInitialItem()
         .then(setItem)
@@ -111,20 +109,21 @@ export const OBSWebsocketEdit: React.FC<{
       return;
     }
     setSaving(true);
-    getSocket('/').emit('integration::obswebsocket::generic::save', item, (err, it) => {
-      enqueueSnackbar('OBS Websocket script saved.', { variant: 'success' });
-      // replace url and add cid to item
-      setItem(() => {
-        item.id = it.id;
-        return item;
+    axios.post(`/api/integrations/obswebsocket`, item)
+      .then(({ data }) => {
+        enqueueSnackbar('OBS Websocket script saved.', { variant: 'success' });
+        // replace url and add cid to item
+        setItem(() => {
+          item.id = data.data.id;
+          return item;
+        });
+        const asPath = `/registry/obswebsocket/edit/${data.data.id}?server=${JSON.parse(localStorage.server)}`;
+        window.history.replaceState(null, '', asPath);
+        if (onSave) {
+          onSave();
+        }
+        setSaving(false);
       });
-      const asPath = `/registry/obswebsocket/edit/${it.id}?server=${JSON.parse(localStorage.server)}`;
-      window.history.replaceState(null, '', asPath);
-      if (onSave) {
-        onSave();
-      }
-      setSaving(false);
-    });
   }, [ item, onSave, enqueueSnackbar ]);
 
   return(<>

@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Alert, Autocomplete, Box, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
@@ -39,12 +39,21 @@ type ServerSelectProps = {
   passive?: boolean;
 };
 
+let error: string | null = null;
+if (window.location) {
+  const hash = window.location.hash;
+  error = hash.replace('#error=', '');
+  if (error.trim().length === 0) {
+    error = null;
+  }
+}
+
 export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
   const dispatch = useAppDispatch();
   const query = useQuery();
   const isMobile = useMobile();
   const isSSL = useSSL();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [isInitial, setIsInitial] = React.useState(true);
 
@@ -58,6 +67,24 @@ export const ServerSelect: React.FC<ServerSelectProps> = (props) => {
 
   React.useEffect(() => {
     checkIfDashboardIsValid();
+
+    if (error) {
+      if (error === 'access_denied') {
+        enqueueSnackbar({
+          message: `Access to dashboard was denied. Please try again.`,
+          variant: 'error',
+          autoHideDuration: 30000,
+          action: (key) => (
+            <Button sx={{
+              color: 'white',
+              borderColor: 'white',
+            }} onClick={() => {
+              closeSnackbar(key);
+            }}>Dismiss</Button>
+          )
+        });
+      }
+    }
   }, []);
 
   React.useEffect(() => {

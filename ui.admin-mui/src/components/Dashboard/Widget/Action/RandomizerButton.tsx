@@ -4,22 +4,22 @@ import { Box } from '@mui/system';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import React, { MouseEventHandler, useCallback, useMemo, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
+import { loggedUserAtom } from '../../../../atoms';
 import { getContrastColor } from '../../../../colors';
 import { SECOND } from '../../../../constants';
 import getAccessToken from '../../../../getAccessToken';
-import { getSocket } from '../../../../helpers/socket';
-import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { isHexColor } from '../../../../validators';
 
 const lastUpdateAt = new Map<string, number>();
 export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerItem }> = ({
   item,
 }) => {
-  const { user } = useAppSelector((state: any) => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ running, setRunning ] = useState(false);
 
   const [ randomizers, setRandomizers ] = useState<Randomizer[]>([]);
@@ -38,20 +38,14 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
     const increment = mouseOffsetX > boxWidth / 2;
 
     if (increment) {
-      axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer/${currentRandomizer.id}/spin`, null, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+      axios.post(`/api/registries/randomizer/${currentRandomizer.id}/spin`, null, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       setRunning(true);
       setTimeout(() => {
         setRunning(false);
       }, 5000);
     } else {
-      getSocket('/widgets/quickaction').emit('trigger', {
-        user: {
-          userId: user.id, userName: user.login,
-        },
-        id:    item.id,
-        value: !currentRandomizer.isShown,
-      });
-      axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: !currentRandomizer.isShown });
+      axios.get(`/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then((res: any) => setRandomizers(res.data.data));
 
     }
@@ -68,7 +62,7 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
 
     lastUpdateAt.set(item.id, Date.now());
 
-    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((res: any) => setRandomizers(res.data.data));
   }, 1000, true, true);
 

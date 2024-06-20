@@ -40,7 +40,7 @@ export const CommandsEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Commands().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Commands()._schema });
 
   const handleValueChange = useCallback(<T extends keyof Commands>(key: T, value: Commands[T]) => {
     if (!item) {
@@ -76,13 +76,13 @@ export const CommandsEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`${JSON.parse(localStorage.server)}/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      axios.get(`/api/systems/customcommands/${id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then(({ data }) => {
-          data.data.responses = data.data.responses.map((o: any) => ({
+          data.data.data.responses = data.data.data.responses.map((o: any) => ({
             ...o, id: v4(), // force random id to ensure that we can always drag
           }));
-          setItem(data.data);
-          setCount(data.count);
+          setItem(data.data.data);
+          setCount(data.data.data.count);
           setLoading(false);
         });
     } else {
@@ -105,7 +105,7 @@ export const CommandsEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+    axios.post(`/api/systems/customcommands`,
       {
         ...item, count,
       },

@@ -1,13 +1,18 @@
-import { CookieTwoTone, PestControlTwoTone } from '@mui/icons-material';
+import { CookieTwoTone, KeyTwoTone, PestControlTwoTone } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Button, Chip, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { Avatar, Button, Chip, Divider, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { Box } from '@mui/system';
+import axios from 'axios';
+import { useAtomValue } from 'jotai';
+import { useConfirm } from 'material-ui-confirm';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIntervalWhen } from 'rooks';
 
+import { loggedUserAtom } from '../../atoms';
+import getAccessToken from '../../getAccessToken';
 import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
@@ -23,8 +28,9 @@ export const UserMenu: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useMobile();
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
 
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const { configuration } = useAppSelector(state => state.loader);
   const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
   const [ logged, setLogged ] = React.useState(false);
@@ -42,7 +48,7 @@ export const UserMenu: React.FC = () => {
 
   const logout = () => {
     delete localStorage['cached-logged-user'];
-    const socket = getSocket('/core/users', true);
+    const socket = getSocket('/core/users' as any);
     socket.emit('logout', {
       accessToken:  localStorage.getItem(`${localStorage.server}::accessToken`),
       refreshToken: localStorage.getItem(`${localStorage.server}::refreshToken`),
@@ -50,7 +56,7 @@ export const UserMenu: React.FC = () => {
     localStorage[`${localStorage.server}::accessToken`] = '';
     localStorage[`${localStorage.server}::refreshToken`] = '';
     localStorage[`${localStorage.server}::userType`] = 'unauthorized';
-    window.location.assign(`${baseURL}/credentials/login#error=logged+out`);
+    window.location.assign(`${baseURL}`);
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,28 +75,25 @@ export const UserMenu: React.FC = () => {
     if (typeof user === 'undefined' || user === null) {
       return;
     }
-    getSocket('/core/users', true).emit('viewers::findOneBy', user.id, (err, recvViewer) => {
-      if (err) {
-        return console.error(err);
-      }
-      if (recvViewer) {
+    axios.get('/api/core/users/' + user.id, { headers: { 'Authorization': 'Bearer ' + getAccessToken() } })
+      .then(({ data }) => {
+        console.log('User data refreshed', data.data);
+        setViewer(data.data);
         if (!logged) {
-          console.log('Logged in as', recvViewer);
           setLogged(true);
         }
-        console.log({ recvViewer });
-        setViewer(recvViewer);
-      } else {
+      }).catch(() => {
         console.error('Cannot find user data, try to write something in chat to load data');
         setViewer(null);
-      }
-    });
+      });
   }, [user, logged]);
 
   useEffect(() => {
     refresh();
   }, [ refresh ]);
   useIntervalWhen(() => refresh(), 60000, true, true);
+
+  const scopes = user?.bot_scopes ?? { [JSON.stringify(localStorage.server)]: [] };
 
   return (
     <>
@@ -112,7 +115,10 @@ export const UserMenu: React.FC = () => {
       >
         <Box sx={{ px: 2 }}>
           <><Typography>{user.display_name}</Typography>
-            <Typography variant='subtitle2' color={theme.palette.info.main}>{viewer?.permission.name}</Typography>
+            <Stack direction='row' sx={{ maxWidth: '200px' }}>
+              <Typography variant='subtitle2' color={theme.palette.info.main}>{viewer?.permission.name}
+              </Typography>
+            </Stack>
             {viewerIs(viewer)
               .map(o => {
                 return (
@@ -133,6 +139,19 @@ export const UserMenu: React.FC = () => {
                 right:    `45px`,
                 top:      `25px`,
               }}><CookieTwoTone/></IconButton>
+            </Tooltip>
+            <Tooltip title="Scopes">
+              <IconButton onClick={(() =>
+                confirm({
+                  title: 'Your current scopes list',
+                  description: scopes[localStorage.server].join(', '),
+                  hideCancelButton: true,
+                }))} sx={{
+                position: 'absolute',
+                right:    `85px`,
+                top:      `25px`,
+              }}><KeyTwoTone/>
+              </IconButton>
             </Tooltip>
             <Divider sx={{ pt: 1 }}/>
 

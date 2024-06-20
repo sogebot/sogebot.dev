@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useRefElement } from 'rooks';
 
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -12,7 +13,7 @@ const PageSettingsModulesIntegrationsLastFM: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
 
   const { settings, loading, refresh, save, saving, errors, TextFieldProps, handleChange } = useSettings('/integrations/lastfm' as any);
@@ -35,15 +36,17 @@ const PageSettingsModulesIntegrationsLastFM: React.FC<{
     <Typography variant='h2' sx={{ pb: 2 }}>Last.fm</Typography>
     {settings && <Paper elevation={1} sx={{ p: 1 }}>
       <Stack spacing={1}>
-        <TextField
-          {...TextFieldProps('apiKey')}
-          type="password"
-          label={translate('integrations.lastfm.settings.apiKey')}
-        />
-        <TextField
-          {...TextFieldProps('username')}
-          label={translate('integrations.lastfm.settings.username')}
-        />
+        {scope.sensitive && <>
+          <TextField
+            {...TextFieldProps('apiKey')}
+            type="password"
+            label={translate('integrations.lastfm.settings.apiKey')}
+          />
+          <TextField
+            {...TextFieldProps('username')}
+            label={translate('integrations.lastfm.settings.username')}
+          />
+        </>}
         <FormControl>
           <FormLabel id="demo-settings-notify-label">{translate('systems.songs.settings.notify')}</FormLabel>
           <RadioGroup

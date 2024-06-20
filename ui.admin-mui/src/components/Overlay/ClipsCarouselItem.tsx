@@ -36,9 +36,9 @@ export const ClipsCarouselItem: React.FC<Props<ClipsCarousel>> = ({ item, active
 
   React.useEffect(() => {
     setTimeout(() => {
-      getSocket('/overlays/clipscarousel', true).emit('clips', {
+      getSocket('/overlays/clipscarousel').emit('clips', {
         customPeriod: model?.customPeriod ?? 31, numOfClips: model?.numOfClips ?? 20,
-      }, (err, data) => {
+      }, (err: any, data: any) => {
         if (err) {
           console.error(err);
           return;

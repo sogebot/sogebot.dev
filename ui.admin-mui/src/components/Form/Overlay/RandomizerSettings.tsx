@@ -19,7 +19,7 @@ export const RandomizerSettings: React.FC<Props> = () => {
   const randomizerId = useAppSelector(getRandomizerId);
 
   const refresh = React.useCallback(async () => {
-    axios.get(`${JSON.parse(localStorage.server)}/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.get(`/api/registries/randomizer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(({ data }) => {
         setRandomizers(data.data);
       });

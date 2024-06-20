@@ -1,12 +1,12 @@
 import { Box } from '@mui/material';
 import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
 import { Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -24,15 +24,8 @@ export const EventlistItem: React.FC<Props<Eventlist>> = ({ item, active }) => {
   }, [ events ]);
 
   useIntervalWhen(() => {
-    getSocket('/overlays/eventlist', true).emit('getEvents', {
-      ignore: item.ignore,
-      limit:  item.count,
-    }, (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      setEvents(orderBy(data, 'timestamp', item.order).filter(o => !o.isHidden).map((o) => {
+    axios.get('/api/overlays/eventlist?ignore=' + JSON.stringify(item.ignore) + '&limit=' + item.count).then(({ data }) => {
+      setEvents(orderBy(data.data, 'timestamp', item.order).filter(o => !o.isHidden).map((o) => {
         const values = JSON.parse(o.values_json);
         if (o.event === 'resub') {
           return {

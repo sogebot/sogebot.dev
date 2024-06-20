@@ -24,7 +24,6 @@ export const classes  = {
   parent: {
     position:   'relative',
     zIndex:     0,
-    cursor:     'pointer',
     userSelect: 'none',
   },
   greyColor:  { color: grey[700] },

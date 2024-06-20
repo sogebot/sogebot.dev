@@ -1,7 +1,7 @@
 import { mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
-import { Backdrop, Box, Button,  IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Adjust, DeleteTwoTone, Diamond, Favorite, Mic, MicOff, MonetizationOn, NotificationsActive, NotificationsOff, Redeem, RefreshTwoTone, SkipNext, TheaterComedy, VolumeOff, VolumeUp } from '@mui/icons-material';
+import { Backdrop, Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { blue, green, grey, indigo, lightBlue, lime, orange, pink, yellow } from '@mui/material/colors';
 import axios from 'axios';
 import parse from 'html-react-parser';
@@ -19,11 +19,13 @@ import { AlertQueueController } from './Events/AlertQueue';
 import { alertQueueAtom } from '../../../../atoms';
 import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
-import { getSocket } from '../../../../helpers/socket';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
+import { useScope } from '../../../../hooks/useScope';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
 import { classes } from '../../../styles';
+
+let timestamp = 0;
 
 export const DotDivider: React.FC = () => {
   return (
@@ -42,18 +44,19 @@ function blockquote (event: any) {
 
 function emitSkipAlertEvent () {
   console.log('Skipping current alert');
-  getSocket('/widgets/eventlist').emit('skip');
+  axios.post(`/api/widgets/eventlist/?_action=skip`);
 }
 
 function resendAlert (id: string) {
   console.log(`resendAlert => ${id}`);
-  getSocket('/widgets/eventlist').emit('eventlist::resend', id);
+  axios.post(`/api/widgets/eventlist/${id}?_action=resend`);
 }
 
 function RenderRow(props: any) {
   const [hover, setHover] = useState(false);
   const { translate } = useTranslation();
   const { configuration } = useAppSelector((state: any) => state.loader);
+  const scope = useScope('dashboard');
 
   const queue = useAtomValue(alertQueueAtom);
   const currentQueue = queue.findIndex(q => {
@@ -93,7 +96,11 @@ function RenderRow(props: any) {
 
   return (
     <ListItem component="div" divider={true} dense key={props.item.id} sx={classes.parent} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <ListItemIcon>
+      <ListItemIcon sx={{
+        opacity: hover ? 0 : 1,
+        transition: 'opacity 0.3s',
+        minWidth: '40px',
+      }}>
         {props.item.event === 'follow' && <Favorite htmlColor={pink[400]}/>}
         {props.item.event === 'rewardredeem' && <Adjust htmlColor={orange[300]}/>}
         {props.item.event === 'tip' && <MonetizationOn htmlColor={green[300]}/>}
@@ -104,7 +111,9 @@ function RenderRow(props: any) {
         {props.item.event === 'subcommunitygift' && <Redeem htmlColor={indigo[300]}/>}
         {props.item.event === 'cheer' && <Diamond htmlColor={yellow[300]}/>}
       </ListItemIcon>
-      <ListItemText primary={<Box>
+      <ListItemText sx={{
+        margin: 0, padding: 0
+      }} primary={<Box>
         {props.item.event === 'rewardredeem' && <>
           <Typography component="span" fontWeight={'bold'} pr={0.5}>{ JSON.parse(props.item.values_json).titleOfReward }</Typography>
           <DotDivider/>
@@ -120,21 +129,28 @@ function RenderRow(props: any) {
       </Box>
       } secondary={blockquote(props.item).length > 0 && <Typography component="span" variant="body2" fontStyle='italic' color={grey[500]}>{ parse(blockquote(props.item)) }</Typography>}/>
 
-      {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, {
-        style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'),
-      }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
-      {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
+      <Box sx={{
+        opacity: hover ? 0 : 1,
+        transition: 'opacity 0.3s',
+        minWidth: '40px',
+        textAlign: 'right'
+      }}>
+        {props.item.event === 'tip' && <Typography color={green[300]} fontSize={'1.2rem'}>{ Intl.NumberFormat(configuration.lang, {
+          style: 'currency', currency: get(JSON.parse(props.item.values_json), 'currency', 'USD'),
+        }).format(get(JSON.parse(props.item.values_json), 'amount', '0')) }</Typography>}
+        {props.item.event === 'cheer' && <Typography color={orange[300]} fontSize={'1.2rem'}>{ get(JSON.parse(props.item.values_json), 'bits', '0') }</Typography>}
+      </Box>
 
       {currentQueue > -1 && <Typography color={grey[500]} fontSize={'0.8rem'} sx={{ pl: 1 }}>#{currentQueue + 1}</Typography>}
 
-      <Backdrop open={hover} sx={classes.backdrop}>
+      {scope.manage && <Backdrop open={hover} sx={{ ...classes.backdrop, backgroundColor: 'inherit', overflow: 'hidden' }}>
         <Stack direction='row' sx={{
-          justifyContent: 'flex-end', width: '100%', px: 2,
+          justifyContent: 'space-between', width: '100%', px: 1,
         }} spacing={3}>
-          {currentQueue === -1 && <Button variant='contained' onClick={() => resendAlert(props.item.id)}>Resend Alert</Button>}
+          {currentQueue === -1 && <IconButton color='light' onClick={() => resendAlert(props.item.id)}><RefreshTwoTone/></IconButton>}
           <IconButton color='error' onClick={() => props.onRemove(props.item.id)}><DeleteTwoTone/></IconButton>
         </Stack>
-      </Backdrop>
+      </Backdrop>}
     </ListItem>
   );
 }
@@ -142,6 +158,7 @@ function RenderRow(props: any) {
 export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
   const [ events, setEvents ] = React.useState<any[]>([]);
   const { events: widgetSettings } = useAppSelector((state: any) => state.page.widgets);
+  const scope = useScope('dashboard');
 
   const [ status, setStatus ] = React.useState({
     areAlertsMuted: false,
@@ -179,9 +196,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
 
   function removeEvent (id: string) {
     console.log(`removeEvent => ${id}`);
-    getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
-      setEvents(evs => [...evs.filter(o => o.id !== id)]);
-    });
+    axios.delete(`/api/widgets/eventlist/${id}`);
+    setEvents(evs => [...evs.filter(o => o.id !== id)]);
   }
 
   const handleStatusChange = (type: keyof typeof status, value: boolean) => {
@@ -191,8 +207,8 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     });
   };
   React.useEffect(() => {
-    getSocket('/registries/alerts').emit('alerts::settings', null, (data) => {
-      setStatus(data);
+    axios.get('/api/registries/alerts/settings').then(({ data }) => {
+      setStatus(data.data);
       setStatusLoaded(true);
     });
   }, []);
@@ -201,13 +217,11 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     if (!statusLoaded) {
       return;
     }
-    getSocket('/registries/alerts').emit('alerts::settings', status, () => {
-      return;
-    });
+    axios.post('/api/registries/alerts/settings', status);
   }, [ status, statusLoaded ]);
 
   const filteredEvents = React.useMemo(() => {
-    return events.filter(event => {
+    const filtered = events.filter(event => {
       const follow = widgetSettings.showFollows && event.event === 'follow';
       const raid = widgetSettings.showRaids && event.event === 'raid';
       const bit = widgetSettings.showBits && event.event === 'cheer';
@@ -248,19 +262,34 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
             || subcommunitygift)
             && queued;
     });
+    return filtered.sort((a, b) => b.timestamp - a.timestamp);
   }, [ events, widgetSettings ]);
 
+  const refresh = () => {
+    let url = `/api/widgets/eventlist?timestamp=${timestamp}`;
+    if (timestamp === 0) {
+      url = `/api/widgets/eventlist?count=100`;
+    }
+    axios.get(url, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(({ data }) => {
+        if (data.data.length === 0) {
+          return;
+        }
+        setEvents(ev => {
+          return [...ev, ...data.data];
+        });
+      });
+    timestamp = Date.now();
+
+  };
+
   React.useEffect(() => {
-    getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
-    getSocket('/widgets/eventlist').on('update', (values: any) => {
-      setEvents(values);
-    });
-    getSocket('/widgets/eventlist').emit('eventlist::get', 100);
+    refresh();
   }, []);
 
   useIntervalWhen(() => {
-    getSocket('/widgets/eventlist').emit('eventlist::get', 100);
-  }, 60000, true, true);
+    refresh();
+  }, 2000, true, true);
 
   return (<Box sx={{
     height: '100%', ...props.sx,
@@ -269,33 +298,35 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
       borderBottom: 1, borderColor: 'divider', backgroundColor: theme.palette.grey[900], display: 'flex'
     }}>
       <DashboardWidgetBotDialogFilterEvents/>
-      <Tooltip title="Skip Alert">
-        <IconButton onClick={emitSkipAlertEvent}><SkipNext/></IconButton>
-      </Tooltip>
-      <Tooltip title={status.isTTSMuted ? 'TTS disabled!' : 'TTS enabled!'}>
-        <IconButton onClick={() => handleStatusChange('isTTSMuted', !status.isTTSMuted)}>
-          {!status.isTTSMuted && <Mic/>}
-          {status.isTTSMuted && <MicOff/>}
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={status.isSoundMuted ? 'Sound is disabled!' : 'Sound is enabled!'}>
-        <IconButton onClick={() => handleStatusChange('isSoundMuted', !status.isSoundMuted)}>
-          {!status.isSoundMuted && <VolumeUp/>}
-          {status.isSoundMuted && <VolumeOff/>}
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={status.areAlertsMuted ? 'Alerts are muted!' : 'Alerts are enabled!'}>
-        <IconButton onClick={() => handleStatusChange('areAlertsMuted', !status.areAlertsMuted)}>
-          {!status.areAlertsMuted && <NotificationsActive/>}
-          {status.areAlertsMuted && <NotificationsOff/>}
-        </IconButton>
-      </Tooltip>
+      {scope.manage && <>
+        <Tooltip title="Skip Alert">
+          <IconButton onClick={emitSkipAlertEvent}><SkipNext/></IconButton>
+        </Tooltip>
+        <Tooltip title={status.isTTSMuted ? 'TTS disabled!' : 'TTS enabled!'}>
+          <IconButton onClick={() => handleStatusChange('isTTSMuted', !status.isTTSMuted)}>
+            {!status.isTTSMuted && <Mic/>}
+            {status.isTTSMuted && <MicOff/>}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={status.isSoundMuted ? 'Sound is disabled!' : 'Sound is enabled!'}>
+          <IconButton onClick={() => handleStatusChange('isSoundMuted', !status.isSoundMuted)}>
+            {!status.isSoundMuted && <VolumeUp/>}
+            {status.isSoundMuted && <VolumeOff/>}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={status.areAlertsMuted ? 'Alerts are muted!' : 'Alerts are enabled!'}>
+          <IconButton onClick={() => handleStatusChange('areAlertsMuted', !status.areAlertsMuted)}>
+            {!status.areAlertsMuted && <NotificationsActive/>}
+            {status.areAlertsMuted && <NotificationsOff/>}
+          </IconButton>
+        </Tooltip>
 
-      <Box sx={{ width: '100%' }}/>
-      {queue.map((q, i) => <AlertQueueController key={q.id} queue={q} index={i}/>)}
-      <Tooltip title="Add new queue">
-        <IconButton onClick={createNewQueue}><TrayPlus/></IconButton>
-      </Tooltip>
+        <Box sx={{ width: '100%' }}/>
+        {queue.map((q, i) => <AlertQueueController key={q.id} queue={q} index={i}/>)}
+        <Tooltip title="Add new queue">
+          <IconButton onClick={createNewQueue}><TrayPlus/></IconButton>
+        </Tooltip>
+      </>}
     </Box>
     <SimpleBar style={{ maxHeight: 'calc(100% - 40px)' }} autoHide={false}>
       <List disablePadding>

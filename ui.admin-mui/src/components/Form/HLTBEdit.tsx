@@ -14,7 +14,7 @@ import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useValidator } from '../../hooks/useValidatorZod';
+import { useValidator } from '../../hooks/useValidator';
 
 export const HLTBEdit: React.FC<{
   items: HowLongToBeatGame[]
@@ -29,7 +29,7 @@ export const HLTBEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new HowLongToBeatGame().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new HowLongToBeatGame()._schema });
 
   const handleValueChange = useCallback(<T extends keyof HowLongToBeatGame>(key: T, value: HowLongToBeatGame[T]) => {
     if (!item) {
@@ -77,7 +77,7 @@ export const HLTBEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/hltb/${item.id}`,
+    axios.post(`/api/systems/howlongtobeat/${item.id}`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then(() => {
@@ -174,7 +174,7 @@ export const HLTBEdit: React.FC<{
         setIsSearching(false);
       } else {
         console.log('Searching for ' + inputValue);
-        getSocket('/').emit('getGameFromTwitch', inputValue, (values) => {
+        getSocket('/').emit('getGameFromTwitch', inputValue, (values: any) => {
           cachedSearch.set(inputValue, values.sort());
           setOptions(values.sort());
           setIsSearching(false);

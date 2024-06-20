@@ -3,6 +3,7 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, VisibilityOffTwoTone, VisibilityTwoTone } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -19,15 +20,18 @@ import { AliasEdit } from '../../components/Form/AliasEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { GroupTypeProvider } from '../../components/Table/GroupTypeProvider';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
+import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsAlias = () => {
+  const scope = useScope('alias');
+
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
@@ -40,7 +44,7 @@ const PageCommandsAlias = () => {
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Alias>([
+  const columnsTpl: ColumnMakerProps<Alias> = [
     {
       columnName: 'alias', filtering: { type: 'string' },
     },
@@ -75,7 +79,10 @@ const PageCommandsAlias = () => {
     {
       columnName: 'enabled', table: { align: 'center' }, filtering: { type: 'boolean' },
     },
-    {
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push({
       columnName:  'actions',
       translation: ' ',
       table:       { width: 130 },
@@ -88,8 +95,10 @@ const PageCommandsAlias = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Alias>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter<Alias>(useFilterSetup);
 
@@ -98,10 +107,11 @@ const PageCommandsAlias = () => {
   }, [items]);
 
   const deleteItem = useCallback((item: Alias) => {
-    getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-      enqueueSnackbar(`Alias ${item.alias} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.delete(`/api/systems/alias/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .finally(() => {
+        enqueueSnackbar(`Alias ${item.alias} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   useEffect(() => {
@@ -111,24 +121,22 @@ const PageCommandsAlias = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
-          if (err) {
+        axios.get(`/api/systems/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              setItems(data.data);
+            }
             resolve();
-            return console.error(err);
-          }
-          setItems(res);
-          resolve();
-        });
+          });
       }),
       new Promise<void>(resolve => {
-        getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
-          if (err) {
+        axios.get(`/api/systems/groups/alias`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          .then(({ data }) => {
+            if (data.status === 'success') {
+              setGroupsSettings(data.data);
+            }
             resolve();
-            return console.error(err);
-          }
-          setGroupsSettings(res);
-          resolve();
-        });
+          });
       }),
     ]);
   };
@@ -183,9 +191,8 @@ const PageCommandsAlias = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/systems/alias').emit('generic::save', item, () => {
-            resolve();
-          });
+          axios.post(`/api/systems/alias`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => resolve());
         });
       }
     }
@@ -221,9 +228,10 @@ const PageCommandsAlias = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
-            resolve();
-          });
+          axios.delete(`/api/systems/alias/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+            .finally(() => {
+              resolve();
+            });
         });
       }
     }
@@ -243,49 +251,51 @@ const PageCommandsAlias = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='alias'/>
-        <Grid item>
+        {scope.manage && <Grid item>
           <LinkButton sx={{ width: 300 }} variant="contained" href='/commands/alias/create/'>Create new alias</LinkButton>
-        </Grid>
+        </Grid>}
         <Grid item>
           <LinkButton sx={{ width: 200 }} variant="contained" href='/commands/alias/group/' color='secondary'>Group settings</LinkButton>
         </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility on">
-            <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Set visibility off">
-            <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
-        </Grid>
-        <Grid item>
-          <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <Tooltip arrow title="Set visibility on">
+              <Button disabled={!bulkCanVisOn} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('visible', true)}><VisibilityTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Set visibility off">
+              <Button disabled={!bulkCanVisOff} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('visible', false)}><VisibilityOffTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('enabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsGroupBulk disabled={bulkCount === 0} onSelect={groupId => bulkToggleAttribute('group', groupId)} groups={groups}/>
+          </Grid>
+          <Grid item>
+            <ButtonsPermissionsBulk disabled={bulkCount === 0} onSelect={permId => bulkToggleAttribute('permission', permId)}/>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -331,13 +341,13 @@ const PageCommandsAlias = () => {
               selection={selection}
               onSelectionChange={setSelection}
             />
-            <IntegratedSelection/>
+            {scope.manage && <IntegratedSelection/>}
             <Table columnExtensions={tableColumnExtensions}/>
             <TableHeaderRow showSortingControls/>
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 

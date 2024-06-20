@@ -5,6 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, CircularProgress, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
 import { SpotifySongBan } from '@sogebot/backend/dest/database/entity/spotify';
+import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,13 +15,14 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
-import { getSocket } from '../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
+import { useScope } from '../../../hooks/useScope';
 import { setBulkCount } from '../../../store/appbarSlice';
 
 const PageCommandsSpotifySongBan = () => {
+  const scope = useScope('integrations');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -66,10 +68,11 @@ const PageCommandsSpotifySongBan = () => {
   const { element: filterElement, filters } = useFilter<SpotifySongBan>(useFilterSetup);
 
   const deleteItem = useCallback((item: SpotifySongBan) => {
-    getSocket('/integrations/spotify').emit('spotify::deleteBan', item.spotifyUri, () => {
-      enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
-      refresh();
-    });
+    axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+      .finally(() => {
+        enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   useEffect(() => {
@@ -79,15 +82,11 @@ const PageCommandsSpotifySongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/integrations/spotify').emit('spotify::getAllBanned', {}, (err, res) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
+        axios.get('/api/integrations/spotify/ban').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
-      }),
+      })
     ]);
   };
 
@@ -100,9 +99,8 @@ const PageCommandsSpotifySongBan = () => {
       const item = items.find(o => o.spotifyUri === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/integrations/spotify').emit('spotify::deleteBan', item.spotifyUri, () => {
-            resolve();
-          });
+          axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+            .finally(resolve);
         });
       }
     }
@@ -119,16 +117,16 @@ const PageCommandsSpotifySongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        getSocket('/integrations/spotify').emit('spotify::addBan', value, (err) => {
-          setIsSaving(false);
-          if (err) {
-            enqueueSnackbar(String(err), { variant: 'error' });
-          } else {
+        axios.post('/api/integrations/spotify/?_action=addBan', { spotifyUri: value })
+          .then(() => {
             enqueueSnackbar('Song added to ban list.', { variant: 'success' });
             refresh();
             close();
-          }
-        });
+          })
+          .catch(err => {
+            enqueueSnackbar(String(err.response.data.messages), { variant: 'error' });
+          })
+          .finally(() => setIsSaving(false));
       }
     }
   }, [ input, enqueueSnackbar ]);
@@ -137,50 +135,52 @@ const PageCommandsSpotifySongBan = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert integration='spotify'/>
-        <Grid item>
-          <PopupState variant="popover" popupId="demo-popup-popover">
-            {(popupState) => (
-              <div>
-                <Button sx={{ width: 200 }} variant="contained" {...bindTrigger(popupState)}>
+        {scope.manage && <>
+          <Grid item>
+            <PopupState variant="popover" popupId="demo-popup-popover">
+              {(popupState) => (
+                <div>
+                  <Button sx={{ width: 200 }} variant="contained" {...bindTrigger(popupState)}>
                   Add new song to ban
-                </Button>
-                <Popover
-                  {...bindPopover(popupState)}
-                  anchorOrigin={{
-                    vertical:   'bottom',
-                    horizontal: 'left',
-                  }}
-                  transformOrigin={{
-                    vertical:   'top',
-                    horizontal: 'left',
-                  }}
-                >
-                  <TextField
-                    ref={input}
-                    id="add-song-ban-input"
-                    label="spotifyUri"
-                    variant="filled"
-                    sx={{
-                      minWidth:               '400px',
-                      '& .MuiInputBase-root': { borderRadius: 0 },
-                    }}/>
-                  <LoadingButton
-                    color="primary"
-                    loading={isSaving}
-                    variant="contained"
-                    sx={{
-                      height:       '56px',
-                      borderRadius: 0,
+                  </Button>
+                  <Popover
+                    {...bindPopover(popupState)}
+                    anchorOrigin={{
+                      vertical:   'bottom',
+                      horizontal: 'left',
                     }}
-                    onClick={() => handleBanSongAdd(popupState.close)}>Add</LoadingButton>
-                </Popover>
-              </div>
-            )}
-          </PopupState>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+                    transformOrigin={{
+                      vertical:   'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <TextField
+                      ref={input}
+                      id="add-song-ban-input"
+                      label="spotifyUri"
+                      variant="filled"
+                      sx={{
+                        minWidth:               '400px',
+                        '& .MuiInputBase-root': { borderRadius: 0 },
+                      }}/>
+                    <LoadingButton
+                      color="primary"
+                      loading={isSaving}
+                      variant="contained"
+                      sx={{
+                        height:       '56px',
+                        borderRadius: 0,
+                      }}
+                      onClick={() => handleBanSongAdd(popupState.close)}>Add</LoadingButton>
+                  </Popover>
+                </div>
+              )}
+            </PopupState>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -215,7 +215,7 @@ const PageCommandsSpotifySongBan = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
     </>

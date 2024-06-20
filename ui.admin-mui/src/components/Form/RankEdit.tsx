@@ -25,7 +25,7 @@ export const RankEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Rank().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Rank()._schema });
 
   const handleValueChange = useCallback(<T extends keyof Rank>(key: T, value: Rank[T]) => {
     if (!item) {
@@ -60,7 +60,7 @@ export const RankEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(JSON.parse(localStorage.server))}/api/systems/ranks`,
+    axios.post(`/api/systems/ranks`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {

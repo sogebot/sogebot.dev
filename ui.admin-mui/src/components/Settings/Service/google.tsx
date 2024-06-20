@@ -13,8 +13,8 @@ import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { getBase64FromUrl } from '../../../helpers/getBase64FromURL';
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -74,6 +74,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const { settings, loading, refresh, save, saving, handleChange } = useSettings('/services/google');
   const { translate } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const scope = useScope('services');
 
   const [ privateKeys, setPrivateKeys ] = useState<GooglePrivateKeysInterface[]>([]);
   const [ privateKeysCache, setPrivateKeysCache ] = useState<GooglePrivateKeysInterface[]>([]);
@@ -83,7 +84,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const refreshKeys = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/services/google/privatekeys`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             console.log({ data });
             setPrivateKeys([...data.data]);
@@ -97,7 +98,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   const refreshStreams = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/services/google/streams`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/services/google/streams`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             console.log({ data });
             setStreams([...data.data]);
@@ -123,7 +124,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     for (const key of privateKeys) {
       if (key.privateKey) {
         // if contain private key, we must save it do db
-        await axios.post(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys`, {
+        await axios.post(`/api/services/google/privatekeys`, {
           id:          key.id,
           clientEmail: key.clientEmail,
           privateKey:  key.privateKey,
@@ -134,7 +135,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     // go through private keys vs cache to delete keys
     for (const key of privateKeysCache) {
       if (!privateKeys.find(o => o.id === key.id)) {
-        axios.delete(`${JSON.parse(localStorage.server)}/api/services/google/privatekeys/${key.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+        axios.delete(`/api/services/google/privatekeys/${key.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
       }
     }
     setSaving2(false);
@@ -189,7 +190,7 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   };
 
   const revoke = useCallback(() => {
-    getSocket('/services/google').emit('google::revoke', () => {
+    axios.post('/api/services/google?_action=revoke').then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
@@ -230,8 +231,8 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           InputProps={{
             endAdornment: <InputAdornment position="end">
               { channel !== 'Not Authorized'
-                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+                ? <Button disabled={!scope.sensitive} color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                : <Button disabled={!scope.sensitive} color="success" variant="contained" onClick={authorize}>Authorize</Button>
               }
             </InputAdornment>,
           }}
@@ -354,51 +355,53 @@ const PageSettingsModulesServiceGoogle: React.FC<{
     </Paper>
     }
 
-    <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.keys')}</Typography>
-    {settings && <Paper>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>E-mail</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell align="right"></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {privateKeys.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell>
-                  {row.clientEmail}
-                </TableCell>
-                <TableCell>{ dayjs(row.createdAt).format('LL LTS') }</TableCell>
-                <TableCell align="right"><IconButton color='error' onClick={() => removePrivateKey(row.id)}><DeleteTwoTone/></IconButton></TableCell>
+    {!scope.sensitive && <>
+      <Typography variant='h5' sx={{ pb: 2 }}>{translate('categories.keys')}</Typography>
+      {settings && <Paper>
+        <TableContainer>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>E-mail</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell align="right"></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {privateKeys.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  <TableCell>
+                    {row.clientEmail}
+                  </TableCell>
+                  <TableCell>{ dayjs(row.createdAt).format('LL LTS') }</TableCell>
+                  <TableCell align="right"><IconButton color='error' onClick={() => removePrivateKey(row.id)}><DeleteTwoTone/></IconButton></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      <input
-        title="File upload"
-        ref={refUploadInput}
-        type="file"
-        multiple
-        style={{ display: 'none' }}
-        accept="application/json"
-        onChange={(event) => filesChange(event.target.files)}
-      />
+        <input
+          title="File upload"
+          ref={refUploadInput}
+          type="file"
+          multiple
+          style={{ display: 'none' }}
+          accept="application/json"
+          onChange={(event) => filesChange(event.target.files)}
+        />
 
-      <LoadingButton sx={{ m: 0.5 }} loading={uploading} onClick={() => elementUploadInput?.click()}>Upload new private key</LoadingButton>
-    </Paper>
-    }
+        <LoadingButton sx={{ m: 0.5 }} loading={uploading} onClick={() => elementUploadInput?.click()}>Upload new private key</LoadingButton>
+      </Paper>
+      }
+    </>}
 
     <Stack direction='row' justifyContent='center' sx={{ pt: 2 }}>
       <LoadingButton sx={{ width: 300 }} variant='contained' loading={saving || saving2} type="submit" onClick={handleSave}>Save changes</LoadingButton>

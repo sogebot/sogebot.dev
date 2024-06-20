@@ -6,7 +6,8 @@ import { blueGrey, grey } from '@mui/material/colors';
 import Select from '@mui/material/Select';
 import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
-import { capitalize, cloneDeep, orderBy, sortBy } from 'lodash';
+import axios from 'axios';
+import { capitalize, cloneDeep, orderBy, set, sortBy } from 'lodash';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -16,12 +17,15 @@ import { v4 } from 'uuid';
 import { ConfirmButton } from '../../components/Buttons/ConfirmButton';
 import { FilterMaker } from '../../components/Permissions/FilterMaker';
 import { PermissionsListItem } from '../../components/Permissions/ListItem';
+import { ScopesSelector } from '../../components/Permissions/ScopesSelector';
 import { TestUserField } from '../../components/Permissions/TestUserField';
 import { UserSearchlist } from '../../components/Permissions/UserSearchList';
-import { getSocket } from '../../helpers/socket';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageSettingsPermissions = () => {
+  const scope = useScope('permissions');
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
@@ -29,32 +33,23 @@ const PageSettingsPermissions = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [ items, setItems ] = useState<Permissions[]>([]);
+  const { permissions, refresh: refreshPerm } = usePermissions();
   const [ loading, setLoading ] = useState(true);
   const [ removing, setRemoving ] = useState(false);
   const [ saving, setSaving ] = useState(false);
 
+  React.useEffect(() => {
+    setItems(permissions);
+  }, [ permissions]);
+
   const refresh = useCallback(async () => {
     setLoading(true);
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/permissions').emit('generic::getAll', (err, data) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.groupCollapsed('permissions::generic::getAll');
-          console.log(data);
-          console.groupEnd();
-          setItems(data);
-
-          if (!id) {
-            navigate(`/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
-          }
-          resolve();
-        });
-      }),
-    ]);
+    await refreshPerm();
     setLoading(false);
+
+    if (!id) {
+      navigate(`/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9`);
+    }
   }, [ id, navigate ]);
 
   useEffect(() => {
@@ -83,12 +78,13 @@ const PageSettingsPermissions = () => {
       viewers.order = sorted.length;
       sorted.push(viewers);
     }
-    getSocket('/core/permissions').emit('permission::save', sorted as Permissions[], () => {
-      if (!quiet) {
-        enqueueSnackbar('Permissions updated.', { variant: 'success' });
-      }
-      return;
-    });
+    console.log('permissions', 'Saving', sorted, new Error().stack);
+    axios.post(`/api/core/permissions/`, sorted)
+      .then(() => {
+        if (!quiet) {
+          enqueueSnackbar('Permissions updated.', { variant: 'success' });
+        }
+      });
     setItems(sorted);
   }, [enqueueSnackbar, items]);
 
@@ -151,12 +147,13 @@ const PageSettingsPermissions = () => {
       userIds:            [],
       excludeUserIds:     [],
       filters:            [],
+      haveAllScopes:      false,
+      excludeSensitiveScopes: true,
+      scopes:             [],
     });
-    setItems(permissions => {
-      permissions.push(data);
-      return [...permissions];
+    setItems(it => {
+      return [...it, data];
     });
-    setTimeout(() => reorder(), 10); // include save
     return;
   }, [ items, reorder ]);
 
@@ -167,37 +164,41 @@ const PageSettingsPermissions = () => {
     );
   }, [ items ]);
 
-  const handlePermissionChange = useCallback(<T extends keyof Permissions>(key: T, value: Permissions[T]) => {
+  const handlePermissionChange = useCallback(<T extends keyof Permissions>(values: { [x in T]: Permissions[T] }) => {
     if (!selectedItem) {
       return;
     }
     const update = cloneDeep(selectedItem);
-    update[key] = value;
+    for (const [key, value] of Object.entries(values)) {
+      set(update, key, value);
+    }
     setSelectedItem(update);
   }, [ selectedItem ]);
 
-  const removeSelectedPermission = useCallback(() => {
+  const removeSelectedPermission = useCallback(async () => {
     if (!selectedItem || selectedItem.isCorePermission) {
       return;
     }
     setRemoving(true);
-    getSocket('/core/permissions').emit('generic::deleteById', selectedItem.id, async () => {
-      enqueueSnackbar(`Permissions ${selectedItem.name} removed.`, { variant: 'success' });
-      navigate('/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
-      setRemoving(false);
-      await refresh();
-    });
+    axios.delete(`/api/core/permissions/${selectedItem.id}`)
+      .then(() => {
+        enqueueSnackbar(`Permissions ${selectedItem.name} removed.`, { variant: 'success' });
+        navigate('/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
+        setRemoving(false);
+        refresh();
+      });
   }, [ enqueueSnackbar, selectedItem, refresh, navigate, reorder ]);
 
   const saveSelectedPermission = useCallback(() => {
     setSaving(true);
-    if (!selectedItem || selectedItem.isCorePermission) {
+    if (!selectedItem) {
       return;
     }
-    getSocket('/core/permissions').emit('permission::save', [...items, selectedItem] as any, async () => {
-      enqueueSnackbar(`Permissions ${selectedItem.name} updated.`, { variant: 'success' });
-      await refresh();
-    });
+    axios.post(`/api/core/permissions/`, [...items, selectedItem])
+      .then(async () => {
+        enqueueSnackbar(`Permissions ${selectedItem.name} updated.`, { variant: 'success' });
+        refresh();
+      });
     setSaving(false);
   }, [ enqueueSnackbar, selectedItem, refresh, items, reorder ]);
 
@@ -225,14 +226,14 @@ const PageSettingsPermissions = () => {
                 { translate('core.permissions.permissionsGroups') }
               </Typography>
 
-              <IconButton
+              {scope.manage && <IconButton
                 onClick={() => addNewPermissionGroup()}
                 color="inherit"
                 aria-label="open drawer"
                 edge="start"
               >
                 <AddTwoTone />
-              </IconButton>
+              </IconButton>}
             </Toolbar>
 
             <Stack>
@@ -294,20 +295,20 @@ const PageSettingsPermissions = () => {
             >
               <TextField
                 fullWidth
-                disabled={selectedItem.isCorePermission}
+                disabled={selectedItem.isCorePermission || !scope.manage}
                 variant="filled"
                 value={selectedItem.name}
                 required
-                onChange={(event) => handlePermissionChange('name', event.target.value)}
+                onChange={(event) => handlePermissionChange({ name: event.target.value })}
                 label={capitalize(translate('core.permissions.name'))}
               />
 
               {!selectedItem.isCorePermission
-                && <FormControl fullWidth variant="filled" >
+                && <FormControl fullWidth variant="filled" disabled={!scope.manage}>
                   <InputLabel id="permission-select-label" shrink>{translate('permissions')}</InputLabel>
                   <Select
                     value={selectedItem.automation}
-                    onChange={(event) => handlePermissionChange('automation', event.target.value)}
+                    onChange={(event) => handlePermissionChange({ automation: event.target.value })}
                     label={capitalize(translate('core.permissions.baseUsersSet'))}
                   >
                     {['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers'].map(item => <MenuItem key={item} value={item}>{translate(`core.permissions.${item}`)}</MenuItem>)}
@@ -318,7 +319,7 @@ const PageSettingsPermissions = () => {
 
               {!selectedItem.isCorePermission
                 && <FormGroup>
-                  <FormControlLabel control={<Checkbox checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange('isWaterfallAllowed', !selectedItem.isWaterfallAllowed)} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
+                  <FormControlLabel control={<Checkbox disabled={!scope.manage} checked={selectedItem.isWaterfallAllowed} onClick={() => handlePermissionChange({ isWaterfallAllowed: !selectedItem.isWaterfallAllowed })} />} label={capitalize(translate('core.permissions.allowHigherPermissions'))} />
                 </FormGroup>}
 
               {!selectedItem.isCorePermission
@@ -326,30 +327,43 @@ const PageSettingsPermissions = () => {
                   <Divider sx={{ m: 1.5 }}>
                     <FormLabel>{ translate('responses.variable.users') }</FormLabel>
                   </Divider>
-                  <UserSearchlist label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
-                    handlePermissionChange('userIds', value);
+                  <UserSearchlist disabled={!scope.manage} label={translate('core.permissions.manuallyAddedUsers')} users={selectedItem.userIds} onChange={(value) => {
+                    handlePermissionChange({ userIds: value });
                   }}/>
-                  <UserSearchlist label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
-                    handlePermissionChange('excludeUserIds', value);
+                  <UserSearchlist disabled={!scope.manage} label={translate('core.permissions.manuallyExcludedUsers')} users={selectedItem.excludeUserIds} onChange={(value) => {
+                    handlePermissionChange({ excludeUserIds: value });
                   }}/>
                 </>}
 
               {!selectedItem.isCorePermission
-                && <FilterMaker model={selectedItem.filters} onChange={filters => handlePermissionChange('filters', filters)}/>
+                && <FilterMaker disabled={!scope.manage} model={selectedItem.filters} onChange={filters => handlePermissionChange({ filters: filters })}/>
               }
 
-              <Divider sx={{ mt: 1.5 }}/>
+              {selectedItem.id !== defaultPermissions.CASTERS
+              && <ScopesSelector
+                modelSensitive={selectedItem.excludeSensitiveScopes ?? true}
+                modelAll={selectedItem.haveAllScopes ?? false}
+                model={selectedItem.scopes ?? []}
+                onChange={values => {
+                  handlePermissionChange({
+                    scopes: values.scopes,
+                    haveAllScopes: values.haveAllScopes,
+                    excludeSensitiveScopes: values.excludeSensitiveScopes,
+                  });
+                }}/>}
 
-              {!selectedItem.isCorePermission
-                && <Grid container sx={{ py: 1 }} justifyContent='space-between'>
+              {scope.manage && <>
+                <Divider sx={{ mt: 1.5 }}/>
+
+                <Grid container sx={{ py: 1 }} justifyContent='space-between'>
                   <Grid item>
-                    <ConfirmButton loading={removing} variant="contained" color='error' sx={{ minWidth: '250px' }} handleOk={() => removeSelectedPermission()}>{ translate('delete') }</ConfirmButton>
+                    {!selectedItem.isCorePermission && <ConfirmButton loading={removing} variant="contained" color='error' sx={{ minWidth: '250px' }} handleOk={() => removeSelectedPermission()}>{ translate('delete') }</ConfirmButton>}
                   </Grid>
                   <Grid item>
                     <LoadingButton loading={saving} variant="contained" sx= {{ minWidth: '250px' }} onClick={() => saveSelectedPermission()}>{ translate('dialog.buttons.saveChanges.idle') }</LoadingButton>
                   </Grid>
                 </Grid>
-              }
+              </>}
             </Box>
           </Box>}
 

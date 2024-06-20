@@ -1,5 +1,6 @@
 import { capitalize, Stack, Typography } from '@mui/material';
 import { BotEntity } from '@sogebot/backend/src/database/BotEntity';
+import { AxiosError } from 'axios';
 import { isEqual } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
@@ -11,7 +12,7 @@ type Props = {
   translations?: Record<string, string>;
   /** Values needs to be changed to trigger errors  */
   mustBeDirty?:  boolean;
-  schema:        NonNullable<BotEntity['schema']>;
+  schema:        NonNullable<BotEntity['_schema']>;
 };
 
 export const useValidator = (props: Props) => {
@@ -141,16 +142,42 @@ export const useValidator = (props: Props) => {
     }
   };
 
-  const showErrors = useCallback((err: z.ZodError | string) => {
-    console.error(err);
+  const showErrors = useCallback((err: AxiosError | z.ZodIssue[] | string) => {
+    console.error(err, typeof err);
 
     if (typeof err === 'string') {
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{err}</Typography>
       </Stack>), { variant: 'error' });
     } else {
-      setDirty(err.issues.map(o => o.path.join('.') as string));
-      setErrors(err.issues);
+      let issues = err as z.ZodIssue[];
+      if (err instanceof AxiosError) {
+        issues = (err.response?.data as any).errors ?? [];
+        if (typeof issues === 'string') {
+          issues = [issues];
+        }
+        for (let i = 0; i < issues.length; i++) {
+          if (typeof issues[i] === 'string') {
+            const stringifiedIssue = issues[i] as unknown as string;
+            // SqliteError: UNIQUE constraint failed: variable.variableName
+            if (stringifiedIssue.startsWith('SqliteError: UNIQUE')) {
+              issues[i] = {
+                code: 'custom',
+                message: 'isUnique',
+                path: [stringifiedIssue.split('.')[1]]
+              };
+            } else {
+              issues[i] = {
+                code: 'custom',
+                message: stringifiedIssue,
+                path: []
+              };
+            }
+          }
+        }
+      }
+      setDirty(issues.map(o => o.path.join('.') as string));
+      setErrors(issues);
       enqueueSnackbar((<Stack>
         <Typography variant="body2">{translate('errors.errorDialogHeader')}</Typography>
       </Stack>), { variant: 'error' });

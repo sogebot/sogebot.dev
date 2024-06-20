@@ -15,11 +15,14 @@ import { DisabledAlert } from '../../components/DisabledAlert';
 import { RankEdit } from '../../components/Form/RankEdit';
 import getAccessToken from '../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageCommandsKeywords = () => {
+  const scope = useScope('ranks');
+
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
@@ -30,7 +33,7 @@ const PageCommandsKeywords = () => {
   const { bulkCount } = useAppSelector(state => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Rank>([
+  const columnsTpl: ColumnMakerProps<Rank> = [
     {
       columnName: 'value', filtering: { type: 'number' }, table: { align: 'right' }, translationKey: 'responses.variable.value',
     },{
@@ -43,12 +46,15 @@ const PageCommandsKeywords = () => {
       },
       column: { getCellValue: (row) => row.type === 'viewer' ? 'Watch time' : 'Subcriber months' },
     },
-    {
-      columnName:  'actions',
-      table:       { width: 130 },
-      sorting:     { sortingEnabled: false },
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push({
+      columnName: 'actions',
+      table: { width: 130 },
+      sorting: { sortingEnabled: false },
       translation: ' ',
-      column:      {
+      column: {
         getCellValue: (row) => [
           <Stack direction="row" key="row">
             <EditButton href={'/manage/ranks/edit/' + row.id}/>
@@ -56,11 +62,13 @@ const PageCommandsKeywords = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Rank>(columnsTpl);
 
   const deleteItem = useCallback((item: Rank) => {
-    axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Rank ${item.value} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -76,7 +84,7 @@ const PageCommandsKeywords = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`${JSON.parse(localStorage.server)}/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/ranks`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -94,7 +102,7 @@ const PageCommandsKeywords = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`${JSON.parse(localStorage.server)}/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });
@@ -117,12 +125,14 @@ const PageCommandsKeywords = () => {
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
         <DisabledAlert system='ranks'/>
-        <Grid item>
-          <Button sx={{ width: 200 }} variant="contained" href='/manage/ranks/create/'>Create new rank</Button>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <Button sx={{ width: 200 }} variant="contained" href='/manage/ranks/create/'>Create new rank</Button>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -162,7 +172,7 @@ const PageCommandsKeywords = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 

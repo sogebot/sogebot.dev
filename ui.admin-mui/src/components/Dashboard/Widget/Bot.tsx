@@ -12,6 +12,7 @@ import { DashboardWidgetBotRaffles } from './Bot/Raffles';
 import { DashboardWidgetBotYTPlayer } from './Bot/YTPlayer';
 import { baseURL } from '../../../helpers/getBaseURL';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useTranslation } from '../../../hooks/useTranslation';
 import theme from '../../../theme';
 import { classes } from '../../styles';
@@ -20,6 +21,9 @@ export const DashboardWidgetBot: React.FC = () => {
   const { systems } = useAppSelector((state: any) => state.loader);
   const [server] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
   const { translate } = useTranslation();
+  const checklistScope = useScope('checklist');
+  const queueScope = useScope('queue');
+  const rafflesScope = useScope('raffles');
 
   const [value, setValue] = React.useState('1');
 
@@ -57,9 +61,9 @@ export const DashboardWidgetBot: React.FC = () => {
             <TabList onChange={handleChange} variant='scrollable' scrollButtons="auto" sx={{ flexGrow: 1 }}>
               <Tab label={translate('widget-title-eventlist')} value="1" />
               {(systems || []).find((o: any) => o.name === 'songs').enabled && <Tab label={translate('widget-title-ytplayer')} value="2" />}
-              <Tab label={translate('widget-title-queue')} value="3" />
-              <Tab label={translate('widget-title-raffles')} value="4"/>
-              <Tab label={translate('menu.checklist')} value="5" />
+              {queueScope.read && <Tab label={translate('widget-title-queue')} value="3" />}
+              {rafflesScope.read && <Tab label={translate('widget-title-raffles')} value="4"/>}
+              {checklistScope.read && <Tab label={translate('menu.checklist')} value="5" />}
               <Tab label={translate('widget-title-custom')} value="6" />
             </TabList>
             {!isPopout && <IconButton sx={{ height: '40px' }}
@@ -77,10 +81,10 @@ export const DashboardWidgetBot: React.FC = () => {
           position: 'relative', height: 'calc(100% - 48px);',
         }}>
           <DashboardWidgetBotEvents sx={value === '1' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotQueue sx={value === '3' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotRaffles active={value === '4'}  sx={value === '4' ? classes.showTab : classes.hideTab}/>
-          <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>
+          {(systems || []).find((o: any) => o.name === 'songs').enabled && <DashboardWidgetBotYTPlayer sx={value === '2' ? classes.showTab : classes.hideTab}/>}
+          {(queueScope.read && value === '3') && <DashboardWidgetBotQueue sx={classes.showTab}/>}
+          {value === '4' && <DashboardWidgetBotRaffles sx={classes.showTab}/>}
+          {checklistScope.read && <DashboardWidgetBotChecklist sx={value === '5' ? classes.showTab : classes.hideTab}/>}
           <DashboardWidgetBotCustom sx={value === '6' ? classes.showTab : classes.hideTab}/>
         </Box>
       </TabContext>

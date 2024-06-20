@@ -2,6 +2,7 @@ import { Filter, FilteringState, IntegratedFiltering, IntegratedSorting, Sorting
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { CircularProgress, Dialog, Grid, Paper, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
@@ -11,12 +12,13 @@ import EditButton from '../../components/Buttons/EditButton';
 import { BotCommandEdit } from '../../components/Form/BotCommandEdit';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
 import { getPermissionName } from '../../helpers/getPermissionName';
-import { getSocket } from '../../helpers/socket';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 
 const PageCommandsBot = () => {
+  const scope = useScope('bot_commands');
   const location = useLocation();
   const { type, id } = useParams();
 
@@ -25,7 +27,7 @@ const PageCommandsBot = () => {
   const [ loading, setLoading ] = useState(true);
   const { permissions } = usePermissions();
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Commands & { isModified: boolean }>([
+  const columnsTpl: ColumnMakerProps<Commands & { isModified: boolean }> = [
     {
       columnName:  'isModified',
       filtering:   { type: 'boolean' },
@@ -87,33 +89,31 @@ const PageCommandsBot = () => {
         type: 'list', options: { listValues: Array.from(new Set(items.map(o => o.type))).sort() },
       },
     },
-    {
-      columnName:  'actions',
-      translation: ' ',
-      table:       { width: 100 },
-      sorting:     { sortingEnabled: false },
-      column:      { getCellValue: (row) => <EditButton href={'/commands/botcommands/edit/' + row.id}/> },
-    },
-  ]);
+  ];
+
+  if (scope.manage) {
+    columnsTpl.push(
+      {
+        columnName:  'actions',
+        translation: ' ',
+        table:       { width: 100 },
+        sorting:     { sortingEnabled: false },
+        column:      { getCellValue: (row) => <EditButton href={'/commands/botcommands/edit/' + row.id}/> },
+      }
+    );
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Commands & { isModified: boolean }>(columnsTpl);
   const { element: filterElement, filters } = useFilter<Commands>(useFilterSetup);
 
   useEffect(() => {
+    setLoading(true);
     refresh().then(() => setLoading(false));
   }, [location.pathname]);
 
   const refresh = async () => {
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/core/general').emit('generic::getCoreCommands', (err, commands) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(commands);
-          resolve();
-        });
-      }),
-    ]);
+    const { data } = await axios.get('/api/core/general/commands');
+    setItems(data.data);
   };
 
   const open = React.useMemo(() => !!(type

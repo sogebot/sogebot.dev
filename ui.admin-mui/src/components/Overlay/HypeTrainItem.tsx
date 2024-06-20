@@ -34,7 +34,7 @@ const shake = keyframes`
 const ids: string[] = [];
 
 export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) => {
-  getSocket('/services/twitch', true);
+  getSocket('/services/twitch');
 
   const boxRef = useRef<Element>();
   const [id] = React.useState(v4());
@@ -114,11 +114,11 @@ export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) 
       document.getElementById(`train-${id}`)!.style.transform = `translateX(${(boxRef.current!.clientWidth + 50)}px)`;
     }
 
-    getSocket('/services/twitch', true).on('hypetrain-end', () => {
+    getSocket('/services/twitch').on('hypetrain-end', () => {
       setSubs([]);
     });
 
-    getSocket('/services/twitch', true).on('hypetrain-update', (data) => {
+    getSocket('/services/twitch').on('hypetrain-update', (data) => {
       if (ids.includes(data.id)) {
         return;
       }

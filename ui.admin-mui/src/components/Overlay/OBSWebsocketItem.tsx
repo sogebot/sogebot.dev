@@ -4,7 +4,6 @@ import axios from 'axios';
 import OBSWebSocket from 'obs-websocket-js';
 import type ObsWebSocket from 'obs-websocket-js';
 import React from 'react';
-import { Socket } from 'socket.io-client';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';
 import type { Props } from './ChatItem';
@@ -68,13 +67,13 @@ export const events = [
   'CustomEvent'
 ] as const;
 
-const inputMuted = (obs: ObsWebSocket, socket?: Socket) => {
+const inputMuted = (obs: ObsWebSocket) => {
   const listener = (data: {
     inputName: string; inputMuted: boolean;
   }) => {
     if (process.env.BUILD === 'web') {
       console.debug(`obs::websocket::on:inputmuted ${data.inputName} | ${data.inputMuted}`);
-      socket?.emit('integration::obswebsocket::event', {
+      axios.post('/api/integrations/obswebsocket/event', {
         type:       'obs-input-mute-state-changed',
         inputName:  data.inputName,
         inputMuted: data.inputMuted,
@@ -85,13 +84,13 @@ const inputMuted = (obs: ObsWebSocket, socket?: Socket) => {
   obs.off('InputMuteStateChanged', listener).on('InputMuteStateChanged', listener);
 };
 
-const switchScenes = (obs: ObsWebSocket, socket?: Socket) => {
+const switchScenes = (obs: ObsWebSocket) => {
   const listener = (data: {
     sceneName: string;
   }) => {
     if (process.env.BUILD === 'web') {
       console.debug(`obs::websocket::on:switchscenes ${data.sceneName}`);
-      socket?.emit('integration::obswebsocket::event', {
+      axios.post('/api/integrations/obswebsocket/event', {
         type:      'obs-scene-changed',
         sceneName: data.sceneName,
         location:  window.location.href,
@@ -192,12 +191,11 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
     for (const event of events) {
       obs.off(event);
       obs.on(event, (args) => {
-        getSocket('/', true).emit('integration::obswebsocket::listener', { event, args });
-        console.log('integration::obswebsocket::listener', event, args);
+        axios.post('/api/integrations/obswebsocket/listener', { event, args });
       });
     }
 
-    getSocket('/', true).on('integration::obswebsocket::trigger', async (opts, cb) => {
+    getSocket('/').on('integration::obswebsocket::trigger', async (opts, cb) => {
       console.log('integration::obswebsocket::trigger', opts);
       cb(); // resolve first so connection is OK
       try {
@@ -208,7 +206,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::call', async (opts) => {
+    getSocket('/').on('integration::obswebsocket::call', async (opts) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
@@ -218,7 +216,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
         const res = await obs.call(opts.event as any, opts.args);
         console.log({ res });
         console.groupEnd();
-        axios.post(`${JSON.parse(localStorage.server)}/api/plugins/obs`, res, { headers: {
+        axios.post(`/api/plugins/obs`, res, { headers: {
           id: opts.id,
           'Content-Type': 'application/json',
         } });
@@ -228,7 +226,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
       }
     });
 
-    getSocket('/', true).on('integration::obswebsocket::callBatch', async (opts, cb) => {
+    getSocket('/').on('integration::obswebsocket::callBatch', async (opts, cb) => {
       if (isAlreadyProcessed(opts.id)) {
         return;
       }
@@ -238,7 +236,7 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
         const res = await obs.callBatch(opts.requests as any, opts.options).then(cb);
         console.log({ res });
         console.groupEnd();
-        axios.post(`${JSON.parse(localStorage.server)}/api/plugins/obs/`, res, { headers: {
+        axios.post(`/api/plugins/obs/`, res, { headers: {
           id: opts.id,
           'Content-Type': 'application/json',
         } });
@@ -249,8 +247,8 @@ export const OBSWebsocketItem: React.FC<Props<Entity>> = ({ item }) => {
     });
 
     // add listeners
-    switchScenes(obs, getSocket('/', true) as any);
-    inputMuted(obs, getSocket('/', true) as any);
+    switchScenes(obs);
+    inputMuted(obs);
   }, []);
 
   React.useEffect(() => {

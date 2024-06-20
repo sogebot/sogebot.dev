@@ -63,8 +63,6 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   const [ activeUntil, setActiveUntil ] = React.useState(0);
   const [ id ] = React.useState(nanoid());
 
-  getSocket('/core/emotes', true); // init socket
-
   const [ defaultProfanityList, setDefaultProfanityList ] = React.useState<string[]>([]);
   const [ listHappyWords, setListHappyWords ] = React.useState<string[]>([]);
   const [ , setEmotesCache ] = useSessionstorageState<{
@@ -74,11 +72,9 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
   }[]>('emotes::cache', []);
 
   React.useEffect(() => {
-    getSocket('/core/emotes', true).emit('getCache', (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-      setEmotesCache(data);
+    console.log(`====== ALERT#${id} ======`);
+    axios.get(`/api/core/emotes`).then(({ data }) => {
+      setEmotesCache(data.data);
       log(new Date().toISOString(), `alert-${id}`, '= emotes loaded');
     });
 
@@ -130,7 +126,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       }
     }
     head.appendChild(style);
-  }, []);
+  }, [id]);
 
   // need to be done only for parryable alerts
   const haveAvailableAlert = (emitData: EmitData) => {
@@ -184,7 +180,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     log(new Date().toISOString(), `alert-${id}`, '=== processing', JSON.stringify(data));
 
     if (data.eventId) {
-      axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+      axios.post(`/api/registries/alerts/queue/${data.queueId}/extend`);
     }
 
     // checking for vulgarities
@@ -237,7 +233,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
       if (emitData[id] === null && emitDataRef.current && emitDataRef.current.queueId) {
         // release after setting to null
         log(new Date().toISOString(), `alert-${id}`, '= sending queue release');
-        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${emitDataRef.current.queueId}/release`);
+        axios.post(`/api/registries/alerts/queue/${emitDataRef.current.queueId}/release`);
       }
       emitDataRef.current = emitData[id] ?? null;
     }
@@ -247,7 +243,7 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
     // extend alert if in emit data list
     for (const data of emitDataList) {
       if (data.eventId) {
-        axios.post(`${JSON.parse(localStorage.server)}/api/registries/alerts/queue/${data.queueId}/extend`);
+        axios.post(`/api/registries/alerts/queue/${data.queueId}/extend`);
       }
     }
   }, 10000, true, true);
@@ -269,8 +265,8 @@ export const AlertItem: React.FC<Props<Alerts>> = ({ item, width, height }) => {
 
   React.useEffect(() => {
     log(new Date().toISOString(), `alert-${id}`, '= listening to alert events');
-    getSocket('/registries/alerts', true).on('alert', (data) => processIncomingAlert(data));
-    getSocket('/registries/alerts', true).on('skip', () => {
+    getSocket('/registries/alerts').on('alert', (data: any) => processIncomingAlert(data));
+    getSocket('/registries/alerts').on('skip', () => {
       setActiveUntil(0);
       if (typeof (window as any).responsiveVoice !== 'undefined') {
         (window as any).responsiveVoice.cancel();

@@ -3,13 +3,13 @@ import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
 import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { OverlayStopwatchItem } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
 import parse from 'html-react-parser';
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
-import { getSocket } from '../../../../helpers/socket';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopwatchItem }> = ({
@@ -50,7 +50,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
       handleClick(ev);
     } else {
       console.log('Setting state', !isStarted);
-      getSocket('/overlays/stopwatch').emit('stopwatch::update::set', {
+      axios.post(`/api/overlays/stopwatch/${item.options.stopwatchId}`, {
         isEnabled: !isStarted,
         time:      null,
         id:        item.options.stopwatchId,
@@ -61,19 +61,16 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   }, [stopwatch, isStarted, handleClick]);
 
   useEffect(() => {
-    getSocket('/registries/overlays').emit('generic::getOne', item.options.stopwatchId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-      setStopwatch(result?.items.find(o => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
+    axios.get(`/api/registries/overlays/${item.options.stopwatchId}`).then(({ data }) => {
+      setStopwatch(data.data?.items.find((o: any) => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
     });
   }, [ item.options.stopwatchId ]);
 
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (stopwatch && !anchorEl) {
-      getSocket('/overlays/stopwatch').emit('stopwatch::check', item.options.stopwatchId, (_err, data) => {
-        if (data && stopwatch) {
+      axios.get(`/api/registries/overlays/${item.options.stopwatchId}`).then(({ data }) => {
+        if (data.data && stopwatch) {
           setIsStarted(data.isEnabled);
           setTimestamp(data.time);
         }
@@ -83,10 +80,9 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
 
   const updateValue = (value: number) => {
     if (stopwatch) {
-      getSocket('/overlays/stopwatch').emit('stopwatch::update::set', {
+      axios.post(`/api/overlays/stopwatch/${item.options.stopwatchId}`, {
         isEnabled: null,
         time:      value,
-        id:        item.options.stopwatchId,
       });
     }
   };

@@ -4,6 +4,7 @@ import { Box, Button, DialogActions, DialogContent, Divider, Fade, Unstable_Grid
 import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
+import axios from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 import { cloneDeep, set } from 'lodash';
 import { nanoid } from 'nanoid';
@@ -43,7 +44,7 @@ import { StopwatchSettings } from './Overlay/StopwatchSettings';
 import { TTSSettings } from './Overlay/TTSSettings';
 import { UrlSettings } from './Overlay/UrlSettings';
 import { WordcloudSettings } from './Overlay/WordcloudSettings';
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { getParentDelKeyStatus } from '../../store/overlaySlice';
 import theme from '../../theme';
@@ -188,17 +189,14 @@ export const OverlayEdit: React.FC = () => {
   React.useEffect(() => {
     if (id) {
       setLoading(true);
-      getSocket('/registries/overlays').emit('generic::getOne', id, (err, data) => {
-        if (err) {
-          return console.error(err);
-        }
-        if (!data) {
+      axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+        if (!data.data) {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
           navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);
         } else {
           const withDefaultValues = {
-            ...data,
-            items: data.items.map(it => ({
+            ...data.data,
+            items: data.data.items.map((it: any) => ({
               ...it, opts: setDefaultOpts(it.opts, it.opts.typeId),
             })),
           };
@@ -239,17 +237,24 @@ export const OverlayEdit: React.FC = () => {
 
   const handleSave = React.useCallback(() => {
     setSaving(true);
-    getSocket('/registries/overlays').emit('generic::save', item, (err, data) => {
-      setSaving(false);
-      if (err || !data) {
+    axios.post(`/api/registries/overlays`,
+      item,
+      { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then((response) => {
+        if (response.data.status === 'success') {
+          enqueueSnackbar('Saved successfully.', { variant: 'success' });
+          if (response.data.data.id) {
+            navigate(`/registry/overlays/edit/${response.data.data.id}?server=${JSON.parse(localStorage.server)}`);
+          }
+        } else {
+          enqueueSnackbar('Unexpected state.', { variant: 'error' });
+        }
+      })
+      .catch(e => {
         enqueueSnackbar('Something went wrong during save. Check Chrome logs for more errors.', { variant: 'error' });
-        return console.error(err);
-      }
-      enqueueSnackbar('Saved successfully.', { variant: 'success' });
-      if (id !== data.id) {
-        navigate(`/registry/overlays/edit/${data.id}?server=${JSON.parse(localStorage.server)}`);
-      }
-    });
+        console.error(e);
+      })
+      .finally(() => setSaving(false));
   }, [id, item, navigate]);
 
   const fitZoomOnScreen = React.useCallback((isZoomReset = false) => {

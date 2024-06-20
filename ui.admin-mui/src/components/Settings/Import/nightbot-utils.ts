@@ -3,7 +3,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
 import getAccessToken from '../../../getAccessToken';
-import { getSocket } from '../../../helpers/socket';
 
 type Track = {
   providerId: string;
@@ -147,20 +146,10 @@ const fetchTracks = async (
 
 const postTrack = async (track: Track) => {
   await new Promise((resolve, reject) => {
-    getSocket('/systems/songs').emit(
-      'import.video',
-      {
-        playlist:  track.providerId,
-        forcedTag: 'nightbot-import',
-      },
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve('resolved');
-        }
-      }
-    );
+    axios.post('/api/systems/songs/import/video', {
+      playlist:  track.providerId,
+      forcedTag: 'nightbot-import',
+    }).then(resolve).catch(reject);
   });
 };
 
@@ -231,7 +220,7 @@ const postKeyword = async (keyword: CustomCommand) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/keywords`,
+      `/api/systems/keywords`,
       convertedKeyword,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );
@@ -262,7 +251,7 @@ const postCommand = async (command: CustomCommand) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/customcommands`,
+      `/api/systems/customcommands`,
       convertedCommand,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );
@@ -336,7 +325,7 @@ const postTimer = async (timer: Timer) => {
   };
   try {
     await axios.post(
-      `${JSON.parse(localStorage.server)}/api/systems/timer`,
+      `/api/systems/timer`,
       convertedTimer,
       { headers: { authorization: `Bearer ${getAccessToken()}` } }
     );

@@ -1,11 +1,13 @@
-import { Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -14,7 +16,7 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
 }> = ({
   onVisible,
 }) => {
-
+  const scope = useScope('integrations');
   const { translate } = useTranslation();
 
   const { settings, loading, refresh } = useSettings('/integrations/tiltify' as any);
@@ -42,10 +44,11 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    getSocket('/integrations/tiltify').emit('tiltify::revoke', () => {
-      enqueueSnackbar('User access revoked.', { variant: 'success' });
-      refresh();
-    });
+    axios.post('/api/integrations/tiltify?_action=revoke', undefined, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+      .then(() => {
+        enqueueSnackbar('User access revoked.', { variant: 'success' });
+        refresh();
+      });
   }, [ enqueueSnackbar ]);
 
   const authorize = useCallback(() => {
@@ -62,24 +65,28 @@ const PageSettingsModulesIntegrationsTiltify: React.FC<{
 
   return (loading ? null : <Box ref={ref} id="tiltify">
     <Typography variant='h2' sx={{ pb: 2 }}>Tiltify</Typography>
-    {settings && <Paper elevation={1} sx={{ p: 1 }}>
-      <Stack spacing={1}>
-        <TextField
-          disabled
-          variant='filled'
-          value={user}
-          label={translate('integrations.lastfm.settings.username')}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">
-              { user !== 'Not Authorized'
-                ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
-                : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
-              }
-            </InputAdornment>,
-          }}
-        />
-      </Stack>
-    </Paper>}
+    {scope.sensitive ? <>
+      {settings && <Paper elevation={1} sx={{ p: 1 }}>
+        <Stack spacing={1}>
+          <TextField
+            disabled
+            variant='filled'
+            value={user}
+            label={translate('integrations.lastfm.settings.username')}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">
+                { user !== 'Not Authorized'
+                  ? <Button color="error" variant="contained" onClick={revoke}>Revoke</Button>
+                  : <Button color="success" variant="contained" onClick={authorize}>Authorize</Button>
+                }
+              </InputAdornment>,
+            }}
+          />
+        </Stack>
+      </Paper>}
+    </>
+      : <Alert severity='error'>You don't have access to any settings of Tiltify integration.</Alert>
+    }
   </Box>
   );
 };

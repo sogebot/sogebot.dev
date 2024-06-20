@@ -1,5 +1,6 @@
 import { Backdrop, CircularProgress, FormControl, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { UserBitInterface } from '@sogebot/backend/dest/database/entity/user';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -7,7 +8,6 @@ import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageStatsBits = () => {
@@ -56,11 +56,8 @@ const PageStatsBits = () => {
   }, [_data, loading]);
 
   const refresh = () => {
-    getSocket('/stats/bits').emit('generic::getAll', (err, val) => {
-      if (err) {
-        return console.error(err);
-      }
-      setData(val);
+    axios.get('/api/stats/bits').then(({ data: axiosData }) => {
+      setData(axiosData.data);
       setLoading(false);
     });
   };

@@ -3,6 +3,7 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSe
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
 import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { Event } from '@sogebot/backend/dest/database/entity/event';
+import axios from 'axios';
 import { useAtom } from 'jotai';
 import { orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -18,11 +19,11 @@ import LinkButton from '../../components/Buttons/LinkButton';
 import { EventsEdit } from '../../components/Form/EventsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 import theme from '../../theme';
@@ -33,12 +34,8 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
   const [ rewards, setRewards ] = useAtom(rewardsAtom);
   const [ rewardLoading, setRewardLoading ] = useState(true);
   React.useEffect(() => {
-
-    getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: { id: string, name: string }[]) => {
-      if (err) {
-        return console.error(err);
-      }
-      setRewards(orderBy(redeems, 'name', 'asc'));
+    axios.get('/api/core/events/rewards').then(({ data }) => {
+      setRewards(orderBy(data.data, 'name', 'asc'));
       setRewardLoading(false);
     });
   }, []);
@@ -110,6 +107,7 @@ const PageManageEvents = () => {
   const location = useLocation();
   const { type, id } = useParams();
   const { translate } = useTranslation();
+  const scope = useScope('events');
 
   const [ items, setItems ] = useState<Event[]>([]);
   const [ loading, setLoading ] = useState(true);
@@ -117,7 +115,7 @@ const PageManageEvents = () => {
   const { permissions } = usePermissions();
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Event & { 'event.name': string }>([
+  const columnTpl: ColumnMakerProps<Event & { 'event.name': string }> = [
     {
       columnName:  'event.name',
       table:       { width: '30%' },
@@ -175,7 +173,10 @@ const PageManageEvents = () => {
       },
       filtering: { type: 'boolean' },
     },
-    {
+  ];
+
+  if (scope.manage) {
+    columnTpl.push({
       columnName:  'actions',
       translation: ' ',
       table:       { width: 130 },
@@ -188,13 +189,15 @@ const PageManageEvents = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    },);
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<Event & { 'event.name': string }>(columnTpl);
 
   const { element: filterElement, filters } = useFilter<Event>(useFilterSetup);
 
   const deleteItem = useCallback((item: Event) => {
-    getSocket('/core/events').emit('events::remove', item.id, () => {
+    axios.delete('/api/core/events/' + item.id).finally(() => {
       enqueueSnackbar(`Event ${item.id} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -207,12 +210,8 @@ const PageManageEvents = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        getSocket('/core/events').emit('generic::getAll', (err, res: Event[]) => {
-          if (err) {
-            resolve();
-            return console.error(err);
-          }
-          setItems(res);
+        axios.get('/api/core/events').then(({ data }) => {
+          setItems(data.data);
           resolve();
         });
       }),
@@ -249,9 +248,8 @@ const PageManageEvents = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          getSocket('/core/events').emit('events::save', item, () => {
-            resolve();
-          });
+          axios.post('/api/core/events/', item)
+            .finally(() => resolve());
         });
       }
     }
@@ -275,7 +273,7 @@ const PageManageEvents = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          getSocket('/core/events').emit('events::remove', item.id, () => {
+          axios.delete('/api/core/events/' + item.id).then(() => {
             resolve();
           });
         });
@@ -296,26 +294,28 @@ const PageManageEvents = () => {
   return (
     <>
       <Grid container sx={{ pb: 0.7 }} spacing={1} alignItems='center'>
-        <Grid item>
-          <LinkButton sx={{ width: 300 }} variant="contained" href='/manage/events/create/'>Create new event</LinkButton>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Enable">
-            <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip arrow title="Disable">
-            <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
-              minWidth: '36px', width: '36px',
-            }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
-        </Grid>
+        {scope.manage && <>
+          <Grid item>
+            <LinkButton sx={{ width: 300 }} variant="contained" href='/manage/events/create/'>Create new event</LinkButton>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Enable">
+              <Button disabled={!bulkCanEnable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('isEnabled', true)}><CheckBoxTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip arrow title="Disable">
+              <Button disabled={!bulkCanDisable} variant="contained" color="secondary" sx={{
+                minWidth: '36px', width: '36px',
+              }} onClick={() => bulkToggleAttribute('isEnabled', false)}><DisabledByDefaultTwoTone/></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <ButtonsDeleteBulk disabled={bulkCount === 0} onDelete={bulkDelete}/>
+          </Grid>
+        </>}
         <Grid item>{filterElement}</Grid>
         <Grid item>
           {bulkCount > 0 && <Typography variant="button" px={2}>{ bulkCount } selected</Typography>}
@@ -363,7 +363,7 @@ const PageManageEvents = () => {
             <TableColumnVisibility
               defaultHiddenColumnNames={defaultHiddenColumnNames}
             />
-            <TableSelection showSelectAll/>
+            {scope.manage && <TableSelection showSelectAll/>}
           </DataGrid>
         </SimpleBar>}
 

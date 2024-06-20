@@ -1,6 +1,7 @@
 import { Box, LinearProgress, linearProgressClasses, Stack } from '@mui/material';
 import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
+import axios from 'axios';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { isEqual } from 'lodash';
@@ -10,7 +11,6 @@ import { useIntervalWhen } from 'rooks';
 
 import type { Props } from './ChatItem';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { shadowGenerator, textStrokeGenerator } from '../../helpers/text';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { loadFont } from '../Accordion/Font';
@@ -96,16 +96,12 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
       return;
     }
 
-    getSocket('/registries/overlays', true).emit('generic::getOne', groupId, (err, result) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      if (!result) {
+    axios.get(`/api/registries/overlays/${groupId}`).then(({ data }) => {
+      if (!data.data) {
         return;
       }
 
-      const goals = result.items.filter(o => o.opts.typeId === 'goal');
+      const goals = data.data.items.filter((o: any) => o.opts.typeId === 'goal');
       for (const goal of goals) {
         if (goal.id === id) {
             console.log(`Goal ${goal.id} check.`);
@@ -199,7 +195,9 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
   };
 
   useIntervalWhen(() => {
-    getSocket('/integrations/tiltify', true).emit('tiltify::campaigns', data => setTiltifyCampaigns(data));
+    axios.get('/api/integrations/tiltify/campaigns').then(({data}) => {
+      setTiltifyCampaigns(data.data);
+    })
   }, 30000, true, true);
 
   return <Box sx={{

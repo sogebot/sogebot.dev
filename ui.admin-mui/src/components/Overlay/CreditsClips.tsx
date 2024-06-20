@@ -78,10 +78,10 @@ export const CreditsClips: React.FC<Props<CreditsScreenClips> &
 
   React.useEffect(() => {
     if (active) {
-      getSocket('/overlays/credits', true).emit('getClips', {
+      getSocket('/overlays/credits').emit('getClips', {
         show: true,
         ...item,
-      }, async (data) => {
+      }, async (data: any) => {
         setClips(data);
         if (data.length === 0) {
           console.log('credits::clips', 'No clips found.');

@@ -2,7 +2,6 @@ import { ShareTwoTone } from '@mui/icons-material';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Alert, Autocomplete, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
-import { GalleryInterface } from '@sogebot/backend/src/database/entity/gallery';
 import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -15,7 +14,6 @@ import { z } from 'zod';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
 import { dayjs } from '../../helpers/dayjsHelper';
-import { getSocket } from '../../helpers/socket';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
@@ -88,17 +86,11 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     setGallery([]);
     setLoading(true);
 
-    new Promise<GalleryInterface[]>((resolve, reject) => getSocket('/overlays/gallery').emit('generic::getAll', (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    })).then((galleryItems) => {
+    axios.get('/api/overlays/gallery').then(({ data }) => {
       if (open) {
         // go through items and process all gallery, currently we can have gallery items only in html
         for (const item of itemsToExport.filter(o => o.opts.typeId === 'html')) {
-          for (const gItem of galleryItems) {
+          for (const gItem of data.data) {
             const url = `${server}/gallery/${gItem.id}`;
             const opts = (item.opts as HTML);
             if (opts.html.includes(url) || opts.javascript.includes(url) || opts.css.includes(url)) {

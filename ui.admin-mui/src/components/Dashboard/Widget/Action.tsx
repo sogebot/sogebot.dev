@@ -2,6 +2,8 @@ import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Card, IconButton, Tab, Typography } from '@mui/material';
 import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
+import axios from 'axios';
+import { useAtomValue } from 'jotai';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
@@ -15,15 +17,17 @@ import { DashboardWidgetActionDividerButton } from './Action/DividerButton';
 import { DashboardWidgetActionMarathonButton } from './Action/MarathonButton';
 import { DashboardWidgetActionRandomizerButton } from './Action/RandomizerButton';
 import { DashboardWidgetActionStopwatchButton } from './Action/StopwatchButton';
-import { getSocket } from '../../../helpers/socket';
-import { useAppSelector } from '../../../hooks/useAppDispatch';
+import { loggedUserAtom } from '../../../atoms';
+import getAccessToken from '../../../getAccessToken';
+import { useScope } from '../../../hooks/useScope';
 import theme from '../../../theme';
 
 export const DashboardWidgetAction: React.FC = () => {
+  const customVariableScope = useScope('customvariables');
   const [value, setValue] = React.useState('1');
   const [height, setHeight] = React.useState(0);
   const ref = React.createRef<HTMLDivElement>();
-  const { user } = useAppSelector(state => state.user);
+  const user = useAtomValue(loggedUserAtom);
   const [ actions, setActions ] = React.useState<QuickActions.Item[]>([]);
   const [ timestamp, setTimestamp ] = React.useState(Date.now());
 
@@ -42,11 +46,8 @@ export const DashboardWidgetAction: React.FC = () => {
     if (!user) {
       return;
     }
-    getSocket('/widgets/quickaction').emit('generic::getAll', user.id, (err, items) => {
-      if (err) {
-        return console.error(err);
-      }
-      setActions(orderBy(items, 'order', 'asc'));
+    axios.get(`/api/widgets/quickaction`, { headers: { authorization: `Bearer ${getAccessToken()}` } }).then(({ data }) => {
+      setActions(orderBy(data.data, 'order', 'asc'));
     });
   }, [user, timestamp]);
 
@@ -100,7 +101,9 @@ export const DashboardWidgetAction: React.FC = () => {
               return <DashboardWidgetActionCommandButton key={action.id} item={action}/>;
             }
             if (action.type === 'customvariable') {
-              return <DashboardWidgetActionCustomVariableButton key={action.id} item={action}/>;
+              return customVariableScope.read
+                ? <DashboardWidgetActionCustomVariableButton key={action.id} item={action}/>
+                : <></>;
             }
             if (action.type === 'randomizer') {
               return <DashboardWidgetActionRandomizerButton key={action.id} item={action}/>;

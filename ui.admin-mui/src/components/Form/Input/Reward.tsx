@@ -1,12 +1,12 @@
 import { RefreshTwoTone } from '@mui/icons-material';
 import { CircularProgress, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import axios from 'axios';
 import { useAtom } from 'jotai';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 
 import { rewardsAtom } from '../../../atoms';
-import { getSocket } from '../../../helpers/socket';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
@@ -37,11 +37,8 @@ export const FormRewardInput: React.FC<{
   const refreshRedeemedRewards = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: { id: string, name: string }[]) => {
-        if (err) {
-          return console.error(err);
-        }
-        setRewards(orderBy(redeems, 'name', 'asc'));
+      axios.get('/api/core/events/rewards').then(({ data }) => {
+        setRewards(orderBy(data.data, 'name', 'asc'));
         setProgress(false);
         resolve();
       });

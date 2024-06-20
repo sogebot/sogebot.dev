@@ -34,7 +34,7 @@ export const CooldownEdit: React.FC<{
   const [ loading, setLoading ] = useState(true);
   const [ saving, setSaving ] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Cooldown().schema });
+  const { propsError, reset, showErrors, validate, haveErrors } = useValidator({ schema: new Cooldown()._schema });
 
   const [ time, setTime ] = useState({
     days: 0, hours: 0, minutes: 5, seconds: 0,
@@ -151,7 +151,7 @@ export const CooldownEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`${JSON.parse(localStorage.server)}/api/systems/cooldown`,
+    axios.post(`/api/systems/cooldown`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
