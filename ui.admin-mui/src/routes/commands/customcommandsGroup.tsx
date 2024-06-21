@@ -21,7 +21,7 @@ import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const PageCommandsCommands = () => {
-  const scope = useScope('custom_commands');
+  const scope = useScope('customcommands');
 
   const { translate } = useTranslation();
   const { id } = useParams();

@@ -28,7 +28,7 @@ import { setBulkCount } from '../../store/appbarSlice';
 type CommandWithCount = Commands & { count: number };
 
 const PageCommandsCommands = () => {
-  const scope = useScope('custom_commands');
+  const scope = useScope('customcommands');
 
   const dispatch = useAppDispatch();
   const location = useLocation();

@@ -85,7 +85,7 @@ export const ScopesSelector: React.FC<{
       <ScopeToggle
         customName='commands'
         selected={model}
-        scopes={['alias', 'custom_commands', 'cooldown', 'keywords', 'price', 'bot_commands']}
+        scopes={['alias', 'customcommands', 'cooldown', 'keywords', 'price', 'botcommands']}
         label='Commands / Keywords'
         caption='User will be able to read or manage aliases, prices, cooldowns, custom commands, keywords and bot commands'
         onChange={(change, remove) => {
