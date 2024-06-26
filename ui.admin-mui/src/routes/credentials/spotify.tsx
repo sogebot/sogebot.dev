@@ -2,6 +2,7 @@ import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/mater
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
+import getAccessToken from '../../getAccessToken';
 
 const Spotify = () => {
   const [state, setState] = useState<boolean | null>(null);
@@ -12,7 +13,7 @@ const Spotify = () => {
       return;
     }
     if (window.location.hash || window.location.search) {
-      axios.post('/api/integrations/spotify?_action=state')
+      axios.post(`${server}/api/integrations/spotify?_action=state`, undefined, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }})
         .then(({ data }) => {
           let urlState = '';
           let urlCode = '';
@@ -26,7 +27,7 @@ const Spotify = () => {
           }
 
           if (urlState === data.data) {
-            axios.post('/api/integrations/spotify?_action=code', { code: urlCode })
+            axios.post(`${server}/api/integrations/spotify?_action=code`, { code: urlCode }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }})
               .then(() => {
                 setState(true);
                 setTimeout(() => window.close(), 1000);
@@ -37,7 +38,7 @@ const Spotify = () => {
           }
         });
     } else {
-      axios.post('/api/integrations/spotify?_action=authorize')
+      axios.post(`${server}/api/integrations/spotify?_action=authorize`, undefined, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }})
         .then(({ data }) => {
           const { opts } = data.data;
           const url = new URL(opts[0]);

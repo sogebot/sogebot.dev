@@ -3,6 +3,7 @@ import axios from 'axios';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
+import getAccessToken from '../../getAccessToken';
 
 const Google = () => {
   const [progress, setProgress] = useState<boolean | null>(null);
@@ -34,7 +35,7 @@ const Google = () => {
         axios.get('https://credentials.sogebot.xyz/google/?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            axios.post('/api/services/google?_action=token', { refreshToken }).then(() => {
+            axios.post(`${server}/api/services/google?_action=token`, { refreshToken }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }}).then(() => {
               setProgress(true);
               setTimeout(() => window.close(), 1000);
               return;

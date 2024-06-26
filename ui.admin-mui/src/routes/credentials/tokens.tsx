@@ -65,7 +65,7 @@ const TwitchOwnAppTokens = () => {
         axios.post(`https://id.twitch.tv/oauth2/token?client_id=${sessionStorage.clientId}&client_secret=${sessionStorage.clientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${window.location.origin}/credentials/oauth/tokens`)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            axios.post('/api/services/twitch/?_action=tokenOwnApp', {
+            axios.post(`${server}/api/services/twitch/?_action=tokenOwnApp`, {
               refreshToken,
               accountType,
               clientId: sessionStorage.clientId,

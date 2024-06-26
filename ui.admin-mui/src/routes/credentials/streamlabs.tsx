@@ -2,6 +2,7 @@ import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/mater
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocalstorageState } from 'rooks';
+import getAccessToken from '../../getAccessToken';
 
 const Streamlabs = () => {
   const [state, setState] = useState<boolean | null>(null);
@@ -23,7 +24,7 @@ const Streamlabs = () => {
         axios.get('https://credentials.sogebot.xyz/streamlabs/?code=' + code)
           .then(({ data }) => {
             const accessToken = data.access_token;
-            axios.post('/api/integrations/streamlabs?_action=token', { accessToken }).then(() => {
+            axios.post(`${server}/api/integrations/streamlabs?_action=token`, { accessToken }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }}).then(() => {
               setState(true);
               setTimeout(() => window.close(), 1000);
               return;
