@@ -52,7 +52,7 @@ const Twitch = () => {
         axios.get(serviceUrl + '?code=' + code)
           .then(({ data }) => {
             const refreshToken = data.refresh_token;
-            axios.post(`${server}/api/services/twitch/?_action=token`, { refreshToken, accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` }}).then(() => {
+            axios.post(`${server}/api/services/twitch/?_action=token`, { refreshToken, accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(() => {
               setProgress(true);
               setTimeout(() => window.close(), 1000);
               return;
