@@ -81,6 +81,25 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   axios.defaults.baseURL = JSON.parse(localStorage.server);
   axios.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
 
+  // Add a response interceptor to the default Axios instance
+  axios.interceptors.response.use(
+    response => {
+    // If the response is successful, simply return the response
+      return response;
+    },
+    error => {
+    // If the response has an error
+      if (error.response && error.response.status === 403) {
+      // Handle 403 error globally
+        console.error('Global Error Handler: Error 403 - Forbidden');
+        dispatch(showLoginWarning());
+      }
+
+      // Return a rejected promise to keep the promise chain
+      return Promise.reject(error);
+    }
+  );
+
   dispatch(setState(false));
 
   try {
