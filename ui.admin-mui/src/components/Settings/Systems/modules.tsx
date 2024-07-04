@@ -1,5 +1,6 @@
 import { Box, FormControlLabel, FormGroup, Grid, Switch, Typography } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -49,14 +50,10 @@ const PageSettingsModulesSystemsModules: React.FC<{
       return [...values];
     });
 
-    getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
-      if (err) {
-        console.error(err);
-        enqueueSnackbar(String(err), { variant: 'error' });
-        return;
-      } else {
-        enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
-      }
+    axios.post(`/api/settings/${item.type}/${item.name}`, { enabled }).then(() => {
+      enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
+    }).catch(err => {
+      enqueueSnackbar(String(err), { variant: 'error' });
     });
   }, [ enqueueSnackbar ]);
 

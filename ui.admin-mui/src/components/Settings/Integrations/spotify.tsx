@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntervalWhen, useRefElement } from 'rooks';
 
 import { baseURL } from '../../../helpers/getBaseURL';
-import { getSocket } from '../../../helpers/socket';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
@@ -55,9 +54,9 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
   const authorize = useCallback(async () => {
     // enable module
     await new Promise<void>(resolve => {
-      getSocket('/integrations/spotify').emit('settings.update', { enabled: true }, () => {
+      axios.post(`/api/settings/integrations/spotify`, { enabled: true }).then(() => {
         resolve();
-      });
+      }).catch(console.error);
     });
     // save changes
     await save();
