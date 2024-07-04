@@ -16,7 +16,6 @@ export interface LoaderState {
   drawerWidth:           number,
   message:               null,
   state:                 boolean,
-  tokensOnboardingState: boolean,
   configuration:         Record<string,any>,
   translation:           Record<string,any>,
 
@@ -41,7 +40,6 @@ const initialState: LoaderState = {
   drawerWidth:           65,
   message:               null,
   state:                 false,
-  tokensOnboardingState: false,
   configuration:         {},
   translation:           {},
 
@@ -81,10 +79,6 @@ export const loaderSlice = createSlice({
       console.debug(`setState`, action.payload);
       state.state = action.payload;
     },
-    setTokensOnboardingState: (state: { tokensOnboardingState: any }, action: { payload: any }) => {
-      console.debug(`setTokensOnboardingState`, action.payload);
-      state.tokensOnboardingState = action.payload;
-    },
     setConfiguration: (state: { configuration: any }, action: { payload: any }) => {
       console.debug(`setConfiguration`, action.payload);
       state.configuration = action.payload;
@@ -115,7 +109,7 @@ export const loaderSlice = createSlice({
   },
 });
 
-export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, setTokensOnboardingState, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, showLoginWarning } = loaderSlice.actions;
+export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, showLoginWarning } = loaderSlice.actions;
 
 export const selectTranslationState = (state: RootState) => state.loader.translation;
 export const selectStateState = (state: RootState) => state.loader.state;

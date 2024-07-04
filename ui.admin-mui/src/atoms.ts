@@ -26,3 +26,8 @@ export const rewardsAtom = atom<{ id: string, name: string }[]>([]);
  * List of alert queues
  */
 export const alertQueueAtom = atom<AlertQueue[]>([]);
+
+/*
+ * Show onboarding tokens dialog
+ */
+export const onboardingTokensAtomValid = atom<boolean>(false);

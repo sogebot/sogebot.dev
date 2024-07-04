@@ -1,24 +1,26 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import axios from 'axios';
+import { useSetAtom } from 'jotai';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 
+import { onboardingTokensAtomValid } from '../atoms';
 import getAccessToken from '../getAccessToken';
 import { baseURL } from '../helpers/getBaseURL';
-import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
+import { useAppSelector } from '../hooks/useAppDispatch';
 import { useScope } from '../hooks/useScope';
 import { useSettings } from '../hooks/useSettings';
-import { setTokensOnboardingState } from '../store/loaderSlice';
 
 export const OnboardingTokens: React.FC = () => {
-  const dispatch = useAppDispatch();
   const scope = useScope('dashboard');
 
-  if (scope.manage) {
+  const setTokensOnboardingState = useSetAtom(onboardingTokensAtomValid);
+
+  if (!scope.manage) {
     // do nothing if user is not admin
-    dispatch(setTokensOnboardingState(true));
+    setTokensOnboardingState(true);
     return <></>;
   }
 
@@ -32,19 +34,19 @@ export const OnboardingTokens: React.FC = () => {
 
   useEffect(() => {
     if (settings) {
-      if (server === 'https://demobot.sogebot.xyz' || (settings.bot.botRefreshToken[0].length > 0 && settings.broadcaster.broadcasterRefreshToken[0].length > 0)) {
-        dispatch(setTokensOnboardingState(true));
+      if (server !== 'https://demobot.sogebot.xyz' && (settings.bot.botRefreshToken[0].length > 0 || settings.broadcaster.broadcasterRefreshToken[0].length > 0)) {
+        setTokensOnboardingState(true);
         setOpen(false);
       } else {
         setOpen(true);
       }
     }
-  }, [ dispatch, settings, connectedToServer, server ]);
+  }, [ settings, connectedToServer, server ]);
 
-  const handleContinue = useCallback(() => {
-    dispatch(setTokensOnboardingState(true));
+  const handleContinue = () => {
+    setTokensOnboardingState(true);
     setOpen(false);
-  }, [dispatch]);
+  };
 
   useEffect(() => {
     if (connectedToServer) {
@@ -63,7 +65,7 @@ export const OnboardingTokens: React.FC = () => {
   useIntervalWhen(refresh, 1000, open, true);
 
   const revoke = useCallback((accountType: 'bot' | 'broadcaster') => {
-    axios.post('/api/services/twitch/?_action=revoke', { accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(() => {
+    axios.post(`/api/services/twitch/?_action=revoke`, { accountType }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(() => {
       enqueueSnackbar('User Access revoked.', { variant: 'success' });
       refresh();
     });

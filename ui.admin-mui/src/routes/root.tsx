@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { cloneDeep } from 'lodash';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
@@ -42,7 +42,7 @@ import PageStatsBits from './stats/bits';
 import PageStatsCommandCount from './stats/commandcount';
 import PageStatsProfiler from './stats/profiler';
 import PageStatsTips from './stats/tips';
-import { loggedUserAtom } from '../atoms';
+import { loggedUserAtom, onboardingTokensAtomValid } from '../atoms';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';
@@ -173,7 +173,8 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 export default function Root() {
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const { server, connectedToServer, state, tokensOnboardingState, configuration } = useAppSelector((s: any) => s.loader);
+  const { server, connectedToServer, state, configuration } = useAppSelector((s: any) => s.loader);
+  const tokensOnboardingState = useAtomValue(onboardingTokensAtomValid);
   const [ isIndexPage, setIndexPage ] = useState(false);
   const isMobile = useMobile();
   const setUser = useSetAtom(loggedUserAtom);
