@@ -52,8 +52,11 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
       axios.get('/api/integrations/discord/channels').then(({ data }) => {
         if (!data.data.find((o: any) => String(o.value) === String(settingsData?.bot.guild[0]))) {
           handleChange('bot.listenAtChannels', ['']);
+        } else {
+          if (settingsData.bot.listenAtChannels.length > 0) {
+            handleChange('bot.listenAtChannels', settingsData.bot.listenAtChannels[0].filter(Boolean));
+          }
         }
-        handleChange('bot.listenAtChannels', settingsData.bot.listenAtChannels[0].filter(Boolean));
         setChannels(data.data);
       });
     });

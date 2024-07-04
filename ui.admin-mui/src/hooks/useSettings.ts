@@ -146,7 +146,7 @@ export const useSettings = (
   }, [ settings, validator, translate, endpoint ]);
 
   const save = useCallback(async (values?: any) => {
-    const data = values ?? settings;
+    const data = !('nativeEvent' in values) ? values : settings;
     if (data) {
       setSaving(true);
       await saveSettings(`/api/settings${endpoint}`, data);
