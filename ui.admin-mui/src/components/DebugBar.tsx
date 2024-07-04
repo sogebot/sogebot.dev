@@ -3,7 +3,9 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { useLocalstorageState } from 'rooks';
 
+import getAccessToken from '../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { toggleDebugManager } from '../store/loaderSlice';
 
@@ -14,6 +16,7 @@ export default function DebugBar() {
   const [ debug, setDebug ] = useState('');
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
 
   useEffect(() => {
     if(showDebugManager && connectedToServer) {
@@ -21,7 +24,7 @@ export default function DebugBar() {
     }
 
     if (connectedToServer) {
-      axios.get(`/api/core/debug`).then(({ data }) => {
+      axios.get(`${server}/api/core/panel/debug`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(({ data }) => {
         console.log({ debug: data.data });
         setDebug(data.data);
       });
@@ -35,7 +38,7 @@ export default function DebugBar() {
 
     console.log('Sending debug', debugInput);
     await new Promise(resolve => {
-      axios.post(`/api/core/debug`, { debug: debugInput });
+      axios.post(`${server}/api/core/panel/debug`, { debug: debugInput }, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
       setTimeout(() => resolve(true), 200);
     });
 
