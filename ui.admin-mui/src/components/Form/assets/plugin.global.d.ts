@@ -602,6 +602,16 @@ declare const ListenTo: {
       userId:                 string;
       userName:               string;
     }) => void): void,
+    onChannelBan(callback: (args: {
+      moderatorName: string;
+      moderatorId: string;
+      moderatorDisplayName: string;
+      userId: string;
+      userName: string;
+      userDisplayName: string;
+      reason: string;
+      ends_at: string | null;
+    }) => void): void,
   },
 
   CustomVariable: {
