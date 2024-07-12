@@ -67,7 +67,7 @@ const PageManageTimers = () => {
   const { element: filterElement, filters } = useFilter<Timer>(useFilterSetup);
 
   const deleteItem = useCallback((item: Timer) => {
-    axios.delete(`/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+    axios.delete(`/api/systems/timers/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .finally(() => {
         enqueueSnackbar(`Timer ${item.name} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -81,7 +81,7 @@ const PageManageTimers = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get(`/api/systems/timer`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+        axios.get(`/api/systems/timers`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
             setItems(data.data);
             resolve();
@@ -139,7 +139,7 @@ const PageManageTimers = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post(`/api/systems/timer`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.post(`/api/systems/timers`, item, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .then(() => {
               resolve();
             });
@@ -168,7 +168,7 @@ const PageManageTimers = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
+          axios.delete(`/api/systems/timers/${item.id}`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
             .finally(() => {
               resolve();
             });

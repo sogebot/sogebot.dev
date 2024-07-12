@@ -63,7 +63,7 @@ export const TimerEdit: React.FC<{
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`/api/systems/timer`,
+    axios.post(`/api/systems/timers`,
       item,
       { headers: { authorization: `Bearer ${getAccessToken()}` } })
       .then((response) => {
