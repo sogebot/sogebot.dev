@@ -58,7 +58,6 @@ import { OnboardingTokens } from '../components/OnboardingTokens';
 import { ServerRouterQueryParam } from '../components/ServerRouterQueryParam';
 import { ServerSelect } from '../components/ServerSelect';
 import { Version } from '../components/Version';
-import getAccessToken from '../getAccessToken';
 import checkTokenValidity from '../helpers/check-token-validity';
 import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
@@ -79,7 +78,6 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
   }
 
   axios.defaults.baseURL = JSON.parse(localStorage.server);
-  axios.defaults.headers.common.Authorization = `Bearer ${getAccessToken()}`;
 
   // Add a response interceptor to the default Axios instance
   axios.interceptors.response.use(
@@ -92,7 +90,6 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
       if (error.response && error.response.status === 403) {
       // Handle 403 error globally
         console.error('Global Error Handler: Error 403 - Forbidden');
-        dispatch(showLoginWarning());
       }
 
       // Return a rejected promise to keep the promise chain
@@ -115,6 +112,8 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     localStorage[`${localStorage.server}::accessToken`] = validation.data.accessToken;
     localStorage[`${localStorage.server}::refreshToken`] = validation.data.refreshToken;
     localStorage[`${localStorage.server}::userType`] = validation.data.userType;
+
+    axios.defaults.headers.common.Authorization = `Bearer ${validation.data.accessToken}`;
   } catch(e) {
     console.error(e);
     console.groupEnd();

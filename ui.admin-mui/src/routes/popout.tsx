@@ -49,6 +49,7 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
     localStorage[`${localStorage.server}::accessToken`] = validation.data.accessToken;
     localStorage[`${localStorage.server}::refreshToken`] = validation.data.refreshToken;
     localStorage[`${localStorage.server}::userType`] = validation.data.userType;
+    axios.defaults.headers.common.Authorization = `Bearer ${validation.data.accessToken}`;
   } catch(e) {
     console.error(e);
     console.groupEnd();
