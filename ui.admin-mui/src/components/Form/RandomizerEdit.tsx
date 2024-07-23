@@ -1,6 +1,7 @@
 import { DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragHandleTwoTone, ExpandMoreTwoTone, LinkOffTwoTone, LinkTwoTone } from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
@@ -76,10 +77,10 @@ const emptyItem = Object.assign(new Randomizer(), {
   widgetOrder:    -1,
   tts:            {
     enabled: false,
-    voice:   '',
-    pitch:   1,
-    volume:  0.5,
-    rate:    1,
+    selectedService: TTSService.NONE,
+    services: {
+      [TTSService.NONE]: null,
+    }
   },
   position: {
     x:       50,
