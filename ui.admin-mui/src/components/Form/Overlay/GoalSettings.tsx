@@ -279,7 +279,7 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
                       renderValue={(selected) => {
                         return <RenderList label={tiltifyCampaigns.find(c => c.id === selected)?.name} id={selected}/>;
                       }}
-                      onChange={(ev) => updateCampaign(idx, 'tiltifyCampaign', ev.target.value === '' ? null : Number(ev.target.value))}
+                      onChange={(ev) => updateCampaign(idx, 'tiltifyCampaign', ev.target.value === '' ? null : ev.target.value)}
                     >
                       <MenuItem value="">
                         <RenderList label={''} id={''}/>

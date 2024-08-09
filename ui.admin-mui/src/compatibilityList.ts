@@ -1,7 +1,9 @@
+// commits from https://github.com/sogebot/sogebot.dev
 type lastCompatibleCommit = string;
 export const versions: {
   [version: string]: lastCompatibleCommit,
 } = {
+  '22.12.1 - 23.1.2':              'f1e1a0aa',
   '22.10.0 - 22.12.0':             '3fd6c3c2',
   '22.7.0 - 22.9.0':               '038e2021',
   '22.6.3':                        'ece54717',

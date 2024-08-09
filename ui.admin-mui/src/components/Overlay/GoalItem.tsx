@@ -255,7 +255,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
             whiteSpace:   'nowrap',
           }}>
             { campaign.type === 'tiltifyCampaign' ? Intl.NumberFormat(lang, {
-              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.causeCurrency || currency,
+              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.amount_raised.currency || currency,
             }).format(campaign.currentAmount ?? 0)
               : campaign.type.toLowerCase().includes('tips') ? Intl.NumberFormat(lang, {
                 style: 'currency', currency: currency,
@@ -273,7 +273,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
             whiteSpace:   'nowrap',
           }}>
             { campaign.type === 'tiltifyCampaign' ? Intl.NumberFormat(lang, {
-              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.causeCurrency || currency,
+              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.amount_raised.currency || currency,
             }).format(campaign.goalAmount ?? 0)
               : campaign.type.toLowerCase().includes('tips') ? Intl.NumberFormat(lang, {
                 style: 'currency', currency: currency,
@@ -325,7 +325,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
             ...fontStyle(campaign),
           }}>
             { campaign.type === 'tiltifyCampaign' ? Intl.NumberFormat(lang, {
-              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.causeCurrency || currency,
+              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.amount_raised.currency || currency,
             }).format(campaign.currentAmount ?? 0)
               : campaign.type.toLowerCase().includes('tips') ? Intl.NumberFormat(lang, {
                 style: 'currency', currency: currency,
@@ -351,7 +351,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
             whiteSpace:   'nowrap',
           }}>
             { campaign.type === 'tiltifyCampaign' ? Intl.NumberFormat(lang, {
-              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.causeCurrency || currency,
+              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.amount_raised.currency || currency,
             }).format(0)
               : campaign.type.toLowerCase().includes('tips') ? Intl.NumberFormat(lang, {
                 style: 'currency', currency: currency,
@@ -381,7 +381,7 @@ export const GoalItem: React.FC<Props<Goal>> = ({ item, width, active, id, group
             whiteSpace:   'nowrap',
           }}>
             { campaign.type === 'tiltifyCampaign' ? Intl.NumberFormat(lang, {
-              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.causeCurrency || currency,
+              style: 'currency', currency: tiltifyCampaigns.find(o => campaign.tiltifyCampaign === o.id)?.amount_raised.currency || currency,
             }).format(campaign.goalAmount ?? 0)
               : campaign.type.toLowerCase().includes('tips') ? Intl.NumberFormat(lang, {
                 style: 'currency', currency: currency,
