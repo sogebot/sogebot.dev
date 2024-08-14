@@ -265,6 +265,22 @@ const PageSettingsModulesServiceGoogle: React.FC<{
           <FormControlLabel control={<Switch checked={settings.shouldPrepareBroadcast[0]} onClick={() => handleChange('shouldPrepareBroadcast', !settings.shouldPrepareBroadcast[0])} />} label={'Automatically prepare new broadcast'} />
         </FormGroup>
 
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id="latency-label" shrink>Latency</InputLabel>
+          <Select
+            labelId="latency-label"
+            id="latency-select"
+            variant='filled'
+            value={settings.latency[0]}
+            label="Latency"
+            onChange={(event) => handleChange('latency', event.target.value)}
+          >
+            <MenuItem value="NORMAL">Normal</MenuItem>
+            <MenuItem value="LOW">Low</MenuItem>
+            <MenuItem value="ULTRA_LOW">Ultra-low</MenuItem>
+          </Select>
+        </FormControl>
+
         <Stack direction='row' spacing={1} alignItems='center'>
           <FormControl fullWidth variant='filled'>
             <InputLabel id="rmtp-stream-label" shrink>On Stream Start Privacy Status</InputLabel>
