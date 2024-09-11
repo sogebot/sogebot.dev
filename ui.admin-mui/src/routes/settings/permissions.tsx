@@ -60,7 +60,7 @@ const PageSettingsPermissions = () => {
     for (let i = 0; i < items.length; i++) {
       if (items[i].order !== i) {
         // order is not correct, reorder
-        reorder(true);
+        reorder();
         break;
       }
     }
@@ -97,44 +97,29 @@ const PageSettingsPermissions = () => {
     if (!value.destination) {
       return;
     }
+
+    const permissionId = value.draggableId;
+    const ordered = orderBy(cloneDeep(items), 'order', 'asc');
+
     const destIdx = value.destination.index;
-    const PID = value.draggableId;
+    const fromIdx = ordered.findIndex(m => m.id === permissionId);
+    const fromItem = ordered.find(m => m.id === permissionId);
 
-    setItems(o => {
-      const output: Permissions[] = [];
+    if (fromIdx === destIdx || !fromItem) {
+      return;
+    }
 
-      const _permissions = orderBy(o, 'order', 'asc');
-      const fromIdx = _permissions.findIndex(m => m.id === PID);
+    // remove fromIdx
+    ordered.splice(fromIdx, 1);
 
-      if (fromIdx === destIdx) {
-        return o;
-      }
+    // insert into destIdx
+    ordered.splice(destIdx, 0, fromItem);
 
-      for (let idx = 0; idx < o.length; idx++) {
-        const permission = _permissions[idx];
-        if (permission.id === PID) {
-          continue;
-        }
-
-        if (idx === destIdx && destIdx === 1) {
-          const dragged = _permissions[fromIdx];
-          dragged.order = output.length;
-          output.push(dragged);
-        }
-
-        permission.order = output.length;
-        output.push(permission);
-
-        if (idx === destIdx && destIdx > 1) {
-          const dragged = _permissions[fromIdx];
-          dragged.order = output.length;
-          output.push(dragged);
-        }
-      }
-      return output;
-    });
-    reorder();
-  }, [reorder]);
+    const reordered = ordered.map((o: any, idx) => ({
+      ...o, order: idx + 1, // move everything by 1 so it forces save
+    }));
+    setItems(reordered);
+  }, [items]);
 
   const addNewPermissionGroup = useCallback(() => {
     const data = Object.assign(new Permissions(), {
