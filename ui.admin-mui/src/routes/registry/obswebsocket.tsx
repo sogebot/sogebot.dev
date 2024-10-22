@@ -21,7 +21,7 @@ import { useScope } from '../../hooks/useScope';
 import { setBulkCount } from '../../store/appbarSlice';
 
 const PageRegistryCustomVariables = () => {
-  const scope = useScope('integration');
+  const scope = useScope('integrations');
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { type, id } = useParams();
