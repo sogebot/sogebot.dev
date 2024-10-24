@@ -1,6 +1,8 @@
 import { CustomPaging, FilteringState, IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, PagingPanel, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
-import { LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
+import { mdiAlphaA } from '@mdi/js';
+import Icon from '@mdi/react';
+import { LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeMuteTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Backdrop, Button, CircularProgress, Dialog, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
@@ -82,9 +84,18 @@ const PageCommandsSongPlaylist = () => {
       column:      {
         getCellValue: row => <Stack direction="row" spacing={1} alignSelf='center'>
           <Typography>{ dayjs.duration(row.length * 1000).format('HH:mm:ss').replace('00:0', '').replace('00:', '') }</Typography>
-          <Typography><VolumeUpTwoTone sx={{
-            fontSize: '16px', position: 'relative', top: '2px',
-          }}/> { row.volume }%</Typography>
+          {row.forceVolume
+            ? <Typography>
+              <VolumeUpTwoTone sx={{ fontSize: '16px', position: 'relative', top: '2px', pr: '2px' }}/>
+              { row.volume }%
+            </Typography>
+            : <Typography>
+              <VolumeMuteTwoTone sx={{ fontSize: '16px', position: 'relative', top: '2px' }}/>
+              <Icon path={mdiAlphaA} size={0.8} style={{ margin: '-4px -4px -4px -10px' }} />
+
+              { row.volume }%
+            </Typography>
+          }
           <Typography>
             <SkipPreviousTwoTone sx={{
               fontSize: '16px', position: 'relative', top: '2px',

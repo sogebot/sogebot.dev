@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Checkbox, FormControlLabel, FormGroup, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, FormGroup, FormLabel, InputAdornment, Paper, Slider, Stack, TextField, Typography } from '@mui/material';
 import React, { useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
@@ -61,11 +61,19 @@ const PageSettingsModulesSystemsSongs: React.FC<{
           />
         </FormGroup>,
         )}
-        <TextField
-          {...TextFieldProps('volume')}
-          label={translate(`systems.songs.settings.volume`)}
-          type="number"
-        />
+
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 60px 0 0' }}>
+          <FormLabel sx={{ width: '400px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
+          <Slider
+            {...TextFieldProps('volume')}
+            step={1}
+            min={0}
+            max={100}
+            valueLabelDisplay="on"
+            valueLabelFormat={(value) => `${value}%`}
+            onChange={(event, newValue) => handleChange('volume', newValue)}
+          />
+        </Stack>
         <TextField
           {...TextFieldProps('duration')}
           InputProps={{ startAdornment: <InputAdornment position="start">{translate(`systems.songs.settings.duration.help`)}</InputAdornment> }}

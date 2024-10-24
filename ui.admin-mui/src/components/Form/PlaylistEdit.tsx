@@ -1,5 +1,5 @@
 import { Autocomplete, LoadingButton } from '@mui/lab';
-import { Box, Button, Chip, Collapse, DialogActions, DialogContent, FormLabel, Grid, LinearProgress, Slider, Stack } from '@mui/material';
+import { Box, Button, Chip, DialogActions, DialogContent, FormLabel, Grid, LinearProgress, Slider, Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
@@ -36,8 +36,6 @@ export const PlaylistEdit: React.FC<{
         setItem(data.data[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
         setLoading(false);
       });
-      //setItem(props.items?.find(o => o.videoId === id) ?? Object.assign(new SongPlaylist(), { tags: [] }));
-      setLoading(false);
     } else {
       setItem(Object.assign(new SongPlaylist(), { tags: [] }));
       setLoading(false);
@@ -137,133 +135,133 @@ export const PlaylistEdit: React.FC<{
 
   return(<>
     {loading && <LinearProgress />}
-    <Collapse in={!loading} mountOnEnter unmountOnExit>
-      <DialogContent dividers>
-        <Box
-          component="form"
-          sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
-          noValidate
-          autoComplete="off"
-        >
-          <Grid>
-            <Grid item>
-              {item.videoId && <YouTube
-                style={{ aspectRatio: '16/9' }}
-                videoId={item.videoId}
-                opts={opts}
-              />}
-            </Grid>
-            <Grid item></Grid>
+    {!loading && <DialogContent dividers>
+      <Box
+        component="form"
+        sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
+        noValidate
+        autoComplete="off"
+      >
+        <Grid>
+          <Grid item>
+            {item.videoId && <YouTube
+              style={{ margin: 'auto', aspectRatio: '16/9', maxHeight: '45vh', minHeight: '200px' }}
+              videoId={item.videoId}
+              opts={opts}
+            />}
           </Grid>
+          <Grid item></Grid>
+        </Grid>
 
-          <Autocomplete
-            fullWidth
-            value={item.tags.map((o: string) => ({
-              title: o, value: o,
-            })) as { title: string, value: string }[]}
-            multiple
-            onChange={(event, newValue) => {
-              if (Array.isArray(newValue)) {
-                handleValueChange('tags', Array.from(new Set(['general', ...newValue.map(o => typeof o === 'string' ? o : o.value)])));
-              }
-            }}
-            filterOptions={(options, params) => {
-              const filtered = filter(options, params);
-
-              const { inputValue } = params;
-              // Suggest the creation of a new value
-              const isExisting = options.some((option) => inputValue === option.title);
-              if (inputValue !== '' && !isExisting) {
-                filtered.push({
-                  value: inputValue,
-                  title: `Add tag "${inputValue}"`,
-                });
-              }
-
-              return filtered;
-            }}
-            selectOnFocus
-            clearOnBlur
-            handleHomeEndKeys
-            options={tagsItems}
-            getOptionLabel={(option) => {
-            // Value selected with enter, right from the input
-              if (typeof option === 'string') {
-                return option;
-              }
-              // Add "xxx" option created dynamically
-              if (option.value) {
-                return option.value;
-              }
-              // Regular option
-              return option.title;
-            }}
-            renderOption={(_props, option) => <li {..._props}>{option.title}</li>}
-            isOptionEqualToValue={(option, v) => {
-              return option.value === v.value;
-            }}
-            renderTags={(tagValue, getTagProps) =>
-              tagValue.map((option, index) => (
-                <Chip
-                  label={option.title}
-                  {...getTagProps({ index })}
-                  disabled={option.value==='general'}
-                  key={option.title}
-                  size="small"
-                />
-              ))
+        <Autocomplete
+          fullWidth
+          value={item.tags.map((o: string) => ({
+            title: o, value: o,
+          })) as { title: string, value: string }[]}
+          multiple
+          onChange={(event, newValue) => {
+            if (Array.isArray(newValue)) {
+              handleValueChange('tags', Array.from(new Set(['general', ...newValue.map(o => typeof o === 'string' ? o : o.value)])));
             }
-            freeSolo
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                fullWidth
-                variant="filled"
-                label={translate('systems.quotes.tags.name')}
-                placeholder='Start typing to add tag'
+          }}
+          filterOptions={(options, params) => {
+            const filtered = filter(options, params);
+
+            const { inputValue } = params;
+            // Suggest the creation of a new value
+            const isExisting = options.some((option) => inputValue === option.title);
+            if (inputValue !== '' && !isExisting) {
+              filtered.push({
+                value: inputValue,
+                title: `Add tag "${inputValue}"`,
+              });
+            }
+
+            return filtered;
+          }}
+          selectOnFocus
+          clearOnBlur
+          handleHomeEndKeys
+          options={tagsItems}
+          getOptionLabel={(option) => {
+            // Value selected with enter, right from the input
+            if (typeof option === 'string') {
+              return option;
+            }
+            // Add "xxx" option created dynamically
+            if (option.value) {
+              return option.value;
+            }
+            // Regular option
+            return option.title;
+          }}
+          renderOption={(_props, option) => <li {..._props}>{option.title}</li>}
+          isOptionEqualToValue={(option, v) => {
+            return option.value === v.value;
+          }}
+          renderTags={(tagValue, getTagProps) =>
+            tagValue.map((option, index) => (
+              <Chip
+                label={option.title}
+                {...getTagProps({ index })}
+                disabled={option.value==='general'}
+                key={option.title}
+                size="small"
               />
-            )}
+            ))
+          }
+          freeSolo
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              variant="filled"
+              label={translate('systems.quotes.tags.name')}
+              placeholder='Start typing to add tag'
+            />
+          )}
+        />
+
+        <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
+        <Stack direction='row' spacing={2} alignItems="center">
+          <FormControlLabel
+            label={translate('systems.songs.calculated') }
+            control={
+              <Checkbox
+                checked={!item.forceVolume}
+                onChange={(_, checked) => handleValueChange('forceVolume', !checked)}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            }/>
+
+          <Slider
+            disabled={!item.forceVolume}
+            value={item.volume}
+            step={1}
+            min={0}
+            max={100}
+            valueLabelDisplay="on"
+            valueLabelFormat={(value) => `${value}%`}
+            size='small'
+            onChange={(event, newValue) => handleValueChange('volume', Number(newValue))}
           />
+        </Stack>
 
-          <FormLabel sx={{ marginTop: '30px' }}>{translate('systems.songs.settings.volume')}</FormLabel>
-          <Stack direction='row' spacing={2} alignItems="center">
-            <FormControlLabel
-              label={translate('systems.songs.calculated') }
-              control={
-                <Checkbox
-                  checked={!item.forceVolume}
-                  onChange={(_, checked) => handleValueChange('forceVolume', checked)}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                />
-              }/>
-
-            <Slider
-              disabled={!item.forceVolume}
-              value={item.volume}
-              max={100}
-              valueLabelDisplay="on"
-              valueLabelFormat={(value) => `${value}%`}
-              size='small'
-              onChange={(event, newValue) => handleValueChange('volume', Number(newValue))}
-            />
-          </Stack>
-
-          <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
-            <FormLabel sx={{ width: '100px' }}>Trim song</FormLabel>
-            <Slider
-              marks={marks}
-              value={[item.startTime, item.endTime]}
-              disableSwap
-              max={item.length}
-              valueLabelDisplay="on"
-              size='small'
-              valueLabelFormat={(value) => dayjs.duration(value * 1000).format('HH:mm:ss').replace('00:0', '').replace('00:', '')}
-              onChange={(event, newValue, activeThumb) => setRange(newValue as [min: number, max: number], activeThumb)}
-            />
-          </Stack>
-        </Box>
-      </DialogContent>
-    </Collapse>
+        <Stack direction='row' spacing={2} alignItems="center" sx={{ padding: '15px 20px 30px 0' }}>
+          <FormLabel sx={{ width: '100px' }}>Trim song</FormLabel>
+          <Slider
+            marks={marks}
+            value={[item.startTime, item.endTime]}
+            disableSwap
+            max={item.length}
+            valueLabelDisplay="on"
+            size='small'
+            valueLabelFormat={(value) => dayjs.duration(value * 1000).format('HH:mm:ss').replace('00:0', '').replace('00:', '')}
+            onChange={(event, newValue, activeThumb) => setRange(newValue as [min: number, max: number], activeThumb)}
+          />
+        </Stack>
+      </Box>
+    </DialogContent>}
     <DialogActions>
       <Button sx={{ width: 150 }} onClick={handleClose}>Close</Button>
       <LoadingButton variant='contained' color='primary' sx={{ width: 150 }} onClick={handleSave} loading={saving} disabled={haveErrors || loading}>Save</LoadingButton>
