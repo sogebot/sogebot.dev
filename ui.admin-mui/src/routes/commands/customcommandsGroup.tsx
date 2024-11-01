@@ -37,8 +37,8 @@ const PageCommandsCommands = () => {
     },
   ];
 
-  const groups = useMemo(() => {
-    return Array.from(new Set(items.map(o => o.group)));
+  const groups = useMemo<(string | null)[]>(() => {
+    return Array.from(new Set(items.map(o => o.group))) || [];
   }, [items]);
 
   const groupsSettingsAll = useMemo((): CommandsGroup[] => {
@@ -51,7 +51,7 @@ const PageCommandsCommands = () => {
             options: {
               filter: null, permission: null,
             },
-          } as CommandsGroup);
+          } as unknown as CommandsGroup);
         }
       }
     }
@@ -75,7 +75,7 @@ const PageCommandsCommands = () => {
       {
         name:         'used',
         title:        capitalize(translate('isUsed')),
-        getCellValue: (row) => groups.includes(row.name),
+        getCellValue: (row: any) => groups.includes(row.name),
       },
       {
         name:         'filter',
@@ -112,7 +112,7 @@ const PageCommandsCommands = () => {
       new Promise<void>(resolve => {
         axios.get(`/api/systems/customcommands`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
           .then(({ data }) => {
-            setItems(data.data);
+            setItems(data.data.items);
             resolve();
           });
       }),
