@@ -58,6 +58,9 @@ export const loaderSlice = createSlice({
   name:     'loader',
   initialState,
   reducers: {
+    setCurrentVersion(state, action: PayloadAction<string>) {
+      state.currentVersion = action.payload;
+    },
     setTranslation(state, action: PayloadAction<Record<string, any>>) {
       state.translation = action.payload;
     },
@@ -109,7 +112,7 @@ export const loaderSlice = createSlice({
   },
 });
 
-export const { toggleCookieManager, toggleDebugManager, addSettingsLoading, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, showLoginWarning } = loaderSlice.actions;
+export const { setCurrentVersion, toggleCookieManager, toggleDebugManager, addSettingsLoading, rmSettingsLoading, setTranslation, setConnectedToServer, setServer, setMessage, setState, setConfiguration, setSystem, showLoginWarning } = loaderSlice.actions;
 
 export const selectTranslationState = (state: RootState) => state.loader.translation;
 export const selectStateState = (state: RootState) => state.loader.state;

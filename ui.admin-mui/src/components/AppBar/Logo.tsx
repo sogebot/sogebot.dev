@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useTranslation } from '../../hooks/useTranslation';
 import sogebotLarge from '../../images/sogebot_large.png';
 import sogebotSmall from '../../images/sogebot_small.png';
+import { setCurrentVersion } from '../../store/loaderSlice';
 import { LinearProgressTimeout } from '../Progress/LinearProgressTimeout';
 
 export const Logo: React.FC = () => {
@@ -44,6 +45,7 @@ export const Logo: React.FC = () => {
           request.send();
         });
         const botVersion = version.trim().split('-')[0];
+        dispatch(setCurrentVersion(botVersion));
         const gitVersion = (response.tag_name as string);
         console.log('botVersion', botVersion, 'gitVersion', gitVersion);
 
