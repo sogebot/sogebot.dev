@@ -34,7 +34,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   const [ value, setValue ] = React.useState('1');
 
   const [ participantSearch, setParticipantSearch ] = React.useState('');
-  const [ keyword, setKeyword ] = React.useState('');
+  const [ keyword, setKeyword ] = React.useState('!enter');
   const [ keywordError, setKeywordError ] = React.useState<string[]>([]);
   const [ isTypeKeywords, setIsTypeKeywords ] = React.useState(false);
   const [ range, setRange ] = React.useState<[min: number, max: number]>([0, 1000]);
@@ -163,6 +163,12 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
       console.groupEnd();
       setLoading(false);
 
+      if (!raffleResponse) {
+        // we don't have any data
+        console.log('No raffle data');
+        return;
+      }
+
       if (!isEqual(raffle, raffleResponse)) {
         setRaffle(raffleResponse || null);
         setKeyword(raffleResponse?.keyword ?? '');
@@ -198,7 +204,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
           });
       }
 
-      if (!raffle?.isClosed) {
+      if ((raffle && !raffle?.isClosed)) {
         setKeyword(raffle.keyword);
         setIsTypeKeywords(raffle.type === 0);
         setRange([raffle.minTickets ?? 0, raffle.maxTickets ?? 0]);
@@ -298,10 +304,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
               variant="filled"
               label='Raffle command'
               fullWidth
-              disabled={!raffle?.isClosed || !scope.manage}
-              value={keyword }
+              disabled={(raffle && !raffle?.isClosed) || !scope.manage}
+              value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              InputProps={{ endAdornment: <InputAdornment position="end">{!raffle?.isClosed && <CircularProgress size={20}/>}</InputAdornment> }}
+              InputProps={{ endAdornment: <InputAdornment position="end">{(raffle && !raffle?.isClosed) && <CircularProgress size={20}/>}</InputAdornment> }}
             />
             <Autocomplete
               multiple
@@ -309,7 +315,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
               isOptionEqualToValue={(option, v) => {
                 return option.value === v.value;
               }}
-              disabled={!raffle?.isClosed || !scope.manage}
+              disabled={(raffle && !raffle?.isClosed) || !scope.manage}
               getOptionLabel={(option) => option.title}
               disableClearable
               value={eligible}
@@ -330,7 +336,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
             <Autocomplete
               value={typeItemSelected}
               options={typeItems}
-              disabled={!raffle?.isClosed || !scope.manage}
+              disabled={(raffle && !raffle?.isClosed) || !scope.manage}
               disableClearable
               onChange={(event, newValue) => setIsTypeKeywords(newValue ? newValue.value : true)}
               getOptionLabel={(option) => option.title}
@@ -347,14 +353,14 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
             {!isTypeKeywords && <Box sx={{
               width: '100%', p: 1,
             }}>
-              <Typography id="input-slider" gutterBottom color={!raffle?.isClosed || !scope.manage ? grey[500] : classes.whiteColor}>
+              <Typography id="input-slider" gutterBottom color={(raffle && !raffle?.isClosed) || !scope.manage ? grey[500] : classes.whiteColor}>
                 { translate('raffle-tickets-range') }
               </Typography>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
                   <Input
                     value={range[0]}
-                    disabled={!raffle?.isClosed || !scope.manage}
+                    disabled={(raffle && !raffle?.isClosed) || !scope.manage}
                     size="small"
                     onChange={(event) => setRange([Number(event.target.value), range[1]])}
                     inputProps={{
@@ -369,7 +375,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
                 <Grid item xs>
                   <Slider
                     value={range}
-                    disabled={!raffle?.isClosed || !scope.manage}
+                    disabled={(raffle && !raffle?.isClosed) || !scope.manage}
                     valueLabelDisplay="auto"
                     min={1}
                     max={10000}
@@ -380,7 +386,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
                   <Input
                     value={range[1]}
                     size="small"
-                    disabled={!raffle?.isClosed || !scope.manage}
+                    disabled={(raffle && !raffle?.isClosed) || !scope.manage}
                     onChange={(event) => setRange([range[0], Number(event.target.value)])}
                     inputProps={{
                       step:              10,
@@ -397,11 +403,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
             {scope.manage && <Box sx={{
               width: '100%', p: 1, textAlign: 'center',
             }}>
-              {!!raffle?.isClosed && <Button onClick={open} disabled={!isValid} sx={{ width: '400px' }} variant='contained'>
+              {!(raffle && !raffle?.isClosed) && <Button onClick={open} disabled={!isValid} sx={{ width: '400px' }} variant='contained'>
                 Open raffle
               </Button>}
 
-              {!raffle?.isClosed && <Stack spacing={1} sx={{ alignItems: 'center' }}>
+              {(raffle && !raffle?.isClosed) && <Stack spacing={1} sx={{ alignItems: 'center' }}>
                 <Button onClick={closeRaffle} sx={{ width: '400px' }} variant='contained' color='warning'>
                   Close raffle
                 </Button>
