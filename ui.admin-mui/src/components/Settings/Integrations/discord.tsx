@@ -274,7 +274,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
             labelId={p.id + '-label'}
             id={p.id + '-select'}
             variant='filled'
-            value={settings.bot.sendAnnouncesToChannel[0][p.id]}
+            value={settings.mapping.rolesMapping[0][p.id]}
             label={p.id}
             onChange={(event) => handleChangePermission(p.id, event.target.value)}
           >
