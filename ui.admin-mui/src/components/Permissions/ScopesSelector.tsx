@@ -72,7 +72,7 @@ export const ScopesSelector: React.FC<{
       <ScopeToggle
         customName='dashboard'
         selected={model}
-        scopes={['dashboard', 'checklist', 'queue', 'raffles', 'alerts', 'stats']}
+        scopes={['dashboard', 'checklist', 'queue', 'raffles', 'alerts', 'stats', 'translations']}
         label='Dashboard access'
         caption='User will be able to login to dashboard or manage dashboard'
         onChange={(change, remove) => {

@@ -25,7 +25,6 @@ export default function DebugBar() {
 
     if (connectedToServer) {
       axios.get(`${server}/api/core/panel/debug`, { headers: { 'Authorization': `Bearer ${getAccessToken()}` } }).then(({ data }) => {
-        console.log({ debug: data.data });
         setDebug(data.data);
       });
     }

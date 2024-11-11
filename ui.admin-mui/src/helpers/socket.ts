@@ -70,3 +70,8 @@ export const getConfiguration = async (): Promise<Configuration> => {
   const response = await axios.get(`/api/ui/configuration`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
   return response.data;
 };
+
+export const getTranslations = async (): Promise<Configuration> => {
+  const response = await axios.get(`/api/core/translations`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+  return response.data;
+};

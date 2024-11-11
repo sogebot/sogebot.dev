@@ -3,29 +3,33 @@ import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow } from '
 import { EditTwoTone } from '@mui/icons-material';
 import { CircularProgress, Dialog, Grid, Stack } from '@mui/material';
 import IconButton from '@mui/material/IconButton/IconButton';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
 import { TranslationsEdit } from '../../components/Form/TranslationsEdit';
-import { getSocket } from '../../helpers/socket';
-import { useColumnMaker } from '../../hooks/useColumnMaker';
+import getAccessToken from '../../getAccessToken';
+import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
+import { useScope } from '../../hooks/useScope';
 
 const PageSettingsTranslations = () => {
   const location = useLocation();
   const { type, id } = useParams();
+  const scope = useScope('translations');
 
   const [ items, setItems ] = useState<{ name: string; current: string; default: string; }[]>([]);
   const [ loading, setLoading ] = useState(true);
 
-  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<(typeof items)[number]>([
-    {
-      columnName: 'name', filtering: { type: 'string' }, translation: 'Key',
-    },{
-      columnName: 'current', filtering: { type: 'string' }, translation: 'Value',
-    },
-    {
+  const columnsTpl: ColumnMakerProps<{ name: string, current: string }> = [{
+    columnName: 'name', filtering: { type: 'string' }, translation: 'Key',
+  },{
+    columnName: 'current', filtering: { type: 'string' }, translation: 'Value',
+  }];
+
+  if (scope.manage) {
+    columnsTpl.push({
       columnName:  'actions',
       table:       { width: 130 },
       sorting:     { sortingEnabled: false },
@@ -37,8 +41,10 @@ const PageSettingsTranslations = () => {
           </Stack>,
         ],
       },
-    },
-  ]);
+    });
+  }
+
+  const { useFilterSetup, columns, tableColumnExtensions, sortingTableExtensions, defaultHiddenColumnNames, filteringColumnExtensions } = useColumnMaker<(typeof items)[number]>(columnsTpl);
 
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
@@ -48,43 +54,34 @@ const PageSettingsTranslations = () => {
 
   const refresh = async () => {
     setLoading(true);
-    await Promise.all([
-      new Promise<void>(resolve => {
-        getSocket('/').emit('responses.get', null, (data: any) => {
-          console.groupCollapsed('translations::responses.get');
-          console.log(data);
-          console.groupEnd();
-          setItems(Object
-            .entries(data)
-            .map((o) => {
-              if ((o[1] as any).current.startsWith('{missing')) {
-                console.debug(`${o[0]} have missing translation`);
-              }
-              return {
-                name:    o[0] as string,
-                current: (o[1] as any).current as string,
-                default: (o[1] as any).default as string,
-              };
-            })
-            .filter(o => !o.name.startsWith('webpanel') && !o.name.startsWith('ui'))
-            .sort((a, b) => {
-              const keyA = a.name.toUpperCase(); // ignore upper and lowercase
-              const keyB = b.name.toUpperCase(); // ignore upper and lowercase
-              if (keyA < keyB) {
-                return -1;
-              }
-              if (keyA > keyB) {
-                return 1;
-              }
+    const request = await axios.get(`/api/core/translations`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
+    setItems(Object
+      .entries(request.data.data)
+      .map((o) => {
+        if ((o[1] as any).current.startsWith('{missing')) {
+          console.debug(`${o[0]} have missing translation`);
+        }
+        return {
+          name:    o[0] as string,
+          current: (o[1] as any).current as string,
+          default: (o[1] as any).default as string,
+        };
+      })
+      .filter(o => !o.name.startsWith('webpanel') && !o.name.startsWith('ui'))
+      .sort((a, b) => {
+        const keyA = a.name.toUpperCase(); // ignore upper and lowercase
+        const keyB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (keyA < keyB) {
+          return -1;
+        }
+        if (keyA > keyB) {
+          return 1;
+        }
 
-              // names must be equal
-              return 0;
-            }),
-          );
-          resolve();
-        });
+        // names must be equal
+        return 0;
       }),
-    ]);
+    );
     setLoading(false);
   };
 

@@ -1,11 +1,12 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, DialogActions, DialogContent, Grow, InputAdornment, LinearProgress, Stack } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getSocket } from '../../helpers/socket';
+import getAccessToken from '../../getAccessToken';
 
 export const TranslationsEdit: React.FC<{
   items: { name: string; current: string; default: string; }[],
@@ -40,16 +41,14 @@ export const TranslationsEdit: React.FC<{
     }));
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setSaving(true);
     if (item.current === item.default) {
-      getSocket('/').emit('responses.revert', { name: item.name }, () => {
-        return;
-      });
+      await axios.delete(`/api/core/translations/${item.name}`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
     } else {
-      getSocket('/').emit('responses.set', {
+      await axios.post(`/api/core/translations/${item.name}`, {
         name: item.name, value: item.current,
-      });
+      }, { headers: { authorization: `Bearer ${getAccessToken()}` } });
     }
     enqueueSnackbar('Translation updated.', { variant: 'success' });
     navigate(`/settings/translations`);
