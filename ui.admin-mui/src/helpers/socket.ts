@@ -73,5 +73,5 @@ export const getConfiguration = async (): Promise<Configuration> => {
 
 export const getTranslations = async (): Promise<Configuration> => {
   const response = await axios.get(`/api/core/translations`, { headers: { authorization: `Bearer ${getAccessToken()}` } });
-  return response.data;
+  return response.data.data;
 };
