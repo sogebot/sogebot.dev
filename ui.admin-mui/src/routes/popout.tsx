@@ -19,7 +19,7 @@ import checkTokenValidity from '../helpers/check-token-validity';
 import { setLocale } from '../helpers/dayjsHelper';
 import { getListOf, populateListOf } from '../helpers/getListOf';
 import { isUserLoggedIn } from '../helpers/isUserLoggedIn';
-import { getConfiguration, getSocket } from '../helpers/socket';
+import { getConfiguration, getTranslations } from '../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import { setConfiguration, setMessage, setState, setSystem, setTranslation, showLoginWarning } from '../store/loaderSlice';
 import theme from '../theme';
@@ -88,13 +88,9 @@ const botInit = async (dispatch: Dispatch<AnyAction>, server: null | string, con
 
   // translations hydration
   console.log('Populating translations.');
-  await new Promise<void>(resolve => {
-    getSocket('/').emit('translations', (translations: any) => {
-      console.log('Dispatching translations.');
-      dispatch(setTranslation(translations));
-      resolve();
-    });
-  });
+  const translations = await getTranslations();
+  console.log('Dispatching translations.', JSON.stringify(translations));
+  dispatch(setTranslation(translations));
 
   setLocale(configuration.lang as string);
 
