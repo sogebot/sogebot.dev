@@ -113,21 +113,11 @@ export default function NavDrawer() {
           <ListItem disablePadding>
             <LinkedListItem path="/" icon={<DashboardIcon/>} title={translate('menu.index')}/>
           </ListItem>
-          <ListItem disablePadding>
-            <MenuItemDeep icon={<PriorityHighIcon/>} title={translate('menu.commands')} category="commands"/>
-          </ListItem>
-          <ListItem disablePadding>
-            <MenuItemDeep icon={<BuildIcon/>} title={translate('menu.manage')} category="manage"/>
-          </ListItem>
-          <ListItem disablePadding>
-            <MenuItemDeep icon={<SettingsIcon/>} title={translate('menu.settings')} category="settings"/>
-          </ListItem>
-          <ListItem disablePadding>
-            <MenuItemDeep icon={<FormatListBulletedIcon/>} title={translate('menu.registry')} category="registry"/>
-          </ListItem>
-          <ListItem disablePadding>
-            <MenuItemDeep icon={<QueryStatsIcon/>} title={translate('menu.stats')} category="stats"/>
-          </ListItem>
+          <MenuItemDeep icon={<PriorityHighIcon/>} title={translate('menu.commands')} category="commands"/>
+          <MenuItemDeep icon={<BuildIcon/>} title={translate('menu.manage')} category="manage"/>
+          <MenuItemDeep icon={<SettingsIcon/>} title={translate('menu.settings')} category="settings"/>
+          <MenuItemDeep icon={<FormatListBulletedIcon/>} title={translate('menu.registry')} category="registry"/>
+          <MenuItemDeep icon={<QueryStatsIcon/>} title={translate('menu.stats')} category="stats"/>
         </List>
       </Stack>
     </Drawer>

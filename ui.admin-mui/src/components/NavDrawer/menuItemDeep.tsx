@@ -1,5 +1,5 @@
 import { ChevronRight } from '@mui/icons-material';
-import { ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { ListItem, ListItemIcon, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import MuiListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
@@ -68,12 +68,19 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
       setMenuItems(items
         // get only items that are in the category
         .filter(o => o.category === props.category)
+        // filter settings modules, return only if there are at least 1 settingsScopes
+        .filter((o) => {
+          if (props.category === 'settings' && o.category === 'settings' && o.name === 'modules') {
+            return settingsScopes.length > 0;
+          }
+          return true;
+        })
         // sort items by name
         .sort((a: { name: string; }, b: { name: string; }) => {
           return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
         }));
     });
-  }, [state, connectedToServer, props, translate]);
+  }, [state, connectedToServer, props, translate, settingsScopes]);
 
   useEffect(() => {
     setIsActive(!!menuItems.find((item: any) => location.pathname.includes(item.id)));
@@ -111,7 +118,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
   };
 
   return (
-    <>
+    menuItems.length > 0 ? <ListItem disablePadding>
       <MuiListItemButton
         selected={isActive || !!anchorEl}
         sx={{
@@ -158,7 +165,8 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
       >
         {menuItems.map(item => {
           if (item.name === 'modules') {
-            return (
+
+            return settingsScopes.length > 0 ? (
               <MenuItem selected={isItemActive(item) || !!anchorElModules} sx={{
                 fontSize: '14px', color: getColorOfItem(item),
               }} key={item.id} onClick={handleClickModules}>
@@ -170,7 +178,7 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
                   fontSize: '20px',
                 }}/>}
               </MenuItem>
-            );
+            ) : <> </>;
           }
           return (
             <Link to={`/${item.id}?server=${JSON.parse(localStorage.server)}`}  key={item.id} style={{
@@ -217,6 +225,6 @@ export const MenuItemDeep: React.FC<LinkedListItemProps> = (props) => {
         </Link>,
         )}
       </Menu>
-    </>
+    </ListItem> : <></>
   );
 };

@@ -17,7 +17,6 @@ export const useTranslation = () => {
   const translation = useAppSelector(selectTranslationState);
 
   const translate = React.useCallback((key: string) => {
-    console.log('translation', translation, key);
     return isNil(at(translation, `ui.${key}`)[0] || at(translation, `webpanel.${key}`)[0])
       ? `{${key}}`
       : at(translation, `ui.${key}`)[0] || at(translation, `webpanel.${key}`)[0] as string;
