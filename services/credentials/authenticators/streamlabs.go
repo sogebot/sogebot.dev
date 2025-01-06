@@ -45,7 +45,7 @@ func Streamlabs(w http.ResponseWriter, r *http.Request) {
 		params.Add("code", code)
 
 		client := &http.Client{}
-		req, _ := http.NewRequest(http.MethodPost, REDIRECTURI+"/credentials/streamlabs", strings.NewReader(params.Encode())) // URL-encoded payload
+		req, _ := http.NewRequest(http.MethodPost, "https://streamlabs.com/api/v1.0/token", strings.NewReader(params.Encode())) // URL-encoded payload
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 		resp, _ := client.Do(req)
