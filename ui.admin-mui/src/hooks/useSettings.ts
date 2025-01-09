@@ -53,12 +53,6 @@ export const useSettings = (
     }
   }, [errors]);
 
-  useEffect(() => {
-    if (endpoint == '/integrations/spotify') {
-      console.log('spotify', { loading });
-    }
-  }, [loading]);
-
   const refresh = useCallback(async () => {
     if (!endpoint) {
       return;
@@ -69,14 +63,12 @@ export const useSettings = (
     const response = await axios.get(`/api/settings${endpoint}`, { headers: {
       'Authorization': `Bearer ${getAccessToken()}`
     } });
-    if (endpoint === '/integrations/spotify') {
-      console.log('spotify', { status: response.data.status, settings: response.data.data.settings });
-    }
+
     if (response.data.status === 'success') {
-      setLoading(false);
       response.data.data.settings && setSettings(response.data.data.settings);
       response.data.data.settings && setSettingsInitial(response.data.data.settings);
       response.data.data.settings && setUI(response.data.data.ui);
+      setLoading(false);
       return response.data.data.settings;
     } else {
       throw new Error(response.data.error);
@@ -154,9 +146,6 @@ export const useSettings = (
   }, [ settings, validator, translate, endpoint ]);
 
   const save = useCallback(async (values?: any) => {
-    // needed delay somehow to get settings and loading false
-    await new Promise<void>(resolve => setTimeout(resolve, 1));
-
     values = values ?? settings;
     const data = !('nativeEvent' in values) ? values : settings;
     if (data) {
@@ -167,7 +156,7 @@ export const useSettings = (
       }
       setSaving(false);
     }
-  }, [ settings, enqueueSnackbar, endpoint, refresh, loading ]);
+  }, [ settings, enqueueSnackbar, endpoint, refresh ]);
 
   const handleChange = useCallback(<T extends string | { [x: string]: any }>(key: T, value?: any, immediateSave?: boolean) => {
     if (typeof key === 'object') {

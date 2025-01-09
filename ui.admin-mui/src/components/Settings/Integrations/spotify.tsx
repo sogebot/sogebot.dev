@@ -69,7 +69,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
         return;
       }
     }, 1000);
-  }, [ enqueueSnackbar ]);
+  }, [ enqueueSnackbar, save ]);
 
   const [ lastActiveDevice, setLastActiveDevice ] = useState('');
   useIntervalWhen(() => {
