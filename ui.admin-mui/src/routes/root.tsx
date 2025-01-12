@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { cloneDeep } from 'lodash';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
@@ -42,7 +42,7 @@ import PageStatsBits from './stats/bits';
 import PageStatsCommandCount from './stats/commandcount';
 import PageStatsProfiler from './stats/profiler';
 import PageStatsTips from './stats/tips';
-import { loggedUserAtom, onboardingTokensAtomValid } from '../atoms';
+import { loggedUserAtom } from '../atoms';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';
@@ -169,7 +169,6 @@ export default function Root() {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { server, connectedToServer, state, configuration } = useAppSelector((s: any) => s.loader);
-  const tokensOnboardingState = useAtomValue(onboardingTokensAtomValid);
   const [ isIndexPage, setIndexPage ] = useState(false);
   const isMobile = useMobile();
   const setUser = useSetAtom(loggedUserAtom);
@@ -209,7 +208,7 @@ export default function Root() {
 
       {state && <>
         <OnboardingTokens/>
-        <Fade in={state && tokensOnboardingState}>
+        <Fade in={state}>
           <Box sx={{ flexGrow: 1 }}>
             <Slide in={!isIndexPage}>
               <AppBar position="sticky" sx={{ px: '70px' }}>
@@ -222,7 +221,7 @@ export default function Root() {
               </AppBar>
             </Slide>
             <NavDrawer />
-            {state && tokensOnboardingState && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
+            {state && <Box sx={{ paddingLeft: isMobile ? undefined : '65px' }}>
               <Fade in={isIndexPage}>
                 <Box sx={{
                   position: 'absolute', top: '0px', width: isMobile ? '100%' : 'calc(100% - 75px)', left: isMobile ? undefined : '70px',

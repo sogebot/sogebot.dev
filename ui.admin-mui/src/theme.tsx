@@ -29,6 +29,13 @@ declare module '@mui/material/ButtonGroup' {
   }
 }
 
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    dark:  true;
+    light: true;
+  }
+}
+
 declare module '@mui/material/IconButton' {
   interface IconButtonPropsColorOverrides {
     dark:  true;
@@ -106,7 +113,7 @@ export let theme = createTheme({
       main: grey[800], contrastText: '#fff',
     },
     light: {
-      main: grey[200], contrastText: '#000',
+      main: grey[200], contrastText: '#000', dark: grey[400],   light: grey[100],
     },
   },
 });
