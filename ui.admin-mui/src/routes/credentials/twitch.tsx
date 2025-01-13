@@ -1,3 +1,5 @@
+import { decode } from 'punycode';
+
 import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
@@ -30,7 +32,7 @@ const Twitch = () => {
         }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
           try {
-            state = JSON.parse(window.atob(url.replace(/\??state=/, '')));
+            state = JSON.parse(window.atob(decodeURIComponent(url.replace(/\??state=/, ''))));
 
             // redirect to correct page with type, code or state if we have it
             if (state.redirect_uri !== window.location.href) {
