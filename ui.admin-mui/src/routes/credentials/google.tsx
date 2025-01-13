@@ -22,12 +22,29 @@ const Google = () => {
           code = url.replace(/\??code=/, '');
         }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
-          state = url.replace(/\??state=/, '');
+          try {
+            state = JSON.parse(window.atob(decodeURIComponent(url.replace(/\??state=/, ''))));
+
+            // redirect to correct page with type, code or state if we have it
+            if ((new URL(state.redirect_uri)).host !== window.location.host) {
+              const params = new URLSearchParams();
+              if (code) {
+                params.append('code', code);
+              }
+              if (state) {
+                params.append('state', window.btoa(JSON.stringify(state)));
+              }
+              window.location.href = `${state.redirect_uri}?${params.toString()}`;
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing state', e);
+          }
         }
       }
 
       if (code) {
-        if (!state || state !== localStorage.googleOauthState) {
+        if (!state || state.state !== JSON.parse(window.atob(localStorage.googleOauthState)).state) {
           setProgress(false);
           return;
         }
@@ -47,7 +64,10 @@ const Google = () => {
         setProgress(false);
       }
     } else {
-      localStorage.googleOauthState = nanoid();
+      localStorage.twitchOauthState = window.btoa(JSON.stringify({
+        state: nanoid(),
+        redirect_uri: `${window.location.origin}/credentials/google`,
+      }));
       location.href = `https://credentials.sogebot.xyz/google/?state=${localStorage.googleOauthState}`;
     }
   }, [server]);

@@ -33,11 +33,8 @@ const Twitch = () => {
             state = JSON.parse(window.atob(decodeURIComponent(url.replace(/\??state=/, ''))));
 
             // redirect to correct page with type, code or state if we have it
-            if (state.redirect_uri !== window.location.href) {
+            if ((new URL(state.redirect_uri)).host !== window.location.host) {
               const params = new URLSearchParams();
-              if (type) {
-                params.append('type', type);
-              }
               if (code) {
                 params.append('code', code);
               }
@@ -58,14 +55,13 @@ const Twitch = () => {
         localStorage.twitchOauthState = window.btoa(JSON.stringify({
           type: type,
           state: nanoid(),
-          redirect_uri: window.location.href,
+          redirect_uri: `${window.location.origin}/credentials/twitch`,
         }));
         location.href = `${serviceUrl}?state=${localStorage.twitchOauthState}`;
         return;
       }
 
       if (code) {
-
         if (!state || state.state !== JSON.parse(window.atob(localStorage.twitchOauthState)).state) {
           console.error('Incorrect state');
           setProgress(false);
