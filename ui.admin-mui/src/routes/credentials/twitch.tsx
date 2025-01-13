@@ -29,24 +29,49 @@ const Twitch = () => {
           code = url.replace(/\??code=/, '');
         }
         if (url.startsWith('?state=') || url.startsWith('state=')) {
-          state = url.replace(/\??state=/, '');
+          try {
+            state = JSON.parse(window.atob(url.replace(/\??state=/, '')));
+
+            // redirect to correct page with type, code or state if we have it
+            if (state.redirect_uri !== window.location.href) {
+              const params = new URLSearchParams();
+              if (type) {
+                params.append('type', type);
+              }
+              if (code) {
+                params.append('code', code);
+              }
+              if (state) {
+                params.append('state', window.btoa(JSON.stringify(state)));
+              }
+              window.location.href = `${state.redirect_uri}?${params.toString()}`;
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing state', e);
+          }
         }
       }
 
       if (type) {
         // redirect if we set type
-        localStorage.twitchOauthState = type + nanoid();
+        localStorage.twitchOauthState = window.btoa(JSON.stringify({
+          type: type,
+          state: nanoid(),
+          redirect_uri: window.location.href,
+        }));
         location.href = `${serviceUrl}?state=${localStorage.twitchOauthState}`;
         return;
       }
 
       if (code) {
-        if (!state || state !== localStorage.twitchOauthState) {
+
+        if (!state || state.state !== JSON.parse(window.atob(localStorage.twitchOauthState)).state) {
           console.error('Incorrect state');
           setProgress(false);
           return;
         }
-        const accountType = state.startsWith('bot') ? 'bot' : 'broadcaster';
+        const accountType = state.type;
         delete localStorage.twitchOauthState;
 
         axios.get(serviceUrl + '?code=' + code)
