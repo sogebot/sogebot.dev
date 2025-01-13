@@ -44,7 +44,6 @@ const Spotify = () => {
           const { opts } = data.data;
           const url = new URL(opts[0]);
           const params = new URLSearchParams(url.search);
-          params.set('redirect_uri', 'https://dash.sogebot.xyz/credentials/spotify');
           window.location.href = `${url.origin}${url.pathname}?${params}`;
         })
         .catch(e => console.error(e.response.data));
