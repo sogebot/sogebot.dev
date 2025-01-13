@@ -142,9 +142,7 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
             label={translate('integrations.spotify.settings.clientSecret')}
           />
           <TextField
-            disabled
-            variant='filled'
-            value="https://dash.sogebot.xyz/credentials/spotify"
+            {...TextFieldProps('connection.redirectURI')}
             label={translate('integrations.spotify.settings.redirectURI')}
           />
           <TextField
