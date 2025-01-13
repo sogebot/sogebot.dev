@@ -1,5 +1,3 @@
-import { decode } from 'punycode';
-
 import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
