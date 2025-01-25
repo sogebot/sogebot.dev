@@ -1,10 +1,11 @@
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, InputLabel, List, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, InputLabel, List, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import parse from 'html-react-parser';
-import { xor } from 'lodash';
+import { cloneDeep, xor } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
@@ -226,6 +227,47 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
           label={translate('integrations.discord.settings.onlineAnnounceMessage')}
         />
 
+        <FormLabel sx={{ pt: 2 }}>Custom fields</FormLabel>
+        {settings.bot.customFields[0].map((item: any, index: number) => <Stack key={`${settings.bot.customFields[0]}-${index}`} spacing={1}>
+          <Typography variant='caption'>Custom field {index + 1}</Typography>
+          <Stack key={index} spacing={1} direction='row'>
+            <TextField
+              value={settings.bot.customFields[0][index].name}
+              onChange={(event) => {
+                const customFields = settings.bot.customFields[0];
+                customFields[index].name = event.target.value;
+                handleChange('bot.customFields', customFields);
+              }}
+              label={'Title'}
+            />
+            <TextField
+              fullWidth
+              value={settings.bot.customFields[0][index].value}
+              onChange={(event) => {
+                const customFields = settings.bot.customFields[0];
+                customFields[index].value = event.target.value;
+                handleChange('bot.customFields', customFields);
+              }}
+              label={'Value'}
+            />
+            <IconButton sx={{ height: 42, width: 42, alignSelf: 'center' }} color="error" onClick={() => {
+              const customFields = settings.bot.customFields[0].filter((o: any, i: number) => i !== index);
+              handleChange('bot.customFields', cloneDeep(customFields));
+              const fields = settings.bot.fields[0].filter((o: string) => !o.startsWith('$custom'));
+              for (let i = 0; i < customFields.length; i++) {
+                fields.push('$custom' + i);
+              }
+              console.log('discord', { fields, customFields });
+              handleChange('bot.fields', fields);
+            }}><DeleteTwoTone/></IconButton>
+          </Stack>
+        </Stack>)}
+        <Button onClick={() => {
+          handleChange('bot.customFields', [...settings.bot.customFields[0], { title: '', value: '' }]);
+          handleChange('bot.fields', [...settings.bot.fields[0], '$custom' + settings.bot.customFields[0].length]);
+        }
+        }>Add field</Button>
+
         <FormLabel sx={{ pt: 2 }}>{translate('systems.userinfo.settings.order')}</FormLabel>
         <List>
           <DndContext
@@ -240,7 +282,7 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
               {settings.bot.fields[0].map((item: string) => <SortableListItem
                 draggable
                 key={item}
-                id={item}
+                id={item.includes('$custom') ? `Custom field ${Number(item.replace('$custom', '')) + 1}` : item}
                 visible={!settings.bot.fieldsDisabled[0].includes(item)}
                 onVisibilityChange={() => toggleVisibility(item)}
                 isDragging={item === activeId} />)}
