@@ -8,7 +8,6 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
 import { v4 } from 'uuid';
 
@@ -32,7 +31,6 @@ const PageManageViewers = () => {
   const { userId } = useParams();
 
   React.useEffect(() => {
-    console.log({ userId });
     if (userId) {
       setFilters([{
         columnName: 'userId',
@@ -48,12 +46,9 @@ const PageManageViewers = () => {
   const { bulkCount } = useAppSelector((state: any) => state.appbar);
   const [ selection, setSelection ] = useState<(string|number)[]>([]);
 
-  const { innerHeight } = useWindowSize();
-  const cellSize = 77.91;
-  const [pageSize, setPageSize] = useState(Math.floor((Math.max(innerHeight ?? 0, 400) - cellSize - 50 - 60) / 80));
-  useEffect(() => {
-    setPageSize(Math.floor((Math.max(innerHeight ?? 0, 400) - cellSize - 50 - 60) / 80));
-  }, [ innerHeight ]);
+  const [pageSize, setPageSize] = useState(20);
+  const [pageSizes] = useState([10, 20, 50, 100]);
+
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -302,7 +297,7 @@ const PageManageViewers = () => {
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)' }} autoHide={false}>
+      <SimpleBar style={{ maxHeight: 'calc(100vh - 116px)', paddingBottom: '48px' }} autoHide={false}>
         <DataGrid
           rows={items}
           columns={columns}
@@ -330,6 +325,7 @@ const PageManageViewers = () => {
           <PagingState
             currentPage={currentPage}
             onCurrentPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
             pageSize={pageSize}
           />
           <CustomPaging
@@ -346,7 +342,9 @@ const PageManageViewers = () => {
             defaultHiddenColumnNames={defaultHiddenColumnNames}
           />
           <TableSelection showSelectAll/>
-          <PagingPanel/>
+          <PagingPanel
+            pageSizes={pageSizes}
+          />
         </DataGrid>
       </SimpleBar>
     </>

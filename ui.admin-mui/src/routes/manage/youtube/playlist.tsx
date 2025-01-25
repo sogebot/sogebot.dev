@@ -12,7 +12,6 @@ import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { useWindowSize } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
@@ -45,16 +44,12 @@ const PageCommandsSongPlaylist = () => {
   const [ currentTag, setCurrentTag ] = useState<string | null>(null);
   const [ tags, setTags ] = useState<string[]>([]);
 
-  const { innerHeight } = useWindowSize();
-  const [pageSize, setPageSize] = useState(Math.floor((Math.max(innerHeight ?? 0, 400) - 64 - 50 - 60) / 80));
+  const [pageSizes] = useState([10, 20, 50, 100]);
+  const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
   const input = useRef<null | HTMLDivElement >(null);
-
-  useEffect(() => {
-    setPageSize(Math.floor((Math.max(innerHeight ?? 0, 400) - 64 - 50 - 60) / 80));
-  }, [ innerHeight ]);
 
   type extension = {
     thumbnail: string;
@@ -329,7 +324,7 @@ const PageCommandsSongPlaylist = () => {
         <CircularProgress color="inherit"/>
       </Backdrop>
 
-      <SimpleBar style={{ maxHeight: 'calc(100vh - 160px)' }} autoHide={false}>
+      <SimpleBar style={{ maxHeight: 'calc(100vh - 160px)', paddingBottom: '48px' }} autoHide={false}>
         <DataGrid
           rows={items}
           columns={columns}
@@ -351,6 +346,7 @@ const PageCommandsSongPlaylist = () => {
           <PagingState
             currentPage={currentPage}
             onCurrentPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
             pageSize={pageSize}
           />
           <CustomPaging
@@ -362,7 +358,9 @@ const PageCommandsSongPlaylist = () => {
             defaultHiddenColumnNames={defaultHiddenColumnNames}
           />
           {scope.manage && <TableSelection showSelectAll/>}
-          <PagingPanel/>
+          <PagingPanel
+            pageSizes={pageSizes}
+          />
         </DataGrid>
       </SimpleBar>
 
