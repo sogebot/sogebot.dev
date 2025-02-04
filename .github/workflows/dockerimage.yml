@@ -73,12 +73,12 @@ jobs:
           username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
           path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-${{ steps.slug.outputs.SHA }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
           path: ${{ github.workspace }}/ui.admin-mui/sogeBot-dashboard-basePath-${{ steps.slug.outputs.SHA }}
