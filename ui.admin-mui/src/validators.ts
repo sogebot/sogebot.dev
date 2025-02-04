@@ -38,7 +38,7 @@ const isValidRegex = (val: string) => {
   try {
     XRegExp(val);
     return true;
-  } catch (e) {
+  } catch {
     return 'Keyword is not valid regexp';
   }
 };

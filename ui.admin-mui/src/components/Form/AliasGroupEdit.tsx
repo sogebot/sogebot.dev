@@ -8,8 +8,8 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import getAccessToken from '../../getAccessToken';
+import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from '../../hooks/useTranslation';
 import { classes } from '../styles';

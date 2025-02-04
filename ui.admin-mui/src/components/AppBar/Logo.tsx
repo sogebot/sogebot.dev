@@ -79,7 +79,7 @@ export const Logo: React.FC = () => {
             autoHideDuration: null,
           });
         }
-      } catch (e) {
+      } catch {
         return;
       }
     });

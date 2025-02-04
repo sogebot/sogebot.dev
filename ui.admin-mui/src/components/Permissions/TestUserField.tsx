@@ -35,7 +35,7 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
       } else {
         throw new Error();
       }
-    } catch (e) {
+    } catch {
       return 'info';
     }
   }, [ partialStatus.access, status.access ]);

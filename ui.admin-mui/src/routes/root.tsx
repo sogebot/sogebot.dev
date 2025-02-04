@@ -10,6 +10,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { useDebounce, useLocalstorageState, useRefElement } from 'rooks';
 
 import Error404 from './404';
+import { loggedUserAtom } from '../atoms';
 import PageCommandsAlias from './commands/alias';
 import PageCommandsAliasGroup from './commands/aliasGroup';
 import PageCommandsBot from './commands/botcommands';
@@ -42,7 +43,6 @@ import PageStatsBits from './stats/bits';
 import PageStatsCommandCount from './stats/commandcount';
 import PageStatsProfiler from './stats/profiler';
 import PageStatsTips from './stats/tips';
-import { loggedUserAtom } from '../atoms';
 import { AppBarBreadcrumbs } from '../components/AppBar/Breadcrumbs';
 import { Logo } from '../components/AppBar/Logo';
 import CookieBar from '../components/CookieBar';

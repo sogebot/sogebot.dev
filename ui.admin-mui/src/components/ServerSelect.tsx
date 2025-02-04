@@ -5,9 +5,8 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
 import semver from 'semver';
 
-import { CopyButton } from './Form/Input/Adornment/Copy';
-import { UserSimple } from './User/Simple';
 import { versions } from '../compatibilityList';
+import { UserSimple } from './User/Simple';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppDispatch';
 import useMobile from '../hooks/useMobile';
 import useQuery from '../hooks/useQuery';
@@ -16,6 +15,7 @@ import sogebotLarge from '../images/sogebot_large.png';
 import { isBotStarted } from '../isBotStarted';
 import { setMessage, setServer } from '../store/loaderSlice';
 import theme from '../theme';
+import { CopyButton } from './Form/Input/Adornment/Copy';
 
 const checkURLValidity = (serverURL: string) => {
   if (serverURL === '-- demo bot for demonstration purpose only --') {
@@ -24,7 +24,7 @@ const checkURLValidity = (serverURL: string) => {
   try {
     new URL(serverURL);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };

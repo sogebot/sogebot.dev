@@ -17,6 +17,8 @@ module.exports = {
     'plugin:import/typescript',
   ],
   rules: {
+    '@typescript-eslint/no-require-imports': 'off',
+    '@typescript-eslint/no-unused-expressions': 'off',
     'no-restricted-imports':                    'off',
     '@typescript-eslint/no-restricted-imports': [
       'warn',

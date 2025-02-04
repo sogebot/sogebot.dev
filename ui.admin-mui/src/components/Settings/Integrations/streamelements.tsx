@@ -55,7 +55,7 @@ const PageSettingsModulesIntegrationsStreamelements: React.FC<{
       setTimeout(() => {
         setValidating(false);
       }, 1000);
-    } catch (e) {
+    } catch {
       enqueueSnackbar('Invalid JWT Token, please recheck if you copied your token correctly', { variant: 'error' });
       setTimeout(() => {
         setValidating(false);

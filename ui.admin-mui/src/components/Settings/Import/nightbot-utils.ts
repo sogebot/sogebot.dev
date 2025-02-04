@@ -98,7 +98,7 @@ const fetchWithRetries = async (
     try {
       const response = await axios.get(url, options);
       return response.data;
-    } catch (error: any) {
+    } catch {
       console.info(`Retrying after ${delaySeconds} seconds.`);
       await sleep(delay);
     }
@@ -195,7 +195,7 @@ const fetchCustomCommands = async (
   try {
     const page = await fetchCustomCommandsPage(accessToken);
     return page.commands;
-  } catch (error: any) {
+  } catch {
     console.error('Error fetching commands.');
     enqueueSnackbar('Remote server error.', { variant: 'error' });
     throw new Error('Failed to fetch commands.');
@@ -269,7 +269,7 @@ export const importCustomCommands = async (accessToken: string | null) => {
   for (const command of commands) {
     try {
       command.name.startsWith('!') ? postCommand(command) : postKeyword(command);
-    } catch (error: any) {
+    } catch {
       failCount++;
     }
   }
@@ -304,7 +304,7 @@ const fetchTimers = async (
   try {
     const page = await fetchTimersPage(accessToken);
     return page.timers;
-  } catch (error: any) {
+  } catch {
     console.error('Error fetching timers.');
     enqueueSnackbar('Remote server error.', { variant: 'error' });
     throw new Error('Failed to fetch timers.');
@@ -343,7 +343,7 @@ export const importTimers = async (accessToken: string | null) => {
   for (const timer of timers) {
     try {
       postTimer(timer);
-    } catch (error: any) {
+    } catch {
       failCount++;
     }
   }

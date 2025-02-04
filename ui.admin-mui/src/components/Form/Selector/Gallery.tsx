@@ -41,7 +41,7 @@ export const getDirectoriesOf = (items: GalleryInterface[], directories: string[
         if (f[i] !== directories[i]) {
           valid = false;
         }
-      } catch (e) {
+      } catch {
         valid = false;
         break;
       }
