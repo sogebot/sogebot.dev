@@ -13,6 +13,7 @@ import { useLocalstorageState } from 'rooks';
 import { z } from 'zod';
 
 import type { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import { useValidator } from '../../hooks/useValidator';
@@ -86,7 +87,11 @@ export const ExportDialog: React.FC<Props> = ({ model }) => {
     setGallery([]);
     setLoading(true);
 
-    axios.get('/api/overlays/gallery').then(({ data }) => {
+    axios.get('/api/overlays/gallery', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(({ data }) => {
       if (open) {
         // go through items and process all gallery, currently we can have gallery items only in html
         for (const item of itemsToExport.filter(o => o.opts.typeId === 'html')) {

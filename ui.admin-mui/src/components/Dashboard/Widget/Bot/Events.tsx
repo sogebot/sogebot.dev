@@ -207,7 +207,11 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     });
   };
   React.useEffect(() => {
-    axios.get('/api/registries/alerts/settings').then(({ data }) => {
+    axios.get('/api/registries/alerts/settings', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(({ data }) => {
       setStatus(data.data);
       setStatusLoaded(true);
     });
@@ -217,7 +221,11 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
     if (!statusLoaded) {
       return;
     }
-    axios.post('/api/registries/alerts/settings', status);
+    axios.post('/api/registries/alerts/settings', status, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    });
   }, [ status, statusLoaded ]);
 
   const filteredEvents = React.useMemo(() => {

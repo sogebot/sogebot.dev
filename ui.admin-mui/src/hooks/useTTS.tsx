@@ -2,6 +2,7 @@ import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 
 import { useAppSelector } from './useAppDispatch';
+import getAccessToken from '../getAccessToken';
 
 let snd: HTMLAudioElement | undefined;
 speechSynthesis.getVoices(); // force loading of voices
@@ -83,6 +84,10 @@ export const useTTS = () => {
               volume: volume,
               voice: voice,
               text: text,
+            }, {
+              headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+              }
             }).then(({ data }) => {
               snd = new Audio(`data:audio/mp3;base64,` + data.data);
               snd.volume = volume;
@@ -111,6 +116,10 @@ export const useTTS = () => {
               volume: volume,
               voice: voice,
               text: text,
+            }, {
+              headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+              }
             }).then(({ data }) => {
               snd = new Audio(`data:audio/mp3;base64,` + data.data);
               snd.volume = volume;

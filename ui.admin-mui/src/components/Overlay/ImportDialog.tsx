@@ -13,6 +13,7 @@ import { useLocalstorageState } from 'rooks';
 import { v4 } from 'uuid';
 
 import { Overlay as RemoteOverlay } from '../../../../services/plugins/export';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 
 type Props = {
@@ -136,6 +137,10 @@ export const ImportDialog: React.FC<Props> = ({ onImport }) => {
           const b64data = b64dataArr.join('');
           await axios.post(`/api/overlays/gallery`, {
             id, b64data, folder:'/overlays', name: `${data.name} #${i}`,
+          }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`,
+            }
           });
         }
         for (const it of items) {

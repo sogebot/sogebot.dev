@@ -12,6 +12,7 @@ import SimpleBar from 'simplebar-react';
 
 import { AudioButton } from '../../components/Audio/Button';
 import { getDirectoriesOf, normalizePath } from '../../components/Form/Selector/Gallery';
+import getAccessToken from '../../getAccessToken';
 import { getBase64FromUrl } from '../../helpers/getBase64FromURL';
 import theme from '../../theme';
 
@@ -37,7 +38,11 @@ const PageRegistryGallery = () => {
     setFolder('/');
 
     setLoading(true);
-    axios.get(`/api/overlays/gallery`).then(({ data }) => {
+    axios.get(`/api/overlays/gallery`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(({ data }) => {
       const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items
@@ -63,7 +68,11 @@ const PageRegistryGallery = () => {
     if (!selectedItem) {
       return;
     }
-    axios.delete(`/api/overlays/gallery/${selectedItem}`).then(() => {
+    axios.delete(`/api/overlays/gallery/${selectedItem}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(() => {
       const item = items.find(o => o.id === selectedItem);
       if (!item) {
         return;
@@ -91,6 +100,10 @@ const PageRegistryGallery = () => {
           const b64data = b64dataArr.join('');
           await axios.post(`/api/overlays/gallery`, {
             id, b64data, folder, name: file.name
+          }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`,
+            }
           });
         }
         enqueueSnackbar(<div>File <strong>{file.name}</strong> was uploaded successfully to folder <strong>{folder}</strong></div>, { variant: 'success' });
@@ -108,7 +121,11 @@ const PageRegistryGallery = () => {
 
   const refresh = () => {
     // refresh
-    axios.get(`/api/overlays/gallery`).then(({ data }) => {
+    axios.get(`/api/overlays/gallery`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(({ data }) => {
       const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items

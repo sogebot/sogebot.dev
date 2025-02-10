@@ -7,6 +7,7 @@ import { enqueueSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import theme from '../../../theme';
 import { AudioButton } from '../../Audio/Button';
 import defaultImage from '../../Overlay/assets/alerts/default.gif';
@@ -89,7 +90,11 @@ export const FormSelectorGallery: React.FC<Props> = ({ label, type, value, onCha
     setFolder('/');
 
     setLoading(true);
-    axios.get('/api/overlays/gallery').then(({ data }) => {
+    axios.get('/api/overlays/gallery', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      }
+    }).then(({ data }) => {
       const _items = data.data as GalleryInterface[];
       console.debug('Loaded', _items);
       setItems(_items
