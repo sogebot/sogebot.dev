@@ -77,10 +77,10 @@ const PageRegistryPlugins = () => {
 
   const deleteItem = useCallback((item: Plugin) => {
     axios.delete(`/api/core/plugins/${item.id}`, {
-            headers: {
-              Authorization: `Bearer ${getAccessToken()}`
-            }
-          })
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(() => {
         enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
         refresh();
