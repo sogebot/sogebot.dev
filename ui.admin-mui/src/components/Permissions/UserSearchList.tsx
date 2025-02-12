@@ -48,7 +48,11 @@ export const UserSearchlist: React.FC<{
     setIsSearching(true);
     axios.get(`/api/core/users?state=${state}&exactUsernameFromTwitch=true&filter=${JSON.stringify([{
       operation: 'contains', columnName: 'userName', value: inputValue,
-    }])}`).then(({ data }) => {
+    }])}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       if (state === data.data.state) {
         const viewers = data.data.viewers.filter((o: any) => o.userName.length > 0);
         // expecting this data

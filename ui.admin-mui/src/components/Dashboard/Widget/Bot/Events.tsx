@@ -44,12 +44,20 @@ function blockquote (event: any) {
 
 function emitSkipAlertEvent () {
   console.log('Skipping current alert');
-  axios.post(`/api/widgets/eventlist/?_action=skip`);
+  axios.post(`/api/widgets/eventlist/?_action=skip`, undefined, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`
+    }
+  });
 }
 
 function resendAlert (id: string) {
   console.log(`resendAlert => ${id}`);
-  axios.post(`/api/widgets/eventlist/${id}?_action=resend`);
+  axios.post(`/api/widgets/eventlist/${id}?_action=resend`, undefined, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`
+    }
+  });
 }
 
 function RenderRow(props: any) {
@@ -196,7 +204,11 @@ export const DashboardWidgetBotEvents: React.FC<{ sx: SxProps }> = (props) => {
 
   function removeEvent (id: string) {
     console.log(`removeEvent => ${id}`);
-    axios.delete(`/api/widgets/eventlist/${id}`);
+    axios.delete(`/api/widgets/eventlist/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
     setEvents(evs => [...evs.filter(o => o.id !== id)]);
   }
 

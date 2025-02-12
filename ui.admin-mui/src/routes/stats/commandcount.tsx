@@ -7,6 +7,7 @@ import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { DAY } from '../../constants';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -252,7 +253,11 @@ const PageStatsBits = () => {
     }, [_data, showChartCommands, interval, timestampList, timestampSmooth]);
 
   const refresh = React.useCallback(() => {
-    axios.get('/api/stats/commandcount').then(({ data: axiosData }) => {
+    axios.get('/api/stats/commandcount', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data: axiosData }) => {
       const val = axiosData.data;
       setData(val);
       if (showChartCommands.length === 0) {

@@ -7,6 +7,7 @@ import { escapeRegExp } from 'lodash';
 import React from 'react';
 import { useDebouncedValue, useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
@@ -77,7 +78,11 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
     for (const key of Object.keys(flatten(dataset))) {
       text = text.replace(new RegExp(escapeRegExp(`$${key}`), 'gi'), flatten(dataset)[key]);
     }
-    axios.post('/integrations/pubg?_action=exampleParse', { text })
+    axios.post('/integrations/pubg?_action=exampleParse', { text }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(({ data }) => {
         if (statsType === 'rankedGameModeStats') {
           setExample1(data.data);
@@ -115,6 +120,10 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
         apiKey:     settings.apiKey[0],
         platform:   settings.player.platform[0],
         playerName: settings.player.playerName[0],
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       }).then(({ data }) => {
         handleChange('player.playerId', data.data[0].id);
         setSearch(false);

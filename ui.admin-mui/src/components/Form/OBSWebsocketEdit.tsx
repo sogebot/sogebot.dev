@@ -9,6 +9,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const createInitialItem = async () => {
@@ -72,7 +73,11 @@ export const OBSWebsocketEdit: React.FC<{
     }
     setScriptIsRunning(true);
 
-    axios.post(`/api/integrations/obswebsocket?_action=trigger`, { code: item.code })
+    axios.post(`/api/integrations/obswebsocket?_action=trigger`, { code: item.code }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(() => enqueueSnackbar('Test done!', { variant: 'success' }))
       .catch(err => {
         console.error({ err });
@@ -84,7 +89,11 @@ export const OBSWebsocketEdit: React.FC<{
   useEffect(() => {
     setLoading(true);
     if (id) {
-      axios.get(`/api/integrations/obswebsocket/${id}`)
+      axios.get(`/api/integrations/obswebsocket/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
         .then(({ data }) => {
           setItem(data.data);
           setLoading(false);
@@ -109,7 +118,11 @@ export const OBSWebsocketEdit: React.FC<{
       return;
     }
     setSaving(true);
-    axios.post(`/api/integrations/obswebsocket`, item)
+    axios.post(`/api/integrations/obswebsocket`, item, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(({ data }) => {
         enqueueSnackbar('OBS Websocket script saved.', { variant: 'success' });
         // replace url and add cid to item

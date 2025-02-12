@@ -6,6 +6,7 @@ import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
@@ -36,7 +37,11 @@ export const FormOBSWebsocketSelect: React.FC<{
   const refreshItems = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      axios.get('/api/integrations/obswebsocket').then(({ data }) => {
+      axios.get('/api/integrations/obswebsocket', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         setItems(orderBy(data.data, 'name', 'asc'));
         setProgress(false);
         resolve();

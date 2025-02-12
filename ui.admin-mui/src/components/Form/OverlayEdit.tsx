@@ -189,7 +189,11 @@ export const OverlayEdit: React.FC = () => {
   React.useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+      axios.get(`/api/registries/overlays/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         if (!data.data) {
           enqueueSnackbar('Overlay with id ' + id + ' not found.');
           navigate(`/registry/overlays?server=${JSON.parse(localStorage.server)}`);

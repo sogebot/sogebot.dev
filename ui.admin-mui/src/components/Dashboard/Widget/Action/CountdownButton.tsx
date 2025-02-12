@@ -10,6 +10,7 @@ import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
+import getAccessToken from '../../../../getAccessToken';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCountdownItem }> = ({
@@ -54,6 +55,10 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
         isEnabled: !isStarted,
         time:      null,
         id:        item.options.countdownId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
       setIsStarted(!isStarted);
     }
@@ -61,7 +66,11 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
   }, [countdown, isStarted, handleClick]);
 
   useEffect(() => {
-    axios.get(`/api/registries/overlays/${item.options.countdownId}`).then(({ data }) => {
+    axios.get(`/api/registries/overlays/${item.options.countdownId}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setCountdown(data.data?.items.find((o: any) => o.id === item.options.countdownId && o.opts.typeId === 'countdown')?.opts as Countdown ?? null);
     });
   }, [item.options.countdownId]);
@@ -69,7 +78,11 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (countdown && !anchorEl) {
-      axios.post(`/api/overlays/countdown/${item.options.countdownId}/check`).then(({ data }) => {
+      axios.post(`/api/overlays/countdown/${item.options.countdownId}/check`, undefined, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         setIsStarted(data.data.isEnabled);
         setTimestamp(data.data.time);
       });
@@ -82,6 +95,10 @@ export const DashboardWidgetActionCountdownButton: React.FC<{ item: OverlayCount
         isEnabled: null,
         time:      value,
         id:        item.options.countdownId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
     }
   };

@@ -32,6 +32,7 @@ import { StopwatchItem } from '../components/Overlay/StopwatchItem';
 import { TTSItem } from '../components/Overlay/TTSItem';
 import { UrlItem } from '../components/Overlay/UrlItem';
 import { WordcloudItem } from '../components/Overlay/WordcloudItem';
+import getAccessToken from '../getAccessToken';
 import { getConfiguration, getSocket } from '../helpers/socket';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setConfiguration, setTranslation } from '../store/loaderSlice';
@@ -129,7 +130,11 @@ export default function Overlays() {
             resolve(true);
             return;
           }
-          axios.get(`/api/registries/overlays/${id}`).then(({ data }) => {
+          axios.get(`/api/registries/overlays/${id}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).then(({ data }) => {
             setOverlay(data.data);
             resolve(true);
           });

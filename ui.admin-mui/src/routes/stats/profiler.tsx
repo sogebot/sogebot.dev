@@ -5,6 +5,7 @@ import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
 import { stringToColour } from './commandcount';
+import getAccessToken from '../../getAccessToken';
 
 const avg = (data: number[]) => {
   return data.reduce((a, b) => (a + b)) / data.length;
@@ -48,7 +49,11 @@ const PageStatsProfiler = () => {
     }, [_data, showChartFunctions]);
 
   const refresh = React.useCallback(() => {
-    axios.get('/api/stats/profiler').then(({ data: axiosData }) => {
+    axios.get('/api/stats/profiler', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data: axiosData }) => {
       const items: typeof _data = [];
       for (const item of axiosData.data) {
         items.push({

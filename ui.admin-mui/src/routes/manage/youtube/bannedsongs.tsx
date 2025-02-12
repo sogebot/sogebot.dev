@@ -15,6 +15,7 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
+import getAccessToken from '../../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { ColumnMakerProps, useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
@@ -81,7 +82,11 @@ const PageCommandsSongBan = () => {
   const { element: filterElement, filters } = useFilter<SongBan>(useFilterSetup);
 
   const deleteItem = useCallback((item: SongBan) => {
-    axios.delete('/api/systems/songs/ban/' + item.videoId).then(() => {
+    axios.delete('/api/systems/songs/ban/' + item.videoId, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -94,7 +99,11 @@ const PageCommandsSongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get('/api/systems/songs/ban').then(({ data }) => {
+        axios.get('/api/systems/songs/ban', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setItems(data.data);
           resolve();
         });
@@ -111,7 +120,11 @@ const PageCommandsSongBan = () => {
       const item = items.find(o => o.videoId === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete('/api/systems/songs/ban/' + item.videoId).then(() => {
+          axios.delete('/api/systems/songs/ban/' + item.videoId, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).then(() => {
             resolve();
           });
         });
@@ -130,7 +143,11 @@ const PageCommandsSongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        axios.post('/api/systems/songs/import/ban', { url: value }).then(() => {
+        axios.post('/api/systems/songs/import/ban', { url: value }, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(() => {
           enqueueSnackbar('Song added to ban list.', { variant: 'success' });
           refresh();
           close();

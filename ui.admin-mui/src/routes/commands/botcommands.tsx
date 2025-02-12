@@ -11,6 +11,7 @@ import { Commands } from '../../classes/Commands';
 import EditButton from '../../components/Buttons/EditButton';
 import { BotCommandEdit } from '../../components/Form/BotCommandEdit';
 import { PermissionTypeProvider } from '../../components/Table/PermissionTypeProvider';
+import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -112,7 +113,11 @@ const PageCommandsBot = () => {
   }, [location.pathname]);
 
   const refresh = async () => {
-    const { data } = await axios.get('/api/core/general/commands');
+    const { data } = await axios.get('/api/core/general/commands', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
     setItems(data.data);
   };
 

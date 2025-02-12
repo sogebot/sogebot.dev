@@ -3,6 +3,7 @@ import { EmotesExplode } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -14,7 +15,11 @@ export const EmotesExplodeSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
 
   const test = () => {
-    axios.post('/api/core/emotes?_action=testExplosion');
+    axios.post('/api/core/emotes?_action=testExplosion', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   };
 
   return <>

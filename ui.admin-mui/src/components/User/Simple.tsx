@@ -7,6 +7,7 @@ import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 
+import getAccessToken from '../../getAccessToken';
 import { baseURL } from '../../helpers/getBaseURL';
 import { getSocket } from '../../helpers/socket';
 import { useAppSelector } from '../../hooks/useAppDispatch';
@@ -33,7 +34,11 @@ export const UserSimple: React.FC = () => {
 
   React.useEffect(() => {
     if (user && isBotConnected) {
-      axios.get('/api/services/twitch/broadcaster/missingScopes').then(({ data }) => {
+      axios.get('/api/services/twitch/broadcaster/missingScopes', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         const missingScopes = data.data;
         if (missingScopes.length > 0) {
           console.error('Broadcaster is missing these scopes: ', missingScopes.join(', '));

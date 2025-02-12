@@ -66,13 +66,21 @@ const PageRegistryPlugins = () => {
   const { element: filterElement, filters } = useFilter<Plugin>(useFilterSetup);
 
   const refresh = useCallback(async () => {
-    const response = await axios.get('/api/core/plugins');
+    const response = await axios.get('/api/core/plugins', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
     setItems(response.data.data);
     setLoading(false);
   }, []);
 
   const deleteItem = useCallback((item: Plugin) => {
-    axios.delete(`/api/core/plugins/${item.id}`)
+    axios.delete(`/api/core/plugins/${item.id}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          })
       .then(() => {
         enqueueSnackbar(`Plugin ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
         refresh();

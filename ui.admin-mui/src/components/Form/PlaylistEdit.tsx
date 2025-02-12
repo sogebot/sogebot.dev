@@ -32,7 +32,11 @@ export const PlaylistEdit: React.FC<{
   useEffect(() => {
     if (id) {
       setLoading(true);
-      axios.get(`/api/systems/songs/playlist?page=${0}&perPage=${1}&search=${id}`).then(({ data }) => {
+      axios.get(`/api/systems/songs/playlist?page=${0}&perPage=${1}&search=${id}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         setItem(data.data[0] ?? Object.assign(new SongPlaylist(), { tags: [] }));
         setLoading(false);
       });

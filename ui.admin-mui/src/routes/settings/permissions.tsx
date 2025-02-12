@@ -20,6 +20,7 @@ import { PermissionsListItem } from '../../components/Permissions/ListItem';
 import { ScopesSelector } from '../../components/Permissions/ScopesSelector';
 import { TestUserField } from '../../components/Permissions/TestUserField';
 import { UserSearchlist } from '../../components/Permissions/UserSearchList';
+import getAccessToken from '../../getAccessToken';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useScope } from '../../hooks/useScope';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -79,7 +80,11 @@ const PageSettingsPermissions = () => {
       sorted.push(viewers);
     }
     console.log('permissions', 'Saving', sorted, new Error().stack);
-    axios.post(`/api/core/permissions/`, sorted)
+    axios.post(`/api/core/permissions/`, sorted, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(() => {
         if (!quiet) {
           enqueueSnackbar('Permissions updated.', { variant: 'success' });
@@ -165,7 +170,11 @@ const PageSettingsPermissions = () => {
       return;
     }
     setRemoving(true);
-    axios.delete(`/api/core/permissions/${selectedItem.id}`)
+    axios.delete(`/api/core/permissions/${selectedItem.id}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(() => {
         enqueueSnackbar(`Permissions ${selectedItem.name} removed.`, { variant: 'success' });
         navigate('/settings/permissions/edit/4300ed23-dca0-4ed9-8014-f5f2f7af55a9');
@@ -179,7 +188,11 @@ const PageSettingsPermissions = () => {
     if (!selectedItem) {
       return;
     }
-    axios.post(`/api/core/permissions/`, [...items, selectedItem])
+    axios.post(`/api/core/permissions/`, [...items, selectedItem], {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(async () => {
         enqueueSnackbar(`Permissions ${selectedItem.name} updated.`, { variant: 'success' });
         refresh();

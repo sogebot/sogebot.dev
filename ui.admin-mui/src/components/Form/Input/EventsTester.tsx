@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 
 import { FormNumericInput } from './Numeric';
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -199,6 +200,10 @@ const EventsTester: React.FC<Props> = (props) => {
           enqueueSnackbar('Event sent', { variant: 'success' });
           axios.post('/api/core/events/?_action=testEvent', {
             id: props.eventId, randomized: randomized, values: values, variables: variables,
+          }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
           });
         }}>Test</Button>
       </DialogActions>

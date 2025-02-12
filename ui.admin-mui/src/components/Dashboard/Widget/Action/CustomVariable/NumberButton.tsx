@@ -9,6 +9,7 @@ import React, { MouseEventHandler, useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { loggedUserAtom } from '../../../../../atoms';
+import getAccessToken from '../../../../../getAccessToken';
 import { ColorButton } from '../_ColorButton';
 
 export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: number) => void, disabled: boolean }> = ({
@@ -37,7 +38,11 @@ export const DashboardWidgetActionCustomVariableNumberButton: React.FC<{ item: Q
       ? Number(variable.currentValue) + value
       : Number(variable.currentValue) - value);
     console.log(`quickaction::trigger::${item.id}`);
-    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: increment ? `+${value}` : `-${value}` });
+    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: increment ? `+${value}` : `-${value}` }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }, [ user, item, variable, onUpdate ]);
 
   const trigger: MouseEventHandler<HTMLElement> = useCallback((ev) => {

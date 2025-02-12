@@ -5,6 +5,7 @@ import React, { useCallback } from 'react';
 
 import { ColorButton } from './_ColorButton';
 import { loggedUserAtom } from '../../../../atoms';
+import getAccessToken from '../../../../getAccessToken';
 
 export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }> = ({
   item,
@@ -16,7 +17,11 @@ export const DashboardWidgetActionCommandButton: React.FC<{ item: CommandItem }>
       return;
     }
     console.log(`quickaction::trigger::${item.id}`);
-    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`);
+    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }, [ user, item ]);
 
   return (

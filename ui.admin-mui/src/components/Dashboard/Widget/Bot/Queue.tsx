@@ -10,6 +10,7 @@ import { useIntervalWhen } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
 import 'simplebar-react/dist/simplebar.min.css';
+import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { useScope } from '../../../../hooks/useScope';
 import { useSettings } from '../../../../hooks/useSettings';
@@ -31,7 +32,11 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   const { settings, handleChange: handleSettingsChange } = useSettings('/systems/queue');
 
   React.useEffect(() => {
-    axios.get('/api/settings/systems/queue/locked').then(({ data }) => {
+    axios.get('/api/settings/systems/queue/locked', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setLocked(data.data);
     });
   }, []);
@@ -43,7 +48,11 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, [selectCount]);
 
   useIntervalWhen(() => {
-    axios.get('/api/systems/queue?_action=picked').then(({ data }) => {
+    axios.get('/api/systems/queue?_action=picked', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       if (!isEqual(picked, data.data)) {
         setPicked(data.data);
       }
@@ -51,7 +60,11 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, 1000, true, true);
 
   useIntervalWhen(() => {
-    axios.get('/api/systems/queue').then(({ data }) => {
+    axios.get('/api/systems/queue', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       if (!isEqual(items, data.data)) {
         setItems(data.data);
       }
@@ -59,7 +72,11 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   }, 5000, true, true);
 
   React.useEffect(() => {
-    axios.post('/api/settings/systems/queue/locked', { value: locked });
+    axios.post('/api/settings/systems/queue/locked', { value: locked }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }, [locked]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -67,10 +84,18 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
   };
 
   function clear () {
-    axios.post('/api/systems/queue?_action=clear');
+    axios.post('/api/systems/queue?_action=clear', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }
   function pick (random: boolean, count: number) {
-    axios.post('/api/systems/queue?_action=pick', { random, count })
+    axios.post('/api/systems/queue?_action=pick', { random, count }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(({ data }) => {
         setPicked(data.data);
         setSelectedUsers([]);
@@ -98,6 +123,10 @@ export const DashboardWidgetBotQueue: React.FC<{ sx: SxProps }> = ({
       username: selectedUsers.map(idx => fUsers[idx].username),
       random:   false,
       count:    0,
+    }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
     })
       .then(({ data }) => {
         setPicked(data.data);

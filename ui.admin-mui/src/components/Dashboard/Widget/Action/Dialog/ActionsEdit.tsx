@@ -345,7 +345,11 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
     setActions(items);
 
     for (const item of items) {
-      axios.post(`/api/widgets/quickaction`, item);
+      axios.post(`/api/widgets/quickaction`, item, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      });
     }
   };
 
@@ -364,7 +368,11 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
         }))));
       });
 
-    axios.get(`/api/registries/overlays`).then(({ data }) => {
+    axios.get(`/api/registries/overlays`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       const _countdowns: { id: string, label: string }[] = [];
       const _marathons: { id: string, label: string }[] = [];
       const _stopwatches: { id: string, label: string }[] = [];
@@ -413,7 +421,11 @@ export const DashboardWidgetBotDialogActionsEdit: React.FC<{ onClose: () => void
       },
     };
 
-    axios.post(`/api/widgets/quickaction`, item).then(() => {
+    axios.post(`/api/widgets/quickaction`, item, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       setActions([...actions, item]);
       setEditingItem(item.id);
     });

@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { baseURL } from '../../../helpers/getBaseURL';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useScope } from '../../../hooks/useScope';
@@ -43,7 +44,11 @@ const PageSettingsModulesIntegrationsStreamlabs: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    axios.post('/api/integrations/streamlabs?_action=revoke').then(() => {
+    axios.post('/api/integrations/streamlabs?_action=revoke', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });

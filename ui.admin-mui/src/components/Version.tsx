@@ -4,6 +4,7 @@ import axios from 'axios';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import React from 'react';
 
+import getAccessToken from '../getAccessToken';
 import { LinearProgressTimeout } from './Progress/LinearProgressTimeout';
 import { useAppSelector } from '../hooks/useAppDispatch';
 
@@ -22,7 +23,11 @@ export const Version: React.FC = () => {
     }
 
     if (connectedToServer && server) {
-      axios.get(`${server}/_dash_version`)
+      axios.get(`${server}/_dash_version`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
         .then(res => {
           console.group('DOCKER UI VERSION');
           console.log(res.data);

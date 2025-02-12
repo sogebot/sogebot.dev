@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntervalWhen, useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { baseURL } from '../../../helpers/getBaseURL';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useScope } from '../../../hooks/useScope';
@@ -45,7 +46,11 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
   }, [element, scrollY, onVisible]);
 
   const revoke = useCallback(() => {
-    axios.post('/api/integrations/spotify/?_action=revoke').then(() => {
+    axios.post('/api/integrations/spotify/?_action=revoke', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });
@@ -54,7 +59,11 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
   const authorize = useCallback(async () => {
     // enable module
     await new Promise<void>(resolve => {
-      axios.post(`/api/settings/integrations/spotify`, { enabled: true }).then(() => {
+      axios.post(`/api/settings/integrations/spotify`, { enabled: true }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(() => {
         resolve();
       }).catch(console.error);
     });
@@ -73,7 +82,11 @@ const PageSettingsModulesIntegrationsSpotify: React.FC<{
 
   const [ lastActiveDevice, setLastActiveDevice ] = useState('');
   useIntervalWhen(() => {
-    axios.get('/api/settings/integrations/spotify/lastActiveDeviceId').then(({ data }) => {
+    axios.get('/api/settings/integrations/spotify/lastActiveDeviceId', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setLastActiveDevice(data.data);
     });
   }, 1000, true, true);

@@ -3,6 +3,7 @@ import { EmotesFireworks } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -14,7 +15,11 @@ export const EmotesFireworksSettings: React.FC<Props> = ({ model, onUpdate }) =>
   const { translate } = useTranslation();
 
   const test = () => {
-    axios.post('/api/core/emotes?_action=testFireworks');
+    axios.post('/api/core/emotes?_action=testFireworks', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   };
   return <>
     <Button sx={{ py: 1.5 }} fullWidth onClick={test} variant='contained'>Test</Button>

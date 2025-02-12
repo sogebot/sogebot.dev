@@ -53,9 +53,17 @@ export const DashboardWidgetBotDialogCustomURLsEdit: React.FC<{ setRefreshTimest
     setIsSaving(true);
     for (const item of custom) {
       if (idxDelete.includes(item.id)) {
-        await axios.delete(`/api/widgets/custom/${item.id}`);
+        await axios.delete(`/api/widgets/custom/${item.id}`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        });
       } else {
-        await axios.post('/api/widgets/custom', item);
+        await axios.post('/api/widgets/custom', item, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        });
       }
     }
     setIsSaving(false);

@@ -10,6 +10,7 @@ import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
+import getAccessToken from '../../../../getAccessToken';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopwatchItem }> = ({
@@ -54,6 +55,10 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
         isEnabled: !isStarted,
         time:      null,
         id:        item.options.stopwatchId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
       setIsStarted(!isStarted);
     }
@@ -61,7 +66,11 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   }, [stopwatch, isStarted, handleClick]);
 
   useEffect(() => {
-    axios.get(`/api/registries/overlays/${item.options.stopwatchId}`).then(({ data }) => {
+    axios.get(`/api/registries/overlays/${item.options.stopwatchId}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setStopwatch(data.data?.items.find((o: any) => o.id === item.options.stopwatchId && o.opts.typeId === 'stopwatch')?.opts as Stopwatch ?? null);
     });
   }, [ item.options.stopwatchId ]);
@@ -69,7 +78,11 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   useIntervalWhen(() => {
     // get actual status of opened overlay
     if (stopwatch && !anchorEl) {
-      axios.get(`/api/registries/overlays/${item.options.stopwatchId}`).then(({ data }) => {
+      axios.get(`/api/registries/overlays/${item.options.stopwatchId}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         if (data.data && stopwatch) {
           setIsStarted(data.isEnabled);
           setTimestamp(data.time);
@@ -83,6 +96,10 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
       axios.post(`/api/overlays/stopwatch/${item.options.stopwatchId}`, {
         isEnabled: null,
         time:      value,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
     }
   };

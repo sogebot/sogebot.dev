@@ -5,6 +5,7 @@ import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 
+import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -76,7 +77,11 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
   }, [filter, history]);
 
   useEffect(() => {
-    axios.get(`/api/core/events/user/${row.userId}`).then(({ data }) => {
+    axios.get(`/api/core/events/user/${row.userId}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setHistory(data.data);
       setLoading(false);
     });

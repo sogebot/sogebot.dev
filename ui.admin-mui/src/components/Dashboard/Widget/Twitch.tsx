@@ -14,6 +14,7 @@ import SimpleBar from 'simplebar-react';
 
 import notifAudio from './assets/message-notification.mp3';
 import { DAY, HOUR, MINUTE } from '../../../constants';
+import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { baseURL } from '../../../helpers/getBaseURL';
 import { getSocket } from '../../../helpers/socket';
@@ -253,10 +254,18 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
         const userName = messageEl?.dataset.username ?? '';
         banText = banText?.toLowerCase();
         if (banText === 'delete' || banText === 'ban' || banText === '!autoban') {
-          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: banText.replace('!', ''), messageId: banMenuForId });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: banText.replace('!', ''), messageId: banMenuForId }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          });
         } else {
           const timeout = [...firstHalfBanTimes, ...secondHalfBanTimes].find(val => val.title.toLowerCase() === banText?.toLowerCase())?.value;
-          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: 'timeout', messageId: banMenuForId, timeout });
+          axios.post(`/api/widgets/chat?_action=moderation`, { userName, type: 'timeout', messageId: banMenuForId, timeout }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          });
         }
       }
 
@@ -392,7 +401,11 @@ export const DashboardWidgetTwitch: React.FC = () => {
   const scrollBarRef = React.useRef(null);
 
   React.useEffect(() => {
-    axios.get('/api/widgets/chat/room').then(({ data }) => {
+    axios.get('/api/widgets/chat/room', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setRoom(data.data);
     });
 

@@ -21,6 +21,7 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { CustomVariablesEdit } from '../../components/Form/CustomVariablesEdit';
+import getAccessToken from '../../getAccessToken';
 import { getPermissionName } from '../../helpers/getPermissionName';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
@@ -57,7 +58,11 @@ const PageRegistryCustomVariables = () => {
   const [ evalsInProgress, setEvalsInProgress ] = useState<string[]>([]);
 
   const refresh = useCallback(async () => {
-    axios.get('/api/core/customvariables').then(({ data }) => {
+    axios.get('/api/core/customvariables', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setItems(data.data);
       setLoading(false);
     });
@@ -65,7 +70,11 @@ const PageRegistryCustomVariables = () => {
 
   const triggerEval = useCallback((item: Variable) => {
     setEvalsInProgress(v => [...v, item.id!]);
-    axios.post(`/api/core/customvariables/${item.id}?_action=runScript`).then(() => {
+    axios.post(`/api/core/customvariables/${item.id}?_action=runScript`, undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar(<>Script&nbsp;<strong>{item.variableName}</strong>&nbsp; finished successfully</>, { variant: 'success' });
       refresh();
     })
@@ -215,7 +224,11 @@ const PageRegistryCustomVariables = () => {
       variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
     });
 
-    axios.post('/api/core/customvariables', clonedItem).then(() => {
+    axios.post('/api/core/customvariables', clonedItem, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) cloned.`, { variant: 'success' });
       refresh();
     }).catch(err => enqueueSnackbar('Error cloning custom variable. ' + err.response.data, { variant: 'error' }));
@@ -223,7 +236,11 @@ const PageRegistryCustomVariables = () => {
 
   const deleteItem = useCallback((item: Variable) => {
     return new Promise((resolve) => {
-      axios.delete(`/api/core/customvariables/${item.id}`)
+      axios.delete(`/api/core/customvariables/${item.id}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
         .then(() => {
           enqueueSnackbar(`Custom variable ${item.variableName} (${item.id}) deleted successfully.`, { variant: 'success' });
           refresh();
@@ -244,7 +261,11 @@ const PageRegistryCustomVariables = () => {
     for (const selected of selection) {
       const item = items.find(o => o.id === selected);
       if (item) {
-        await axios.delete(`/api/core/customvariables/${item.id}`);
+        await axios.delete(`/api/core/customvariables/${item.id}`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        });
       }
     }
     setItems(i => i.filter(item => !selection.includes(item.id!)));

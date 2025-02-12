@@ -50,6 +50,7 @@ import LODASH_index from '!raw-loader!@types/lodash/index.d.ts';
 import { DAY } from '../../constants';
 import { useAppSelector } from '../../hooks/useAppDispatch';
 import axios from 'axios';
+import getAccessToken from '../../getAccessToken';
 /* eslint-enable */
 
 const createInitialItem = async () => {
@@ -266,6 +267,10 @@ export const CustomVariablesEdit: React.FC = () => {
     setScriptIsRunning(true);
     axios.post(`/api/core/customvariables?_action=testScript`, {
       evalValue: item.evalValue, currentValue: item.currentValue,
+    }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
     }).then(({ data }) => {
       handleValueChange('currentValue', data.data);
     })
@@ -278,7 +283,11 @@ export const CustomVariablesEdit: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     if (id) {
-      axios.get(`/api/core/customvariables/`)
+      axios.get(`/api/core/customvariables/`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
         .then(({ data }) => {
           const itemFromList = data.data.find((o: any) => o.id === id);
           if (itemFromList) {
@@ -316,7 +325,11 @@ export const CustomVariablesEdit: React.FC = () => {
       return;
     }
     setSaving(true);
-    axios.post(`/api/core/customvariables/`, item)
+    axios.post(`/api/core/customvariables/`, item, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(({ data }) => {
         enqueueSnackbar('Custom variable saved.', { variant: 'success' });
 

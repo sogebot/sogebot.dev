@@ -6,6 +6,7 @@ import { useSetAtom } from 'jotai';
 import React from 'react';
 
 import { AdditionalGridFormResponse } from './Response';
+import getAccessToken from '../../../getAccessToken';
 import { anItems, anMoveableId } from '../atoms';
 import { AccordionAnimationIn } from '../Overlay/AlertSettings/Accordion/AnimationIn';
 import { AccordionAnimationOut } from '../Overlay/AlertSettings/Accordion/AnimationOut';
@@ -98,7 +99,11 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   const [ expand, setExpand ] = React.useState(false);
 
   React.useEffect(() => {
-    axios.get('/registries/overlays').then(({ data }) => {
+    axios.get('/registries/overlays', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       // filter data to overlays only with alert item with custom hook
       setOverlays(data.data.filter((o: any) => {
         // first check if there is any alert item

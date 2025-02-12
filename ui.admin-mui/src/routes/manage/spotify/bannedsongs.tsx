@@ -15,6 +15,7 @@ import SimpleBar from 'simplebar-react';
 import { ButtonsDeleteBulk } from '../../../components/Buttons/DeleteBulk';
 import { DeleteButton } from '../../../components/Buttons/DeleteButton';
 import { DisabledAlert } from '../../../components/DisabledAlert';
+import getAccessToken from '../../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../../hooks/useColumnMaker';
 import { useFilter } from '../../../hooks/useFilter';
@@ -68,7 +69,11 @@ const PageCommandsSpotifySongBan = () => {
   const { element: filterElement, filters } = useFilter<SpotifySongBan>(useFilterSetup);
 
   const deleteItem = useCallback((item: SpotifySongBan) => {
-    axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+    axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .finally(() => {
         enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -82,7 +87,11 @@ const PageCommandsSpotifySongBan = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get('/api/integrations/spotify/ban').then(({ data }) => {
+        axios.get('/api/integrations/spotify/ban', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setItems(data.data);
           resolve();
         });
@@ -99,7 +108,11 @@ const PageCommandsSpotifySongBan = () => {
       const item = items.find(o => o.spotifyUri === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri })
+          axios.post('/api/integrations/spotify/?_action=deleteBan', { spotifyUri: item.spotifyUri }, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          })
             .finally(resolve);
         });
       }
@@ -117,7 +130,11 @@ const PageCommandsSpotifySongBan = () => {
         enqueueSnackbar('Cannot add empty song to ban list.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        axios.post('/api/integrations/spotify/?_action=addBan', { spotifyUri: value })
+        axios.post('/api/integrations/spotify/?_action=addBan', { spotifyUri: value }, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        })
           .then(() => {
             enqueueSnackbar('Song added to ban list.', { variant: 'success' });
             refresh();

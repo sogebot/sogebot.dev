@@ -10,6 +10,7 @@ import { useIntervalWhen } from 'rooks';
 
 import { ColorButton } from './_ColorButton';
 import { GenerateTime } from './GenerateTime';
+import getAccessToken from '../../../../getAccessToken';
 import { FormInputTime } from '../../../Form/Input/Time';
 
 export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarathonItem }> = ({
@@ -47,7 +48,11 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
   }, [marathon, handleClick]);
 
   useEffect(() => {
-    axios.get(`/api/overlays/marathon/${item.options.marathonId}`).then(({ data }) => {
+    axios.get(`/api/overlays/marathon/${item.options.marathonId}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setMarathon(data.data?.items.find((o: any) => o.id === item.options.marathonId && o.opts.typeId === 'marathon')?.opts as Marathon ?? null);
     });
   }, [item.options.marathonId]);
@@ -56,7 +61,11 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
     setKey(Date.now());
     // get actual status of opened overlay
     if (marathon) {
-      axios.get(`/api/overlays/marathon/${item.options.marathonId}`).then(({ data }) => {
+      axios.get(`/api/overlays/marathon/${item.options.marathonId}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         if (data.data && marathon) {
           setTimestamp(Math.max(data.data.endTime, Date.now()));
         }
@@ -72,6 +81,10 @@ export const DashboardWidgetActionMarathonButton: React.FC<{ item: OverlayMarath
       axios.post(`/api/overlays/marathon/${item.options.marathonId}`, {
         time: value,
         id:   item.options.marathonId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       });
     }
   };

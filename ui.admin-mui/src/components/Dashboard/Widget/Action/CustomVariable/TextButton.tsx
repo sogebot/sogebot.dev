@@ -8,6 +8,7 @@ import { useAtomValue } from 'jotai';
 import React, { useCallback, useRef, useState } from 'react';
 
 import { loggedUserAtom } from '../../../../../atoms';
+import getAccessToken from '../../../../../getAccessToken';
 import { ColorButton } from '../_ColorButton';
 
 export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: QuickActions.Item, variable: Variable, onUpdate: (value: string) => void, disabled: boolean }> = ({
@@ -35,7 +36,11 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
     }
     onUpdate(value);
     console.log(`quickaction::trigger::${item.id}`);
-    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: value });
+    axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: value }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }, [ user, item, onUpdate ]);
 
   return (<>

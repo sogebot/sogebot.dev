@@ -10,6 +10,7 @@ import { useLocalstorageState } from 'rooks';
 import { useSettings } from './useSettings';
 import { loggedUserAtom } from '../atoms';
 import { Commands } from '../classes/Commands';
+import getAccessToken from '../getAccessToken';
 
 export const useBotCommandsExample = (item: Commands | null) => {
   const user = useAtomValue(loggedUserAtom);
@@ -112,6 +113,10 @@ export const useBotCommandsExample = (item: Commands | null) => {
                       user: {
                         id: user.id, username: user.login,
                       },
+                    }, {
+                      headers: {
+                        Authorization: `Bearer ${getAccessToken()}`
+                      }
                     })
                     .then((response) => {
                       setParsed(d => ({

@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { useSettings } from '../../../hooks/useSettings';
@@ -78,7 +79,11 @@ const PageSettingsModulesSystemsPoints: React.FC<{
   const manuallyResetPoints = React.useCallback(() => {
     confirm({ description: 'This action is permanent!' })
       .then(() => {
-        axios.post(`/api/systems/points/reset`)
+        axios.post(`/api/systems/points/reset`, undefined, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        })
           .then(() => {
             enqueueSnackbar('User points were reset.', { variant: 'success' });
           });
@@ -87,7 +92,11 @@ const PageSettingsModulesSystemsPoints: React.FC<{
 
   useEffect(() => {
     if (settings?.reset.resetIntervalCron) {
-      axios.post(`/api/systems/points/cron`, { cron: settings.reset.resetIntervalCron[0] })
+      axios.post(`/api/systems/points/cron`, { cron: settings.reset.resetIntervalCron[0] }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
         .then(({ data }) => {
           setCronError('');
           setCronIntervals(data.data);

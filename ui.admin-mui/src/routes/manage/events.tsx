@@ -18,6 +18,7 @@ import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { EventsEdit } from '../../components/Form/EventsEdit';
 import { BoolTypeProvider } from '../../components/Table/BoolTypeProvider';
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
@@ -34,7 +35,11 @@ const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProp
   const [ rewards, setRewards ] = useAtom(rewardsAtom);
   const [ rewardLoading, setRewardLoading ] = useState(true);
   React.useEffect(() => {
-    axios.get('/api/core/events/rewards').then(({ data }) => {
+    axios.get('/api/core/events/rewards', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setRewards(orderBy(data.data, 'name', 'asc'));
       setRewardLoading(false);
     });
@@ -197,7 +202,11 @@ const PageManageEvents = () => {
   const { element: filterElement, filters } = useFilter<Event>(useFilterSetup);
 
   const deleteItem = useCallback((item: Event) => {
-    axios.delete('/api/core/events/' + item.id).finally(() => {
+    axios.delete('/api/core/events/' + item.id, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).finally(() => {
       enqueueSnackbar(`Event ${item.id} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -210,7 +219,11 @@ const PageManageEvents = () => {
   const refresh = async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get('/api/core/events').then(({ data }) => {
+        axios.get('/api/core/events', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setItems(data.data);
           resolve();
         });
@@ -248,7 +261,11 @@ const PageManageEvents = () => {
       if (item && item[attribute] !== value) {
         await new Promise<void>((resolve) => {
           item[attribute] = value;
-          axios.post('/api/core/events/', item)
+          axios.post('/api/core/events/', item, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          })
             .finally(() => resolve());
         });
       }
@@ -273,7 +290,11 @@ const PageManageEvents = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete('/api/core/events/' + item.id).then(() => {
+          axios.delete('/api/core/events/' + item.id, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).then(() => {
             resolve();
           });
         });

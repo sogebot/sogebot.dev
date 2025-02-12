@@ -13,6 +13,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useIntervalWhen } from 'rooks';
 
 import { SECOND } from '../../../../constants';
+import getAccessToken from '../../../../getAccessToken';
 import { dayjs } from '../../../../helpers/dayjsHelper';
 import { useScope } from '../../../../hooks/useScope';
 import { useTranslation } from '../../../../hooks/useTranslation';
@@ -130,7 +131,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
     console.group('raffles open()');
     console.debug('out: ', out.join(' '));
     console.groupEnd();
-    axios.post('/api/systems/raffles/?_action=open', { message: out.join(' ') })
+    axios.post('/api/systems/raffles/?_action=open', { message: out.join(' ') }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then(({ data }) => {
         const raffleResponse = data.data;
         setRaffle(raffleResponse);
@@ -154,7 +159,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   }, [ eligibleItems ]);
 
   const refresh = () => {
-    axios.get('/api/systems/raffles').then(({ data }) => {
+    axios.get('/api/systems/raffles', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       const raffleResponse = data.data;
       console.groupCollapsed('raffle:getLatest');
       console.log({
@@ -195,7 +204,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
       if (!raffle.winner) {
         setWinner(null);
       } else if (winner === null || winner.userName !== raffle.winner) {
-        axios.get(`/api/core/users/${raffle.winner}?_query=userName`)
+        axios.get(`/api/core/users/${raffle.winner}?_query=userName`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        })
           .then(({ data }) => {
             setWinner(data.data);
           })
@@ -235,6 +248,10 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
 
     axios.post('/api/systems/raffles/?_action=eligibility', {
       id: participant.id, isEligible: participant.isEligible,
+    }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
     })
       .catch((error) => {
         console.error('Failed to update participant eligibility:', error);
@@ -248,7 +265,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
       cancellationText: 'Cancel',
     })
       .then(() => {
-        axios.post('/api/systems/raffles/?_action=close')
+        axios.post('/api/systems/raffles/?_action=close', undefined, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        })
           .then(() => {
             refresh();
           });
@@ -263,7 +284,11 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
       cancellationText: 'Cancel',
     })
       .then(() => {
-        axios.post('/api/systems/raffles/?_action=pick')
+        axios.post('/api/systems/raffles/?_action=pick', undefined, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        })
           .then(() => {
             refresh();
             setValue('3');

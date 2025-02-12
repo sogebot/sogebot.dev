@@ -7,6 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLocalstorageState, useWindowSize } from 'rooks';
 
+import getAccessToken from '../../getAccessToken';
 import { dayjs } from '../../helpers/dayjsHelper';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -56,7 +57,11 @@ const PageStatsBits = () => {
   }, [_data, loading]);
 
   const refresh = () => {
-    axios.get('/api/stats/bits').then(({ data: axiosData }) => {
+    axios.get('/api/stats/bits', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data: axiosData }) => {
       setData(axiosData.data);
       setLoading(false);
     });

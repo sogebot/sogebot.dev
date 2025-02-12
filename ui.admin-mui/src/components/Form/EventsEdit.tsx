@@ -15,6 +15,7 @@ import { CopyButton } from './Input/Adornment/Copy';
 import { FormInputAdornmentCustomVariable } from './Input/Adornment/CustomVariables';
 import { EventsDefinitions } from './Input/EventsDefinitions';
 import { EventsTester } from './Input/EventsTester';
+import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useValidator } from '../../hooks/useValidator';
 import theme from '../../theme';
@@ -61,7 +62,11 @@ export const EventsEdit: React.FC = () => {
     Promise.all([
       new Promise<void>(resolve => {
         if (id) {
-          axios.get(`/api/core/events/${id}`).then(({ data }) => {
+          axios.get(`/api/core/events/${id}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).then(({ data }) => {
             setItem(Event.create(data.data));
             resolve();
           });
@@ -74,7 +79,11 @@ export const EventsEdit: React.FC = () => {
         }
       }),
       new Promise<void>(resolve => {
-        axios.post('/api/core/events/?_action=listSupportedOperations').then(({ data }) => {
+        axios.post('/api/core/events/?_action=listSupportedOperations', undefined, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setAvailableOperations(data.data.sort((a: any, b: any) => {
             const A = translate(a.id).toLowerCase();
             const B = translate(b.id).toLowerCase();
@@ -90,7 +99,11 @@ export const EventsEdit: React.FC = () => {
         });
       }),
       new Promise<void>(resolve => {
-        axios.post('/api/core/events/?_action=listSupportedEvents').then(({ data }) => {
+        axios.post('/api/core/events/?_action=listSupportedEvents', undefined, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           for (const d of data.data) {
             // sort variables
             if (d.variables) {
@@ -136,7 +149,11 @@ export const EventsEdit: React.FC = () => {
       return;
     }
     setSaving(true);
-    axios.post('/api/core/events/', item).then((response) => {
+    axios.post('/api/core/events/', item, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then((response) => {
       if (response.data.status === 'success') {
         enqueueSnackbar('Event saved.', { variant: 'success' });
         navigate(`/manage/events/edit/${response.data.data.id}`);

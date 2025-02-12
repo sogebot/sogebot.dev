@@ -20,6 +20,7 @@ import { ImportDialog } from '../Plugin/ImportDialog';
 // @ts-ignore: TS2307
 import libSource from '!raw-loader!./assets/plugin.global.d.ts';
 import axios from 'axios';
+import getAccessToken from '../../getAccessToken';
 /* eslint-enable */
 
 const leftPanelWidth = 352;
@@ -268,7 +269,11 @@ export const PluginsEdit: React.FC = () => {
           } as Plugin);
         } else {
           if (id) {
-            axios.get(`/api/core/plugins/${id}`)
+            axios.get(`/api/core/plugins/${id}`, {
+              headers: {
+                Authorization: `Bearer ${getAccessToken()}`
+              }
+            })
               .then(response => {
                 setPlugin(response.data.data);
               });
@@ -289,7 +294,11 @@ export const PluginsEdit: React.FC = () => {
 
   const handleSave = () => {
     setSaving(true);
-    axios.post(`/api/core/plugins`, plugin)
+    axios.post(`/api/core/plugins`, plugin, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then((response) => {
         enqueueSnackbar('Plugin saved.', { variant: 'success' });
         navigate(`/registry/plugins/edit/${response.data.data.id}`);

@@ -190,7 +190,11 @@ const PageSettingsModulesServiceGoogle: React.FC<{
   };
 
   const revoke = useCallback(() => {
-    axios.post('/api/services/google?_action=revoke').then(() => {
+    axios.post('/api/services/google?_action=revoke', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar('User access revoked.', { variant: 'success' });
       refresh();
     });

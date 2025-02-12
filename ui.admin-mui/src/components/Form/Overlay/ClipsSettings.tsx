@@ -3,6 +3,7 @@ import { Clips } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 type Props = {
@@ -19,7 +20,11 @@ export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
     if (!testURLRef.current) {
       return;
     }
-    axios.post('/api/overlays/clips/?_action=test', { clipId: testURLRef.current.value });
+    axios.post('/api/overlays/clips/?_action=test', { clipId: testURLRef.current.value }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   };
 
   return <>

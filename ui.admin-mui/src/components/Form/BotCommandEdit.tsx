@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Commands, schema } from '../../classes/Commands';
+import getAccessToken from '../../getAccessToken';
 import { useBotCommandsExample } from '../../hooks/useBotCommandsExample';
 import { useBotCommandsSpecificSettings } from '../../hooks/useBotCommandsSpecificSettings';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -87,7 +88,11 @@ export const BotCommandEdit: React.FC<{
 
     setSaving(true);
     await handleBotCommandSpecificSettingsSave();
-    axios.post('/api/core/general/commands', item).then(() => {
+    axios.post('/api/core/general/commands', item, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar('Bot command saved.', { variant: 'success' });
       navigate(`/commands/botcommands/edit/${item.id}`);
     }).finally(() => setSaving(false));

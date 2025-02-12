@@ -192,7 +192,11 @@ const PageManageViewers = () => {
           sortTable.orderBy = 'userName';
         }
 
-        axios.get(`/api/core/users?state=${v4()}&order=${JSON.stringify(sortTable)}&page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+        axios.get(`/api/core/users?state=${v4()}&order=${JSON.stringify(sortTable)}&page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setTotalCount(data.data.count);
           setItems(data.data.viewers);
           resolve();
@@ -238,37 +242,61 @@ const PageManageViewers = () => {
   }, [ selection, enqueueSnackbar, items ]);
 
   const resetPoints = () => {
-    axios.post('/core/users?_action=resetPointsAll').then(() => {
+    axios.post('/core/users?_action=resetPointsAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };
 
   const resetWatchedTime = () => {
-    axios.post('/core/users?_action=resetWatchedTimeAll').then(() => {
+    axios.post('/core/users?_action=resetWatchedTimeAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };
 
   const resetMessages = () => {
-    axios.post('/core/users?_action=resetMessagesAll').then(() => {
+    axios.post('/core/users?_action=resetMessagesAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };
 
   const resetBits = () => {
-    axios.post('/core/users?_action=resetBitsAll').then(() => {
+    axios.post('/core/users?_action=resetBitsAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };
 
   const resetTips = () => {
-    axios.post('/core/users?_action=resetTipsAll').then(() => {
+    axios.post('/core/users?_action=resetTipsAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };
 
   const resetSubgifts = () => {
-    axios.post('/core/users?_action=resetSubgiftsAll').then(() => {
+    axios.post('/core/users?_action=resetSubgiftsAll', undefined, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       refresh();
     });
   };

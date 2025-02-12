@@ -44,7 +44,11 @@ export const DashboardWidgetActionRandomizerButton: React.FC<{ item: RandomizerI
         setRunning(false);
       }, 5000);
     } else {
-      axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: !currentRandomizer.isShown });
+      axios.post(`/api/widgets/quickaction/${item.id}?_action=trigger`, { value: !currentRandomizer.isShown }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      });
       axios.get(`/api/registries/randomizer/`, { headers: { authorization: `Bearer ${getAccessToken()}` } })
         .then((res: any) => setRandomizers(res.data.data));
 

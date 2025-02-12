@@ -7,6 +7,7 @@ import { capitalize } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 
+import getAccessToken from '../../getAccessToken';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const TestUserField: React.FC<{ permissionId: string }> = ({
@@ -53,6 +54,10 @@ export const TestUserField: React.FC<{ permissionId: string }> = ({
     } else {
       axios.post('/api/core/permissions/?_action=testUser', {
         pid: permissionId, value: testUserName, state,
+      }, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
       }).then(({ data }) => {
         console.log({ data });
         if (data.data.state === state) {

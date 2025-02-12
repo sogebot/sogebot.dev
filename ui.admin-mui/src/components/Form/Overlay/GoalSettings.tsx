@@ -13,6 +13,7 @@ import { useIntervalWhen } from 'rooks';
 import { CSSDialog } from './HTMLSettings/css';
 import { HTMLDialog } from './HTMLSettings/html';
 import { JavascriptDialog } from './HTMLSettings/javascript';
+import getAccessToken from '../../../getAccessToken';
 import { dayjs } from '../../../helpers/dayjsHelper';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { isHexColor } from '../../../validators';
@@ -40,7 +41,11 @@ export const GoalSettings: React.FC<Props> = ({ onUpdate, model }) => {
   const [ accordionBarOpen, setAccordionBarOpen ] = React.useState(false);
 
   useIntervalWhen(() => {
-    axios.get('/api/integrations/tiltify/campaigns').then(({ data }) => {
+    axios.get('/api/integrations/tiltify/campaigns', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(({ data }) => {
       setTiltifyCampaigns(data.data);
     });
   }, 30000, true, true);

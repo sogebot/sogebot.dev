@@ -179,19 +179,31 @@ const PageCommandsSongPlaylist = () => {
     setLoading(true);
     await Promise.all([
       new Promise<void>((resolve) => {
-        axios.get('/api/systems/songs/playlist/tag/current').then(({ data }) => {
+        axios.get('/api/systems/songs/playlist/tag/current', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setCurrentTag(data.data);
           resolve();
         });
       }),
       new Promise<void>((resolve) => {
-        axios.get('/api/systems/songs/playlist/tags').then(({ data }) => {
+        axios.get('/api/systems/songs/playlist/tags', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setTags(data.data);
           resolve();
         });
       }),
       new Promise<void>(resolve => {
-        axios.get(`/api/systems/songs/playlist?page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`).then(({ data }) => {
+        axios.get(`/api/systems/songs/playlist?page=${currentPage}&perPage=${pageSize}&filter=${JSON.stringify(filters)}`, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setItems(data.data);
           setTotalCount(data.total);
           resolve();
@@ -202,7 +214,11 @@ const PageCommandsSongPlaylist = () => {
   }, [ currentPage, pageSize, filters, enqueueSnackbar ]);
 
   const deleteItem = useCallback((item: SongPlaylist) => {
-    axios.delete(`/api/systems/songs/playlist/${item.videoId}`)
+    axios.delete(`/api/systems/songs/playlist/${item.videoId}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .finally(() => {
         enqueueSnackbar(`Song ${item.title} deleted successfully.`, { variant: 'success' });
         refresh();
@@ -226,7 +242,11 @@ const PageCommandsSongPlaylist = () => {
       const item = items.find(o => o.videoId === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`/api/systems/songs/playlist/${item.videoId}`).finally(resolve);
+          axios.delete(`/api/systems/songs/playlist/${item.videoId}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).finally(resolve);
         });
       }
     }
@@ -243,7 +263,11 @@ const PageCommandsSongPlaylist = () => {
         enqueueSnackbar('Cannot add empty song to playlist.', { variant: 'error' });
       } else {
         setIsSaving(true);
-        axios.post(`/api/systems/songs/import/${value.includes('playlist') ? 'playlist' : 'video'}`, { playlist: value, forcedTag: currentTag }).then(() => {
+        axios.post(`/api/systems/songs/import/${value.includes('playlist') ? 'playlist' : 'video'}`, { playlist: value, forcedTag: currentTag }, {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(() => {
           enqueueSnackbar('Song added to playlist.', { variant: 'success' });
           refresh();
           close();

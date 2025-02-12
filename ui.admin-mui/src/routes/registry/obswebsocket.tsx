@@ -14,6 +14,7 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OBSWebsocketEdit } from '../../components/Form/OBSWebsocketEdit';
+import getAccessToken from '../../getAccessToken';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { ColumnMakerProps, useColumnMaker } from '../../hooks/useColumnMaker';
 import { useFilter } from '../../hooks/useFilter';
@@ -37,7 +38,11 @@ const PageRegistryCustomVariables = () => {
   const refresh = useCallback(async () => {
     await Promise.all([
       new Promise<void>(resolve => {
-        axios.get('/api/integrations/obswebsocket').then(({ data }) => {
+        axios.get('/api/integrations/obswebsocket', {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`
+          }
+        }).then(({ data }) => {
           setItems(data.data);
           resolve();
         });
@@ -93,7 +98,11 @@ const PageRegistryCustomVariables = () => {
 
   const deleteItem = useCallback((item: OBSWebsocket) => {
     return new Promise((resolve, reject) => {
-      axios.delete(`/api/integrations/obswebsocket/${item.id}`).then(() => {
+      axios.delete(`/api/integrations/obswebsocket/${item.id}`, {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(() => {
         enqueueSnackbar(`Custom variable ${item.name} (${item.id}) deleted successfully.`, { variant: 'success' });
         refresh();
         resolve(true);
@@ -114,7 +123,11 @@ const PageRegistryCustomVariables = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`/api/integrations/obswebsocket/${item.id}`).then(() => resolve());
+          axios.delete(`/api/integrations/obswebsocket/${item.id}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).then(() => resolve());
         });
       }
     }

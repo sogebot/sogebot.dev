@@ -8,6 +8,7 @@ import axios from 'axios';
 import { shuffle } from 'lodash';
 import React from 'react';
 
+import getAccessToken from '../../../../getAccessToken';
 import { useAppSelector } from '../../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../../hooks/useTranslation';
 import theme from '../../../../theme';
@@ -113,7 +114,11 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
       monthsName: '', // will be added at server
     };
     console.log('Testing', emit);
-    axios.post('/api/registries/alerts/?_action=test', emit);
+    axios.post('/api/registries/alerts/?_action=test', emit, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
   }, [
     reward, selectedEvent, currency,
     amountRandom, usernameRandom, tierRandom, serviceRandom, recipientRandom, messageRandom,

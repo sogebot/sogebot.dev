@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { useAppSelector } from '../../../hooks/useAppDispatch';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useScope } from '../../../hooks/useScope';
@@ -39,7 +40,11 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
 
   useEffect(() => {
     refresh().then((settingsData) => {
-      axios.get('/api/integrations/discord/guilds').then(({ data }) => {
+      axios.get('/api/integrations/discord/guilds', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         if (!data.data.find((o: any) => String(o.value) === String(settingsData.bot.guild[0]))) {
           handleChange('bot.guild', '');
         }
@@ -47,10 +52,18 @@ const PageSettingsModulesIntegrationsDiscord: React.FC<{
           value: '', text: `-- ${translate('integrations.discord.settings.noGuildSelected')} --`,
         }, ...data.data]);
       });
-      axios.get('/api/integrations/discord/roles').then(({ data }) => {
+      axios.get('/api/integrations/discord/roles', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         setRoles(data.data);
       });
-      axios.get('/api/integrations/discord/channels').then(({ data }) => {
+      axios.get('/api/integrations/discord/channels', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         if (!data.data.find((o: any) => String(o.value) === String(settingsData?.bot.guild[0]))) {
           handleChange('bot.listenAtChannels', ['']);
         } else {

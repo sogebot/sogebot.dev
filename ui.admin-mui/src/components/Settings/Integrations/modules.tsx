@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRefElement } from 'rooks';
 
+import getAccessToken from '../../../getAccessToken';
 import { getSocket } from '../../../helpers/socket';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useAppDispatch';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -50,7 +51,11 @@ const PageSettingsModulesIntegrationsModules: React.FC<{
       return [...values];
     });
 
-    axios.post(`/api/settings/${item.type}/${item.name}`, { enabled }).then(() => {
+    axios.post(`/api/settings/${item.type}/${item.name}`, { enabled }, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).then(() => {
       enqueueSnackbar(`Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`, { variant: enabled ? 'success' : 'info' });
     }).catch(err => {
       enqueueSnackbar(String(err), { variant: 'error' });

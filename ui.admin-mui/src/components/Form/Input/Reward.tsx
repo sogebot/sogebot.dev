@@ -7,6 +7,7 @@ import orderBy from 'lodash/orderBy';
 import React from 'react';
 
 import { rewardsAtom } from '../../../atoms';
+import getAccessToken from '../../../getAccessToken';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { useValidator } from '../../../hooks/useValidator';
 
@@ -37,7 +38,11 @@ export const FormRewardInput: React.FC<{
   const refreshRedeemedRewards = () => {
     setProgress(true);
     return new Promise<void>((resolve) => {
-      axios.get('/api/core/events/rewards').then(({ data }) => {
+      axios.get('/api/core/events/rewards', {
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      }).then(({ data }) => {
         setRewards(orderBy(data.data, 'name', 'asc'));
         setProgress(false);
         resolve();

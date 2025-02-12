@@ -18,6 +18,7 @@ import { DeleteButton } from '../../components/Buttons/DeleteButton';
 import EditButton from '../../components/Buttons/EditButton';
 import LinkButton from '../../components/Buttons/LinkButton';
 import { OverlayEdit } from '../../components/Form/OverlayEdit';
+import getAccessToken from '../../getAccessToken';
 import { cloneIncrementName } from '../../helpers/cloneIncrementName';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { useColumnMaker } from '../../hooks/useColumnMaker';
@@ -47,7 +48,11 @@ const PageRegistryOverlays = () => {
   const [ selection, setSelection ] = useState<(number|string)[]>([]);
 
   const refresh = useCallback(async () => {
-    const response = await axios.get('/api/registries/overlays');
+    const response = await axios.get('/api/registries/overlays', {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    });
     setItems(response.data.data);
   }, []);
 
@@ -93,7 +98,11 @@ const PageRegistryOverlays = () => {
   const { element: filterElement, filters } = useFilter(useFilterSetup);
 
   const deleteItem = useCallback((item: Overlay) => {
-    axios.delete(`/api/registries/overlays/${item.id}`).finally(() => {
+    axios.delete(`/api/registries/overlays/${item.id}`, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }).finally(() => {
       enqueueSnackbar(`Overlay ${item.name} deleted successfully.`, { variant: 'success' });
       refresh();
     });
@@ -112,7 +121,11 @@ const PageRegistryOverlays = () => {
       const item = items.find(o => o.id === selected);
       if (item) {
         await new Promise<void>((resolve) => {
-          axios.delete(`/api/registries/overlays/${item.id}`).finally(resolve);
+          axios.delete(`/api/registries/overlays/${item.id}`, {
+            headers: {
+              Authorization: `Bearer ${getAccessToken()}`
+            }
+          }).finally(resolve);
         });
       }
     }
@@ -135,7 +148,11 @@ const PageRegistryOverlays = () => {
 
     setCloningItems(it => [...it, item.id]);
 
-    axios.post('/api/registries/overlays', clonedItem)
+    axios.post('/api/registries/overlays', clonedItem, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
       .then((response) => {
         if (response.data.status === 'success') {
           setCloningItems(it => it.filter(o => o !== item.id));
