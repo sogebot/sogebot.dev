@@ -5,7 +5,8 @@ import 'swiper/css/effect-fade';
 import { Alert, Box } from '@mui/material';
 import { ClipsCarousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
-import { EffectFade } from 'swiper';
+import { Swiper as SwiperType } from 'swiper';
+import { EffectFade } from 'swiper/modules';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 
 import type { Props } from './ChatItem';
@@ -95,8 +96,8 @@ export const ClipsCarouselItem: React.FC<Props<ClipsCarousel>> = ({ item, active
           grabCursor={true}
           centeredSlides={true}
           spaceBetween={model.spaceBetween ?? 200}
-          onInit={(swiper) => swiper.slideNext()}
-          onSlideChangeTransitionEnd={(swiper) => {
+          onInit={(swiper: SwiperType) => swiper.slideNext()}
+          onSlideChangeTransitionEnd={(swiper: SwiperType) => {
             if (!active) {
               return; // don't play on edit
             }
