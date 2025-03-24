@@ -1,7 +1,7 @@
+import { Permissions } from '@entity/permissions';
 import { LockOpenTwoTone, LockTwoTone, PriorityHighTwoTone } from '@mui/icons-material';
 import { Box, Checkbox, FormControlLabel, FormGroup, IconButton, InputAdornment, Stack, Tab, Tabs } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
 import React, { ChangeEvent } from 'react';
@@ -9,7 +9,7 @@ import React, { ChangeEvent } from 'react';
 import { usePermissions } from '../../hooks/usePermissions';
 
 const getIgnoredPermissions = (settings: Record<string, any>, category: string) => {
-  const ignored = [];
+  const ignored: string[] = [];
   const attributeKey = Object.keys(settings.__permission_based__[category])[0];
   for (const key of Object.keys(settings.__permission_based__[category][attributeKey][0])) {
     if (settings.__permission_based__[category][attributeKey][0][key] === '%%%%___ignored___%%%%') {
@@ -32,9 +32,9 @@ export const PermissionTabs: React.FC<{
     isEditable:     (key: string) => boolean,
     toggle:         (key: string, handleChange: (key: string, pid: string) => void) => void,
     isToggable:     boolean,
-    CheckBox:       (key: string, options: { label: string }) => JSX.Element,
+    CheckBox:       (key: string, options: { label: string }) => React.JSX.Element,
     TextFieldProps: (key: string) => Record<string, any>
-  }) => void,
+  }) => React.ReactNode,
 }> = ({
   settings,
   errors,

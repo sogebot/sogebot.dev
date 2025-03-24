@@ -1,6 +1,6 @@
+import { defaultPermissions } from '@backend/helpers/permissions/defaultPermissions';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, Fade, FormControl, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
-import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

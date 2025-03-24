@@ -1,7 +1,7 @@
+import { Keyword, KeywordGroup } from '@backend/database/entity/keyword';
 import { Column } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import { Button, CircularProgress, Dialog, Grid, Stack } from '@mui/material';
-import { Keyword, KeywordGroup } from '@sogebot/backend/src/database/entity/keyword';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';

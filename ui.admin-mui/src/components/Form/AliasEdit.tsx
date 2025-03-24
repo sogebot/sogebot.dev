@@ -1,7 +1,7 @@
+import { defaultPermissions } from '@backend/helpers/permissions/defaultPermissions';
+import { Alias, AliasGroup } from '@entity/alias';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
-import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

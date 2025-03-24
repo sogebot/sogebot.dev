@@ -1,6 +1,6 @@
+import { AlertCustom, Alerts } from '@backend/database/entity/overlay';
+import { generateUsername } from '@backend/helpers/generateUsername';
 import { Box } from '@mui/material';
-import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
-import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { get, orderBy } from 'lodash';
 import React from 'react';

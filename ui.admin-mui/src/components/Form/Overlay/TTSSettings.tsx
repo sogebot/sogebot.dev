@@ -1,5 +1,5 @@
+import { TTS } from '@entity/overlay';
 import { Checkbox, FormControlLabel, FormGroup, Stack } from '@mui/material';
-import { TTS } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';

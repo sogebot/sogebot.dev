@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "target": "ES2018",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -11,7 +15,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -19,6 +23,12 @@
     "paths": {
       "@entity/*": [
         "../node_modules/@sogebot/backend/dest/database/entity/*"
+      ],
+      "@backend/*": [
+        "../node_modules/@sogebot/backend/dest/*"
+      ],
+      "@d.ts/*": [
+        "../node_modules/@sogebot/backend/d.ts/*"
       ]
     },
   },

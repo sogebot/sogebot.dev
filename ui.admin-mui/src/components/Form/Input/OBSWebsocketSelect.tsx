@@ -1,6 +1,6 @@
+import { OBSWebsocket } from '@entity/obswebsocket';
 import { RefreshTwoTone } from '@mui/icons-material';
 import { CircularProgress, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import orderBy from 'lodash/orderBy';

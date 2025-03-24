@@ -1,5 +1,5 @@
+import { Alerts } from '@backend/database/entity/overlay';
 import { Button, Dialog, DialogActions } from '@mui/material';
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import React from 'react';
 

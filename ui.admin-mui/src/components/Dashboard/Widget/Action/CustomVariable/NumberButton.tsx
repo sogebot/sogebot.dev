@@ -1,8 +1,8 @@
+import { QuickActions } from '@backend/database/entity/dashboard';
+import { Variable } from '@entity/variable';
 import { Add, Remove } from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Variable } from '@sogebot/backend/dest/database/entity/variable';
-import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import React, { MouseEventHandler, useCallback, useState } from 'react';

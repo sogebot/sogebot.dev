@@ -1,6 +1,6 @@
+import { Price } from '@entity/price';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, Collapse, DialogActions, DialogContent, Divider, FormControlLabel, FormGroup, FormHelperText, Grid, LinearProgress, TextField } from '@mui/material';
-import { Price } from '@sogebot/backend/dest/database/entity/price';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

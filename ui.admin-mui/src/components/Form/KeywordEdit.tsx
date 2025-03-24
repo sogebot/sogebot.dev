@@ -1,9 +1,9 @@
+import defaultPermissions from '@backend/helpers/permissions/defaultPermissions';
+import { Keyword, KeywordGroup } from '@entity/keyword';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragIndicatorTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Checkbox, Collapse, createFilterOptions, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
-import { Keyword, KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
-import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { capitalize, cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';

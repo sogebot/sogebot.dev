@@ -1,6 +1,6 @@
+import { WidgetCustomInterface } from '@backend/database/entity/widget';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Stack, SxProps, Tab } from '@mui/material';
-import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';

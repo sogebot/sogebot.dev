@@ -1,7 +1,7 @@
+import { Permissions } from '@entity/permissions';
 import { DeleteTwoTone } from '@mui/icons-material';
 import { Box, Button, Divider, FormControl, FormLabel, IconButton, MenuItem, Select, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import { isEqual } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 

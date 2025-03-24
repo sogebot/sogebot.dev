@@ -1,5 +1,5 @@
+import { AlertProfileImage, Alerts } from '@backend/database/entity/overlay';
 import { Box } from '@mui/material';
-import { AlertProfileImage, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import React, { useRef } from 'react';
 import { useIntervalWhen } from 'rooks';

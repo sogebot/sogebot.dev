@@ -1,6 +1,6 @@
+import { OBSWebsocket } from '@entity/overlay';
 import { KeyboardReturnTwoTone } from '@mui/icons-material';
 import { Box, FormLabel, InputAdornment, Link, Stack, TextField } from '@mui/material';
-import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 

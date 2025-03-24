@@ -1,5 +1,5 @@
+import { Countdown } from '@entity/overlay';
 import { Box, Button, Divider, FormControlLabel, FormLabel, InputAdornment, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Countdown } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';

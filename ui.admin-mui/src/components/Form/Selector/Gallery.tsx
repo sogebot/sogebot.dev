@@ -1,6 +1,6 @@
+import { GalleryInterface } from '@entity/gallery';
 import { CollectionsTwoTone, Folder } from '@mui/icons-material';
 import { Box, Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Grid, IconButton, Link, Skeleton, Stack, Typography } from '@mui/material';
-import { GalleryInterface } from '@sogebot/backend/dest/database/entity/gallery';
 import axios from 'axios';
 import { uniq } from 'lodash';
 import { enqueueSnackbar } from 'notistack';
@@ -33,7 +33,7 @@ export const getDirectoriesOf = (items: GalleryInterface[], directories: string[
   const folders = items.map(o => o.folder.split('/').filter(Boolean));
 
   // get first level
-  const firstLevelFolder = [];
+  const firstLevelFolder: string[] = [];
   for (const f of folders) {
     // check if valid
     let valid = f.length > 0;

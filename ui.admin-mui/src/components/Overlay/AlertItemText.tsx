@@ -1,6 +1,6 @@
+import { Alerts, AlertText } from '@backend/database/entity/overlay';
+import { generateUsername } from '@backend/helpers/generateUsername';
 import { Box } from '@mui/material';
-import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
-import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
 import { useAtomValue } from 'jotai';
 import { get } from 'lodash';
@@ -99,7 +99,12 @@ export const AlertItemText: React.FC<Props<AlertText> & {
         </div>);
       }
 
-      replacedText = reactStringReplace(replacedText.length === 0 ? template : replacedText, match[0], () => <span style={{ color: item.font ? item.font.highlightcolor : parent[item.globalFont].highlightcolor }}>{animatedText}</span>);
+      replacedText = reactStringReplace(
+        replacedText.length === 0 ? template: replacedText,
+        match[0],
+        () => <span style={{ color: item.font ? item.font.highlightcolor : parent[item.globalFont].highlightcolor }}>
+          {animatedText}
+        </span>);
     });
 
     const output = replacedText.length > 0 ? replacedText : [<span>{template}</span>];
@@ -114,7 +119,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
       for (const emote of emotesCache) {
         if (get(item, `allowEmotes.${emote.type}`, false)) {
           if (outputString.includes(emote.code)) {
-            output[i] = reactStringReplace(output[i] as React.ReactNode[], emote.code, () => <img title='emote' src={emote.urls[3]} style={{
+            output[i] = reactStringReplace(output[i] as any, emote.code, () => <img title='emote' src={emote.urls[3]} style={{
               position: 'relative', top: '0.1rem', height: item.font ? item.font.size : parent[item.globalFont].size, width: 'auto',
             }}/>);
           }
@@ -127,7 +132,7 @@ export const AlertItemText: React.FC<Props<AlertText> & {
       if (typeof output[i] !== 'string') {
         continue;
       }
-      output[i] = reactStringReplace(output[i] as React.ReactNode[], '\n', () => <br/>);
+      output[i] = reactStringReplace(output[i] as any, '\n', () => <br/>);
     }
     return output;
   }, [item.messageTemplate, variant, curIdx, emitData[groupId], active, test]);

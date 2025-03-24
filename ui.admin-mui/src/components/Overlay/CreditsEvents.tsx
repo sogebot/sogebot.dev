@@ -1,7 +1,7 @@
+import type { Event } from '@backend/overlays/credits';
+import { CreditsScreenEvents , EmitData } from '@entity/overlay';
 import { DiamondTwoTone, KeyboardDoubleArrowRightTwoTone, TheaterComedyTwoTone } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { CreditsScreenEvents , EmitData } from '@sogebot/backend/dest/database/entity/overlay';
-import type { Event } from '@sogebot/backend/dest/overlays/credits';
 import { capitalize, get, groupBy } from 'lodash';
 import React from 'react';
 

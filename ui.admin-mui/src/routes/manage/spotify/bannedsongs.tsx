@@ -1,10 +1,10 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { SpotifySongBan } from '@entity/spotify';
 import { Link } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Button, CircularProgress, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
-import { SpotifySongBan } from '@sogebot/backend/dest/database/entity/spotify';
 import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';

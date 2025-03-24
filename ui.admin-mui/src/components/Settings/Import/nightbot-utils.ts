@@ -1,4 +1,4 @@
-import { defaultPermissions } from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
+import { defaultPermissions } from '@backend/helpers/permissions/defaultPermissions';
 import axios, { AxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 

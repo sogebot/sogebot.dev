@@ -1,12 +1,12 @@
+import { flatten } from '@backend/helpers/flatten';
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { CreditsScreenCustom } from '@entity/overlay';
 import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, DragIndicatorTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
-import { Box, Button, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip } from '@mui/material';
+import { Box, Button, DialogContent, Divider, FormControl, Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip } from '@mui/material';
 import orange from '@mui/material/colors/orange';
-import { CreditsScreenCustom } from '@sogebot/backend/dest/database/entity/overlay';
-import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import { cloneDeep } from 'lodash';
 import set from 'lodash/set';
 import React from 'react';
@@ -116,7 +116,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
   const mouseY = usePreviousImmediate(y);
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
 
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [ zoom, setZoom ] = React.useState(1);
   const [frame, setFrame] = React.useState({
@@ -393,7 +393,7 @@ export const CreditsSettingsCustom: React.FC<Props> = ({ model, canvas, onUpdate
 
         </SimpleBar>
       </Grid>
-      <Grid xs sx={{ height: '100%' }}
+      <Grid size="grow" sx={{ height: '100%' }}
         onContextMenu={(e) => {
           setMoveableId(null);
           e.stopPropagation();

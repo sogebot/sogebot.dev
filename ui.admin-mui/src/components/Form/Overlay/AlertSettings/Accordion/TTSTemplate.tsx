@@ -12,7 +12,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:        (value: string) => void;
   onChange:            (value: string) => void;
   helperText?:         string;
-  customLabelDetails?: React.ReactNode;
+  customLabelDetails?: string | React.JSX.Element | null;
   placeholder?:        string;
 };
 

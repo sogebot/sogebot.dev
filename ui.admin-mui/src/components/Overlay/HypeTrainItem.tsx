@@ -1,5 +1,5 @@
+import { HypeTrain } from '@entity/overlay';
 import { Box, keyframes, Stack, Typography } from '@mui/material';
-import { HypeTrain } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { chunk } from 'lodash';
 import React, { useRef } from 'react';
@@ -36,7 +36,7 @@ const ids: string[] = [];
 export const HypeTrainItem: React.FC<Props<HypeTrain>> = ({ active, selected }) => {
   getSocket('/services/twitch');
 
-  const boxRef = useRef<Element>();
+  const boxRef = useRef<Element>(null);
   const [id] = React.useState(v4());
   const [ running, setRunning ] = React.useState(false);
   const [ cooldown, setCooldown ] = React.useState(Date.now());

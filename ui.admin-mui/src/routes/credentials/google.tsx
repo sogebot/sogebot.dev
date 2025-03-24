@@ -15,8 +15,8 @@ const Google = () => {
       return;
     }
     if (window.location.hash || window.location.search) {
-      let code = null;
-      let state = null;
+      let code: null | string = null;
+      let state: any = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?code=') || url.startsWith('code=')) {
           code = url.replace(/\??code=/, '');

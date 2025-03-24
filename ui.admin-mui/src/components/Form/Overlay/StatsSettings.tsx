@@ -1,5 +1,5 @@
+import { Stats } from '@entity/overlay';
 import { Button } from '@mui/material';
-import { Stats } from '@sogebot/backend/dest/database/entity/overlay';
 import { random } from 'lodash';
 import React from 'react';
 

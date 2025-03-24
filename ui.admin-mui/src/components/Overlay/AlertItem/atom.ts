@@ -1,5 +1,5 @@
-import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
-import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
+import { EmitData } from '@entity/overlay';
+import { UserInterface } from '@entity/user';
 import { atom } from 'jotai';
 
 // save emit data per alert

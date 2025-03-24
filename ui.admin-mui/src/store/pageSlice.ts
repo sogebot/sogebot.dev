@@ -1,5 +1,5 @@
+import { Permissions } from '@entity/permissions';
 import { createSlice } from '@reduxjs/toolkit';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import { xor } from 'lodash';
 
 export interface PageState {

@@ -14,7 +14,7 @@ type Props = {
     alignY:   number;
   };
   onUpdate:  (path: string, value: any) => void;
-  children?: React.ReactNode
+  children?: string | React.JSX.Element | null | Array<string | React.JSX.Element | null>
 };
 
 export const Settings: React.FC<Props> = ({ children, model, onUpdate }) => {

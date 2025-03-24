@@ -1,7 +1,7 @@
+import { Alerts, TTS, TTSService } from '@entity/overlay';
+import { Randomizer } from '@entity/randomizer';
 import { ExpandMoreTwoTone, LaunchTwoTone, PlayArrowTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Alert, Autocomplete, Chip, Fade, FormControl, FormLabel, IconButton, InputLabel, LinearProgress, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Alerts, TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
@@ -28,8 +28,8 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:            (value: string) => void;
   onChange:                (value: any) => void;
   alwaysShowLabelDetails?: boolean;
-  prepend?:                React.ReactNode;
-  customLabelDetails?:     React.ReactNode;
+  prepend?:                string | React.JSX.Element | null;
+  customLabelDetails?:     string | React.JSX.Element | null;
 };
 
 const values = {

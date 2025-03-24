@@ -1,7 +1,7 @@
+import { Chat } from '@entity/overlay';
 import { mdiTwitch, mdiYoutube } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import Jabber from 'jabber';
 import { isEqual } from 'lodash';

@@ -1,9 +1,9 @@
 import { IntegratedSorting, Sorting, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { Highlight } from '@entity/highlight';
 import { Link } from '@mui/icons-material';
 import { CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { Highlight } from '@sogebot/backend/dest/database/entity/highlight';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';

@@ -1,9 +1,9 @@
+import { flatten } from '@backend/helpers/flatten';
+import { setDefaultOpts } from '@backend/helpers/overlaysDefaultValues';
+import { Credits, Overlay } from '@entity/overlay';
 import { BorderInnerTwoTone, BorderStyleTwoTone, CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, DialogActions, DialogContent, Divider, Fade, Unstable_Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip } from '@mui/material';
-import { Credits, Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { setDefaultOpts } from '@sogebot/backend/dest/helpers/overlaysDefaultValues';
+import { Box, Button, DialogActions, DialogContent, Divider, Fade, Grid2 as Grid, IconButton, LinearProgress, Paper, TextField, Tooltip } from '@mui/material';
 import axios from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 import { cloneDeep, set } from 'lodash';
@@ -94,7 +94,7 @@ export const OverlayEdit: React.FC = () => {
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
   const [ key, setKey ] = React.useState(Date.now());
 
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [ zoom, setZoom ] = React.useState(1);
   const [ frame, setFrame ] = React.useState({
@@ -282,7 +282,7 @@ export const OverlayEdit: React.FC = () => {
   }, [ zoom ]);
 
   return(<>
-    {loading && (<LinearProgress /> && <DialogContent dividers/>)}
+    {loading && <><LinearProgress /><DialogContent dividers/></>}
     <Fade in={!loading} mountOnEnter unmountOnExit>
       { item && <DialogContent dividers sx={{
         p: 0, overflowX: 'hidden',
@@ -376,7 +376,7 @@ export const OverlayEdit: React.FC = () => {
               />
             </SimpleBar>
           </Grid>
-          <Grid xs sx={{ height: '100%' }}
+          <Grid size="grow" sx={{ height: '100%' }}
             onContextMenu={(e) => {
               setMoveableId(null);
               e.stopPropagation();
@@ -636,7 +636,7 @@ export const OverlayEdit: React.FC = () => {
                 setTimeout(() => refresh(), 100);
               }}>
                 <Divider variant='middle'/>
-                {selectedItemOpts && <>
+                {selectedItemOpts ? <>
                   {selectedItemOpts.typeId === 'alerts' && <AlertsSettings onUpdate={(val) => {
                     handleItemChange({ 'opts': val });
                   }}/>}
@@ -706,7 +706,7 @@ export const OverlayEdit: React.FC = () => {
                   {selectedItemOpts.typeId === 'wordcloud' && <WordcloudSettings model={selectedItemOpts} onUpdate={(val) => {
                     handleItemChange({ 'opts': val });
                   }}/>}
-                </>}
+                </> : <></>}
               </Settings>
 
               {

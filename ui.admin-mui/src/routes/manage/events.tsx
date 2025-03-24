@@ -1,8 +1,8 @@
 import { DataTypeProvider, DataTypeProviderProps, FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { Event } from '@entity/event';
 import { CheckBoxTwoTone, DisabledByDefaultTwoTone, FilterAltTwoTone } from '@mui/icons-material';
 import { Box, Button, capitalize, CircularProgress, Dialog, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { Event } from '@sogebot/backend/dest/database/entity/event';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { orderBy } from 'lodash';
@@ -29,7 +29,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { setBulkCount } from '../../store/appbarSlice';
 import theme from '../../theme';
 
-const EventNameProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => {
+const EventNameProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => {
   const { translate } = useTranslation();
 
   const [ rewards, setRewards ] = useAtom(rewardsAtom);

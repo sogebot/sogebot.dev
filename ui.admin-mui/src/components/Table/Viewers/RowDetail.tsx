@@ -1,6 +1,6 @@
 import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { EventListInterface } from '@entity/eventList';
 import { Box, Button, LinearProgress, Typography } from '@mui/material';
-import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
@@ -58,10 +58,6 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
 
   const filteredHistory = useMemo(() => {
     return history.filter(o => {
-      if (filter === filterType.all) {
-        return true;
-      }
-
       if (filter === filterType.bits) {
         return o.event === 'cheer';
       }
@@ -73,6 +69,7 @@ export const RowDetail: React.FC<Props> = ({ row }) => {
       if (filter === filterType.sub) {
         return o.event === 'subgift' || o.event === 'subcommunitygift' || o.event ==='sub' || o.event === 'resub';
       }
+      return true; // gilterType.all
     });
   }, [filter, history]);
 

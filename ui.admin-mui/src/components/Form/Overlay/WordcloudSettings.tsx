@@ -1,5 +1,5 @@
+import { Wordcloud } from '@entity/overlay';
 import { InputAdornment, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { AccordionFont } from '../../Accordion/Font';

@@ -1,9 +1,9 @@
+import { flatten } from '@backend/helpers/flatten';
+import type { tiltifyCampaign } from '@d.ts/src/helpers/socket';
+import { Goal } from '@entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
-import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
-import { flatten } from '@sogebot/backend/dest/helpers/flatten';
 import axios from 'axios';
 import set from 'lodash/set';
 import { MuiColorInput } from 'mui-color-input';

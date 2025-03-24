@@ -1,6 +1,6 @@
+import { Permissions } from '@entity/permissions';
 import { CheckCircleTwoTone, WarningTwoTone } from '@mui/icons-material';
 import { Box, Divider, FormControlLabel, FormGroup, FormHelperText, FormLabel, Switch, Typography } from '@mui/material';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import React, {  } from 'react';
 
 // import { usePermissions } from '../../hooks/usePermissions';

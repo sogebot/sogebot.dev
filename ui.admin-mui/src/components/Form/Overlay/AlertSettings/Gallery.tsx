@@ -1,5 +1,5 @@
+import { AlertImage } from '@backend/database/entity/overlay';
 import { Button, Checkbox, FormControlLabel, FormGroup, FormHelperText, Stack } from '@mui/material';
-import { AlertImage } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -31,7 +31,7 @@ const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
 
   React.useEffect(() => {
     setItem(it => ({
-      ...it, rotation: props.model.rotation, alignX: props.model.alignX, alignY: props.model.alignY, width: props.model.width, height: props.model.height, 
+      ...it, rotation: props.model.rotation, alignX: props.model.alignX, alignY: props.model.alignY, width: props.model.width, height: props.model.height,
     }));
   }, [ props.model.rotation, props.model.alignX, props.model.alignY, props.model.width, props.model.height]);
 
@@ -92,13 +92,14 @@ const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
       customLabelDetails={(item.animationIn === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationIn} {(item.animationInDuration ?? 0) / 1000}s</>}
-      prepend={item.animationIn !== null && <Stack direction='row'>
+      prepend={item.animationIn !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationIn: null, animationInDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
     <AccordionAnimationOut
       alwaysShowLabelDetails
       model={{
@@ -117,13 +118,14 @@ const AlertSettingsGallery: React.FC<AlertSettingsGalleryProps> = (props) => {
       customLabelDetails={(item.animationOut === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationOut} {(item.animationOutDuration ?? 0) / 1000}s</>}
-      prepend={item.animationOut !== null && <Stack direction='row'>
+      prepend={item.animationOut !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationOut: null, animationOutDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
 
     {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}  </>
   );

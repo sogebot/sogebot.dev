@@ -1,6 +1,6 @@
+import { Overlay } from '@entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Typography } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 

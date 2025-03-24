@@ -1,5 +1,5 @@
+import { AlertImage, Alerts } from '@backend/database/entity/overlay';
 import { Box } from '@mui/material';
-import { AlertImage, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import React, { useRef } from 'react';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 

@@ -1,6 +1,6 @@
+import { Marathon } from '@entity/overlay';
 import { Sparklines, SparklinesCurve } from '@jrwats/react-sparklines';
 import { Box, Stack } from '@mui/material';
-import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';

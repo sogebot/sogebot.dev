@@ -1,7 +1,7 @@
+import { CustomVariableItem } from '@backend/database/entity/dashboard';
+import { Variable } from '@entity/variable';
 import { CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
-import { Variable } from '@sogebot/backend/dest/database/entity/variable';
-import { CustomVariableItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useIntervalWhen } from 'rooks';

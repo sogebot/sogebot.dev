@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react';
 export const ListFormatter = ({ value }: { value: string[] }) => {
   return <Typography>{value.join(', ')}</Typography>;
 };
-export const ListTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+export const ListTypeProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
   <DataTypeProvider
     formatterComponent={ListFormatter}
     {...props}

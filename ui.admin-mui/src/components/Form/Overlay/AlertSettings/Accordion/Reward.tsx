@@ -13,7 +13,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   label?:              string,
   onOpenChange:        (value: string) => void;
   onChange:            (value: string) => void;
-  customLabelDetails?: React.ReactNode;
+  customLabelDetails?: string | React.JSX.Element | null;
 };
 
 export const AccordionReward: React.FC<Props> = (props) => {

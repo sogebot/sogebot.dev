@@ -11,7 +11,7 @@ export const AudioButton: React.FC<Props> = ({ src }) => {
   const [ volume, setVolume ] = React.useState(20);
   const [ isPlaying, setPlaying ] = React.useState(false);
   const [ canPlay, setCanPlay ] = React.useState(false);
-  const audioRef = React.useRef<HTMLAudioElement>();
+  const audioRef = React.useRef<HTMLAudioElement>(null);
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 

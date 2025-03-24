@@ -1,9 +1,9 @@
+import defaultPermissions from '@backend/helpers/permissions/defaultPermissions';
+import { TTSService } from '@entity/overlay';
+import { Randomizer } from '@entity/randomizer';
 import { DragDropContext, Draggable, DraggableProvidedDragHandleProps, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
 import { DeleteTwoTone, DragHandleTwoTone, ExpandMoreTwoTone, LinkOffTwoTone, LinkTwoTone } from '@mui/icons-material';import { LoadingButton } from '@mui/lab';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
-import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
-import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, DialogActions, DialogContent, Divider, FormControl, Grid2 as Grid, IconButton, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { cloneDeep, debounce, isEqual, orderBy } from 'lodash';
 import { MuiColorInput } from 'mui-color-input';
@@ -381,7 +381,7 @@ export const RandomizerEdit: React.FC = () => {
     {loading && <LinearProgress />}
     { (!loading && item) && <DialogContent dividers>
       <Grid container spacing={1}>
-        <Grid lg={6} md={12}>
+        <Grid size={{ lg: 6, md: 12 }}>
           <Box
             component="form"
             sx={{ '& .MuiFormControl-root': { my: 0.5 } }}
@@ -500,7 +500,7 @@ export const RandomizerEdit: React.FC = () => {
             </Accordion>
           </Box>
         </Grid>
-        <Grid lg={6} md={12}>
+        <Grid size={{ lg: 6, md: 12 }}>
           <Box
             component="form"
             sx={{

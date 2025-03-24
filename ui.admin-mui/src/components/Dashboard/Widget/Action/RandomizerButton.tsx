@@ -1,8 +1,8 @@
+import { RandomizerItem } from '@backend/database/entity/dashboard';
+import { Randomizer } from '@entity/randomizer';
 import { PlayArrow, Visibility, VisibilityOff } from '@mui/icons-material';
 import { CircularProgress, Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
-import { RandomizerItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import React, { MouseEventHandler, useCallback, useMemo, useState } from 'react';

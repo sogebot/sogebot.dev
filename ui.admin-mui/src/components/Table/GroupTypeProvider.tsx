@@ -10,7 +10,7 @@ export const GroupFormatter = ({ value }: { value: string }) => {
     return (<Typography sx={{ color: grey[400] }}>Ungrouped</Typography>);
   }
 };
-export const GroupTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+export const GroupTypeProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
   <DataTypeProvider
     formatterComponent={GroupFormatter}
     {...props}

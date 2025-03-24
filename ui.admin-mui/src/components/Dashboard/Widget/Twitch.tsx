@@ -8,7 +8,7 @@ import HTMLReactParser from 'html-react-parser';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import PopupState, { bindMenu, bindPopover, bindTrigger } from 'material-ui-popup-state';
 import React, { useEffect } from 'react';
-import usePortal from 'react-useportal';
+import { createPortal } from 'react-dom';
 import { useIntervalWhen, useLocalstorageState } from 'rooks';
 import SimpleBar from 'simplebar-react';
 
@@ -184,7 +184,6 @@ const SimpleMessage = ({ message, isBanned }: { message: OverlayState['chat']['m
 };
 
 const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scrollBarRef: React.MutableRefObject<null>, chatUrl: string, messages: OverlayState['chat']['messages'], split: boolean, bannedMessages: string[] }) => {
-  const { Portal } = usePortal();
   const [ banMenuForId, setBanMenuForId ] = useAtom(anBanMenuForId);
   const [ isScrollBlocked, setIsScrollBlocked ] = useAtom(anIsScrollBlocked);
   const banMenuPosition = useAtomValue(anBanMenuPositionY);
@@ -192,7 +191,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
   const mergedChat = useAtomValue(anChatIsMerged);
 
   return <>
-    {banMenuForId && <Portal><Paper id="ban-paper" sx={{
+    {banMenuForId && createPortal(<Paper id="ban-paper" sx={{
       backgroundColor: theme.palette.grey[900] + 'dd',
       border: `1px solid ${theme.palette.grey[900]}`,
       position: 'absolute',
@@ -289,7 +288,7 @@ const Chat = ({ scrollBarRef, chatUrl, messages, split, bannedMessages }: { scro
         </Box>
         <Typography variant='button' component='div'>Delete</Typography>
       </Box>
-    </Paper></Portal>}
+    </Paper>, document.body)}
 
     {isScrollBlocked && <Alert severity='info'
       onClick={() => setIsScrollBlocked(false)}

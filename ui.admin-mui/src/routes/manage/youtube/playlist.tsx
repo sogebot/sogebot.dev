@@ -1,12 +1,12 @@
 import { CustomPaging, FilteringState, IntegratedSelection, IntegratedSorting, PagingState, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, PagingPanel, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { SongPlaylist } from '@entity/song';
 import { mdiAlphaA } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LinkTwoTone, MusicNoteTwoTone, SkipNextTwoTone, SkipPreviousTwoTone, VolumeMuteTwoTone, VolumeUpTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Backdrop, Button, CircularProgress, Dialog, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import Popover from '@mui/material/Popover';
-import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
 import axios from 'axios';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { useSnackbar } from 'notistack';

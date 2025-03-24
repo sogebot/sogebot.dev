@@ -1,6 +1,6 @@
+import { Overlay } from '@entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, InputAdornment, Stack, TextField, Typography } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 type Props = {

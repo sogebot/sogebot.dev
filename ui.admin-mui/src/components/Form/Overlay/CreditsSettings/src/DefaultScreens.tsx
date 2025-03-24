@@ -1,4 +1,4 @@
-import { Credits } from '@sogebot/backend/dest/database/entity/overlay';
+import { Credits } from '@entity/overlay';
 import { v4 } from 'uuid';
 
 import { css, html } from './Templates';

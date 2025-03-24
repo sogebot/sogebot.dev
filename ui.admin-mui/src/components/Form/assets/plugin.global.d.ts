@@ -733,7 +733,7 @@ declare const Variable: {
 /**
  * Contains core permissions defined by bot
  * */
-declare const permission = {
+const permission = {
   CASTERS:     '4300ed23-dca0-4ed9-8014-f5f2f7af55a9',
   MODERATORS:  'b38c5adb-e912-47e3-937a-89fabd12393a',
   SUBSCRIBERS: 'e3b557e7-c26a-433c-a183-e56c11003ab7',

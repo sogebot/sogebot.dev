@@ -1,7 +1,7 @@
+import { Plugin } from '@backend/database/entity/plugins';
 import { ShareTwoTone } from '@mui/icons-material';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, LinearProgress, Stack, Tab, TextField, Tooltip, Typography } from '@mui/material';
-import { Plugin } from '@sogebot/backend/src/database/entity/plugins';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';

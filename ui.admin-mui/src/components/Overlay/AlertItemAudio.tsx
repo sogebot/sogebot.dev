@@ -1,5 +1,5 @@
+import { AlertAudio, Alerts } from '@backend/database/entity/overlay';
 import { Box } from '@mui/material';
-import { AlertAudio, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtom, useSetAtom } from 'jotai';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
@@ -11,7 +11,7 @@ import type { Props } from './ChatItem';
 export const AlertItemAudio: React.FC<Props<AlertAudio> & { variant: Omit<Alerts['items'][number], 'variants'> }>
 = ({ item, width, height, active, variant }) => {
   const [ server ] = useLocalstorageState('server', 'https://demobot.sogebot.xyz');
-  const audioRef = React.useRef<HTMLAudioElement>();
+  const audioRef = React.useRef<HTMLAudioElement>(null);
   const [ canPlay, setCanPlay ] = React.useState(false);
 
   const [ itemAnimationTriggered, setItemAnimationTriggered ] = React.useState(false);

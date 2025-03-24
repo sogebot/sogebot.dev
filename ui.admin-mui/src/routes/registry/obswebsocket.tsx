@@ -1,8 +1,8 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { OBSWebsocket } from '@entity/obswebsocket';
 import ContentPasteIcon from '@mui/icons-material/ContentPasteTwoTone';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
+import { Alerts } from '@backend/database/entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Checkbox, Fade, FormControlLabel, FormGroup, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { nanoid } from 'nanoid';
 import React from 'react';
 

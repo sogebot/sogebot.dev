@@ -1,11 +1,34 @@
+import { Wordcloud as WordcloudEntity } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
-import React from 'react';
-import ReactWordcloud from 'react-d3-cloud';
+import React, { useEffect, useRef } from 'react';
+import WordCloud from 'wordcloud';
 
 import type { Props } from './ChatItem';
 import { getSocket } from '../../helpers/socket';
 import { loadFont } from '../Accordion/Font';
+
+const WordCloudCanvas = ({ words, font, color, weight, width, height }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      WordCloud(canvasRef.current, {
+        list: words,
+        gridSize: 5,
+        rotateRatio: 0.25,
+        weightFactor: 10,
+        fontFamily: font,
+        fontWeight: weight,
+        color: color,
+        backgroundColor: '#ffffff00',
+      });
+    }
+  }, [words]);
+
+  return <canvas ref={canvasRef} width={width} height={height} style={{
+    padding: '1em',
+  }}/>;
+};
 
 const time = {
   seconds: 1000,
@@ -13,7 +36,7 @@ const time = {
   hours:   60 * 60 * 1000,
 } as const;
 
-export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
+export const WordcloudItem: React.FC<Props<WordcloudEntity>> = ({ item, active, width, height }) => {
   const [ words, setWords ] = React.useState<string[]>(active ? [] : 'Contrary to popular belief Lorem Ipsum is not simply random text It has roots in a piece of classical Latin literature from 45 BC making it over 2000 years old Richard McClintock a Latin professor at Hampden-Sydney College in Virginia looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source Lorem Ipsum comes from sections'.toLowerCase().split(' '));
 
   const computedWords = React.useMemo(() => {
@@ -28,21 +51,13 @@ export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
         text: key, value: obj[key],
       });
     }
-    return wordObj;
-  }, [words]);
-
-  const maxValue = React.useMemo(() => {
-    let maxNumber = 0;
-    for (const word of computedWords) {
-      if (word.value > maxNumber) {
-        maxNumber = word.value;
-      }
+    // change wordObj format {text, value} to [[text, value], [text, value]]
+    const wordArray: [string, number][] = [];
+    for (const key of Object.keys(obj)) {
+      wordArray.push([key, obj[key]]);
     }
-    return maxNumber;
-  }, [ computedWords ]);
-
-  const fontSize = React.useCallback((word: { text: string, value: number }) => Math.max(20, (word.value / maxValue) * 100), [maxValue]);
-  const rotate = React.useCallback(() => Math.round(Math.random() * 360), []);
+    return wordArray;
+  }, [words]);
 
   React.useEffect(() => {
     loadFont(item.wordFont.family);
@@ -70,6 +85,6 @@ export const WordcloudItem: React.FC<Props<Wordcloud>> = ({ item, active }) => {
     height:   '100%',
     overflow: 'hidden',
   }}>
-    <ReactWordcloud data={computedWords} fontSize={fontSize} rotate={rotate} font={item.wordFont.family} fill={item.wordFont.color}  />
+    <WordCloudCanvas key={`${width}-${height}-${words.join('-')}`} words={computedWords} font={item.wordFont.family} color={item.wordFont.color} weight={item.wordFont.weight} width={width} height={height}/>
   </Box>;
 };

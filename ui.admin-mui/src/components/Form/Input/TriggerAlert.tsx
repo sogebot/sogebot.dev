@@ -1,6 +1,6 @@
+import { Alerts, EmitData, Overlay } from '@backend/database/entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Collapse, Divider, Fade, FormControl, InputLabel, LinearProgress, ListSubheader, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { Alerts, EmitData, Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import axios from 'axios';
 import { useSetAtom } from 'jotai';
 import React from 'react';
@@ -135,7 +135,7 @@ export const FormTriggerAlert: React.FC<Props> = ({ value, onChange,
   }, [ selectedItemId, options, propsValue ]);
 
   const getAllVariantsOfAlertItems = (items: Alerts['items']) => {
-    const variants = [];
+    const variants: any[] = [];
     for (const item of items) {
       if (item.hooks[0] === 'custom') {
         item.variantName ??= 'Main';

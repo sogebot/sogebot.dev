@@ -1,6 +1,6 @@
+import type { tiltifyCampaign } from '@d.ts/src/helpers/socket';
+import { Goal } from '@entity/overlay';
 import { Box, LinearProgress, linearProgressClasses, Stack } from '@mui/material';
-import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
-import { Goal } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';

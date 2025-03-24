@@ -1,11 +1,11 @@
+import defaultPermissions from '@backend/helpers/permissions/defaultPermissions';
+import { Permissions } from '@entity/permissions';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { AddTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Backdrop, Box, Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, IconButton, InputLabel, MenuItem, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import Select from '@mui/material/Select';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
-import defaultPermissions from '@sogebot/backend/src/helpers/permissions/defaultPermissions';
 import axios from 'axios';
 import { capitalize, cloneDeep, orderBy, set, sortBy } from 'lodash';
 import { nanoid } from 'nanoid';

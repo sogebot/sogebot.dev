@@ -1,9 +1,9 @@
+import { Overlay } from '@entity/overlay';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { mdiResize, mdiTarget } from '@mdi/js';
 import Icon from '@mdi/react';
 import { AddTwoTone, ExpandMoreTwoTone, VisibilityOffTwoTone, VisibilityTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, Grid, IconButton, List, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 
