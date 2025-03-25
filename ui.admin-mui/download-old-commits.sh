@@ -1,5 +1,5 @@
 #/bin/bash
-COMMITS=$(npx --yes ts-node -T -O '{"module": "commonjs", "isolatedModules": false }' -e 'const { versions } = require("./src/compatibilityList"); Object.values(versions).map(o => console.log(o))')
+COMMITS=$(npx --yes ts-node -T -O '{"module": "esnext", "isolatedModules": false }' -e 'const { versions } = require("./src/compatibilityList"); Object.values(versions).map(o => console.log(o))')
 
 for commit in $COMMITS
 do
