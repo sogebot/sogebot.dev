@@ -1,5 +1,5 @@
-import { Attributes } from '@sogebot/backend/dest/database/entity/event';
-import { OBSWebsocket as Entity } from '@sogebot/backend/dest/database/entity/overlay';
+import { Attributes } from '@entity/event';
+import { OBSWebsocket as Entity } from '@entity/overlay';
 import axios from 'axios';
 import OBSWebSocket from 'obs-websocket-js';
 import type ObsWebSocket from 'obs-websocket-js';

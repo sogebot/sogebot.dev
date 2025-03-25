@@ -1,5 +1,5 @@
+import { AlertCustom, Alerts } from '@backend/database/entity/overlay';
 import { Alert, Button, Stack } from '@mui/material';
-import { AlertCustom, Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';

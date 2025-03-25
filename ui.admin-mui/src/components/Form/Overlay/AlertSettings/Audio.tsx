@@ -1,5 +1,5 @@
+import { AlertAudio } from '@backend/database/entity/overlay';
 import { Button } from '@mui/material';
-import { AlertAudio } from '@sogebot/backend/src/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 

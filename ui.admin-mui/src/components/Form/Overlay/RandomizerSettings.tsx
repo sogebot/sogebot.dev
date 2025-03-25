@@ -1,6 +1,6 @@
+import { Randomizer as Overlay } from '@entity/overlay';
+import { Randomizer } from '@entity/randomizer';
 import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import { Randomizer as Overlay } from '@sogebot/backend/dest/database/entity/overlay';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import React from 'react';
 

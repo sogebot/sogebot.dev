@@ -32,7 +32,7 @@ export const UserMenu: React.FC = () => {
 
   const user = useAtomValue(loggedUserAtom);
   const { configuration } = useAppSelector(state => state.loader);
-  const [ viewer, setViewer ] = React.useState<null | import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType>(null);
+  const [ viewer, setViewer ] = React.useState<null | import('@d.ts/src/helpers/socket').ViewerReturnType>(null);
   const [ logged, setLogged ] = React.useState(false);
 
   const viewerIs = (data: any) => {

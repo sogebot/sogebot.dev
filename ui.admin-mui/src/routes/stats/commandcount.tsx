@@ -1,5 +1,5 @@
+import { CommandsCount } from '@entity/commands';
 import { Backdrop, Box, capitalize, Checkbox, CircularProgress, Paper, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { CommandsCount } from '@sogebot/backend/dest/database/entity/commands';
 import axios from 'axios';
 import { countBy } from 'lodash';
 import React from 'react';

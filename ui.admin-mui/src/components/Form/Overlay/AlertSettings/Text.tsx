@@ -1,5 +1,5 @@
+import { Alerts, AlertText } from '@backend/database/entity/overlay';
 import { Button, Stack } from '@mui/material';
-import { Alerts, AlertText } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -94,13 +94,14 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
       customLabelDetails={(item.animationIn === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationIn} {(item.animationInDuration ?? 0) / 1000}s</>}
-      prepend={item.animationIn !== null && <Stack direction='row'>
+      prepend={item.animationIn !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationIn: null, animationInDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
     <AccordionAnimationOut
       alwaysShowLabelDetails
       model={{
@@ -116,13 +117,14 @@ const AlertSettingsText: React.FC<AlertSettingsTextProps> = (props) => {
       customLabelDetails={(item.animationOut === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationOut} {(item.animationOutDuration ?? 0) / 1000}s</>}
-      prepend={item.animationOut !== null && <Stack direction='row'>
+      prepend={item.animationOut !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationOut: null, animationOutDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
 
     <AccordionFilter
       model={item.enabledWhen}

@@ -1,9 +1,9 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { Randomizer } from '@entity/randomizer';
 import { PlayArrowTwoTone, VisibilityOffTwoTone, VisibilityTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { useSnackbar } from 'notistack';

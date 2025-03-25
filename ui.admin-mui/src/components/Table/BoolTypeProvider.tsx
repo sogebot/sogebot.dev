@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react';
 export const BoolFormatter = ({ value }: { value: boolean }) => {
   return value ? <Check/> : <Clear/>;
 };
-export const BoolTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+export const BoolTypeProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
   <DataTypeProvider
     formatterComponent={BoolFormatter}
     {...props}

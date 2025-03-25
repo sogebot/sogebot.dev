@@ -1,3 +1,4 @@
+import { Credits } from '@backend/database/entity/overlay';
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
@@ -5,7 +6,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { DragIndicatorTwoTone, SettingsTwoTone } from '@mui/icons-material';
 import { Box, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material';
 import orange from '@mui/material/colors/orange';
-import { Credits } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 import { v4 } from 'uuid';

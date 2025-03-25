@@ -1,5 +1,5 @@
+import { EmotesCombo } from '@entity/overlay';
 import { Box, ScopedCssBaseline, Stack, Typography } from '@mui/material';
-import { EmotesCombo } from '@sogebot/backend/dest/database/entity/overlay';
 import { random } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';

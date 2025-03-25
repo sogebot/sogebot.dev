@@ -1,5 +1,5 @@
+import { UserBitInterface } from '@entity/user';
 import { Backdrop, CircularProgress, FormControl, Link, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { UserBitInterface } from '@sogebot/backend/dest/database/entity/user';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import React from 'react';

@@ -1,6 +1,6 @@
+import { Cooldown } from '@entity/cooldown';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, Collapse, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, LinearProgress, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { Cooldown } from '@sogebot/backend/dest/database/entity/cooldown';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

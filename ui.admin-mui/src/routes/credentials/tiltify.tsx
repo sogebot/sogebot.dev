@@ -15,7 +15,7 @@ const Tiltify = () => {
       return;
     }
     if (window.location.hash || window.location.search) {
-      let urlCode = null;
+      let urlCode: null | string  = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?token=') || url.startsWith('token=')) {
           urlCode = url.replace(/\??token=/, '');

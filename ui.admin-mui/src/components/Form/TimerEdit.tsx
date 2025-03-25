@@ -1,8 +1,8 @@
+import { Timer, TimerResponse } from '@entity/timer';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { CheckCircleTwoTone, DeleteTwoTone, DragIndicatorTwoTone, RadioButtonUncheckedTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, DialogActions, DialogContent, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, LinearProgress, Stack, TextField } from '@mui/material';
-import { Timer, TimerResponse } from '@sogebot/backend/dest/database/entity/timer';
 import axios from 'axios';
 import { capitalize, cloneDeep, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';

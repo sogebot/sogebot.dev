@@ -1,4 +1,4 @@
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
+import { Overlay } from '@entity/overlay';
 import { atom } from 'jotai';
 
 export const emptyItem: Partial<Overlay> = {

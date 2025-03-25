@@ -1,8 +1,8 @@
+import { Carousel } from '@backend/database/entity/overlay';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Box, Button, Grid, Paper, Stack } from '@mui/material';
 import { orange } from '@mui/material/colors';
-import { Carousel } from '@sogebot/backend/src/database/entity/overlay';
 import React from 'react';
 import { useLocalstorageState } from 'rooks';
 

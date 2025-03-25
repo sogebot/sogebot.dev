@@ -1,5 +1,5 @@
+import { Alerts,  AlertTTS } from '@backend/database/entity/overlay';
 import { Alert, Button, Stack } from '@mui/material';
-import { Alerts,  AlertTTS } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -54,13 +54,14 @@ const AlertSettingsTTS: React.FC<AlertSettingsTTSProps> = (props) => {
       customLabelDetails={(item.tts === null)
         ? <strong>Global</strong>
         : <><strong>Modified</strong> {item.tts.services[item.tts.selectedService]?.voice}</>}
-      prepend={item.tts !== null && <Stack direction='row'>
+      prepend={item.tts !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, tts: null,
           });
         }}>Use global setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
 
     <AccordionDelay
       label={'Speak delay'}

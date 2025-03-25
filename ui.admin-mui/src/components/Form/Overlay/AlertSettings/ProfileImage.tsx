@@ -1,5 +1,5 @@
+import { AlertProfileImage } from '@backend/database/entity/overlay';
 import { Button, Stack } from '@mui/material';
-import { AlertProfileImage } from '@sogebot/backend/src/database/entity/overlay';
 import { useAtomValue } from 'jotai';
 import { isEqual } from 'lodash';
 import React from 'react';
@@ -59,13 +59,14 @@ const AlertSettingsProfileImage: React.FC<AlertSettingsProfileImageProps> = (pro
       customLabelDetails={(item.animationIn === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationIn} {(item.animationInDuration ?? 0) / 1000}s</>}
-      prepend={item.animationIn !== null && <Stack direction='row'>
+      prepend={item.animationIn !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationIn: null, animationInDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
     <AccordionAnimationOut
       alwaysShowLabelDetails
       model={{
@@ -84,13 +85,14 @@ const AlertSettingsProfileImage: React.FC<AlertSettingsProfileImageProps> = (pro
       customLabelDetails={(item.animationOut === null)
         ? <strong>Variant</strong>
         : <><strong>Modified</strong> {item.animationOut} {(item.animationOutDuration ?? 0) / 1000}s</>}
-      prepend={item.animationOut !== null && <Stack direction='row'>
+      prepend={item.animationOut !== null ? <Stack direction='row'>
         <Button fullWidth onClick={() => {
           setItem({
             ...item, animationOut: null, animationOutDuration: null,
           });
         }}>Use variant setting</Button>
-      </Stack>}/>
+      </Stack>
+        : null}/>
 
     {props.onDelete && <Button sx={{ mt: 2 }}color='error' onClick={props.onDelete}>Delete</Button>}  </>
   );

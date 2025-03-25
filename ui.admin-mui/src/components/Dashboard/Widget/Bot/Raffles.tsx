@@ -1,10 +1,10 @@
+import { RaffleParticipantInterface } from '@backend/database/entity/raffle';
+import { UserInterface } from '@backend/database/entity/user';
+import { RaffleInterface } from '@entity/raffle';
 import { ChatTwoTone, SyncDisabledTwoTone, SyncTwoTone, VisibilityOffTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Autocomplete, Box, Button, Checkbox, CircularProgress, Grid, Input, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Slider, Stack, SxProps, Tab, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from '@mui/material';
 import { green, grey, red } from '@mui/material/colors';
-import { RaffleInterface } from '@sogebot/backend/dest/database/entity/raffle';
-import { RaffleParticipantInterface } from '@sogebot/backend/src/database/entity/raffle';
-import { UserInterface } from '@sogebot/backend/src/database/entity/user';
 import axios from 'axios';
 import { isEqual } from 'lodash';
 import orderBy from 'lodash/orderBy';
@@ -118,7 +118,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
   }, [raffle, winner]);
 
   const open = React.useCallback(() => {
-    const out = [];
+    const out: string[] = [];
     out.push(keyword);
     if (eligible.find(o => o.value === 'subscribers')) {
       out.push('-for ' + (eligible.find(o => o.value === 'subscribers') ? 'subscribers' : ' '));
@@ -227,7 +227,7 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
           setEligible([eligibleItems[0]]);
         } else {
           setEligible([]);
-          const eligibilitySet = [];
+          const eligibilitySet: typeof eligibleItems = [];
           if (raffle.forSubscribers) {
             eligibilitySet.push(eligibleItems[2]);
           }
@@ -378,7 +378,9 @@ export const DashboardWidgetBotRaffles: React.FC<{ sx: SxProps }> = ({
             {!isTypeKeywords && <Box sx={{
               width: '100%', p: 1,
             }}>
-              <Typography id="input-slider" gutterBottom color={(raffle && !raffle?.isClosed) || !scope.manage ? grey[500] : classes.whiteColor}>
+              <Typography id="input-slider" gutterBottom
+                sx={{ color: (raffle && !raffle?.isClosed) || !scope.manage ? grey[500] : classes.whiteColor }}
+              >
                 { translate('raffle-tickets-range') }
               </Typography>
               <Grid container spacing={2} alignItems="center">

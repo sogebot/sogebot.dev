@@ -1,5 +1,5 @@
+import { Stopwatch } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { nanoid } from 'nanoid';

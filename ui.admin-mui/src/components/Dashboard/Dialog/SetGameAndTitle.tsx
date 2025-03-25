@@ -1,9 +1,9 @@
+import { CONTENT_CLASSIFICATION_LABELS } from '@backend/helpers/constants';
+import { CacheGamesInterface } from '@entity/cacheGames';
+import { CacheTitlesInterface } from '@entity/cacheTitles';
 import { CheckBoxOutlineBlankTwoTone, CheckBoxTwoTone, CheckSharp, Lock, LockTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Backdrop, Box, Button, Checkbox, Chip, CircularProgress, createFilterOptions, Dialog, DialogActions, DialogContent, Grid, List, ListItem, ListItemButton, Stack, TextField, Typography } from '@mui/material';
-import { CacheGamesInterface } from '@sogebot/backend/dest/database/entity/cacheGames';
-import { CacheTitlesInterface } from '@sogebot/backend/dest/database/entity/cacheTitles';
-import { CONTENT_CLASSIFICATION_LABELS } from '@sogebot/backend/dest/helpers/constants';
 import { capitalize } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
@@ -242,7 +242,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
           disableCloseOnSelect
           options={Object.keys(CONTENT_CLASSIFICATION_LABELS)}
           onChange={(_, value) => {
-            let labels = [];
+            let labels: string[] = [];
             if (props.contentClassificationLabels.includes('MatureGame')) {
               labels.push('MatureGame');
             }
@@ -335,7 +335,7 @@ export const DashboardDialogSetGameAndTitle: React.FC<{ game: string, title: str
                           setTitleInputValue(title.title);
                           setSelectedTags(title.tags);
 
-                          let labels = [];
+                          let labels: string[] = [];
                           if (props.contentClassificationLabels.includes('MatureGame')) {
                             labels.push('MatureGame');
                           }

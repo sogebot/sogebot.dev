@@ -1,4 +1,4 @@
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
+import { Alerts } from '@backend/database/entity/overlay';
 import { Atom, atom } from 'jotai';
 
 import { anSelectedItemOpts } from '../../../atoms';

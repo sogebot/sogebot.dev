@@ -4,4 +4,4 @@ type Flatten<T extends object> = object extends T ? object : {
       [P in keyof FV as `${Extract<K, string | number>}.${Extract<P, string | number>}`]:
       FV[P] }) : never : Pick<T, K> : never
   ) => void } extends Record<keyof T, (y: infer O) => void> ?
-  O extends infer U ? { [K in keyof O]: O[K] } : never : never
+  O extends infer U ? { [K in keyof O]: O[K] } : never : never;

@@ -1,3 +1,4 @@
+import { Alerts } from '@backend/database/entity/overlay';
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
@@ -7,7 +8,6 @@ import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import { LoadingButton } from '@mui/lab';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, DialogContent, Divider, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import orange from '@mui/material/colors/orange';
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import { Atom, useAtom, useAtomValue } from 'jotai';
 import { capitalize, cloneDeep, set } from 'lodash';
 import { nanoid } from 'nanoid';
@@ -186,7 +186,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
 
   const [elementGuidelines, setElementGuidelines] = React.useState<Element[]>([]);
 
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [ zoom, setZoom ] = React.useState(1);
   const [frame, setFrame] = React.useState({
@@ -205,7 +205,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
   const addNewComponent = (value: any) => {
     setItems(it => {
       const update = cloneDeep(it);
-      let updateItem = [];
+      let updateItem: Alerts['items'][number]['items'] = [];
       if (selectedVariantId) {
         updateItem = update.find(o => o.id === selectedAlertId)!.variants.find(o => o.id === selectedVariantId)!.items;
       } else {

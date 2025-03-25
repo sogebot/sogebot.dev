@@ -1,7 +1,7 @@
+import { generateUsername } from '@backend/helpers/generateUsername';
+import { EmitData } from '@entity/overlay';
 import { ExpandMoreTwoTone, ShuffleOnTwoTone, ShuffleTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
-import { EmitData } from '@sogebot/backend/dest/database/entity/overlay';
-import { generateUsername } from '@sogebot/backend/dest/helpers/generateUsername';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
@@ -27,22 +27,22 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
     return events[idx] as EmitData['event'];
   }, [event]);
 
-  const usernameRef = React.useRef<HTMLInputElement>();
+  const usernameRef = React.useRef<HTMLInputElement>(null);
   const [ usernameRandom, setUsernameRandom ] = React.useState(true);
 
-  const recipientRef = React.useRef<HTMLInputElement>();
+  const recipientRef = React.useRef<HTMLInputElement>(null);
   const [ recipientRandom, setRecipientRandom ] = React.useState(true);
   const haveRecipient = React.useMemo(() => {
     return ['rewardredeem', 'subgift', 'custom'].includes(selectedEvent);
   }, [ selectedEvent ]);
 
-  const messageRef = React.useRef<HTMLInputElement>();
+  const messageRef = React.useRef<HTMLInputElement>(null);
   const [ messageRandom, setMessageRandom ] = React.useState(true);
   const haveMessage = React.useMemo(() => {
     return ['tip', 'cheer', 'resub', 'rewardredeem', 'promo'].includes(selectedEvent);
   }, [ selectedEvent ]);
 
-  const tierRef = React.useRef<HTMLInputElement>();
+  const tierRef = React.useRef<HTMLInputElement>(null);
   const tiers = ['Prime', '1', '2', '3'] as const;
   const [ tierRandom, setTierRandom ] = React.useState(true);
   const haveTier = React.useMemo(() => {
@@ -50,13 +50,13 @@ export const AlertsRegistryTesterAccordion: React.FC = () => {
   }, [ selectedEvent ]);
 
   const services = ['YouTube SuperChat', 'donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
-  const serviceRef = React.useRef<HTMLInputElement>();
+  const serviceRef = React.useRef<HTMLInputElement>(null);
   const [ serviceRandom, setServiceRandom ] = React.useState(true);
   const haveService = React.useMemo(() => {
     return ['tip'].includes(selectedEvent);
   }, [ selectedEvent ]);
 
-  const amountRef = React.useRef<HTMLInputElement>();
+  const amountRef = React.useRef<HTMLInputElement>(null);
   const [ amountRandom, setAmountRandom ] = React.useState(true);
   const amountLabel = React.useMemo(() => {
     switch (selectedEvent) {

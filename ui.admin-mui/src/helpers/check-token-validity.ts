@@ -1,4 +1,3 @@
-// eslint-disable-next-line camelcase
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { debounce } from 'lodash';

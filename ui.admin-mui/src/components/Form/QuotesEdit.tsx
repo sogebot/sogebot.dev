@@ -1,7 +1,7 @@
+import { Quotes } from '@entity/quotes';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Chip, Collapse, DialogActions, DialogContent, LinearProgress, TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { Quotes } from '@sogebot/backend/dest/database/entity/quotes';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

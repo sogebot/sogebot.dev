@@ -1,4 +1,4 @@
-import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
+import { HTML } from '@entity/overlay';
 import React from 'react';
 
 import { CSSDialog } from './HTMLSettings/css';

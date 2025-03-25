@@ -1,7 +1,7 @@
+import { OBSWebsocket } from '@entity/obswebsocket';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, Grid, LinearProgress, TextField } from '@mui/material';
-import { OBSWebsocket } from '@sogebot/backend/dest/database/entity/obswebsocket';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { nanoid } from 'nanoid';

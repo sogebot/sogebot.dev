@@ -1,4 +1,4 @@
-import { command } from '@sogebot/backend/dest/database/validators/IsCommand';
+import { command } from '@backend/database/validators/IsCommand';
 import { z } from 'zod';
 
 export const schema = z.object({

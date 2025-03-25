@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 
+import { Overlay } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 import { useParams } from 'react-router-dom';

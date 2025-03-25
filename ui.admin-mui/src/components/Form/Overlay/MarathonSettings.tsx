@@ -1,7 +1,7 @@
+import { Marathon } from '@entity/overlay';
 import { Box, FormControlLabel, FormHelperText, Stack, Switch } from '@mui/material';
 import { DateTimeValidationError } from '@mui/x-date-pickers';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
-import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { AccordionTimeAdditions } from './MarathonSettings/TimeAdditions';

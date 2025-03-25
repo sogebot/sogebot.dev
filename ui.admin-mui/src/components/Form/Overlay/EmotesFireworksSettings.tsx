@@ -1,5 +1,5 @@
+import { EmotesFireworks } from '@entity/overlay';
 import { Button, Divider, FormControl, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { EmotesFireworks } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 

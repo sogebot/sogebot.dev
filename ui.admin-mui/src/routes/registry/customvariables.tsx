@@ -1,12 +1,12 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { Variable } from '@entity/variable';
 import { mdiAlphabeticalVariant, mdiCodeBrackets, mdiCodeJson, mdiNumeric } from '@mdi/js';
 import Icon from '@mdi/react';
 import { PlayArrowTwoTone } from '@mui/icons-material';
 import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Variable } from '@sogebot/backend/dest/database/entity/variable';
 import axios from 'axios';
 import humanizeDuration from 'humanize-duration';
 import { capitalize } from 'lodash';

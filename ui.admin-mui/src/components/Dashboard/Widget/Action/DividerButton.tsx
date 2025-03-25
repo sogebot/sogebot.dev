@@ -1,5 +1,5 @@
+import { DividerItem } from '@entity/dashboard';
 import { Divider } from '@mui/material';
-import { DividerItem } from '@sogebot/backend/dest/database/entity/dashboard';
 import React, {  } from 'react';
 
 export const DashboardWidgetActionDividerButton: React.FC<{ item: DividerItem }> = ({

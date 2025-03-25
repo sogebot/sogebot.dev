@@ -1,6 +1,6 @@
+import { CreditsScreenEvents } from '@entity/overlay';
 import { CropFreeTwoTone, ExpandMoreTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, DialogContent, Divider, FormControl, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { CreditsScreenEvents } from '@sogebot/backend/dest/database/entity/overlay';
+import { Accordion, AccordionDetails, AccordionSummary, Box, DialogContent, Divider, FormControl, Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { capitalize } from 'lodash';
 import React from 'react';
 import { useMouse, usePreviousImmediate } from 'rooks';
@@ -28,7 +28,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
   const mouseX = usePreviousImmediate(x);
   const mouseY = usePreviousImmediate(y);
 
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [ zoom, setZoom ] = React.useState(1);
 
@@ -156,7 +156,7 @@ export const CreditsSettingsEvents: React.FC<Props> = ({ model, canvas, onUpdate
           </Stack>
         </SimpleBar>
       </Grid>
-      <Grid xs sx={{ height: '100%' }}
+      <Grid size="grow" sx={{ height: '100%' }}
         onContextMenu={(e) => {
           e.stopPropagation();
           e.preventDefault();

@@ -7,7 +7,7 @@ import { dayjs } from '../../helpers/dayjsHelper';
 export const DateFormatter = ({ value }: { value: string }) => {
   return (<Typography>{ dayjs(value).format('LL LTS') }</Typography>);
 };
-export const DateTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+export const DateTypeProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
   <DataTypeProvider
     formatterComponent={DateFormatter}
     {...props}

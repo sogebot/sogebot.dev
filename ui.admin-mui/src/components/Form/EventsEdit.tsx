@@ -1,7 +1,7 @@
+import { Event, SupportedEvent, SupportedOperation } from '@entity/event';
 import { DeleteTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, Grid, IconButton, InputAdornment, LinearProgress, Paper, Switch, TextField, Typography } from '@mui/material';
-import { Event, SupportedEvent, SupportedOperation } from '@sogebot/backend/dest/database/entity/event';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';
@@ -54,7 +54,7 @@ export const EventsEdit: React.FC = () => {
   }, [ item ]);
 
   const availableVariables = React.useMemo(() => {
-    return (availableEvents.find(o => o.id === item?.event.name ?? '') || { variables: [] }).variables;
+    return (availableEvents.find(o => o.id === (item?.event.name ?? '')) || { variables: [] }).variables;
   }, [ availableEvents, item ]);
 
   useEffect(() => {

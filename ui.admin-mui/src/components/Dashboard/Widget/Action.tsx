@@ -1,7 +1,7 @@
+import { QuickActions } from '@backend/database/entity/dashboard';
 import { UnfoldLessTwoTone, UnfoldMoreTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Card, IconButton, Tab, Typography } from '@mui/material';
-import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import orderBy from 'lodash/orderBy';

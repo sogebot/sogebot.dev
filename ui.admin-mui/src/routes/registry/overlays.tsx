@@ -2,9 +2,9 @@ import { Buffer } from 'buffer';
 
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, SelectionState, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { Overlay } from '@entity/overlay';
 import { ContentCopyTwoTone, ContentPasteTwoTone, LinkTwoTone } from '@mui/icons-material';
 import { CircularProgress, Dialog, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';

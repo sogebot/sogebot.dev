@@ -1,5 +1,5 @@
+import { CreditsScreenCustom } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { CreditsScreenCustom } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 

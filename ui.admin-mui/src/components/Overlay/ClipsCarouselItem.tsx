@@ -1,9 +1,8 @@
-/* eslint-disable import/no-unresolved */
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
+import { ClipsCarousel } from '@entity/overlay';
 import { Alert, Box } from '@mui/material';
-import { ClipsCarousel } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 import { Swiper as SwiperType } from 'swiper';
 import { EffectFade } from 'swiper/modules';

@@ -1,5 +1,5 @@
+import { URL } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { URL } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import type { Props } from './ChatItem';

@@ -1,7 +1,7 @@
+import { Chat } from '@entity/overlay';
 import { mdiCrown, mdiDiamond, mdiTwitch, mdiWrench, mdiYoutube } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Typography } from '@mui/material';
-import { Chat } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import HTMLReactParser from 'html-react-parser';
 import { orderBy } from 'lodash';

@@ -36,9 +36,9 @@ export const AccordionPosition: React.FC<Props> = (props) => {
     ...accordionProps } = props;
   const { translate } = useTranslation();
 
-  const anchorRef = React.useRef<any>();
-  const textRef = React.useRef<any>();
-  const paperRef = React.useRef<any>();
+  const anchorRef = React.useRef<any>(null);
+  const textRef = React.useRef<any>(null);
+  const paperRef = React.useRef<any>(null);
 
   const handleClick = () => {
     onOpenChange(open === accordionId ? '' : accordionId);

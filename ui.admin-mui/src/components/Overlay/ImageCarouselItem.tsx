@@ -1,5 +1,5 @@
+import { Carousel } from '@entity/overlay';
 import { Box, ScopedCssBaseline } from '@mui/material';
-import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { nanoid } from 'nanoid';
 import React from 'react';

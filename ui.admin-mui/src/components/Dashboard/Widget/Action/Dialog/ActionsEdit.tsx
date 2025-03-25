@@ -1,10 +1,10 @@
+import { QuickActions } from '@backend/database/entity/dashboard';
+import { Countdown, Marathon, Stopwatch } from '@entity/overlay';
 import { Draggable } from '@hello-pangea/dnd';
 import { DragIndicator, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Button, Collapse, Container, Divider, Drawer, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Countdown, Marathon, Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
-import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import HTMLReactParser from 'html-react-parser';
 import { useAtomValue } from 'jotai';

@@ -1,8 +1,8 @@
+import { QuickActions } from '@backend/database/entity/dashboard';
+import { Variable } from '@entity/variable';
 import { Edit } from '@mui/icons-material';
 import { Popover, Stack, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Variable } from '@sogebot/backend/dest/database/entity/variable';
-import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import React, { useCallback, useRef, useState } from 'react';
@@ -18,7 +18,7 @@ export const DashboardWidgetActionCustomVariableTextButton: React.FC<{ item: Qui
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ menuWidth, setMenuWidth ] = useState<string>('inherit');
   const open = Boolean(anchorEl);
-  const btnRef = useRef<any>();
+  const btnRef = useRef<any>(null);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     if (btnRef.current) {

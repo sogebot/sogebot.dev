@@ -1,6 +1,6 @@
+import { Randomizer as Overlay, TTSService } from '@entity/overlay';
+import { Randomizer } from '@entity/randomizer';
 import { Box, Fade } from '@mui/material';
-import { Randomizer as Overlay, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { Mutex } from 'async-mutex';
 import axios from 'axios';
 import gsap from 'gsap';

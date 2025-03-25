@@ -12,9 +12,9 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:            (value: string) => void;
   onChange:                (value: { animationOut: string, animationOutDuration: number, animationOutWindowBoundaries?: boolean }) => void;
   alwaysShowLabelDetails?: boolean;
-  prependLabel?: React.ReactNode;
-  prepend?:                React.ReactNode;
-  customLabelDetails?:     React.ReactNode;
+  prependLabel?: string | React.JSX.Element | null;
+  prepend?:                string | React.JSX.Element | null;
+  customLabelDetails?:     string | React.JSX.Element | null;
 };
 
 const animationOutOptions = [
@@ -79,7 +79,7 @@ export const AccordionAnimationOut: React.FC<Props> = (props) => {
           labelId="page.settings.overlays.carousel.titles.animationOut"
           value={model.animationOut}
           onChange={(ev) => {
-            if (model.animationOut !== ev.target.value ?? '') {
+            if (model.animationOut !== (ev.target.value ?? '')) {
               onChange({
                 ...model, animationOut: ev.target.value ?? '',
               });

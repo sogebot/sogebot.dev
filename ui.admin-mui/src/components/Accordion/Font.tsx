@@ -1,7 +1,7 @@
+import { Alerts, Countdown, CreditsScreenEvents, Eventlist, Wordcloud } from '@entity/overlay';
+import { Randomizer } from '@entity/randomizer';
 import { AddTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Autocomplete, Box, Button, Divider, Fade, FormControl, FormLabel, InputLabel, MenuItem, Paper, Select, Slider, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
-import { Alerts, Countdown, CreditsScreenEvents, Eventlist, Wordcloud } from '@sogebot/backend/dest/database/entity/overlay';
-import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import capitalize from 'lodash/capitalize';
@@ -40,8 +40,8 @@ type Props<T> = Omit<AccordionProps, 'children' | 'onChange'> & {
   disableExample?:         boolean;
   label?:                  string;
   alwaysShowLabelDetails?: boolean;
-  prepend?:                React.ReactNode;
-  customLabelDetails?:     React.ReactNode;
+  prepend?:                string | React.JSX.Element | null;
+  customLabelDetails?:     string | React.JSX.Element | null;
   isEditable?:             boolean;
 };
 type FontTypes = Randomizer['customizationFont']
@@ -91,7 +91,12 @@ export const AccordionFont = <T extends FontTypes>(props: Props<T>) => {
           <Typography component='span' variant='caption' sx={{ textAlign: 'right' }}>
             {props.customLabelDetails
               ? props.customLabelDetails
-              : model && <>{model.family} {'size' in model && `${model.size}px`}</>}
+              : model && (
+                <>
+                  {model.family}
+                  {'size' in model ? ` ${model.size}px` : ''}
+                </>
+              )}
           </Typography>
         </Fade>
       </Typography>

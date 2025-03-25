@@ -1,4 +1,4 @@
-import { CommandItem } from '@sogebot/backend/src/database/entity/dashboard';
+import { CommandItem } from '@backend/database/entity/dashboard';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import React, { useCallback } from 'react';

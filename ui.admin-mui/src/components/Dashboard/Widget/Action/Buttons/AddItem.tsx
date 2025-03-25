@@ -1,5 +1,5 @@
+import { QuickActions } from '@entity/dashboard';
 import { Button, Menu, MenuItem } from '@mui/material';
-import { QuickActions } from '@sogebot/backend/dest/database/entity/dashboard';
 import React from 'react';
 
 export const DashboardWidgetActionButtonsAddItem: React.FC<{

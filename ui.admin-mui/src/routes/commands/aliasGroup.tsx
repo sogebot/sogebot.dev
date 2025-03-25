@@ -1,7 +1,7 @@
+import { Alias, AliasGroup } from '@backend/database/entity/alias';
 import { Column } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 import { Button, CircularProgress, Dialog, Grid, Stack } from '@mui/material';
-import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import { useSnackbar } from 'notistack';

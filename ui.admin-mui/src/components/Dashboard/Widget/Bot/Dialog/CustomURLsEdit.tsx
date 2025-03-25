@@ -1,9 +1,9 @@
+import { WidgetCustomInterface } from '@backend/database/entity/widget';
 import { Delete, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Button, Container, Divider, Drawer, Grid, IconButton, Stack, TextField, Tooltip } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
-import { WidgetCustomInterface } from '@sogebot/backend/src/database/entity/widget';
 import axios from 'axios';
 import { useAtomValue } from 'jotai';
 import clone from 'lodash/clone';

@@ -1,4 +1,4 @@
-import { flatten, unflatten } from '@sogebot/backend/dest/helpers/flatten';
+import { flatten, unflatten } from '@backend/helpers/flatten';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 

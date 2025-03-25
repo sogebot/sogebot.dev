@@ -1,7 +1,7 @@
+import { Permissions } from '@entity/permissions';
 import { DragIndicatorTwoTone, ManageAccountsTwoTone } from '@mui/icons-material';
 import { Button, ListItemIcon, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { Permissions } from '@sogebot/backend/dest/database/entity/permissions';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 

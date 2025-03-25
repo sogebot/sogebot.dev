@@ -2,7 +2,7 @@ import { TableCell } from '@mui/material';
 import React from 'react';
 
 export const TableCellKeepWidth: React.FC<{ width?: number, children?: any, dragHandleProps?: any, snapshot?: any, sx?: any  }> = ({ width, children, dragHandleProps, snapshot, sx }) => {
-  const ref = React.useRef<HTMLElement>();
+  const ref = React.useRef<HTMLElement>(null);
   const [widthCalc, setWidth] = React.useState(width ?? 0);
   const isDragging = React.useMemo(() => {
     return snapshot.isDragging;

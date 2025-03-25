@@ -1,8 +1,8 @@
+import { Overlay } from '@backend/database/entity/overlay';
+import { HTML } from '@entity/overlay';
 import { ShareTwoTone } from '@mui/icons-material';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Alert, Autocomplete, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, FormLabel, IconButton, LinearProgress, Popover, Stack, Tab, TextField, Tooltip, Typography } from '@mui/material';
-import { HTML } from '@sogebot/backend/dest/database/entity/overlay';
-import { Overlay } from '@sogebot/backend/src/database/entity/overlay';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import axios from 'axios';

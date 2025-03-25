@@ -1,9 +1,9 @@
+import { Plugin } from '@entity/plugins';
 import { mdiMouseRightClick } from '@mdi/js';
 import Icon from '@mdi/react';
 import Editor, { Monaco }  from '@monaco-editor/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Divider, Fade, FormControlLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemText, ListSubheader, Menu, MenuItem, Popover, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { Plugin } from '@sogebot/backend/dest/database/entity/plugins';
 import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';

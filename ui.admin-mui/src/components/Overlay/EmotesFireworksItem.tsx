@@ -1,5 +1,5 @@
+import { EmotesFireworks } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { EmotesFireworks } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { cloneDeep, random, sample } from 'lodash';
 import { nanoid } from 'nanoid';

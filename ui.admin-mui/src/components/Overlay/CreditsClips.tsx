@@ -1,6 +1,6 @@
+import type { getTopClips } from '@backend/services/twitch/calls/getTopClips';
+import { CreditsScreenClips } from '@entity/overlay';
 import { Box, Typography } from '@mui/material';
-import { CreditsScreenClips } from '@sogebot/backend/dest/database/entity/overlay';
-import type { getTopClips } from '@sogebot/backend/dest/services/twitch/calls/getTopClips';
 import React from 'react';
 import { v4 } from 'uuid';
 

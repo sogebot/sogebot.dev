@@ -1,4 +1,4 @@
-import { AlertQueue } from '@sogebot/backend/dest/database/entity/overlay';
+import { AlertQueue } from '@entity/overlay';
 import { atom } from 'jotai';
 
 /*

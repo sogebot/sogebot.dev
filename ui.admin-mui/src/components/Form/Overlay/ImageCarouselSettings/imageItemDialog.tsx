@@ -1,3 +1,4 @@
+import { Carousel } from '@backend/database/entity/overlay';
 import { SettingsTwoTone } from '@mui/icons-material';
 import { Button, FormControl, InputAdornment, InputLabel, MenuItem } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -8,7 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { Carousel } from '@sogebot/backend/src/database/entity/overlay';
 import * as React from 'react';
 import { useLocalstorageState } from 'rooks';
 

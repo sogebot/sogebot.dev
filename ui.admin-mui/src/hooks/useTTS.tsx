@@ -1,4 +1,4 @@
-import { TTSService } from '@sogebot/backend/dest/database/entity/overlay';
+import { TTSService } from '@entity/overlay';
 import axios from 'axios';
 
 import { useAppSelector } from './useAppDispatch';

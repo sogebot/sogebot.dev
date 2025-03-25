@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Alert, Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
@@ -17,12 +16,12 @@ const TwitchOwnAppTokens = () => {
     }
 
     if (window.location.hash || window.location.search) {
-      let type = null;
-      let code = null;
-      let state = null;
-      let clientId = null;
-      let clientSecret = null;
-      let scope = null;
+      let type: null | string  = null;
+      let code: null | string = null;
+      let state: any = null;
+      let clientId: null | string  = null;
+      let clientSecret: null | string  = null;
+      let scope: null | string  = null;
 
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?type=') || url.startsWith('type=')) {

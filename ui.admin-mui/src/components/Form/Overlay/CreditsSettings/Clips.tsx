@@ -1,6 +1,6 @@
+import { CreditsScreenClips } from '@entity/overlay';
 import { CropFreeTwoTone, FitScreenTwoTone, ZoomInTwoTone, ZoomOutTwoTone } from '@mui/icons-material';
-import { Box, DialogContent, Divider, FormControl, FormLabel, Unstable_Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Slider, Stack, TextField, Tooltip } from '@mui/material';
-import { CreditsScreenClips } from '@sogebot/backend/dest/database/entity/overlay';
+import { Box, DialogContent, Divider, FormControl, FormLabel, Grid2 as Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Slider, Stack, TextField, Tooltip } from '@mui/material';
 import React from 'react';
 import { useMouse, usePreviousImmediate } from 'rooks';
 import SimpleBar from 'simplebar-react';
@@ -28,7 +28,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
   const mouseX = usePreviousImmediate(x);
   const mouseY = usePreviousImmediate(y);
 
-  const containerRef = React.useRef<HTMLDivElement>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [ zoom, setZoom ] = React.useState(1);
 
@@ -156,7 +156,7 @@ export const CreditsSettingsClips: React.FC<Props> = ({ model, canvas, onUpdate 
           </Stack>
         </SimpleBar>
       </Grid>
-      <Grid xs sx={{ height: '100%' }}
+      <Grid size="grow" sx={{ height: '100%' }}
         onContextMenu={(e) => {
           e.stopPropagation();
           e.preventDefault();

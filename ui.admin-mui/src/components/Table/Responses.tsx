@@ -1,6 +1,6 @@
+import { Keyword } from '@backend/database/entity/keyword';
 import { FilterAlt, Key, Pause, PlayArrow } from '@mui/icons-material';
 import { Divider, Grid, List, ListItem, Stack, Typography } from '@mui/material';
-import { Keyword } from '@sogebot/backend/src/database/entity/keyword';
 import orderBy from 'lodash/orderBy';
 import React from 'react';
 import { v4 } from 'uuid';

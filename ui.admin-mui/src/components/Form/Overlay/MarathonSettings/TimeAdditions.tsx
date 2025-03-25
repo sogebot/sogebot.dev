@@ -1,6 +1,6 @@
+import { Marathon } from '@entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, FormControlLabel, FormHelperText, FormLabel, InputAdornment, Stack, Switch, Typography } from '@mui/material';
-import { Marathon } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 

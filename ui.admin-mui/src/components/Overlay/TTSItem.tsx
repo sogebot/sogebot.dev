@@ -1,4 +1,4 @@
-import { TTS, TTSService } from '@sogebot/backend/dest/database/entity/overlay';
+import { TTS, TTSService } from '@entity/overlay';
 import React from 'react';
 
 import { isAlreadyProcessed } from './_processedSocketCalls';

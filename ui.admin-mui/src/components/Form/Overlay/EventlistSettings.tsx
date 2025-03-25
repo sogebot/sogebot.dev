@@ -1,5 +1,5 @@
+import { Eventlist } from '@entity/overlay';
 import { Chip, Divider, FormControl, FormControlLabel, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { AccordionFont } from '../../Accordion/Font';

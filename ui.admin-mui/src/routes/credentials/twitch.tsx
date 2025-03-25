@@ -18,9 +18,9 @@ const Twitch = () => {
     }
 
     if (window.location.hash || window.location.search) {
-      let type = null;
-      let code = null;
-      let state = null;
+      let type: null | string  = null;
+      let code: null | string = null;
+      let state: any = null;
       for (const url of window.location.search.split('&')) {
         if (url.startsWith('?type=') || url.startsWith('type=')) {
           type = url.replace(/\??type=/, '');

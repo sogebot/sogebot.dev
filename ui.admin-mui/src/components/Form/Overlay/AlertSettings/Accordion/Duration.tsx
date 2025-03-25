@@ -12,8 +12,8 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   max?:                number,
   onOpenChange:        (value: string) => void;
   onChange:            (value: number) => void;
-  customLabelDetails?: React.ReactNode;
-  prependLabel?: React.ReactNode;
+  customLabelDetails?: string | React.JSX.Element | null;
+  prependLabel?: string | React.JSX.Element | null;
   hideEndAdornment?:   boolean;
   helperText?:         string;
 };

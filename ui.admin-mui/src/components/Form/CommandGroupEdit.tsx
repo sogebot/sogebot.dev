@@ -1,7 +1,7 @@
+import { KeywordGroup } from '@entity/keyword';
 import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
-import { KeywordGroup } from '@sogebot/backend/dest/database/entity/keyword';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

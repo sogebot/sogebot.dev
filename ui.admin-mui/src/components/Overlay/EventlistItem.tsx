@@ -1,6 +1,6 @@
+import { EventListInterface } from '@entity/eventList';
+import { Eventlist } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { EventListInterface } from '@sogebot/backend/dest/database/entity/eventList';
-import { Eventlist } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import orderBy from 'lodash/orderBy';
 import React from 'react';

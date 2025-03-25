@@ -4,7 +4,7 @@ import { SxProps, TableBody, TableBodyClasses } from '@mui/material';
 import React from 'react';
 import { CommonProps } from 'react-window';
 
-export const DroppableComponent = (onDragEnd: (result: any, provided: any) => void) => (props: JSX.IntrinsicAttributes & { component: React.ElementType<any>; } & { children?: React.ReactNode; classes?: Partial<TableBodyClasses> | undefined; sx?: SxProps<Theme> | undefined; } & CommonProps & Omit<any, 'children' | 'sx' | keyof CommonProps>) => {
+export const DroppableComponent = (onDragEnd: (result: any, provided: any) => void) => (props: React.JSX.IntrinsicAttributes & { component: React.ElementType<any>; } & { children?: string | React.JSX.Element | null; classes?: Partial<TableBodyClasses> | undefined; sx?: SxProps<Theme> | undefined; } & CommonProps & Omit<any, 'children' | 'sx' | keyof CommonProps>) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={'1'} direction="vertical">

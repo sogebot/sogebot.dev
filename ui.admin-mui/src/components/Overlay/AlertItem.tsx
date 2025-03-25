@@ -1,8 +1,8 @@
+import { flatten } from '@backend/helpers/flatten';
+import { itemsToEvalPart } from '@backend/helpers/queryFilter';
+import { Alerts, EmitData, Filter } from '@entity/overlay';
+import { UserInterface } from '@entity/user';
 import { Box } from '@mui/material';
-import { Alerts, EmitData, Filter } from '@sogebot/backend/dest/database/entity/overlay';
-import { UserInterface } from '@sogebot/backend/dest/database/entity/user';
-import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { itemsToEvalPart } from '@sogebot/backend/dest/helpers/queryFilter';
 import axios from 'axios';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';

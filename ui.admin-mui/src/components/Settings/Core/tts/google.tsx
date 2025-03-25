@@ -1,6 +1,6 @@
+import { GooglePrivateKeysInterface } from '@entity/google';
 import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import { GooglePrivateKeysInterface } from '@sogebot/backend/dest/database/entity/google';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 

@@ -1,5 +1,5 @@
+import { Clips } from '@entity/overlay';
 import { Box, Button, capitalize, FormControl, FormControlLabel, FormLabel, InputAdornment, InputLabel, MenuItem, Select, Slider, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Clips } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import React from 'react';
 
@@ -14,7 +14,7 @@ type Props = {
 export const ClipsSettings: React.FC<Props> = ({ model, onUpdate }) => {
   const { translate } = useTranslation();
 
-  const testURLRef = React.useRef<HTMLInputElement>();
+  const testURLRef = React.useRef<HTMLInputElement>(null);
 
   const onSubmit = () => {
     if (!testURLRef.current) {

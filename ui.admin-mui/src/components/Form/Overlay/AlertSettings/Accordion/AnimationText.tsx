@@ -1,6 +1,6 @@
+import { Alerts } from '@backend/database/entity/overlay';
 import { ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Fade, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { Alerts } from '@sogebot/backend/src/database/entity/overlay';
 import baffle from 'baffle';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -17,9 +17,9 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange:            (value: string) => void;
   onChange:                (value: Props['model']) => void;
   alwaysShowLabelDetails?: boolean;
-  prependLabel?: React.ReactNode;
-  prepend?:                React.ReactNode;
-  customLabelDetails?:     React.ReactNode;
+  prependLabel?: string | React.JSX.Element | null;
+  prepend?:                string | React.JSX.Element | null;
+  customLabelDetails?:     string | React.JSX.Element | null;
 };
 
 const options = [
@@ -96,7 +96,7 @@ export const AccordionAnimationText: React.FC<Props> = (props) => {
           labelId="registry.alerts.animationText.name"
           value={model.animationText}
           onChange={(ev) => {
-            if (model.animationText !== ev.target.value ?? 'none') {
+            if (model.animationText !== (ev.target.value ?? 'none')) {
               onChange({
                 ...model, animationText: (ev.target.value ?? 'none') as any,
               });
@@ -115,7 +115,7 @@ export const AccordionAnimationText: React.FC<Props> = (props) => {
           labelId="registry.alerts.speed.name"
           value={model.animationTextOptions.speed}
           onChange={(ev) => {
-            if (model.animationTextOptions.speed !== ev.target.value ?? 'normal') {
+            if (model.animationTextOptions.speed !== (ev.target.value ?? 'normal')) {
               onChange({
                 ...model,
                 animationTextOptions: {
@@ -135,7 +135,7 @@ export const AccordionAnimationText: React.FC<Props> = (props) => {
         value={model.animationTextOptions.characters}
         label={translate('registry.alerts.characters.name')}
         onChange={(ev) => {
-          if (model.animationTextOptions.characters !== ev.target.value ?? '123456789qwrtyuiopasdfghjklzxcvbnm,.?!') {
+          if (model.animationTextOptions.characters !== (ev.target.value ?? '123456789qwrtyuiopasdfghjklzxcvbnm,.?!')) {
             onChange({
               ...model,
               animationTextOptions: {

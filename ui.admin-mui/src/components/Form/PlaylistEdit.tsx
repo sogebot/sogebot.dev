@@ -1,10 +1,10 @@
+import { SongPlaylist } from '@entity/song';
 import { Autocomplete, LoadingButton } from '@mui/lab';
 import { Box, Button, Chip, DialogActions, DialogContent, FormLabel, Grid, LinearProgress, Slider, Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { SongPlaylist } from '@sogebot/backend/dest/database/entity/song';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';
@@ -127,7 +127,7 @@ export const PlaylistEdit: React.FC<{
   const marks = useMemo(() => {
     const step = 60;
     const markCount = item.length / step;
-    const list = [];
+    const list: { value: number, label: string }[] = [];
     for (let i = 0; i < markCount; i++) {
       list.push({
         value: i * step,

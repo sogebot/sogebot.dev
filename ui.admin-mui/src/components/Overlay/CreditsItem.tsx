@@ -1,5 +1,5 @@
+import { Credits, CreditsScreenCustom } from '@entity/overlay';
 import Box from '@mui/material/Box';
-import { Credits, CreditsScreenCustom } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import React from 'react';
 import { useIntervalWhen } from 'rooks';

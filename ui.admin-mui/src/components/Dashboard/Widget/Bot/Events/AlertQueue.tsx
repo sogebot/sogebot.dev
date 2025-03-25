@@ -1,9 +1,9 @@
+import { AlertQueue } from '@entity/overlay';
 import { mdiMouseLeftClick, mdiMouseRightClick } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DeleteTwoTone, SettingsTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Chip, CircularProgress, circularProgressClasses, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, LinearProgress, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material';
-import { AlertQueue } from '@sogebot/backend/dest/database/entity/overlay';
 import axios from 'axios';
 import { useSetAtom } from 'jotai';
 import { isEqual } from 'lodash';

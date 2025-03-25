@@ -1,6 +1,6 @@
+import { Rank } from '@entity/rank';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, DialogActions, DialogContent, FormControl, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
-import { Rank } from '@sogebot/backend/dest/database/entity/rank';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

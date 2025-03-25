@@ -1,6 +1,6 @@
+import { currentSongType } from '@backend/database/entity/song';
 import { Delete, PlayArrow, PlaylistRemove, SkipNext, Stop } from '@mui/icons-material';
 import { Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip } from '@mui/material';
-import { currentSongType } from '@sogebot/backend/src/database/entity/song';
 import axios from 'axios';
 import { isEqual } from 'lodash';
 import React, { useEffect, useMemo } from 'react';

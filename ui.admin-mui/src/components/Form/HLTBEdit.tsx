@@ -1,6 +1,6 @@
+import { HowLongToBeatGame } from '@entity/howLongToBeatGame';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, Button, Collapse, DialogActions, DialogContent, FormLabel, LinearProgress, Slider, Stack, TextField, Typography } from '@mui/material';
-import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import debounce from 'lodash/debounce';

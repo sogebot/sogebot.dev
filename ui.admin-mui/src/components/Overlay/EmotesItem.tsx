@@ -1,5 +1,5 @@
+import { Emotes } from '@entity/overlay';
 import { Box } from '@mui/material';
-import { Emotes } from '@sogebot/backend/dest/database/entity/overlay';
 import gsap from 'gsap';
 import { cloneDeep, random } from 'lodash';
 import { nanoid } from 'nanoid';

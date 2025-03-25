@@ -1,6 +1,6 @@
+import { QuickActions } from '@backend/database/entity/dashboard';
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { QuickActions } from '@sogebot/backend/src/database/entity/dashboard';
 import React from 'react';
 
 import { ColorButton } from '../_ColorButton';

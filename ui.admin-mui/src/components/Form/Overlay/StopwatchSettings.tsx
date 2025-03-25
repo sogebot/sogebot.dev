@@ -1,5 +1,5 @@
+import { Stopwatch } from '@entity/overlay';
 import { Box, FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
-import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { usePreviousImmediate } from 'rooks';

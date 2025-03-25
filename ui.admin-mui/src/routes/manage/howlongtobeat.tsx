@@ -1,7 +1,7 @@
 import { FilteringState, IntegratedFiltering, IntegratedSelection, IntegratedSorting, RowDetailState, SelectionState, Sorting, SortingState } from '@devexpress/dx-react-grid';
 import { Grid as DataGrid, Table, TableColumnVisibility, TableHeaderRow, TableRowDetail, TableSelection } from '@devexpress/dx-react-grid-material-ui';
+import { HowLongToBeatGame } from '@entity/howLongToBeatGame';
 import { Button, CircularProgress, Dialog, Grid, Stack, Typography } from '@mui/material';
-import { HowLongToBeatGame } from '@sogebot/backend/dest/database/entity/howLongToBeatGame';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -42,7 +42,7 @@ const PageManageHLTB = () => {
   const offset = useAppSelector(state => state.hltb.offset);
 
   const timeToReadable = useCallback((data: { days: number; hours: number; minutes: number; seconds: number }) => {
-    const output = [];
+    const output: string[] = [];
     if (data.days) {
       output.push(`${data.days}d`);
     }

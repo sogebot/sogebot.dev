@@ -10,7 +10,7 @@ export const PermissionFormatter = ({ value }: { value: string }) => {
     return (<Typography sx={{ color: grey[400] }}>Disabled</Typography>);
   }
 };
-export const PermissionTypeProvider = (props: JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
+export const PermissionTypeProvider = (props: React.JSX.IntrinsicAttributes & DataTypeProviderProps & { children?: ReactNode; }) => (
   <DataTypeProvider
     formatterComponent={PermissionFormatter}
     {...props}

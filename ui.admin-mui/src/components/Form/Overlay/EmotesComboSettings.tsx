@@ -1,5 +1,5 @@
+import { EmotesCombo } from '@entity/overlay';
 import { InputAdornment, Stack, TextField } from '@mui/material';
-import { EmotesCombo } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';

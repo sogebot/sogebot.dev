@@ -1,7 +1,7 @@
+import { flatten } from '@backend/helpers/flatten';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, CircularProgress, FormControl, FormLabel, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
-import { flatten } from '@sogebot/backend/dest/helpers/flatten';
-import { JsonViewer, NamedColorspace } from '@textea/json-viewer';
+import { JsonInspector } from '@rexxars/react-json-inspector';
 import axios from 'axios';
 import { escapeRegExp } from 'lodash';
 import React from 'react';
@@ -13,26 +13,27 @@ import { useScope } from '../../../hooks/useScope';
 import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../hooks/useTranslation';
 
-const ocean: NamedColorspace = {
-  scheme: 'Ocean',
-  author: 'Chris Kempson (http://chriskempson.com)',
-  base00: '#2b303b',
-  base01: '#343d46',
-  base02: '#4f5b66',
-  base03: '#65737e',
-  base04: '#a7adba',
-  base05: '#c0c5ce',
-  base06: '#dfe1e8',
-  base07: '#eff1f5',
-  base08: '#bf616a',
-  base09: '#d08770',
-  base0A: '#ebcb8b',
-  base0B: '#a3be8c',
-  base0C: '#96b5b4',
-  base0D: '#8fa1b3',
-  base0E: '#b48ead',
-  base0F: '#ab7967',
-};
+require('@rexxars/react-json-inspector/json-inspector.css');
+// const ocean: NamedColorspace = {
+//   scheme: 'Ocean',
+//   author: 'Chris Kempson (http://chriskempson.com)',
+//   base00: '#2b303b',
+//   base01: '#343d46',
+//   base02: '#4f5b66',
+//   base03: '#65737e',
+//   base04: '#a7adba',
+//   base05: '#c0c5ce',
+//   base06: '#dfe1e8',
+//   base07: '#eff1f5',
+//   base08: '#bf616a',
+//   base09: '#d08770',
+//   base0A: '#ebcb8b',
+//   base0B: '#a3be8c',
+//   base0C: '#96b5b4',
+//   base0D: '#8fa1b3',
+//   base0E: '#b48ead',
+//   base0F: '#ab7967',
+// };
 
 const PageSettingsModulesIntegrationsPUBG: React.FC<{
   onVisible: () => void,
@@ -236,25 +237,17 @@ const PageSettingsModulesIntegrationsPUBG: React.FC<{
 
         <div>
           <FormLabel>{ translate('integrations.pubg.player_stats_ranked') }</FormLabel>
-          <JsonViewer
-            value={settings.stats.rankedGameModeStats[0]}
-            theme={ocean}
-            style={{ padding: '10px' }}
-            displayDataTypes={false}
-            enableClipboard={false}
-          />
+          <Box sx={{ p:1 }}>
+            <JsonInspector data={settings.stats.rankedGameModeStats[0]} search={false}/>
+          </Box>
           <Alert severity="info">{ translate('integrations.pubg.stats_are_automatically_refreshed_every_10_minutes') }</Alert>
         </div>
 
         <div>
           <FormLabel>{ translate('integrations.pubg.player_stats') }</FormLabel>
-          <JsonViewer
-            value={settings.stats.gameModeStats[0]}
-            theme={ocean}
-            style={{ padding: '10px' }}
-            displayDataTypes={false}
-            enableClipboard={false}
-          />
+          <Box sx={{ p:1 }}>
+            <JsonInspector data={settings.stats.gameModeStats[0]} search={false}/>
+          </Box>
           <Alert severity="info">{ translate('integrations.pubg.stats_are_automatically_refreshed_every_10_minutes') }</Alert>
 
         </div>

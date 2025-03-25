@@ -1,8 +1,8 @@
+import { QueueInterface } from '@backend/database/entity/queue';
 import { Backspace, Lock, LockOpenTwoTone } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Alert, Box, Button, ButtonGroup, Chip, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, SxProps, Tab, TextField, Tooltip, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { QueueInterface } from '@sogebot/backend/src/database/entity/queue';
 import axios from 'axios';
 import { isEqual } from 'lodash';
 import React from 'react';

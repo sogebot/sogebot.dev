@@ -1,6 +1,6 @@
+import { Filter } from '@backend/database/entity/overlay';
 import { DeleteTwoTone, ExpandMoreTwoTone } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
-import { Filter } from '@sogebot/backend/src/database/entity/overlay';
 import { cloneDeep, isEqual } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
@@ -15,7 +15,7 @@ type Props = Omit<AccordionProps, 'children' | 'onChange'> & {
   onOpenChange?:        (value: string) => void;
   onChange:            (value: Filter) => void;
   onDelete?:           () => void;
-  customLabelDetails?: React.ReactNode;
+  customLabelDetails?: string | React.JSX.Element | null;
   rules:               [string, string][],
   hideGroupButton?:    boolean,
 };
@@ -98,7 +98,7 @@ export const AccordionFilter: React.FC<Props> = (props) => {
   };
 
   const generateComparators = (type: 'number' | 'string' | 'any') => {
-    const items = [];
+    const items: { value: string, text: string }[] = [];
 
     if (getRuleType(type) === 'service' || getRuleType(type) === 'reward') {
       items.push({

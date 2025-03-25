@@ -1,5 +1,5 @@
+import { BotEntity } from '@backend/database/BotEntity';
 import { capitalize, Stack, Typography } from '@mui/material';
-import { BotEntity } from '@sogebot/backend/src/database/BotEntity';
 import { AxiosError } from 'axios';
 import { isEqual } from 'lodash';
 import { useSnackbar } from 'notistack';

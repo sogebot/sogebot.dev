@@ -1,7 +1,7 @@
+import { AliasGroup } from '@entity/alias';
 import { Clear } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, LinearProgress, MenuItem, Select, TextField } from '@mui/material';
-import { AliasGroup } from '@sogebot/backend/dest/database/entity/alias';
 import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 import { useSnackbar } from 'notistack';

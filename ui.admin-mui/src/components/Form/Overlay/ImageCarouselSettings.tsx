@@ -1,4 +1,4 @@
-import { Carousel } from '@sogebot/backend/dest/database/entity/overlay';
+import { Carousel } from '@entity/overlay';
 import React from 'react';
 
 import { ImageDialog } from './ImageCarouselSettings/image';

@@ -1,5 +1,5 @@
+import { Polls } from '@entity/overlay';
 import { FormControl, InputAdornment, InputLabel, MenuItem, Select, Stack, Switch, TextField } from '@mui/material';
-import { Polls } from '@sogebot/backend/dest/database/entity/overlay';
 import React from 'react';
 
 import { useTranslation } from '../../../hooks/useTranslation';

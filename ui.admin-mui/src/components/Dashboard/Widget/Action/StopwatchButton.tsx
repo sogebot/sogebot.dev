@@ -1,8 +1,8 @@
+import { OverlayStopwatchItem } from '@backend/database/entity/dashboard';
+import { Stopwatch } from '@entity/overlay';
 import { Edit, Pause, PlayArrow } from '@mui/icons-material';
 import { Popover } from '@mui/material';
 import { Box } from '@mui/system';
-import { Stopwatch } from '@sogebot/backend/dest/database/entity/overlay';
-import { OverlayStopwatchItem } from '@sogebot/backend/src/database/entity/dashboard';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,7 +20,7 @@ export const DashboardWidgetActionStopwatchButton: React.FC<{ item: OverlayStopw
   const [ isStarted, setIsStarted ] = useState(false);
   const [ timestamp, setTimestamp ] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const btnRef = useRef<any>();
+  const btnRef = useRef<any>(null);
   const [ menuWidth, setMenuWidth ] = useState<string>('inherit');
   const open = Boolean(anchorEl);
 
