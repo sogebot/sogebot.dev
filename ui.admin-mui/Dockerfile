@@ -10,6 +10,8 @@ RUN mkdir -p /app/static/${COMMIT}
 ADD sogeBot-dashboard-${COMMIT} /app/static
 ADD sogeBot-dashboard-basePath-${COMMIT} /app/static/${COMMIT}
 
+RUN ls /app/static/*
+
 # extract commit files
 COPY *.zip /app/static/
 RUN ls /app/static/*.zip
