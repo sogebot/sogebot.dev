@@ -7,9 +7,9 @@ module.exports = {
       return webpackConfig;
     },
     alias: {
-      '@entity': path.resolve(__dirname, '../node_modules/@sogebot/backend/dest/database/entity'),
-      '@backend': path.resolve(__dirname, '../node_modules/@sogebot/backend/dest'),
-      '@d.ts': path.resolve(__dirname, '../node_modules/@sogebot/backend/d.ts')
+      '@entity': '@sogebot/backend/dest/database/entity',
+      '@backend': '@sogebot/backend/dest',
+      '@d.ts': '@sogebot/backend/d.ts',
     }
   }
 };
