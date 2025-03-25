@@ -24,7 +24,7 @@ jobs:
       - name: install node LTS
         uses: actions/setup-node@v3
         with:
-          node-version: lts
+          node-version: lts/*
           check-latest: true
       - name: Install latest npm
         run: |
@@ -90,7 +90,7 @@ jobs:
       - name: install node LTS
         uses: actions/setup-node@v3
         with:
-          node-version: lts
+          node-version: lts/*
           check-latest: true
 
       - name: Include older out build (test)
