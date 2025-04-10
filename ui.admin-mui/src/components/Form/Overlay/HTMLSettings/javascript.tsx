@@ -1,15 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, PaperProps, Stack } from '@mui/material';
 import React from 'react';
-import Draggable from 'react-draggable';
-
-function PaperComponent(props: PaperProps) {
-  return (
-    <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-      <Paper {...props} />
-    </Draggable>
-  );
-}
 
 type Props = {
   model: string,
@@ -31,10 +22,9 @@ export const JavascriptDialog: React.FC<Props> = ({ onChange, model }) => {
       PaperProps={{ style: { pointerEvents: 'auto' } }}
       maxWidth='md'
       hideBackdrop
-      PaperComponent={PaperComponent}
       onClose={() => setOpen(false)}
       open={open}>
-      <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+      <DialogTitle id="draggable-dialog-title">
         Javascript
       </DialogTitle>
       <DialogContent sx={{ p: 0 }} dividers>
