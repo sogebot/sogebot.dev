@@ -930,7 +930,6 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 model={selectedAlertVariant.rewardId ?? ''}
                 open={accordionId}
                 onOpenChange={setAccordionId} onChange={(val) => {
-                  console.log('Changing rewardId', { val });
                   handleAlertChange({ 'rewardId': val });
                 }}/>
             }
