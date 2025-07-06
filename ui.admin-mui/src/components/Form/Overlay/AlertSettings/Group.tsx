@@ -9,7 +9,7 @@ import { LoadingButton } from '@mui/lab';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, DialogContent, Divider, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import orange from '@mui/material/colors/orange';
 import { Atom, useAtom, useAtomValue } from 'jotai';
-import { capitalize, cloneDeep, set } from 'lodash';
+import { capitalize, cloneDeep, isEqual, set } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import Moveable from 'react-moveable';
@@ -349,6 +349,9 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
             }
           }
         }
+      }
+      if (isEqual(update, m)) {
+        return m; // fix for infinite changes
       }
       return update;
     });
@@ -927,6 +930,7 @@ export const AlertSettingsGroup: React.FC<Props> = ({ canvas, onUpdate }) => {
                 model={selectedAlertVariant.rewardId ?? ''}
                 open={accordionId}
                 onOpenChange={setAccordionId} onChange={(val) => {
+                  console.log('Changing rewardId', { val });
                   handleAlertChange({ 'rewardId': val });
                 }}/>
             }
