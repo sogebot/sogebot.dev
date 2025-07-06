@@ -3,7 +3,7 @@ import { mdiMouseLeftClick, mdiMouseRightClick } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DeleteTwoTone, SettingsTwoTone } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Chip, CircularProgress, circularProgressClasses, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, LinearProgress, Menu, MenuItem, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, circularProgressClasses, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, LinearProgress, Menu, MenuItem, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import axios from 'axios';
 import { useSetAtom } from 'jotai';
 import { isEqual } from 'lodash';
@@ -177,7 +177,10 @@ const AlertQueueController: React.FC<Props> = (props) => {
               </IconButton>
             </Tooltip>
             <Menu {...bindMenu(popupState)} sx={{ '& .MuiList-root': { minWidth: 250 } }}>
-              <Typography sx={{ px: 1, mx: 1, mb: 1 }}>Alert Queue #{props.index + 1}</Typography>
+              <Stack direction='row' sx={{ px: 1, mx: 1, mb: 1 }}>
+                <Typography variant="h5" sx={{ flexGrow: '1', alignContent: 'center' }}>Alert Queue #{props.index + 1}</Typography>
+                <Switch  sx={{ alignSelf: 'center' }} size='small' checked={!model.passthrough} onChange={(_, checked) => setModel(AlertQueue.create({ ...model, passthrough: !checked }))} />
+              </Stack>
               <Divider sx={{ my: 1 }}/>
               <MenuItem disabled={model.play || model.emitData.length === 0} onClick={sendAlertToOverlay}>
                 <Stack>
@@ -197,20 +200,6 @@ const AlertQueueController: React.FC<Props> = (props) => {
                   <Typography variant='caption'>Pause next alert in queue.</Typography>
                 </Stack>
               </MenuItem>}
-
-              {model.passthrough
-                ? <MenuItem disabled={saving} onClick={() => setModel(AlertQueue.create({ ...model, passthrough: false }))}>
-                  <Stack>
-                    <Typography variant='button'>Disable Passthrough</Typography>
-                    <Typography variant='caption'>New alerts will be queued</Typography>
-                  </Stack>
-                </MenuItem>
-                : <MenuItem disabled={saving} onClick={() => setModel(AlertQueue.create({ ...model, passthrough: true }))}>
-                  <Stack>
-                    <Typography variant='button'>Passthrough</Typography>
-                    <Typography variant='caption'>New alerts will skip queue</Typography>
-                  </Stack>
-                </MenuItem>}
               <Divider/>
               <MenuItem disabled={saving} onClick={openDialog}>
                 <Typography variant='button'>Configure</Typography>
