@@ -130,14 +130,15 @@ export const DashboardWidgetBotYTPlayer: React.FC<{ sx: SxProps }> = ({
           player.setVolume(currentSong.volume);
           setVolumeSetForId(currentSong.videoId ?? '');
         }
-        if (player.getCurrentTime() > currentSong.endTime) {
+        const currentTime = player.getCurrentTime();
+        if (currentSong.endTime && currentSong.endTime !== Number.MAX_SAFE_INTEGER && currentTime > 0 && currentTime > currentSong.endTime) {
           next();
         }
       }
     } catch {
       return;
     }
-  }, 100, true, true);
+  }, 1000, true, true);
 
   useIntervalWhen(async () => {
     await new Promise<void>(resolve => {
